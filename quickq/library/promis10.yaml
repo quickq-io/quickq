@@ -1,0 +1,154 @@
+library:
+  instrument: "PROMIS-10"
+  full_name: "PROMIS Global Health v1.2"
+  version: "1.2"
+  citation: "Hays RD, et al. Item Response Theory Analyses of the Patient-Reported Outcomes Measurement Information System (PROMIS) Global Health Items. Qual Life Res. 2009;18(4):447-460."
+  license: "PROMIS instruments are in the public domain."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+
+  concepts:
+    # Questions — LOINC panel 85524-7
+    - { ref: "LOINC:61577-3", name: "Global health - general health rating",         domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61578-1", name: "Global health - quality of life rating",         domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61579-9", name: "Global health - physical health rating",         domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61580-7", name: "Global health - mental health rating",           domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61581-5", name: "Global health - social activities satisfaction", domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61582-3", name: "Global health - physical activities ability",    domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61583-1", name: "Global health - pain rating 0-10",              domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61584-9", name: "Global health - fatigue rating",                domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61585-6", name: "Global health - social roles performance",      domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:61586-4", name: "Global health - emotional problems frequency",  domain: Question, class: Survey, standard: S }
+    # LL4280-5  Excellent → Poor
+    - { ref: "LOINC:LA9206-9",  name: "Excellent",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13913-1", name: "Very good",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA8967-7",  name: "Good",         domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA8968-5",  name: "Fair",         domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA8969-3",  name: "Poor",         domain: Answer, class: Answer, standard: S }
+    # LL1013-3  Completely → Not at all
+    - { ref: "LOINC:LA13937-0", name: "Completely",   domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13938-8", name: "Mostly",       domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13939-6", name: "Moderately",   domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13940-4", name: "A little",     domain: Answer, class: Answer, standard: S }
+    # LL4478-5  None → Very severe
+    - { ref: "LOINC:LA137-2",   name: "None",         domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6752-5",  name: "Mild",         domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6751-7",  name: "Moderate",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6750-9",  name: "Severe",       domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13958-6", name: "Very severe",  domain: Answer, class: Answer, standard: S }
+    # LL3122-0  Never → Always
+    - { ref: "LOINC:LA6270-8",  name: "Never",        domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA10066-1", name: "Rarely",       domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA10082-8", name: "Sometimes",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA10044-8", name: "Often",        domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA9933-8",  name: "Always",       domain: Answer, class: Answer, standard: S }
+
+  option_sets:
+    # LL4280-5 — used by G1-G5 and G9
+    general_health:
+      - { text: "Excellent",   value: "5", concept: "LOINC:LA9206-9"  }
+      - { text: "Very good",   value: "4", concept: "LOINC:LA13913-1" }
+      - { text: "Good",        value: "3", concept: "LOINC:LA8967-7"  }
+      - { text: "Fair",        value: "2", concept: "LOINC:LA8968-5"  }
+      - { text: "Poor",        value: "1", concept: "LOINC:LA8969-3"  }
+
+    # LL1013-3 — used by G6
+    physical_ability:
+      - { text: "Completely",  value: "5", concept: "LOINC:LA13937-0" }
+      - { text: "Mostly",      value: "4", concept: "LOINC:LA13938-8" }
+      - { text: "Moderately",  value: "3", concept: "LOINC:LA13939-6" }
+      - { text: "A little",    value: "2", concept: "LOINC:LA13940-4" }
+      - { text: "Not at all",  value: "1", concept: "LOINC:LA6568-5"  }
+
+    # LL4478-5 — used by G8 (fatigue)
+    fatigue_severity:
+      - { text: "None",        value: "5", concept: "LOINC:LA137-2"   }
+      - { text: "Mild",        value: "4", concept: "LOINC:LA6752-5"  }
+      - { text: "Moderate",    value: "3", concept: "LOINC:LA6751-7"  }
+      - { text: "Severe",      value: "2", concept: "LOINC:LA6750-9"  }
+      - { text: "Very severe", value: "1", concept: "LOINC:LA13958-6" }
+
+    # LL3122-0 — used by G10 (emotional problems)
+    frequency:
+      - { text: "Never",       value: "5", concept: "LOINC:LA6270-8"  }
+      - { text: "Rarely",      value: "4", concept: "LOINC:LA10066-1" }
+      - { text: "Sometimes",   value: "3", concept: "LOINC:LA10082-8" }
+      - { text: "Often",       value: "2", concept: "LOINC:LA10044-8" }
+      - { text: "Always",      value: "1", concept: "LOINC:LA9933-8"  }
+
+  questions:
+    - link_id: promis10.g1
+      text: "In general, would you say your health is:"
+      type: single_choice
+      concept: "LOINC:61577-3"
+      source_item_id: "PROMIS10-G1"
+      options: $general_health
+
+    - link_id: promis10.g2
+      text: "In general, would you say your quality of life is:"
+      type: single_choice
+      concept: "LOINC:61578-1"
+      source_item_id: "PROMIS10-G2"
+      options: $general_health
+
+    - link_id: promis10.g3
+      text: "In general, how would you rate your physical health:"
+      type: single_choice
+      concept: "LOINC:61579-9"
+      source_item_id: "PROMIS10-G3"
+      options: $general_health
+
+    - link_id: promis10.g4
+      text: "In general, how would you rate your mental health, including your mood and your ability to think:"
+      type: single_choice
+      concept: "LOINC:61580-7"
+      source_item_id: "PROMIS10-G4"
+      options: $general_health
+
+    - link_id: promis10.g5
+      text: "In general, how would you rate your satisfaction with your social activities and relationships:"
+      type: single_choice
+      concept: "LOINC:61581-5"
+      source_item_id: "PROMIS10-G5"
+      options: $general_health
+
+    - link_id: promis10.g6
+      text: "To what extent are you able to carry out your everyday physical activities such as walking, climbing stairs, carrying groceries, or moving a chair:"
+      type: single_choice
+      concept: "LOINC:61582-3"
+      source_item_id: "PROMIS10-G6"
+      options: $physical_ability
+
+    - link_id: promis10.g7
+      text: "How would you rate your pain on average?"
+      type: slider
+      concept: "LOINC:61583-1"
+      source_item_id: "PROMIS10-G7"
+      numeric_min: 0
+      numeric_max: 10
+      slider_min_label: "No pain"
+      slider_max_label: "Worst pain imaginable"
+
+    - link_id: promis10.g8
+      text: "How would you rate your fatigue on average? (Fatigue means a feeling of tiredness that is not relieved by rest or sleep)"
+      type: single_choice
+      concept: "LOINC:61584-9"
+      source_item_id: "PROMIS10-G8"
+      options: $fatigue_severity
+
+    - link_id: promis10.g9
+      text: "In general, please rate how well you carry out your usual social activities and roles. (This includes activities at home, at work and in your community, and responsibilities as a parent, child, spouse, employee, friend, etc.)"
+      type: single_choice
+      concept: "LOINC:61585-6"
+      source_item_id: "PROMIS10-G9"
+      options: $general_health
+
+    - link_id: promis10.g10
+      text: "In general, how often have you been bothered by emotional problems such as feeling anxious, depressed or irritable:"
+      type: single_choice
+      concept: "LOINC:61586-4"
+      source_item_id: "PROMIS10-G10"
+      options: $frequency

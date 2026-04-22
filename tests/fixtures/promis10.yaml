@@ -1,0 +1,37 @@
+questionnaire:
+  name: "PROMIS-10 Global Health"
+  canonical_url: "http://quickq.io/instruments/promis10"
+  version: "1.2"
+  description: "10-item global health instrument assessing physical, mental, and social health (LOINC panel 85524-7)"
+  fhir_status: active
+
+  sections:
+    - title: "Please answer each question by selecting the response that best describes you."
+      questions:
+        - { library: promis10.g1 }
+        - { library: promis10.g2 }
+        - { library: promis10.g3 }
+        - { library: promis10.g4 }
+        - { library: promis10.g5 }
+        - { library: promis10.g6 }
+        - { library: promis10.g7 }
+        - { library: promis10.g8 }
+        - { library: promis10.g9 }
+        - { library: promis10.g10 }
+
+  scoring:
+    # GPH raw score: G3 + G6 + (11 - G7_pain) + (6 - G8_fatigue)
+    # G7 and G8 are reverse-scored before summing; see PROMIS Global Health
+    # Scoring Manual for raw-to-T-score conversion tables.
+    - name: "Global Physical Health (GPH) raw"
+      description: "Sum of G3 and G6; G7 (pain) and G8 (fatigue) require reversal before inclusion. Convert raw sum to T-score via PROMIS scoring tables."
+      formula: sum
+      items: [promis10.g3, promis10.g6]
+
+    # GMH raw score: G2 + G4 + G5 + G10
+    # G10 frequency scale is already inverted (Never=5, Always=1).
+    # Convert raw sum to T-score via PROMIS scoring tables.
+    - name: "Global Mental Health (GMH) raw"
+      description: "Sum of G2, G4, G5, G10. Convert raw sum to T-score via PROMIS scoring tables."
+      formula: sum
+      items: [promis10.g2, promis10.g4, promis10.g5, promis10.g10]

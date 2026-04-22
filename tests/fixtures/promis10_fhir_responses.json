@@ -1,0 +1,637 @@
+[
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/promis10",
+    "authored": "2026-04-22T21:55:11Z",
+    "subject": {
+      "reference": "Patient/synthetic-001"
+    },
+    "item": [
+      {
+        "linkId": "promis10.g1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13937-0",
+              "display": "Completely"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g7",
+        "answer": [
+          {
+            "valueDecimal": 0
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA137-2",
+              "display": "None"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9206-9",
+              "display": "Excellent"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/promis10",
+    "authored": "2026-04-22T21:55:11Z",
+    "subject": {
+      "reference": "Patient/synthetic-002"
+    },
+    "item": [
+      {
+        "linkId": "promis10.g1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13938-8",
+              "display": "Mostly"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g7",
+        "answer": [
+          {
+            "valueDecimal": 2
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6752-5",
+              "display": "Mild"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13913-1",
+              "display": "Very good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA10066-1",
+              "display": "Rarely"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/promis10",
+    "authored": "2026-04-22T21:55:11Z",
+    "subject": {
+      "reference": "Patient/synthetic-003"
+    },
+    "item": [
+      {
+        "linkId": "promis10.g1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13939-6",
+              "display": "Moderately"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g7",
+        "answer": [
+          {
+            "valueDecimal": 5
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6751-7",
+              "display": "Moderate"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8967-7",
+              "display": "Good"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA10082-8",
+              "display": "Sometimes"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/promis10",
+    "authored": "2026-04-22T21:55:11Z",
+    "subject": {
+      "reference": "Patient/synthetic-004"
+    },
+    "item": [
+      {
+        "linkId": "promis10.g1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13940-4",
+              "display": "A little"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g7",
+        "answer": [
+          {
+            "valueDecimal": 7
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6750-9",
+              "display": "Severe"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8968-5",
+              "display": "Fair"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA10044-8",
+              "display": "Often"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/promis10",
+    "authored": "2026-04-22T21:55:11Z",
+    "subject": {
+      "reference": "Patient/synthetic-005"
+    },
+    "item": [
+      {
+        "linkId": "promis10.g1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g7",
+        "answer": [
+          {
+            "valueDecimal": 10
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13958-6",
+              "display": "Very severe"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA8969-3",
+              "display": "Poor"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "promis10.g10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA9933-8",
+              "display": "Always"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

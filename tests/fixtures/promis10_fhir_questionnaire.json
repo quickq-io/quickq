@@ -1,0 +1,539 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "PROMIS-10 Global Health",
+  "version": "1.2",
+  "url": "http://quickq.io/instruments/promis10",
+  "description": "10-item global health instrument assessing physical, mental, and social health (LOINC panel 85524-7)",
+  "date": "2026-04-22T21:55:11Z",
+  "name": "PROMIS10GlobalHealth",
+  "extension": [
+    {
+      "url": "https://quickq.io/fhir/StructureDefinition/scoring-rule",
+      "extension": [
+        {
+          "url": "name",
+          "valueString": "Global Physical Health (GPH) raw"
+        },
+        {
+          "url": "formula",
+          "valueString": "sum"
+        },
+        {
+          "url": "description",
+          "valueString": "Sum of G3 and G6; G7 (pain) and G8 (fatigue) require reversal before inclusion. Convert raw sum to T-score via PROMIS scoring tables."
+        }
+      ]
+    },
+    {
+      "url": "https://quickq.io/fhir/StructureDefinition/scoring-rule",
+      "extension": [
+        {
+          "url": "name",
+          "valueString": "Global Mental Health (GMH) raw"
+        },
+        {
+          "url": "formula",
+          "valueString": "sum"
+        },
+        {
+          "url": "description",
+          "valueString": "Sum of G2, G4, G5, G10. Convert raw sum to T-score via PROMIS scoring tables."
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "promis10.g1",
+      "text": "In general, would you say your health is:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G1"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g2",
+      "text": "In general, would you say your quality of life is:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G2"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g3",
+      "text": "In general, how would you rate your physical health:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G3"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g4",
+      "text": "In general, how would you rate your mental health, including your mood and your ability to think:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G4"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g5",
+      "text": "In general, how would you rate your satisfaction with your social activities and relationships:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G5"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g6",
+      "text": "To what extent are you able to carry out your everyday physical activities such as walking, climbing stairs, carrying groceries, or moving a chair:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Completely",
+            "code": "LA13937-0",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Mostly",
+            "code": "LA13938-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Moderately",
+            "code": "LA13939-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "A little",
+            "code": "LA13940-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Not at all",
+            "code": "LA6568-5",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G6"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g7",
+      "text": "How would you rate your pain on average?",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueDecimal": 0.0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueDecimal": 10.0
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G7"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g8",
+      "text": "How would you rate your fatigue on average? (Fatigue means a feeling of tiredness that is not relieved by rest or sleep)",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "None",
+            "code": "LA137-2",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Mild",
+            "code": "LA6752-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Moderate",
+            "code": "LA6751-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Severe",
+            "code": "LA6750-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very severe",
+            "code": "LA13958-6",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G8"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g9",
+      "text": "In general, please rate how well you carry out your usual social activities and roles. (This includes activities at home, at work and in your community, and responsibilities as a parent, child, spouse, employee, friend, etc.)",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Excellent",
+            "code": "LA9206-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very good",
+            "code": "LA13913-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Good",
+            "code": "LA8967-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Fair",
+            "code": "LA8968-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Poor",
+            "code": "LA8969-3",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G9"
+        }
+      ]
+    },
+    {
+      "linkId": "promis10.g10",
+      "text": "In general, how often have you been bothered by emotional problems such as feeling anxious, depressed or irritable:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Never",
+            "code": "LA6270-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Rarely",
+            "code": "LA10066-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Sometimes",
+            "code": "LA10082-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Often",
+            "code": "LA10044-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Always",
+            "code": "LA9933-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PROMIS-10"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PROMIS10-G10"
+        }
+      ]
+    }
+  ]
+}
