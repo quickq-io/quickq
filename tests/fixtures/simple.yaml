@@ -1,0 +1,53 @@
+questionnaire:
+  name: "Tobacco Use Survey"
+  canonical_url: "http://quickq.io/instruments/tobacco-use"
+  version: "1.0"
+
+  option_sets:
+    yn:
+      - { text: "Yes", value: "yes", concept: "SNOMED:373066001" }
+      - { text: "No",  value: "no",  concept: "SNOMED:373067005" }
+
+    tobacco_products:
+      - { text: "Cigarettes",          value: "cig" }
+      - { text: "E-cigarettes/vaping", value: "ecig" }
+      - { text: "Chewing tobacco",     value: "chew" }
+      - { text: "Cigars",              value: "cigar" }
+      - { text: "Other",               value: "other", is_other: true }
+
+  sections:
+    - title: "Tobacco Use"
+      questions:
+        - link_id: tobacco.current
+          text: "Do you currently use any tobacco products?"
+          type: single_choice
+          concept: "LOINC:72166-2"
+          required: true
+          options: $yn
+
+        - link_id: tobacco.type
+          text: "Which tobacco products do you use? Select all that apply."
+          type: multiple_choice
+          options: $tobacco_products
+          show_when:
+            question: tobacco.current
+            operator: "="
+            value: "yes"
+
+        - link_id: tobacco.cpd
+          text: "On average, how many cigarettes do you smoke per day?"
+          type: numeric
+          range: [1, 100]
+          show_when:
+            question: tobacco.type
+            operator: "="
+            value: "cig"
+
+        - link_id: tobacco.quit_attempts
+          text: "How many times have you tried to quit in the past year?"
+          type: numeric
+          range: [0, 20]
+          show_when:
+            question: tobacco.current
+            operator: "="
+            value: "yes"

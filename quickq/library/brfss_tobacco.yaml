@@ -1,0 +1,96 @@
+library:
+  instrument: "BRFSS-TOBACCO"
+  full_name: "BRFSS Tobacco Use Module"
+  version: "2023"
+  citation: "CDC Behavioral Risk Factor Surveillance System 2023 Survey Questionnaire. Atlanta, Georgia: U.S. Department of Health and Human Services, Centers for Disease Control and Prevention."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+    - vocabulary_id: SNOMED
+      vocabulary_name: "SNOMED Clinical Terms"
+      vocabulary_reference: "https://www.snomed.org"
+
+  concepts:
+    - { ref: "LOINC:72166-2",    name: "Tobacco smoking status",                        domain: Question, class: Survey,  standard: S }
+    - { ref: "LOINC:63638-1",    name: "Types of tobacco used",                          domain: Question, class: Survey,  standard: S }
+    - { ref: "LOINC:64234-8",    name: "Cigarettes smoked per day",                      domain: Question, class: Survey,  standard: S }
+    - { ref: "LOINC:67741-9",    name: "Age at first tobacco use",                        domain: Question, class: Survey,  standard: S }
+    - { ref: "LOINC:68517-2",    name: "Quit attempts in past year",                      domain: Question, class: Survey,  standard: S }
+    - { ref: "LOINC:68518-0",    name: "Intention to quit tobacco",                       domain: Question, class: Survey,  standard: S }
+    - { ref: "SNOMED:373066001", name: "Yes",                                             domain: Answer,   class: Answer,  standard: S }
+    - { ref: "SNOMED:373067005", name: "No",                                              domain: Answer,   class: Answer,  standard: S }
+
+  option_sets:
+    yn:
+      - { text: "Yes", value: "yes", concept: "SNOMED:373066001" }
+      - { text: "No",  value: "no",  concept: "SNOMED:373067005" }
+
+  questions:
+    - link_id: brfss.tobacco.ever
+      text: "Have you smoked at least 100 cigarettes in your entire life?"
+      type: single_choice
+      concept: "LOINC:72166-2"
+      source_item_id: "BRFSS-TOBACCO-1"
+      options: $yn
+
+    - link_id: brfss.tobacco.current
+      text: "Do you now smoke cigarettes every day, some days, or not at all?"
+      type: single_choice
+      concept: "LOINC:72166-2"
+      source_item_id: "BRFSS-TOBACCO-2"
+      options:
+        - { text: "Every day",   value: "every_day" }
+        - { text: "Some days",   value: "some_days" }
+        - { text: "Not at all",  value: "not_at_all" }
+
+    - link_id: brfss.tobacco.types
+      text: "Which of the following tobacco products have you used in the past 30 days? Select all that apply."
+      type: multiple_choice
+      concept: "LOINC:63638-1"
+      source_item_id: "BRFSS-TOBACCO-3"
+      options:
+        - { text: "Cigarettes",                value: "cigarettes" }
+        - { text: "E-cigarettes or vaping",    value: "ecig" }
+        - { text: "Cigars, cigarillos, or little cigars", value: "cigars" }
+        - { text: "Smokeless tobacco (chewing tobacco, snuff, dip, snus, or dissolvable tobacco)", value: "smokeless" }
+        - { text: "Pipes (not including water pipes or hookah)", value: "pipe" }
+        - { text: "Hookah or water pipe",      value: "hookah" }
+        - { text: "Nicotine replacement therapy (patch, gum, lozenge)", value: "nrt" }
+        - { text: "None of the above",         value: "none", is_exclusive: true }
+
+    - link_id: brfss.tobacco.cpd
+      text: "On the days when you smoked, about how many cigarettes did you smoke per day?"
+      type: numeric
+      concept: "LOINC:64234-8"
+      source_item_id: "BRFSS-TOBACCO-4"
+      numeric_min: 1
+      numeric_max: 200
+
+    - link_id: brfss.tobacco.age_first
+      text: "How old were you when you first started smoking cigarettes regularly?"
+      type: numeric
+      concept: "LOINC:67741-9"
+      source_item_id: "BRFSS-TOBACCO-5"
+      numeric_min: 5
+      numeric_max: 100
+
+    - link_id: brfss.tobacco.quit_attempts
+      text: "During the past 12 months, how many times have you stopped smoking for one day or longer because you were trying to quit smoking?"
+      type: numeric
+      concept: "LOINC:68517-2"
+      source_item_id: "BRFSS-TOBACCO-6"
+      numeric_min: 0
+      numeric_max: 365
+
+    - link_id: brfss.tobacco.quit_intention
+      text: "Are you seriously thinking about quitting smoking?"
+      type: single_choice
+      concept: "LOINC:68518-0"
+      source_item_id: "BRFSS-TOBACCO-7"
+      options:
+        - { text: "Yes, within the next 30 days",    value: "yes_30d" }
+        - { text: "Yes, within the next 6 months",   value: "yes_6mo" }
+        - { text: "Yes, but not within the next 6 months", value: "yes_future" }
+        - { text: "No",                              value: "no" }

@@ -1,0 +1,645 @@
+[
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/phq9",
+    "authored": "2026-04-22T21:39:12Z",
+    "subject": {
+      "reference": "Patient/synthetic-001"
+    },
+    "item": [
+      {
+        "linkId": "phq9.1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/phq9",
+    "authored": "2026-04-22T21:39:12Z",
+    "subject": {
+      "reference": "Patient/synthetic-002"
+    },
+    "item": [
+      {
+        "linkId": "phq9.1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.difficulty",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6572-7",
+              "display": "Not difficult at all"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/phq9",
+    "authored": "2026-04-22T21:39:12Z",
+    "subject": {
+      "reference": "Patient/synthetic-003"
+    },
+    "item": [
+      {
+        "linkId": "phq9.1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6569-3",
+              "display": "Several days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.difficulty",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6573-5",
+              "display": "Somewhat difficult"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/phq9",
+    "authored": "2026-04-22T21:39:12Z",
+    "subject": {
+      "reference": "Patient/synthetic-004"
+    },
+    "item": [
+      {
+        "linkId": "phq9.1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6570-1",
+              "display": "More than half the days"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.difficulty",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6574-3",
+              "display": "Very difficult"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "status": "completed",
+    "questionnaire": "http://quickq.io/instruments/phq9",
+    "authored": "2026-04-22T21:39:12Z",
+    "subject": {
+      "reference": "Patient/synthetic-005"
+    },
+    "item": [
+      {
+        "linkId": "phq9.1",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6571-9",
+              "display": "Nearly every day"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "phq9.difficulty",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6575-0",
+              "display": "Extremely difficult"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,128 @@
+questionnaire:
+  name: "PHQ-9 Patient Health Questionnaire"
+  canonical_url: "http://quickq.io/instruments/phq9"
+  version: "1.0"
+  description: "9-item depression screening instrument (Kroenke & Spitzer, 2002)"
+
+  option_sets:
+    phq_frequency:
+      - { text: "Not at all",             value: "0", concept: "LOINC:LA6568-5" }
+      - { text: "Several days",           value: "1", concept: "LOINC:LA6569-3" }
+      - { text: "More than half the days", value: "2", concept: "LOINC:LA6570-1" }
+      - { text: "Nearly every day",       value: "3", concept: "LOINC:LA6571-9" }
+
+  sections:
+    - title: "Over the last 2 weeks, how often have you been bothered by any of the following problems?"
+      questions:
+        - link_id: phq9.1
+          text: "Little interest or pleasure in doing things"
+          type: single_choice
+          concept: "LOINC:44250-9"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-1"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.2
+          text: "Feeling down, depressed, or hopeless"
+          type: single_choice
+          concept: "LOINC:44255-8"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-2"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.3
+          text: "Trouble falling or staying asleep, or sleeping too much"
+          type: single_choice
+          concept: "LOINC:44259-0"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-3"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.4
+          text: "Feeling tired or having little energy"
+          type: single_choice
+          concept: "LOINC:44254-1"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-4"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.5
+          text: "Poor appetite or overeating"
+          type: single_choice
+          concept: "LOINC:44251-7"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-5"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.6
+          text: "Feeling bad about yourself — or that you are a failure or have let yourself or your family down"
+          type: single_choice
+          concept: "LOINC:44258-2"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-6"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.7
+          text: "Trouble concentrating on things, such as reading the newspaper or watching television"
+          type: single_choice
+          concept: "LOINC:44252-5"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-7"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.8
+          text: "Moving or speaking so slowly that other people could have noticed — or being so fidgety or restless that you have been moving around a lot more than usual"
+          type: single_choice
+          concept: "LOINC:44253-3"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-8"
+          required: true
+          options: $phq_frequency
+
+        - link_id: phq9.9
+          text: "Thoughts that you would be better off dead, or of hurting yourself in some way"
+          type: single_choice
+          concept: "LOINC:44260-8"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-9"
+          required: true
+          options: $phq_frequency
+
+    - title: "Functional Impact"
+      questions:
+        - link_id: phq9.difficulty
+          text: "If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?"
+          type: single_choice
+          concept: "LOINC:44261-6"
+          source_instrument: "PHQ-9"
+          source_item_id: "PHQ-9-10"
+          options:
+            - { text: "Not difficult at all", value: "0" }
+            - { text: "Somewhat difficult",   value: "1" }
+            - { text: "Very difficult",        value: "2" }
+            - { text: "Extremely difficult",   value: "3" }
+          show_when:
+            behavior: any
+            conditions:
+              - { question: phq9.1, operator: "!=", value: "0" }
+              - { question: phq9.2, operator: "!=", value: "0" }
+              - { question: phq9.3, operator: "!=", value: "0" }
+
+  scoring:
+    - name: "PHQ-9 Total Score"
+      description: "Sum of items 1–9 (0–27)"
+      formula: sum
+      items: [phq9.1, phq9.2, phq9.3, phq9.4, phq9.5, phq9.6, phq9.7, phq9.8, phq9.9]
+      categories:
+        - { label: "Minimal depression",        min: 0,  max: 4  }
+        - { label: "Mild depression",            min: 5,  max: 9  }
+        - { label: "Moderate depression",        min: 10, max: 14 }
+        - { label: "Moderately severe depression", min: 15, max: 19 }
+        - { label: "Severe depression",          min: 20, max: 27 }

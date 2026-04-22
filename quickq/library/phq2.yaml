@@ -1,0 +1,42 @@
+library:
+  instrument: "PHQ-2"
+  full_name: "Patient Health Questionnaire-2 (Ultra-Brief Depression Screen)"
+  version: "original"
+  citation: "Kroenke K, Spitzer RL, Williams JB. The Patient Health Questionnaire-2: Validity of a Two-Item Depression Screener. Medical Care. 2003;41(11):1284-1292."
+  license: "No permission required to reproduce, translate, display or distribute."
+  note: "PHQ-2 items are items 1 and 2 of the PHQ-9. If the phq9 library is loaded, these questions are already present under phq9.1 and phq9.2. This file defines them independently so PHQ-2 can be used without loading the full PHQ-9."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+
+  concepts:
+    - { ref: "LOINC:44250-9",  name: "Little interest or pleasure in doing things", domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:44255-8",  name: "Feeling down, depressed, or hopeless",        domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:LA6568-5", name: "Not at all",                                  domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6569-3", name: "Several days",                                domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6570-1", name: "More than half the days",                     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6571-9", name: "Nearly every day",                            domain: Answer, class: Answer, standard: S }
+
+  option_sets:
+    phq_frequency:
+      - { text: "Not at all",               value: "0", concept: "LOINC:LA6568-5" }
+      - { text: "Several days",             value: "1", concept: "LOINC:LA6569-3" }
+      - { text: "More than half the days",  value: "2", concept: "LOINC:LA6570-1" }
+      - { text: "Nearly every day",         value: "3", concept: "LOINC:LA6571-9" }
+
+  questions:
+    - link_id: phq9.1
+      text: "Little interest or pleasure in doing things"
+      type: single_choice
+      concept: "LOINC:44250-9"
+      source_item_id: "PHQ-2-1"
+      options: $phq_frequency
+
+    - link_id: phq9.2
+      text: "Feeling down, depressed, or hopeless"
+      type: single_choice
+      concept: "LOINC:44255-8"
+      source_item_id: "PHQ-2-2"
+      options: $phq_frequency

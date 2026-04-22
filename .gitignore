@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Build / docs
+site/
+dist/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# DB files (generated artifacts, not source)
+*.db
+*.duckdb

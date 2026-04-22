@@ -1,0 +1,124 @@
+library:
+  instrument: "CDC-DEMO"
+  full_name: "CDC / OMB Standard Demographic Questions"
+  version: "2024"
+  citation: "OMB Statistical Policy Directive No. 15 (2024 revision). CDC BRFSS Core Questionnaire."
+  note: "Standard demographic items used across NHANES, BRFSS, and federal health surveys."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+    - vocabulary_id: SNOMED
+      vocabulary_name: "SNOMED Clinical Terms"
+      vocabulary_reference: "https://www.snomed.org"
+
+  concepts:
+    # Age
+    - { ref: "LOINC:30525-0",  name: "Age",                               domain: Question,     class: Survey,  standard: S }
+    # Sex at birth
+    - { ref: "LOINC:76689-9",  name: "Sex assigned at birth",             domain: Question,     class: Survey,  standard: S }
+    - { ref: "SNOMED:248153007", name: "Male",                            domain: Answer,       class: Answer,  standard: S }
+    - { ref: "SNOMED:248152002", name: "Female",                          domain: Answer,       class: Answer,  standard: S }
+    # Gender identity
+    - { ref: "LOINC:76691-5",  name: "Gender identity",                   domain: Question,     class: Survey,  standard: S }
+    # Race / Ethnicity (OMB 2024 combined question)
+    - { ref: "LOINC:72826-1",  name: "Race",                              domain: Question,     class: Survey,  standard: S }
+    - { ref: "LOINC:69490-1",  name: "Ethnicity",                         domain: Question,     class: Survey,  standard: S }
+    # Education
+    - { ref: "LOINC:63504-5",  name: "Highest level of education",        domain: Question,     class: Survey,  standard: S }
+    # Income / poverty
+    - { ref: "LOINC:63058-2",  name: "Annual household income",           domain: Question,     class: Survey,  standard: S }
+    # Marital status
+    - { ref: "LOINC:45404-1",  name: "Marital status",                    domain: Question,     class: Survey,  standard: S }
+
+  questions:
+    - link_id: demo.age
+      text: "What is your age?"
+      type: numeric
+      concept: "LOINC:30525-0"
+      source_item_id: "CDC-DEMO-AGE"
+      numeric_min: 0
+      numeric_max: 120
+
+    - link_id: demo.sex
+      text: "What sex were you assigned at birth, on your original birth certificate?"
+      type: single_choice
+      concept: "LOINC:76689-9"
+      source_item_id: "CDC-DEMO-SEX"
+      options:
+        - { text: "Male",                    value: "male",    concept: "SNOMED:248153007" }
+        - { text: "Female",                  value: "female",  concept: "SNOMED:248152002" }
+        - { text: "Prefer not to answer",    value: "decline", is_exclusive: true }
+
+    - link_id: demo.gender
+      text: "What is your current gender identity?"
+      type: single_choice
+      concept: "LOINC:76691-5"
+      source_item_id: "CDC-DEMO-GENDER"
+      options:
+        - { text: "Man or male",                         value: "man" }
+        - { text: "Woman or female",                     value: "woman" }
+        - { text: "Transgender man or trans man",        value: "trans_man" }
+        - { text: "Transgender woman or trans woman",    value: "trans_woman" }
+        - { text: "Nonbinary",                           value: "nonbinary" }
+        - { text: "A different identity",                value: "other", is_other: true }
+        - { text: "Prefer not to answer",                value: "decline", is_exclusive: true }
+
+    - link_id: demo.race_ethnicity
+      text: "What is your race and/or ethnicity? Select all that apply."
+      type: multiple_choice
+      concept: "LOINC:72826-1"
+      source_item_id: "CDC-DEMO-RACE"
+      options:
+        - { text: "American Indian or Alaska Native",    value: "aian" }
+        - { text: "Asian",                               value: "asian" }
+        - { text: "Black or African American",           value: "black" }
+        - { text: "Hispanic or Latino",                  value: "hispanic" }
+        - { text: "Middle Eastern or North African",     value: "mena" }
+        - { text: "Native Hawaiian or Pacific Islander", value: "nhpi" }
+        - { text: "White",                               value: "white" }
+        - { text: "Some other race or ethnicity",        value: "other", is_other: true }
+        - { text: "Prefer not to answer",                value: "decline", is_exclusive: true }
+
+    - link_id: demo.education
+      text: "What is the highest grade or year of school you completed?"
+      type: single_choice
+      concept: "LOINC:63504-5"
+      source_item_id: "CDC-DEMO-EDU"
+      options:
+        - { text: "Never attended school or only kindergarten", value: "none" }
+        - { text: "Grades 1–8 (elementary)",                    value: "elementary" }
+        - { text: "Grades 9–11 (some high school)",             value: "some_hs" }
+        - { text: "Grade 12 or GED (high school diploma)",      value: "hs_diploma" }
+        - { text: "College 1–3 years (some college or technical school)", value: "some_college" }
+        - { text: "College 4 years or more (college graduate)", value: "college_grad" }
+        - { text: "Prefer not to answer",                       value: "decline", is_exclusive: true }
+
+    - link_id: demo.income
+      text: "Which of the following best represents your total annual household income from all sources?"
+      type: single_choice
+      concept: "LOINC:63058-2"
+      source_item_id: "CDC-DEMO-INC"
+      options:
+        - { text: "Less than $15,000",          value: "lt_15k" }
+        - { text: "$15,000 to less than $25,000", value: "15k_25k" }
+        - { text: "$25,000 to less than $35,000", value: "25k_35k" }
+        - { text: "$35,000 to less than $50,000", value: "35k_50k" }
+        - { text: "$50,000 to less than $75,000", value: "50k_75k" }
+        - { text: "$75,000 or more",             value: "gte_75k" }
+        - { text: "Prefer not to answer",        value: "decline", is_exclusive: true }
+
+    - link_id: demo.marital_status
+      text: "Are you currently married, widowed, divorced, separated, never married, or a member of an unmarried couple?"
+      type: single_choice
+      concept: "LOINC:45404-1"
+      source_item_id: "CDC-DEMO-MARITAL"
+      options:
+        - { text: "Married",                    value: "married" }
+        - { text: "Divorced",                   value: "divorced" }
+        - { text: "Widowed",                    value: "widowed" }
+        - { text: "Separated",                  value: "separated" }
+        - { text: "Never married",              value: "never_married" }
+        - { text: "Member of an unmarried couple", value: "unmarried_couple" }
+        - { text: "Prefer not to answer",       value: "decline", is_exclusive: true }
