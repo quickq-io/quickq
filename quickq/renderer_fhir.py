@@ -26,7 +26,7 @@ _FHIR_TYPE: dict[str, str] = {
     "likert":          "choice",
     "grid":            "group",
     "ranked":          "choice",
-    "slider":          "decimal",
+    "slider":          "integer",
 }
 
 _REPEATS_TYPES = frozenset({"multiple_choice", "sata_other"})
@@ -137,15 +137,16 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
     # Numeric / slider constraints (SDC minValue / maxValue)
     if qtype in ("numeric", "slider"):
         ext_buf: list[dict] = item.setdefault("extension", [])
+        value_key = "valueInteger" if qtype == "slider" else "valueDecimal"
         if row["numeric_min"] is not None:
             ext_buf.append({
                 "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-                "valueDecimal": row["numeric_min"],
+                value_key: int(row["numeric_min"]) if qtype == "slider" else row["numeric_min"],
             })
         if row["numeric_max"] is not None:
             ext_buf.append({
                 "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-                "valueDecimal": row["numeric_max"],
+                value_key: int(row["numeric_max"]) if qtype == "slider" else row["numeric_max"],
             })
         if row["numeric_step"] is not None:
             ext_buf.append({
@@ -154,6 +155,15 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
             })
     if qtype == "slider":
         ext_buf = item.setdefault("extension", [])
+        # FHIR SDC rendering hint — SDC-compliant tools render this as a slider;
+        # LHC-Forms falls back to a validated integer text input (slider not supported).
+        ext_buf.append({
+            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+            "valueCodeableConcept": {
+                "coding": [{"system": "http://hl7.org/fhir/questionnaire-item-control",
+                             "code": "slider"}]
+            },
+        })
         if row["slider_min_label"]:
             ext_buf.append({"url": f"{_EXT}/slider-min-label", "valueString": row["slider_min_label"]})
         if row["slider_max_label"]:

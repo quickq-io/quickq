@@ -3,7 +3,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/phq9",
-    "authored": "2026-04-22T21:39:12Z",
+    "authored": "2026-04-22T21:59:58Z",
     "subject": {
       "reference": "Patient/synthetic-001"
     },
@@ -122,7 +122,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/phq9",
-    "authored": "2026-04-22T21:39:12Z",
+    "authored": "2026-04-22T21:59:58Z",
     "subject": {
       "reference": "Patient/synthetic-002"
     },
@@ -253,7 +253,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/phq9",
-    "authored": "2026-04-22T21:39:12Z",
+    "authored": "2026-04-22T21:59:58Z",
     "subject": {
       "reference": "Patient/synthetic-003"
     },
@@ -384,7 +384,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/phq9",
-    "authored": "2026-04-22T21:39:12Z",
+    "authored": "2026-04-22T21:59:58Z",
     "subject": {
       "reference": "Patient/synthetic-004"
     },
@@ -515,7 +515,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/phq9",
-    "authored": "2026-04-22T21:39:12Z",
+    "authored": "2026-04-22T21:59:58Z",
     "subject": {
       "reference": "Patient/synthetic-005"
     },

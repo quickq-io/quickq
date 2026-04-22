@@ -153,7 +153,7 @@ def test_empty_questionnaire_has_no_item_key(tmp_path):
     ("date",            "date"),
     ("datetime",        "dateTime"),
     ("likert",          "choice"),
-    ("slider",          "decimal"),
+    ("slider",          "integer"),
 ])
 def test_type_mapping(tmp_path, qtype, expected_fhir):
     conn = _db(tmp_path)

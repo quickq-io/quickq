@@ -5,7 +5,7 @@
   "version": "1.2",
   "url": "http://quickq.io/instruments/promis10",
   "description": "10-item global health instrument assessing physical, mental, and social health (LOINC panel 85524-7)",
-  "date": "2026-04-22T21:55:11Z",
+  "date": "2026-04-22T21:59:58Z",
   "name": "PROMIS10GlobalHealth",
   "extension": [
     {
@@ -359,15 +359,26 @@
     {
       "linkId": "promis10.g7",
       "text": "How would you rate your pain on average?",
-      "type": "decimal",
+      "type": "integer",
       "extension": [
         {
           "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-          "valueDecimal": 0.0
+          "valueInteger": 0
         },
         {
           "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-          "valueDecimal": 10.0
+          "valueInteger": 10
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "slider"
+              }
+            ]
+          }
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
