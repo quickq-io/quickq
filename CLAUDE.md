@@ -109,6 +109,7 @@ Every `question`, `response_option`, `grid_row`, and `grid_column` has an option
 respondent
   └── response_session  (questionnaire + timestamps + completion status + admin context)
         └── response    (one row per answer atom: option_id or text or numeric or date)
+                        ⚠ repeat_index column needed for repeating_group support (planned)
 admin_event             (dispatch, reminder, interviewer assignment, mode)
 ```
 
@@ -127,6 +128,30 @@ admin_event             (dispatch, reminder, interviewer assignment, mode)
 | `grid` | matrix; uses grid_row + grid_column |
 | `ranked` | drag-to-rank |
 | `slider` | visual analog scale |
+| `repeating_group` | *(planned)* loop — same sub-question set repeats N times; see below |
+
+### Repeating group (loop questions)
+
+A `repeating_group` question is a container whose sub-questions repeat N times — once per pregnancy, medication, job, family member, etc. The count may be free-form (respondent adds instances) or driven by a prior numeric answer.
+
+**FHIR mapping:** `group` item with `repeats: true`. Sub-questions are nested `item` entries. Optionally linked to a count question via the SDC `questionnaire-maxOccurs` extension.
+
+**ODK/XLSForm equivalent:** `begin_repeat` / `end_repeat` with `repeat_count: ${count_question}`.
+
+**Schema readiness:**
+
+| Layer | Status | Detail |
+|---|---|---|
+| Questionnaire definition | ✓ Ready | `questionnaire_question.parent_qq_id` already exists for sub-question trees |
+| Question type field | ✓ Ready | `question.question_type` — add `'repeating_group'` as a valid value |
+| FHIR export | ✓ Ready | Renderer already handles `group`; needs child-item enumeration via `parent_qq_id` |
+| Count linkage | ⚠ Gap | `questionnaire_question` needs `count_qq_id INTEGER REFERENCES questionnaire_question(qq_id)` to link a repeating group to its driving count question |
+| Response collection | ⚠ Gap | `response` table needs `repeat_index INTEGER` — without it responses from different instances (pregnancy 1 vs 2) are indistinguishable |
+| OLAP analytics | ⚠ Gap | `fact_response` needs the same `repeat_index` column so per-instance aggregation works |
+
+Both gaps are clean additive migrations (`ALTER TABLE ADD COLUMN`). The definition / export side can be implemented before the collection side — useful for questionnaire authoring and FHIR round-trip testing even without live data collection.
+
+**Implement together with the response collection layer.** Do not add `repeat_index` to the response table in isolation — design it alongside `quickq collect` / `import_fhir_response` so the storage contract is settled once.
 
 ### Skip logic
 
@@ -159,6 +184,7 @@ fact_response (
     option_id           INTEGER,
     grid_row_id         INTEGER,
     grid_column_id      INTEGER,
+    repeat_index        INTEGER,    -- NULL for non-repeating; 0-based instance index for repeating_group
 
     response_text       VARCHAR,
     response_numeric    DOUBLE,
