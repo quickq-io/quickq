@@ -53,7 +53,8 @@ def migrate_oltp(conn: sqlite3.Connection) -> list[str]:
         except sqlite3.OperationalError:
             pass  # column already exists
 
-    _add_column("question", "internal_note", "TEXT")
+    _add_column("question",     "internal_note",  "TEXT")
+    _add_column("grid_column", "column_value",   "TEXT")
     _add_column("questionnaire_question", "status",
                 "TEXT NOT NULL DEFAULT 'active'")
     _add_column("questionnaire_question", "status_changed_at", "TEXT")

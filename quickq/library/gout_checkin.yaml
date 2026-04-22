@@ -1,0 +1,123 @@
+library:
+  instrument: "GoutCheckin"
+  full_name: "Gout Symptoms Check-In and Family History"
+  version: "1.0"
+  citation: "Synthetic instrument — not a validated scale. Designed to exercise quickq question types: date, multiple_choice, grid, ranked, boolean, numeric, text."
+  license: "Public domain synthetic fixture."
+
+  # No external vocabulary — all questions are locally defined (unmapped).
+
+  option_sets:
+    # Joints for multiple_choice and grid rows
+    attack_joint_options:
+      - { text: "Big toe (either foot)", value: "big_toe"   }
+      - { text: "Ankle",                 value: "ankle"     }
+      - { text: "Knee",                  value: "knee"      }
+      - { text: "Wrist",                 value: "wrist"     }
+      - { text: "Elbow",                 value: "elbow"     }
+      - { text: "Finger joints",         value: "finger"    }
+
+    family_gout_options:
+      - { text: "Biological father",                   value: "father"      }
+      - { text: "Biological mother",                   value: "mother"      }
+      - { text: "Brother or sister",                   value: "sibling"     }
+      - { text: "Maternal grandparent",                value: "mat_gp"      }
+      - { text: "Paternal grandparent",                value: "pat_gp"      }
+      - { text: "First cousin, aunt, or uncle",        value: "cousin"      }
+      - { text: "None of the above", value: "none", is_exclusive: true }
+
+    treatment_goal_options:
+      - { text: "Reducing pain during attacks",         value: "pain_relief"   }
+      - { text: "Preventing future attacks",            value: "prevention"    }
+      - { text: "Minimizing medication side effects",   value: "side_effects"  }
+      - { text: "Maintaining daily activities",         value: "function"      }
+      - { text: "Reaching target uric acid level",      value: "uric_acid"     }
+
+  questions:
+    # ── Recent Attacks ──────────────────────────────────────────────���─
+    - link_id: gout.last_attack_date
+      text: "When did your most recent gout attack begin?"
+      type: date
+      source_item_id: "GOUT-H1"
+
+    - link_id: gout.attacks_12mo
+      text: "How many gout attacks have you had in the past 12 months?"
+      type: numeric
+      source_item_id: "GOUT-H2"
+      numeric_min: 0
+
+    - link_id: gout.attack_joints
+      text: "Which joints were affected in your most recent attack? (select all that apply)"
+      type: multiple_choice
+      source_item_id: "GOUT-H3"
+      options: $attack_joint_options
+
+    # ── Current Symptoms ─────────────────────────────────────────────
+    - link_id: gout.joint_severity
+      text: "Rate pain and swelling in each joint right now:"
+      type: grid
+      source_item_id: "GOUT-S1"
+      rows:
+        - { text: "Right big toe" }
+        - { text: "Left big toe"  }
+        - { text: "Right ankle"   }
+        - { text: "Left ankle"    }
+        - { text: "Right knee"    }
+        - { text: "Left knee"     }
+      columns:
+        - { text: "None",     value: "0" }
+        - { text: "Mild",     value: "1" }
+        - { text: "Moderate", value: "2" }
+        - { text: "Severe",   value: "3" }
+
+    # ── Family History ───────────────────────────────────────────────
+    - link_id: gout.family_gout
+      text: "Which blood relatives have been diagnosed with gout? (select all that apply)"
+      type: multiple_choice
+      source_item_id: "GOUT-F1"
+      options: $family_gout_options
+
+    - link_id: gout.family_conditions
+      text: "Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?"
+      type: grid
+      source_item_id: "GOUT-F2"
+      rows:
+        - { text: "Biological father" }
+        - { text: "Biological mother" }
+        - { text: "Brother or sister" }
+      columns:
+        - { text: "Gout",              value: "gout"    }
+        - { text: "Kidney stones",     value: "kidney"  }
+        - { text: "Hypertension",      value: "htn"     }
+        - { text: "Diabetes",          value: "dm"      }
+        - { text: "None of the above", value: "none"    }
+
+    # ── Management & Labs ─────────────────────────────────────────────
+    - link_id: gout.on_ult
+      text: "Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?"
+      type: boolean
+      source_item_id: "GOUT-M1"
+
+    - link_id: gout.uric_acid
+      text: "Most recent serum uric acid level (mg/dL):"
+      type: numeric
+      source_item_id: "GOUT-M2"
+      numeric_min: 0.0
+      numeric_max: 30.0
+
+    - link_id: gout.uric_acid_date
+      text: "Date of that uric acid blood test:"
+      type: date
+      source_item_id: "GOUT-M3"
+
+    # ── Priorities ───────────────────────────────────────────────��───
+    - link_id: gout.treatment_priorities
+      text: "Rank the following treatment goals from most important (1) to least important (5) to you:"
+      type: ranked
+      source_item_id: "GOUT-P1"
+      options: $treatment_goal_options
+
+    - link_id: gout.notes
+      text: "Any additional information you would like your care team to know:"
+      type: text
+      source_item_id: "GOUT-P2"

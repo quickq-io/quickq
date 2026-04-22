@@ -12,6 +12,7 @@ import sqlite3
 from .models import (
     OptionDef, QuestionDef, SectionDef,
     QuestionnaireDef, ShowWhen, ScoringRuleDef, ScoringCategoryDef,
+    GridRowDef, GridColumnDef,
 )
 
 # Maps vocabulary_id to its canonical FHIR/HL7 system URI
@@ -248,6 +249,32 @@ def insert_options(
         )
         result[opt.value] = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     return result
+
+
+def insert_grid_rows_columns(
+    conn: sqlite3.Connection,
+    question_id: int,
+    rows: list[GridRowDef],
+    columns: list[GridColumnDef],
+) -> None:
+    """Insert grid row and column definitions. Idempotent — skips if already present."""
+    if conn.execute(
+        "SELECT COUNT(*) FROM grid_row WHERE question_id = ?", (question_id,)
+    ).fetchone()[0]:
+        return
+    for i, row in enumerate(rows):
+        conn.execute(
+            "INSERT INTO grid_row (question_id, row_text, display_order) VALUES (?, ?, ?)",
+            (question_id, row.text, i),
+        )
+    for i, col in enumerate(columns):
+        conn.execute(
+            """
+            INSERT INTO grid_column (question_id, column_text, column_value, column_type, display_order)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (question_id, col.text, col.value, col.column_type, i),
+        )
 
 
 def place_question(

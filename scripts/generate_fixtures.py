@@ -6,6 +6,12 @@ Outputs:
   tests/fixtures/phq9_fhir_responses.json          — synthetic QuestionnaireResponses
   tests/fixtures/promis10_fhir_questionnaire.json  — FHIR R4 Questionnaire
   tests/fixtures/promis10_fhir_responses.json      — synthetic QuestionnaireResponses
+  tests/fixtures/audit_fhir_questionnaire.json     — FHIR R4 Questionnaire
+  tests/fixtures/audit_fhir_responses.json         — synthetic QuestionnaireResponses
+  tests/fixtures/prapare_fhir_questionnaire.json       — FHIR R4 Questionnaire
+  tests/fixtures/prapare_fhir_responses.json           — synthetic QuestionnaireResponses
+  tests/fixtures/gout_checkin_fhir_questionnaire.json  — FHIR R4 Questionnaire
+  tests/fixtures/gout_checkin_fhir_responses.json      — synthetic QuestionnaireResponses
 
 Run:
   uv run python scripts/generate_fixtures.py
@@ -288,6 +294,222 @@ def generate_audit(conn) -> None:
 # Entry point
 # ------------------------------------------------------------------
 
+# ------------------------------------------------------------------
+# PRAPARE
+# ------------------------------------------------------------------
+
+_PRAPARE_LOINC = "http://loinc.org"
+
+
+def _prapare_single(link_id: str, concept_code: str, display: str) -> dict:
+    return {"linkId": link_id, "answer": [_coding(_PRAPARE_LOINC, concept_code, display)]}
+
+
+def _prapare_bool(link_id: str, value: bool) -> dict:
+    return {"linkId": link_id, "answer": [{"valueBoolean": value}]}
+
+
+def _prapare_numeric(link_id: str, value: int | float) -> dict:
+    return {"linkId": link_id, "answer": [{"valueDecimal": value}]}
+
+
+def _prapare_text(link_id: str, value: str) -> dict:
+    return {"linkId": link_id, "answer": [{"valueString": value}]}
+
+
+def _prapare_sata(link_id: str, codings: list[tuple[str, str]]) -> dict:
+    return {"linkId": link_id, "answer": [_coding(_PRAPARE_LOINC, c, d) for c, d in codings]}
+
+
+# Two synthetic patients covering different social risk profiles.
+# Profile fields: (label, responses as list of item dicts)
+
+def _build_prapare_low_risk(url: str, subject_id: str) -> dict:
+    """Patient with minimal social risk."""
+    items = [
+        _prapare_single("prapare.hispanic",        "LA32-8",    "No"),
+        _prapare_single("prapare.race",            "LA4457-3",  "White"),
+        _prapare_single("prapare.farm_worker",     "LA32-8",    "No"),
+        _prapare_single("prapare.military",        "LA32-8",    "No"),
+        _prapare_single("prapare.language",        "LA43-5",    "English"),
+        _prapare_numeric("prapare.household_size", 3),
+        _prapare_single("prapare.housing_status",  "LA18835-1", "I have a steady place to live"),
+        _prapare_single("prapare.housing_concern", "LA32-8",    "No"),
+        _prapare_text(  "prapare.address",         "123 Main St, Anytown, USA"),
+        _prapare_single("prapare.education",       "LA37-7",    "More than high school"),
+        _prapare_single("prapare.employment",      "LA17958-2", "Full-time work"),
+        _prapare_single("prapare.insurance",       "LA22077-4", "Private insurance"),
+        _prapare_numeric("prapare.income",         75000),
+        _prapare_sata(  "prapare.necessities",     [("LA30122-8", "I choose not to answer this question")]),
+        _prapare_bool(  "prapare.transportation",  False),
+        _prapare_single("prapare.social_contact",  "LA30131-9", "3 to 5 times a week"),
+        _prapare_single("prapare.stress",          "LA6568-5",  "Not at all"),
+        _prapare_single("prapare.incarceration",   "LA32-8",    "No"),
+        _prapare_single("prapare.refugee",         "LA32-8",    "No"),
+        _prapare_single("prapare.safety",          "LA33-6",    "Yes"),
+        _prapare_bool(  "prapare.partner_fear",    False),
+    ]
+    return _fhir_response(url, subject_id, items)
+
+
+def _build_prapare_high_risk(url: str, subject_id: str) -> dict:
+    """Patient with multiple unmet social needs."""
+    items = [
+        _prapare_single("prapare.hispanic",        "LA33-6",    "Yes"),
+        _prapare_single("prapare.race",            "LA10610-6", "Black or African American"),
+        _prapare_single("prapare.farm_worker",     "LA33-6",    "Yes"),
+        _prapare_single("prapare.military",        "LA32-8",    "No"),
+        _prapare_single("prapare.language",        "LA44-3",    "Spanish"),
+        _prapare_numeric("prapare.household_size", 5),
+        _prapare_single("prapare.housing_status",  "LA18837-7", "I do not have a steady place to live (temporarily staying with others, hotel, shelter, or outside)"),
+        _prapare_single("prapare.housing_concern", "LA33-6",    "Yes"),
+        _prapare_text(  "prapare.address",         "c/o Shelter, 456 Hope Ave, Anytown, USA"),
+        _prapare_single("prapare.education",       "LA35-1",    "Less than high school degree"),
+        _prapare_single("prapare.employment",      "LA17956-6", "Unemployed"),
+        _prapare_single("prapare.insurance",       "LA15652-3", "Medicaid"),
+        _prapare_numeric("prapare.income",         18000),
+        _prapare_sata(  "prapare.necessities",     [
+            ("LA30125-1", "Food"),
+            ("LA30124-4", "Utilities"),
+            ("LA30128-5", "Medicine or Any Health Care"),
+        ]),
+        _prapare_bool(  "prapare.transportation",  True),
+        _prapare_single("prapare.social_contact",  "LA27722-0", "Less than once a week"),
+        _prapare_single("prapare.stress",          "LA13914-9", "Very much"),
+        _prapare_single("prapare.incarceration",   "LA32-8",    "No"),
+        _prapare_single("prapare.refugee",         "LA32-8",    "No"),
+        _prapare_single("prapare.safety",          "LA32-8",    "No"),
+        _prapare_bool(  "prapare.partner_fear",    True),
+    ]
+    return _fhir_response(url, subject_id, items)
+
+
+def generate_prapare(conn) -> None:
+    load_library_file(conn, LIBRARY / "prapare.yaml")
+    qid = load_yaml(conn, FIXTURES / "prapare.yaml")
+    q = export_fhir(conn, qid)
+    url = q.get("url", "http://quickq.io/instruments/prapare")
+
+    (FIXTURES / "prapare_fhir_questionnaire.json").write_text(json.dumps(q, indent=2))
+    print("wrote prapare_fhir_questionnaire.json")
+
+    responses = [
+        _build_prapare_low_risk( url, "synthetic-001"),
+        _build_prapare_high_risk(url, "synthetic-002"),
+    ]
+    (FIXTURES / "prapare_fhir_responses.json").write_text(json.dumps(responses, indent=2))
+    print(f"wrote prapare_fhir_responses.json  ({len(responses)} responses)")
+    print("  low_risk:  minimal social needs")
+    print("  high_risk: housing insecurity, food/utilities/care unmet, transportation barrier, safety concern")
+
+
+# ------------------------------------------------------------------
+# Gout Check-In
+# ------------------------------------------------------------------
+
+def _gout_sata(link_id: str, values: list[str]) -> dict:
+    return {"linkId": link_id, "answer": [{"valueString": v} for v in values]}
+
+
+def _gout_grid(link_id: str, row_answers: list[tuple[str, str]]) -> dict:
+    """row_answers: [(sub_linkId, column_value), ...]"""
+    return {"linkId": link_id, "answer": [], "item": [
+        {"linkId": sub_lid, "answer": [{"valueCoding": {"code": col_val}}]}
+        for sub_lid, col_val in row_answers
+    ]}
+
+
+def _gout_ranked(link_id: str, ordered_values: list[str]) -> dict:
+    """Ranked response: answer list in rank order, valueInteger = rank position."""
+    return {"linkId": link_id, "answer": [
+        {"valueCoding": {"code": v}, "extension": [
+            {"url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+             "valueDecimal": i + 1}
+        ]}
+        for i, v in enumerate(ordered_values)
+    ]}
+
+
+def _build_gout_mild(url: str, subject_id: str) -> dict:
+    """Patient with mild, infrequent gout; family history in father only."""
+    items = [
+        {"linkId": "gout.last_attack_date",  "answer": [{"valueDate": "2026-01-15"}]},
+        {"linkId": "gout.attacks_12mo",       "answer": [{"valueDecimal": 2}]},
+        _gout_sata("gout.attack_joints",      ["big_toe", "ankle"]),
+        _gout_grid("gout.joint_severity", [
+            ("gout.joint_severity.r0", "0"),
+            ("gout.joint_severity.r1", "1"),
+            ("gout.joint_severity.r2", "0"),
+            ("gout.joint_severity.r3", "0"),
+            ("gout.joint_severity.r4", "0"),
+            ("gout.joint_severity.r5", "0"),
+        ]),
+        _gout_sata("gout.family_gout",        ["father"]),
+        _gout_grid("gout.family_conditions", [
+            ("gout.family_conditions.r0", "gout"),
+            ("gout.family_conditions.r1", "none"),
+            ("gout.family_conditions.r2", "none"),
+        ]),
+        {"linkId": "gout.on_ult",           "answer": [{"valueBoolean": True}]},
+        {"linkId": "gout.uric_acid",         "answer": [{"valueDecimal": 6.2}]},
+        {"linkId": "gout.uric_acid_date",    "answer": [{"valueDate": "2026-03-01"}]},
+        _gout_ranked("gout.treatment_priorities",
+                     ["prevention", "uric_acid", "pain_relief", "function", "side_effects"]),
+        {"linkId": "gout.notes", "answer": [{"valueString": "Doing well on allopurinol."}]},
+    ]
+    return _fhir_response(url, subject_id, items)
+
+
+def _build_gout_severe(url: str, subject_id: str) -> dict:
+    """Patient with frequent severe attacks; strong family history; not on ULT."""
+    items = [
+        {"linkId": "gout.last_attack_date",  "answer": [{"valueDate": "2026-04-10"}]},
+        {"linkId": "gout.attacks_12mo",       "answer": [{"valueDecimal": 8}]},
+        _gout_sata("gout.attack_joints",      ["big_toe", "ankle", "knee", "wrist"]),
+        _gout_grid("gout.joint_severity", [
+            ("gout.joint_severity.r0", "3"),
+            ("gout.joint_severity.r1", "2"),
+            ("gout.joint_severity.r2", "2"),
+            ("gout.joint_severity.r3", "1"),
+            ("gout.joint_severity.r4", "0"),
+            ("gout.joint_severity.r5", "0"),
+        ]),
+        _gout_sata("gout.family_gout",        ["father", "mat_gp", "pat_gp"]),
+        _gout_grid("gout.family_conditions", [
+            ("gout.family_conditions.r0", "gout"),
+            ("gout.family_conditions.r1", "htn"),
+            ("gout.family_conditions.r2", "none"),
+        ]),
+        {"linkId": "gout.on_ult",           "answer": [{"valueBoolean": False}]},
+        {"linkId": "gout.uric_acid",         "answer": [{"valueDecimal": 9.8}]},
+        {"linkId": "gout.uric_acid_date",    "answer": [{"valueDate": "2026-04-15"}]},
+        _gout_ranked("gout.treatment_priorities",
+                     ["pain_relief", "prevention", "function", "uric_acid", "side_effects"]),
+        {"linkId": "gout.notes",
+         "answer": [{"valueString": "Attacks getting worse. Concerned about kidneys."}]},
+    ]
+    return _fhir_response(url, subject_id, items)
+
+
+def generate_gout_checkin(conn) -> None:
+    load_library_file(conn, LIBRARY / "gout_checkin.yaml")
+    qid = load_yaml(conn, FIXTURES / "gout_checkin.yaml")
+    q = export_fhir(conn, qid)
+    url = q.get("url", "http://quickq.io/instruments/gout-checkin")
+
+    (FIXTURES / "gout_checkin_fhir_questionnaire.json").write_text(json.dumps(q, indent=2))
+    print("wrote gout_checkin_fhir_questionnaire.json")
+
+    responses = [
+        _build_gout_mild(  url, "synthetic-001"),
+        _build_gout_severe(url, "synthetic-002"),
+    ]
+    (FIXTURES / "gout_checkin_fhir_responses.json").write_text(json.dumps(responses, indent=2))
+    print(f"wrote gout_checkin_fhir_responses.json  ({len(responses)} responses)")
+    print("  mild:   2 attacks/yr, father only, on ULT, UA 6.2")
+    print("  severe: 8 attacks/yr, father+grandparents, not on ULT, UA 9.8")
+
+
 def main() -> None:
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         tmp_path = f.name
@@ -301,6 +523,12 @@ def main() -> None:
         print()
         print("=== AUDIT ===")
         generate_audit(conn)
+        print()
+        print("=== PRAPARE ===")
+        generate_prapare(conn)
+        print()
+        print("=== Gout Check-In ===")
+        generate_gout_checkin(conn)
     finally:
         conn.close()
         os.unlink(tmp_path)

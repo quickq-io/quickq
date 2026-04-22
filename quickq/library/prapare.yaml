@@ -1,0 +1,345 @@
+library:
+  instrument: "PRAPARE"
+  full_name: "Protocol for Responding to and Assessing Patients' Assets, Risks, and Experiences"
+  version: "2019"
+  citation: "National Association of Community Health Centers (NACHC). PRAPARE Implementation and Action Toolkit. 2019. https://www.nachc.org/research-and-data/prapare/"
+  license: "Free to use. Please credit NACHC."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+
+  concepts:
+    # Questions — LOINC panel 93025-5
+    - { ref: "LOINC:56051-6", name: "Hispanic or Latino",                                  domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:32624-9", name: "Race",                                                domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93035-4", name: "Farm worker status",                                  domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93034-7", name: "Veteran/military status",                             domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:54899-0", name: "Preferred language",                                  domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:63512-8", name: "Number of people in household",                       domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:71802-3", name: "Housing status",                                      domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93033-9", name: "Risk of losing housing",                              domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:56799-0", name: "Address",                                             domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:82589-3", name: "Highest level of education",                          domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:67875-5", name: "Employment status",                                   domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:76437-3", name: "Primary insurance",                                   domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:63586-2", name: "Total household income in past year",                 domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93031-3", name: "Unmet material needs (necessities)",                  domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93030-5", name: "Transportation barrier to care",                      domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93029-7", name: "Frequency of social contact with family/friends",     domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93038-8", name: "Stress level",                                        domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93028-9", name: "Incarceration history",                               domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93027-1", name: "Refugee status",                                      domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:93026-3", name: "Feel physically and emotionally safe",                domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:76501-6", name: "Partner fear history",                                domain: Question, class: Survey, standard: S }
+    # Common Y/N/opt-out
+    - { ref: "LOINC:LA33-6",    name: "Yes",                              domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA32-8",    name: "No",                               domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30122-8", name: "I choose not to answer this question", domain: Answer, class: Answer, standard: S }
+    # LL988-7 — Hispanic/Latino (Q1)
+    - { ref: "LOINC:LA4389-8",  name: "Refused",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA12688-0", name: "Don't know",  domain: Answer, class: Answer, standard: S }
+    # LL2858-0 — Race (Q2)
+    - { ref: "LOINC:LA6155-1",  name: "American Indian or Alaska Native",          domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA6156-9",  name: "Asian",                                     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA10610-6", name: "Black or African American",                 domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA10611-4", name: "Native Hawaiian or Other Pacific Islander", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA4457-3",  name: "White",                                     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA4489-6",  name: "Unknown",                                   domain: Answer, class: Answer, standard: S }
+    # LL1628-8 — Preferred language (Q5)
+    - { ref: "LOINC:LA43-5",    name: "English",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA44-3",    name: "Spanish",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA4168-6",  name: "Chinese",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA4443-3",  name: "Vietnamese", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA15353-8", name: "Tagalog",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA46-8",    name: "Other",      domain: Answer, class: Answer, standard: S }
+    # LL2148-6 — Housing status (Q7)
+    - { ref: "LOINC:LA18835-1", name: "I have a steady place to live",                   domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18836-9", name: "I have a place to live today, but I am worried about losing it in the future", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18837-7", name: "I do not have a steady place to live (I am temporarily staying with others, in a hotel, in a shelter, living outside on the street, on a beach, in a car, abandoned building, bus or train station, or in a park)", domain: Answer, class: Answer, standard: S }
+    # LL5338-0 — Education (Q10)
+    - { ref: "LOINC:LA35-1",    name: "Less than high school degree",          domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA36-9",    name: "High school diploma or GED",            domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA37-7",    name: "More than high school",                 domain: Answer, class: Answer, standard: S }
+    # LL1901-9 — Employment (Q11)
+    - { ref: "LOINC:LA17956-6", name: "Unemployed",                 domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA17957-4", name: "Part-time or temporary work", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA17958-2", name: "Full-time work",             domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA17959-0", name: "Otherwise unemployed but not seeking work (e.g., retired, seeking work)", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA17960-8", name: "Student",                    domain: Answer, class: Answer, standard: S }
+    # LL3184-0 — Insurance (Q12)
+    - { ref: "LOINC:LA22073-3", name: "None/uninsured",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA15652-3", name: "Medicaid",           domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA17849-3", name: "CHIP Medicaid",      domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA22074-1", name: "Medicare",           domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA22075-8", name: "Other public insurance (not CHIP)", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA22076-6", name: "Other public insurance (CHIP)",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA22077-4", name: "Private insurance",  domain: Answer, class: Answer, standard: S }
+    # LL5334-9 — Necessities SATA (Q14)
+    - { ref: "LOINC:LA30125-1", name: "Food",                      domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30126-9", name: "Clothing",                  domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30124-4", name: "Utilities",                 domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30127-7", name: "Child care",                domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30128-5", name: "Medicine or Any Health Care", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30129-3", name: "Phone",                     domain: Answer, class: Answer, standard: S }
+    # LL5335-6 — Social contact frequency (Q16)
+    - { ref: "LOINC:LA27722-0", name: "Less than once a week",  domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30130-1", name: "1 or 2 times a week",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30131-9", name: "3 to 5 times a week",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA30132-7", name: "5 or more times a week", domain: Answer, class: Answer, standard: S }
+    # LL5354-7 — Stress (Q17)
+    - { ref: "LOINC:LA6568-5",  name: "Not at all",   domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13863-8", name: "A little bit", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13909-9", name: "Somewhat",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13902-4", name: "Quite a bit",  domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA13914-9", name: "Very much",    domain: Answer, class: Answer, standard: S }
+    # LL5333-1 — Safety (Q20)
+    - { ref: "LOINC:LA14072-5", name: "Unsure", domain: Answer, class: Answer, standard: S }
+
+  option_sets:
+    # Shared: Yes / No / I choose not to answer (LL5332-3) — used by Q3, Q4, Q8, Q18, Q19
+    yes_no_opt_out:
+      - { text: "Yes", value: "1", concept: "LOINC:LA33-6"    }
+      - { text: "No",  value: "0", concept: "LOINC:LA32-8"    }
+      - { text: "I choose not to answer this question", value: "9", concept: "LOINC:LA30122-8" }
+
+    # LL988-7 — Hispanic or Latino (Q1)
+    hispanic_latino:
+      - { text: "Yes",       value: "1", concept: "LOINC:LA33-6"    }
+      - { text: "No",        value: "0", concept: "LOINC:LA32-8"    }
+      - { text: "Refused",   value: "7", concept: "LOINC:LA4389-8"  }
+      - { text: "Don't know", value: "9", concept: "LOINC:LA12688-0" }
+
+    # LL2858-0 — Race (Q2) — single choice per LOINC
+    race:
+      - { text: "American Indian or Alaska Native",          value: "1", concept: "LOINC:LA6155-1"  }
+      - { text: "Asian",                                     value: "2", concept: "LOINC:LA6156-9"  }
+      - { text: "Black or African American",                 value: "3", concept: "LOINC:LA10610-6" }
+      - { text: "Native Hawaiian or Other Pacific Islander", value: "4", concept: "LOINC:LA10611-4" }
+      - { text: "White",                                     value: "5", concept: "LOINC:LA4457-3"  }
+      - { text: "Unknown",                                   value: "9", concept: "LOINC:LA4489-6"  }
+
+    # LL1628-8 — Preferred language (Q5)
+    language:
+      - { text: "English",    value: "1", concept: "LOINC:LA43-5"    }
+      - { text: "Spanish",    value: "2", concept: "LOINC:LA44-3"    }
+      - { text: "Chinese",    value: "3", concept: "LOINC:LA4168-6"  }
+      - { text: "Vietnamese", value: "4", concept: "LOINC:LA4443-3"  }
+      - { text: "Tagalog",    value: "5", concept: "LOINC:LA15353-8" }
+      - { text: "Other",      value: "6", concept: "LOINC:LA46-8"    }
+
+    # LL2148-6 — Housing status (Q7) — NACHC simplified display text
+    housing_status:
+      - { text: "I have a steady place to live",                                                      value: "1", concept: "LOINC:LA18835-1" }
+      - { text: "I have a place to live today, but I am worried about losing it in the future",        value: "2", concept: "LOINC:LA18836-9" }
+      - { text: "I do not have a steady place to live (temporarily staying with others, hotel, shelter, or outside)", value: "3", concept: "LOINC:LA18837-7" }
+
+    # LL5338-0 — Education (Q10) — simplified 3-level grouping used by PRAPARE
+    education:
+      - { text: "Less than high school degree", value: "1", concept: "LOINC:LA35-1" }
+      - { text: "High school diploma or GED",   value: "2", concept: "LOINC:LA36-9" }
+      - { text: "More than high school",        value: "3", concept: "LOINC:LA37-7" }
+
+    # LL1901-9 — Employment (Q11) — simplified grouping used by PRAPARE
+    employment:
+      - { text: "Unemployed",                                                                              value: "1", concept: "LOINC:LA17956-6" }
+      - { text: "Part-time or temporary work",                                                            value: "2", concept: "LOINC:LA17957-4" }
+      - { text: "Full-time work",                                                                          value: "3", concept: "LOINC:LA17958-2" }
+      - { text: "Otherwise unemployed but not seeking work (e.g., retired, student, disabled, caregiver)", value: "4", concept: "LOINC:LA17959-0" }
+      - { text: "Student",                                                                                  value: "5", concept: "LOINC:LA17960-8" }
+
+    # LL3184-0 — Insurance (Q12) — simplified grouping used by PRAPARE
+    insurance:
+      - { text: "None/uninsured",                   value: "1", concept: "LOINC:LA22073-3" }
+      - { text: "Medicaid",                          value: "2", concept: "LOINC:LA15652-3" }
+      - { text: "CHIP Medicaid",                     value: "3", concept: "LOINC:LA17849-3" }
+      - { text: "Medicare",                          value: "4", concept: "LOINC:LA22074-1" }
+      - { text: "Other public insurance (not CHIP)", value: "5", concept: "LOINC:LA22075-8" }
+      - { text: "Other public insurance (CHIP)",     value: "6", concept: "LOINC:LA22076-6" }
+      - { text: "Private insurance",                 value: "7", concept: "LOINC:LA22077-4" }
+
+    # LL5334-9 — Unmet necessities SATA with Other (Q14)
+    necessities:
+      - { text: "Food",                        value: "1", concept: "LOINC:LA30125-1" }
+      - { text: "Clothing",                    value: "2", concept: "LOINC:LA30126-9" }
+      - { text: "Utilities",                   value: "3", concept: "LOINC:LA30124-4" }
+      - { text: "Child care",                  value: "4", concept: "LOINC:LA30127-7" }
+      - { text: "Medicine or Any Health Care", value: "5", concept: "LOINC:LA30128-5" }
+      - { text: "Phone",                       value: "6", concept: "LOINC:LA30129-3" }
+      - { text: "Other",                       value: "7", concept: "LOINC:LA46-8"    }
+      - { text: "I choose not to answer this question", value: "9", concept: "LOINC:LA30122-8" }
+
+    # LL5335-6 — Social contact frequency (Q16)
+    social_contact_freq:
+      - { text: "Less than once a week",  value: "1", concept: "LOINC:LA27722-0" }
+      - { text: "1 or 2 times a week",    value: "2", concept: "LOINC:LA30130-1" }
+      - { text: "3 to 5 times a week",    value: "3", concept: "LOINC:LA30131-9" }
+      - { text: "5 or more times a week", value: "4", concept: "LOINC:LA30132-7" }
+      - { text: "I choose not to answer this question", value: "9", concept: "LOINC:LA30122-8" }
+
+    # LL5354-7 — Stress (Q17)
+    stress_level:
+      - { text: "Not at all",   value: "1", concept: "LOINC:LA6568-5"  }
+      - { text: "A little bit", value: "2", concept: "LOINC:LA13863-8" }
+      - { text: "Somewhat",     value: "3", concept: "LOINC:LA13909-9" }
+      - { text: "Quite a bit",  value: "4", concept: "LOINC:LA13902-4" }
+      - { text: "Very much",    value: "5", concept: "LOINC:LA13914-9" }
+      - { text: "I choose not to answer this question", value: "9", concept: "LOINC:LA30122-8" }
+
+    # LL5333-1 — Safety (Q20)
+    safety:
+      - { text: "Yes",    value: "1", concept: "LOINC:LA33-6"    }
+      - { text: "No",     value: "0", concept: "LOINC:LA32-8"    }
+      - { text: "Unsure", value: "2", concept: "LOINC:LA14072-5" }
+      - { text: "I choose not to answer this question", value: "9", concept: "LOINC:LA30122-8" }
+
+  questions:
+    # ── Personal Characteristics ──────────────────────────────────────
+    - link_id: prapare.hispanic
+      text: "Are you Hispanic or Latino?"
+      type: single_choice
+      concept: "LOINC:56051-6"
+      source_item_id: "PRAPARE-PC1"
+      options: $hispanic_latino
+
+    - link_id: prapare.race
+      text: "Which race(s) are you? (select best answer)"
+      type: single_choice
+      concept: "LOINC:32624-9"
+      source_item_id: "PRAPARE-PC2"
+      options: $race
+
+    - link_id: prapare.farm_worker
+      text: "At any point in the past 2 years, has seasonal or migrant farm work been your or your family's main source of income?"
+      type: single_choice
+      concept: "LOINC:93035-4"
+      source_item_id: "PRAPARE-PC3"
+      options: $yes_no_opt_out
+
+    - link_id: prapare.military
+      text: "Have you or any family members ever served in the military?"
+      type: single_choice
+      concept: "LOINC:93034-7"
+      source_item_id: "PRAPARE-PC4"
+      options: $yes_no_opt_out
+
+    - link_id: prapare.language
+      text: "What language are you most comfortable speaking?"
+      type: single_choice
+      concept: "LOINC:54899-0"
+      source_item_id: "PRAPARE-PC5"
+      options: $language
+
+    # ── Family & Home ─────────────────────────────────────────────────
+    - link_id: prapare.household_size
+      text: "How many people are living or staying at your address?"
+      type: numeric
+      concept: "LOINC:63512-8"
+      source_item_id: "PRAPARE-FH1"
+      numeric_min: 1
+
+    - link_id: prapare.housing_status
+      text: "What is your housing situation today?"
+      type: single_choice
+      concept: "LOINC:71802-3"
+      source_item_id: "PRAPARE-FH2"
+      options: $housing_status
+
+    - link_id: prapare.housing_concern
+      text: "Are you worried about losing your housing?"
+      type: single_choice
+      concept: "LOINC:93033-9"
+      source_item_id: "PRAPARE-FH3"
+      options: $yes_no_opt_out
+
+    - link_id: prapare.address
+      text: "What is your current address?"
+      type: text
+      concept: "LOINC:56799-0"
+      source_item_id: "PRAPARE-FH4"
+
+    # ── Money & Resources ─────────────────────────────────────────────
+    - link_id: prapare.education
+      text: "What is the highest level of school that you have finished?"
+      type: single_choice
+      concept: "LOINC:82589-3"
+      source_item_id: "PRAPARE-MR1"
+      options: $education
+
+    - link_id: prapare.employment
+      text: "What is your current work situation?"
+      type: single_choice
+      concept: "LOINC:67875-5"
+      source_item_id: "PRAPARE-MR2"
+      options: $employment
+
+    - link_id: prapare.insurance
+      text: "What is your main insurance?"
+      type: single_choice
+      concept: "LOINC:76437-3"
+      source_item_id: "PRAPARE-MR3"
+      options: $insurance
+
+    - link_id: prapare.income
+      text: "During the past year, what was the total combined income for you and the family members you live with? Please include money from jobs, disability payments, unemployment benefits, food stamps, Social Security, child support, and any other sources."
+      type: numeric
+      concept: "LOINC:63586-2"
+      source_item_id: "PRAPARE-MR4"
+      numeric_min: 0
+
+    - link_id: prapare.necessities
+      text: "In the past year, have you or any family members you live with been unable to get any of the following when it was really needed? (check all that apply)"
+      type: sata_other
+      concept: "LOINC:93031-3"
+      source_item_id: "PRAPARE-MR5"
+      options: $necessities
+
+    # ── Social & Emotional Health ─────────────────────────────────────
+    - link_id: prapare.transportation
+      text: "Has lack of transportation kept you from medical appointments, meetings, work, or from getting things needed for daily living?"
+      type: boolean
+      concept: "LOINC:93030-5"
+      source_item_id: "PRAPARE-SE1"
+
+    - link_id: prapare.social_contact
+      text: "How often do you see or talk to people that you care about and feel close to (for example: talking to friends on the phone, visiting friends or family, going to church or club meetings)?"
+      type: single_choice
+      concept: "LOINC:93029-7"
+      source_item_id: "PRAPARE-SE2"
+      options: $social_contact_freq
+
+    - link_id: prapare.stress
+      text: "Stress is when someone feels tense, nervous, anxious, or can't sleep at night because their mind is troubled. How stressed are you?"
+      type: likert
+      concept: "LOINC:93038-8"
+      source_item_id: "PRAPARE-SE3"
+      options: $stress_level
+
+    # ── Optional Additional Questions ────────────────────────────────
+    - link_id: prapare.incarceration
+      text: "Have you spent more than 2 nights in a row in a jail, prison, detention center, or juvenile correctional facility in the past 12 months?"
+      type: single_choice
+      concept: "LOINC:93028-9"
+      source_item_id: "PRAPARE-OPT1"
+      options: $yes_no_opt_out
+
+    - link_id: prapare.refugee
+      text: "Are you a refugee?"
+      type: single_choice
+      concept: "LOINC:93027-1"
+      source_item_id: "PRAPARE-OPT2"
+      options: $yes_no_opt_out
+
+    - link_id: prapare.safety
+      text: "Do you feel physically and emotionally safe where you currently live?"
+      type: single_choice
+      concept: "LOINC:93026-3"
+      source_item_id: "PRAPARE-OPT3"
+      options: $safety
+
+    - link_id: prapare.partner_fear
+      text: "Are you afraid of your partner or ex-partner?"
+      type: boolean
+      concept: "LOINC:76501-6"
+      source_item_id: "PRAPARE-OPT4"

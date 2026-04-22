@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS grid_column (
     column_id            INTEGER PRIMARY KEY,
     question_id          INTEGER NOT NULL REFERENCES question (question_id),
     column_text          TEXT    NOT NULL,
+    column_value         TEXT,
     column_type          TEXT    NOT NULL DEFAULT 'single_choice'
                              CHECK (column_type IN ('single_choice', 'numeric', 'text', 'boolean')),
     display_order        INTEGER NOT NULL DEFAULT 0,

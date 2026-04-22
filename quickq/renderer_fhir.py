@@ -169,6 +169,45 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
         if row["slider_max_label"]:
             ext_buf.append({"url": f"{_EXT}/slider-max-label", "valueString": row["slider_max_label"]})
 
+    # Grid: nested group with one child item per row, column options as answerOption
+    if qtype == "grid":
+        grid_rows = conn.execute(
+            "SELECT row_text, display_order FROM grid_row WHERE question_id = ? ORDER BY display_order",
+            (row["question_id"],),
+        ).fetchall()
+        grid_cols = conn.execute(
+            "SELECT column_text, column_value, display_order FROM grid_column WHERE question_id = ? ORDER BY display_order",
+            (row["question_id"],),
+        ).fetchall()
+        answer_opts = [
+            {"valueCoding": {"code": c["column_value"] if c["column_value"] else str(c["display_order"]),
+                             "display": c["column_text"]}}
+            for c in grid_cols
+        ]
+        item["item"] = [
+            {
+                "linkId": f"{row['link_id']}.r{r['display_order']}",
+                "text":   r["row_text"],
+                "type":   "choice",
+                "answerOption": answer_opts,
+            }
+            for r in grid_rows
+        ]
+        item.setdefault("extension", []).append({
+            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+            "valueCodeableConcept": {
+                "coding": [{"system": "http://hl7.org/fhir/questionnaire-item-control",
+                             "code": "gtable"}]
+            },
+        })
+
+    # Ranked: emit custom extension so consumers know to present for ordering
+    if qtype == "ranked":
+        item.setdefault("extension", []).append({
+            "url": f"{_EXT}/ranked-choice",
+            "valueBoolean": True,
+        })
+
     # Skip logic
     enable_when = _enable_when(conn, row["qq_id"])
     if enable_when:

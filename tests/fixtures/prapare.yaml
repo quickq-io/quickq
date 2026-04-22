@@ -1,0 +1,43 @@
+questionnaire:
+  name: "PRAPARE"
+  canonical_url: "http://quickq.io/instruments/prapare"
+  version: "2019"
+  description: "Protocol for Responding to and Assessing Patients' Assets, Risks, and Experiences — 21-item social determinants of health screening tool (LOINC panel 93025-5)"
+  fhir_status: active
+
+  sections:
+    - title: "Personal Characteristics"
+      questions:
+        - { library: prapare.hispanic }
+        - { library: prapare.race }
+        - { library: prapare.farm_worker }
+        - { library: prapare.military }
+        - { library: prapare.language }
+
+    - title: "Family & Home"
+      questions:
+        - { library: prapare.household_size }
+        - { library: prapare.housing_status }
+        - { library: prapare.housing_concern }
+        - { library: prapare.address }
+
+    - title: "Money & Resources"
+      questions:
+        - { library: prapare.education }
+        - { library: prapare.employment }
+        - { library: prapare.insurance }
+        - { library: prapare.income }
+        - { library: prapare.necessities }
+
+    - title: "Social & Emotional Health"
+      questions:
+        - { library: prapare.transportation }
+        - { library: prapare.social_contact }
+        - { library: prapare.stress }
+
+    - title: "Optional Additional Questions"
+      questions:
+        - { library: prapare.incarceration }
+        - { library: prapare.refugee }
+        - { library: prapare.safety }
+        - { library: prapare.partner_fear }

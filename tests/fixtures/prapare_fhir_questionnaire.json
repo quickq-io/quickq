@@ -1,0 +1,872 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "PRAPARE",
+  "version": "2019",
+  "url": "http://quickq.io/instruments/prapare",
+  "description": "Protocol for Responding to and Assessing Patients' Assets, Risks, and Experiences \u2014 21-item social determinants of health screening tool (LOINC panel 93025-5)",
+  "date": "2026-04-22T23:05:23Z",
+  "name": "PRAPARE",
+  "item": [
+    {
+      "linkId": "prapare.hispanic",
+      "text": "Are you Hispanic or Latino?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Refused",
+            "code": "LA4389-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Don't know",
+            "code": "LA12688-0",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-PC1"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.race",
+      "text": "Which race(s) are you? (select best answer)",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "American Indian or Alaska Native",
+            "code": "LA6155-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Asian",
+            "code": "LA6156-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Black or African American",
+            "code": "LA10610-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Native Hawaiian or Other Pacific Islander",
+            "code": "LA10611-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "White",
+            "code": "LA4457-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Unknown",
+            "code": "LA4489-6",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-PC2"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.farm_worker",
+      "text": "At any point in the past 2 years, has seasonal or migrant farm work been your or your family's main source of income?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-PC3"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.military",
+      "text": "Have you or any family members ever served in the military?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-PC4"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.language",
+      "text": "What language are you most comfortable speaking?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "English",
+            "code": "LA43-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Spanish",
+            "code": "LA44-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Chinese",
+            "code": "LA4168-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Vietnamese",
+            "code": "LA4443-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Tagalog",
+            "code": "LA15353-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Other",
+            "code": "LA46-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-PC5"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.household_size",
+      "text": "How many people are living or staying at your address?",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueDecimal": 1.0
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-FH1"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.housing_status",
+      "text": "What is your housing situation today?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "I have a steady place to live",
+            "code": "LA18835-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I have a place to live today, but I am worried about losing it in the future",
+            "code": "LA18836-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I do not have a steady place to live (temporarily staying with others, hotel, shelter, or outside)",
+            "code": "LA18837-7",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-FH2"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.housing_concern",
+      "text": "Are you worried about losing your housing?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-FH3"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.address",
+      "text": "What is your current address?",
+      "type": "text",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-FH4"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.education",
+      "text": "What is the highest level of school that you have finished?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Less than high school degree",
+            "code": "LA35-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "High school diploma or GED",
+            "code": "LA36-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "More than high school",
+            "code": "LA37-7",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-MR1"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.employment",
+      "text": "What is your current work situation?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Unemployed",
+            "code": "LA17956-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Part-time or temporary work",
+            "code": "LA17957-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Full-time work",
+            "code": "LA17958-2",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Otherwise unemployed but not seeking work (e.g., retired, student, disabled, caregiver)",
+            "code": "LA17959-0",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Student",
+            "code": "LA17960-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-MR2"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.insurance",
+      "text": "What is your main insurance?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "None/uninsured",
+            "code": "LA22073-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Medicaid",
+            "code": "LA15652-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "CHIP Medicaid",
+            "code": "LA17849-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Medicare",
+            "code": "LA22074-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Other public insurance (not CHIP)",
+            "code": "LA22075-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Other public insurance (CHIP)",
+            "code": "LA22076-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Private insurance",
+            "code": "LA22077-4",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-MR3"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.income",
+      "text": "During the past year, what was the total combined income for you and the family members you live with? Please include money from jobs, disability payments, unemployment benefits, food stamps, Social Security, child support, and any other sources.",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueDecimal": 0.0
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-MR4"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.necessities",
+      "text": "In the past year, have you or any family members you live with been unable to get any of the following when it was really needed? (check all that apply)",
+      "type": "open-choice",
+      "repeats": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Food",
+            "code": "LA30125-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Clothing",
+            "code": "LA30126-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Utilities",
+            "code": "LA30124-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Child care",
+            "code": "LA30127-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Medicine or Any Health Care",
+            "code": "LA30128-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Phone",
+            "code": "LA30129-3",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Other",
+            "code": "LA46-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-MR5"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.transportation",
+      "text": "Has lack of transportation kept you from medical appointments, meetings, work, or from getting things needed for daily living?",
+      "type": "boolean",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-SE1"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.social_contact",
+      "text": "How often do you see or talk to people that you care about and feel close to (for example: talking to friends on the phone, visiting friends or family, going to church or club meetings)?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Less than once a week",
+            "code": "LA27722-0",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "1 or 2 times a week",
+            "code": "LA30130-1",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "3 to 5 times a week",
+            "code": "LA30131-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "5 or more times a week",
+            "code": "LA30132-7",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-SE2"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.stress",
+      "text": "Stress is when someone feels tense, nervous, anxious, or can't sleep at night because their mind is troubled. How stressed are you?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Not at all",
+            "code": "LA6568-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "A little bit",
+            "code": "LA13863-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Somewhat",
+            "code": "LA13909-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Quite a bit",
+            "code": "LA13902-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Very much",
+            "code": "LA13914-9",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-SE3"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.incarceration",
+      "text": "Have you spent more than 2 nights in a row in a jail, prison, detention center, or juvenile correctional facility in the past 12 months?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-OPT1"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.refugee",
+      "text": "Are you a refugee?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-OPT2"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.safety",
+      "text": "Do you feel physically and emotionally safe where you currently live?",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Yes",
+            "code": "LA33-6",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "No",
+            "code": "LA32-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Unsure",
+            "code": "LA14072-5",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "I choose not to answer this question",
+            "code": "LA30122-8",
+            "system": "http://loinc.org"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-OPT3"
+        }
+      ]
+    },
+    {
+      "linkId": "prapare.partner_fear",
+      "text": "Are you afraid of your partner or ex-partner?",
+      "type": "boolean",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "PRAPARE"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "PRAPARE-OPT4"
+        }
+      ]
+    }
+  ]
+}

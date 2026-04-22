@@ -20,10 +20,11 @@ from .models import (
     OptionDef, QuestionDef, SectionDef,
     SkipCondition, ShowWhen,
     ScoringRuleDef, ScoringCategoryDef,
-    QuestionnaireDef,
+    QuestionnaireDef, GridRowDef, GridColumnDef,
 )
 from .authoring import (
     upsert_option_set, upsert_question, insert_options,
+    insert_grid_rows_columns,
     insert_questionnaire, insert_section, place_question,
     insert_skip_rule, insert_scoring_rule,
     insert_scoring_rule_item, insert_scoring_category,
@@ -121,6 +122,12 @@ def _parse_question(raw: dict) -> QuestionDef:
         numeric_step=raw.get("numeric_step"),
         slider_min_label=raw.get("slider_min_label"),
         slider_max_label=raw.get("slider_max_label"),
+        rows=[GridRowDef(text=r["text"]) for r in raw["rows"]] if raw.get("rows") else None,
+        columns=[
+            GridColumnDef(text=c["text"], value=str(c["value"]) if "value" in c else None,
+                          column_type=c.get("column_type", "single_choice"))
+            for c in raw["columns"]
+        ] if raw.get("columns") else None,
     )
 
 
@@ -258,6 +265,9 @@ def load_def(
 
                     if effective_options:
                         insert_options(conn, question_id, effective_options, effective_set_id)
+
+                    if q_def.rows and q_def.columns:
+                        insert_grid_rows_columns(conn, question_id, q_def.rows, q_def.columns)
 
                 qq_id = place_question(
                     conn,

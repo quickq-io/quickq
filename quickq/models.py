@@ -3,6 +3,20 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class GridRowDef:
+    text: str
+    concept: str | None = None
+
+
+@dataclass
+class GridColumnDef:
+    text: str
+    value: str | None = None
+    column_type: str = "single_choice"  # single_choice | boolean | numeric | text
+    concept: str | None = None
+
+
+@dataclass
 class OptionDef:
     text: str
     value: str
@@ -35,6 +49,8 @@ class QuestionDef:
     help_text: str | None = None
     concept: str | None = None      # 'VOCAB:code'
     options: list[OptionDef] | None = None
+    rows: list[GridRowDef] | None = None
+    columns: list[GridColumnDef] | None = None
     option_set: str | None = None   # name of a shared option_set in the questionnaire
     show_when: ShowWhen | None = None
     required: bool = False

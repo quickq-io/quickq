@@ -1,0 +1,632 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "Gout Symptoms Check-In and Family History",
+  "version": "1.0",
+  "url": "http://quickq.io/instruments/gout-checkin",
+  "description": "Synthetic gout check-in form. Covers question types: date, multiple_choice, grid, ranked, boolean, numeric, text.",
+  "date": "2026-04-22T23:05:23Z",
+  "name": "GoutSymptomsCheckInandFamilyHistory",
+  "item": [
+    {
+      "linkId": "gout.last_attack_date",
+      "text": "When did your most recent gout attack begin?",
+      "type": "date",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-H1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.attacks_12mo",
+      "text": "How many gout attacks have you had in the past 12 months?",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueDecimal": 0.0
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-H2"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.attack_joints",
+      "text": "Which joints were affected in your most recent attack? (select all that apply)",
+      "type": "choice",
+      "repeats": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Big toe (either foot)",
+            "code": "big_toe"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Ankle",
+            "code": "ankle"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Knee",
+            "code": "knee"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Wrist",
+            "code": "wrist"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Elbow",
+            "code": "elbow"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Finger joints",
+            "code": "finger"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-H3"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.joint_severity",
+      "text": "Rate pain and swelling in each joint right now:",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "gout.joint_severity.r0",
+          "text": "Right big toe",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.joint_severity.r1",
+          "text": "Left big toe",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.joint_severity.r2",
+          "text": "Right ankle",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.joint_severity.r3",
+          "text": "Left ankle",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.joint_severity.r4",
+          "text": "Right knee",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.joint_severity.r5",
+          "text": "Left knee",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "0",
+                "display": "None"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Severe"
+              }
+            }
+          ]
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "gtable"
+              }
+            ]
+          }
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-S1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.family_gout",
+      "text": "Which blood relatives have been diagnosed with gout? (select all that apply)",
+      "type": "choice",
+      "repeats": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Biological father",
+            "code": "father"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Biological mother",
+            "code": "mother"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Brother or sister",
+            "code": "sibling"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Maternal grandparent",
+            "code": "mat_gp"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Paternal grandparent",
+            "code": "pat_gp"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "First cousin, aunt, or uncle",
+            "code": "cousin"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "None of the above",
+            "code": "none"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-F1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.family_conditions",
+      "text": "Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "gout.family_conditions.r0",
+          "text": "Biological father",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "gout",
+                "display": "Gout"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "kidney",
+                "display": "Kidney stones"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "htn",
+                "display": "Hypertension"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "dm",
+                "display": "Diabetes"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "none",
+                "display": "None of the above"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.family_conditions.r1",
+          "text": "Biological mother",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "gout",
+                "display": "Gout"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "kidney",
+                "display": "Kidney stones"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "htn",
+                "display": "Hypertension"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "dm",
+                "display": "Diabetes"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "none",
+                "display": "None of the above"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.family_conditions.r2",
+          "text": "Brother or sister",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "gout",
+                "display": "Gout"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "kidney",
+                "display": "Kidney stones"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "htn",
+                "display": "Hypertension"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "dm",
+                "display": "Diabetes"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "none",
+                "display": "None of the above"
+              }
+            }
+          ]
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "gtable"
+              }
+            ]
+          }
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-F2"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.on_ult",
+      "text": "Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?",
+      "type": "boolean",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-M1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.uric_acid",
+      "text": "Most recent serum uric acid level (mg/dL):",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueDecimal": 0.0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueDecimal": 30.0
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-M2"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.uric_acid_date",
+      "text": "Date of that uric acid blood test:",
+      "type": "date",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-M3"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.treatment_priorities",
+      "text": "Rank the following treatment goals from most important (1) to least important (5) to you:",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "display": "Reducing pain during attacks",
+            "code": "pain_relief"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Preventing future attacks",
+            "code": "prevention"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Minimizing medication side effects",
+            "code": "side_effects"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Maintaining daily activities",
+            "code": "function"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Reaching target uric acid level",
+            "code": "uric_acid"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/ranked-choice",
+          "valueBoolean": true
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-P1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.notes",
+      "text": "Any additional information you would like your care team to know:",
+      "type": "text",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-P2"
+        }
+      ]
+    }
+  ]
+}

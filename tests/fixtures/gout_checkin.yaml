@@ -1,0 +1,33 @@
+questionnaire:
+  name: "Gout Symptoms Check-In and Family History"
+  canonical_url: "http://quickq.io/instruments/gout-checkin"
+  version: "1.0"
+  description: "Synthetic gout check-in form. Covers question types: date, multiple_choice, grid, ranked, boolean, numeric, text."
+  fhir_status: active
+
+  sections:
+    - title: "Recent Attacks"
+      questions:
+        - { library: gout.last_attack_date }
+        - { library: gout.attacks_12mo }
+        - { library: gout.attack_joints }
+
+    - title: "Current Symptoms"
+      questions:
+        - { library: gout.joint_severity }
+
+    - title: "Family History"
+      questions:
+        - { library: gout.family_gout }
+        - { library: gout.family_conditions }
+
+    - title: "Management & Labs"
+      questions:
+        - { library: gout.on_ult }
+        - { library: gout.uric_acid }
+        - { library: gout.uric_acid_date }
+
+    - title: "Priorities & Notes"
+      questions:
+        - { library: gout.treatment_priorities }
+        - { library: gout.notes }

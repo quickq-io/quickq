@@ -2,110 +2,14 @@
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/audit",
+    "questionnaire": "http://quickq.io/instruments/prapare",
     "authored": "2026-04-22T23:05:23Z",
     "subject": {
       "reference": "Patient/synthetic-001"
     },
     "item": [
       {
-        "linkId": "audit.q1",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q2",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA15694-5",
-              "display": "1 or 2"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q3",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q7",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q9",
+        "linkId": "prapare.hispanic",
         "answer": [
           {
             "valueCoding": {
@@ -117,7 +21,19 @@
         ]
       },
       {
-        "linkId": "audit.q10",
+        "linkId": "prapare.race",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA4457-3",
+              "display": "White"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.farm_worker",
         "answer": [
           {
             "valueCoding": {
@@ -125,6 +41,202 @@
               "code": "LA32-8",
               "display": "No"
             }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.military",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.language",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA43-5",
+              "display": "English"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.household_size",
+        "answer": [
+          {
+            "valueDecimal": 3
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.housing_status",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA18835-1",
+              "display": "I have a steady place to live"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.housing_concern",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.address",
+        "answer": [
+          {
+            "valueString": "123 Main St, Anytown, USA"
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.education",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA37-7",
+              "display": "More than high school"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.employment",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA17958-2",
+              "display": "Full-time work"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.insurance",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA22077-4",
+              "display": "Private insurance"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.income",
+        "answer": [
+          {
+            "valueDecimal": 75000
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.necessities",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA30122-8",
+              "display": "I choose not to answer this question"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.transportation",
+        "answer": [
+          {
+            "valueBoolean": false
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.social_contact",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA30131-9",
+              "display": "3 to 5 times a week"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.stress",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6568-5",
+              "display": "Not at all"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.incarceration",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.refugee",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.safety",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA33-6",
+              "display": "Yes"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.partner_fear",
+        "answer": [
+          {
+            "valueBoolean": false
           }
         ]
       }
@@ -133,110 +245,50 @@
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/audit",
+    "questionnaire": "http://quickq.io/instruments/prapare",
     "authored": "2026-04-22T23:05:23Z",
     "subject": {
       "reference": "Patient/synthetic-002"
     },
     "item": [
       {
-        "linkId": "audit.q1",
+        "linkId": "prapare.hispanic",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA18927-6",
-              "display": "2-4 times a month"
+              "code": "LA33-6",
+              "display": "Yes"
             }
           }
         ]
       },
       {
-        "linkId": "audit.q2",
+        "linkId": "prapare.race",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA15695-2",
-              "display": "3 or 4"
+              "code": "LA10610-6",
+              "display": "Black or African American"
             }
           }
         ]
       },
       {
-        "linkId": "audit.q3",
+        "linkId": "prapare.farm_worker",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
+              "code": "LA33-6",
+              "display": "Yes"
             }
           }
         ]
       },
       {
-        "linkId": "audit.q4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6270-8",
-              "display": "Never"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q7",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q9",
+        "linkId": "prapare.military",
         "answer": [
           {
             "valueCoding": {
@@ -248,7 +300,161 @@
         ]
       },
       {
-        "linkId": "audit.q10",
+        "linkId": "prapare.language",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA44-3",
+              "display": "Spanish"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.household_size",
+        "answer": [
+          {
+            "valueDecimal": 5
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.housing_status",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA18837-7",
+              "display": "I do not have a steady place to live (temporarily staying with others, hotel, shelter, or outside)"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.housing_concern",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA33-6",
+              "display": "Yes"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.address",
+        "answer": [
+          {
+            "valueString": "c/o Shelter, 456 Hope Ave, Anytown, USA"
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.education",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA35-1",
+              "display": "Less than high school degree"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.employment",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA17956-6",
+              "display": "Unemployed"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.insurance",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA15652-3",
+              "display": "Medicaid"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.income",
+        "answer": [
+          {
+            "valueDecimal": 18000
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.necessities",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA30125-1",
+              "display": "Food"
+            }
+          },
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA30124-4",
+              "display": "Utilities"
+            }
+          },
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA30128-5",
+              "display": "Medicine or Any Health Care"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.transportation",
+        "answer": [
+          {
+            "valueBoolean": true
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.social_contact",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA27722-0",
+              "display": "Less than once a week"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.stress",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA13914-9",
+              "display": "Very much"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "prapare.incarceration",
         "answer": [
           {
             "valueCoding": {
@@ -258,116 +464,9 @@
             }
           }
         ]
-      }
-    ]
-  },
-  {
-    "resourceType": "QuestionnaireResponse",
-    "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/audit",
-    "authored": "2026-04-22T23:05:23Z",
-    "subject": {
-      "reference": "Patient/synthetic-003"
-    },
-    "item": [
-      {
-        "linkId": "audit.q1",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18928-4",
-              "display": "2-3 times a week"
-            }
-          }
-        ]
       },
       {
-        "linkId": "audit.q2",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18930-0",
-              "display": "5 or 6"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q3",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18876-5",
-              "display": "Monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18876-5",
-              "display": "Monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18876-5",
-              "display": "Monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q7",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18933-4",
-              "display": "Less than monthly"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q9",
+        "linkId": "prapare.refugee",
         "answer": [
           {
             "valueCoding": {
@@ -379,145 +478,22 @@
         ]
       },
       {
-        "linkId": "audit.q10",
+        "linkId": "prapare.safety",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA32279-4",
-              "display": "Yes, but not in the last year"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "resourceType": "QuestionnaireResponse",
-    "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/audit",
-    "authored": "2026-04-22T23:05:23Z",
-    "subject": {
-      "reference": "Patient/synthetic-004"
-    },
-    "item": [
-      {
-        "linkId": "audit.q1",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18929-2",
-              "display": "4 or more times a week"
+              "code": "LA32-8",
+              "display": "No"
             }
           }
         ]
       },
       {
-        "linkId": "audit.q2",
+        "linkId": "prapare.partner_fear",
         "answer": [
           {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18932-6",
-              "display": "10 or more"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q3",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q7",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA18934-2",
-              "display": "Daily or almost daily"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q9",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA32280-2",
-              "display": "Yes, during the last year"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "audit.q10",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA32280-2",
-              "display": "Yes, during the last year"
-            }
+            "valueBoolean": true
           }
         ]
       }

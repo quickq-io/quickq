@@ -15,8 +15,9 @@ import yaml
 from .authoring import (
     upsert_vocabulary, upsert_concept,
     upsert_option_set, upsert_question, insert_options,
+    insert_grid_rows_columns,
 )
-from .models import OptionDef, QuestionDef
+from .models import OptionDef, QuestionDef, GridRowDef, GridColumnDef
 
 LIBRARY_DIR = Path(__file__).parent / "library"
 
@@ -108,6 +109,18 @@ def load_library_file(conn: sqlite3.Connection, path: Path) -> list[int]:
                     insert_options(conn, question_id, opts, set_id)
                 elif isinstance(raw_opts, list):
                     insert_options(conn, question_id, _parse_options(raw_opts))
+
+            if q_raw.get("rows") and q_raw.get("columns"):
+                rows = [GridRowDef(text=r["text"]) for r in q_raw["rows"]]
+                cols = [
+                    GridColumnDef(
+                        text=c["text"],
+                        value=str(c["value"]) if "value" in c else None,
+                        column_type=c.get("column_type", "single_choice"),
+                    )
+                    for c in q_raw["columns"]
+                ]
+                insert_grid_rows_columns(conn, question_id, rows, cols)
 
             question_ids.append(question_id)
 
