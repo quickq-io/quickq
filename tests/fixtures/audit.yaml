@@ -1,0 +1,29 @@
+questionnaire:
+  name: "AUDIT"
+  canonical_url: "http://quickq.io/instruments/audit"
+  version: "2001"
+  description: "Alcohol Use Disorders Identification Test — 10-item WHO screening instrument (LOINC panel 72110-0)"
+  fhir_status: active
+
+  sections:
+    - title: "Please answer each question about your alcohol use."
+      questions:
+        - { library: audit.q1 }
+        - { library: audit.q2 }
+        - { library: audit.q3 }
+        - { library: audit.q4 }
+        - { library: audit.q5 }
+        - { library: audit.q6 }
+        - { library: audit.q7 }
+        - { library: audit.q8 }
+        - { library: audit.q9 }
+        - { library: audit.q10 }
+
+  scoring:
+    # Total score 0-40; risk zones: 0-7 low risk, 8-15 harmful use,
+    # 16-19 harmful/hazardous, 20+ possible dependence (WHO thresholds).
+    - name: "AUDIT Total"
+      description: "Sum of all 10 items. Scores 8+ indicate harmful or hazardous alcohol use."
+      formula: sum
+      items: [audit.q1, audit.q2, audit.q3, audit.q4, audit.q5,
+              audit.q6, audit.q7, audit.q8, audit.q9, audit.q10]

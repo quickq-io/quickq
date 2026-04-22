@@ -202,6 +202,89 @@ def generate_promis10(conn) -> None:
 
 
 # ------------------------------------------------------------------
+# AUDIT
+# ------------------------------------------------------------------
+
+_AUDIT_LOINC = "http://loinc.org"
+
+# option codings keyed by (option_set, value)
+_AUDIT_FREQ = {
+    "0": ("LA6270-8",  "Never"),
+    "1": ("LA18926-8", "Monthly or less"),
+    "2": ("LA18927-6", "2-4 times a month"),
+    "3": ("LA18928-4", "2-3 times a week"),
+    "4": ("LA18929-2", "4 or more times a week"),
+}
+_AUDIT_QTY = {
+    "0": ("LA15694-5", "1 or 2"),
+    "1": ("LA15695-2", "3 or 4"),
+    "2": ("LA18930-0", "5 or 6"),
+    "3": ("LA18931-8", "7 to 9"),
+    "4": ("LA18932-6", "10 or more"),
+}
+_AUDIT_HARM = {
+    "0": ("LA6270-8",  "Never"),
+    "1": ("LA18933-4", "Less than monthly"),
+    "2": ("LA18876-5", "Monthly"),
+    "3": ("LA18891-4", "Weekly"),
+    "4": ("LA18934-2", "Daily or almost daily"),
+}
+_AUDIT_YESNO = {
+    "0": ("LA32-8",    "No"),
+    "2": ("LA32279-4", "Yes, but not in the last year"),
+    "4": ("LA32280-2", "Yes, during the last year"),
+}
+
+def _audit_coding(option_map: dict, value: str) -> dict:
+    code, display = option_map[value]
+    return _coding(_AUDIT_LOINC, code, display)
+
+
+# Profiles: (label, q1-q8 values 0-4, q9 value 0/2/4, q10 value 0/2/4)
+_AUDIT_PROFILES = [
+    ("low_risk",            ["0","0","0","0","0","0","0","0"], "0", "0"),
+    ("harmful_use",         ["2","1","1","1","1","0","1","1"], "0", "0"),
+    ("hazardous",           ["3","2","2","2","2","1","1","1"], "0", "2"),
+    ("possible_dependence", ["4","4","4","4","4","4","4","4"], "4", "4"),
+]
+
+_AUDIT_ITEMS = [f"audit.q{i}" for i in range(1, 11)]
+_AUDIT_OPT_MAPS = [_AUDIT_FREQ, _AUDIT_QTY] + [_AUDIT_HARM] * 6
+
+
+def _audit_response(url: str, subject_id: str, profile: tuple) -> dict:
+    label, q1_8, q9_val, q10_val = profile
+    items = [
+        {"linkId": lid, "answer": [_audit_coding(opt_map, val)]}
+        for lid, opt_map, val in zip(_AUDIT_ITEMS[:8], _AUDIT_OPT_MAPS, q1_8)
+    ]
+    items.append({"linkId": "audit.q9",  "answer": [_audit_coding(_AUDIT_YESNO, q9_val)]})
+    items.append({"linkId": "audit.q10", "answer": [_audit_coding(_AUDIT_YESNO, q10_val)]})
+    return _fhir_response(url, subject_id, items)
+
+
+def generate_audit(conn) -> None:
+    load_library_file(conn, LIBRARY / "audit.yaml")
+    qid = load_yaml(conn, FIXTURES / "audit.yaml")
+    q = export_fhir(conn, qid)
+    url = q.get("url", "http://quickq.io/instruments/audit")
+
+    (FIXTURES / "audit_fhir_questionnaire.json").write_text(json.dumps(q, indent=2))
+    print(f"wrote audit_fhir_questionnaire.json")
+
+    responses = [
+        _audit_response(url, f"synthetic-{i+1:03d}", profile)
+        for i, profile in enumerate(_AUDIT_PROFILES)
+    ]
+    (FIXTURES / "audit_fhir_responses.json").write_text(json.dumps(responses, indent=2))
+    print(f"wrote audit_fhir_responses.json  ({len(responses)} responses)")
+    print("  Profile summary:")
+    for label, q1_8, q9, q10 in _AUDIT_PROFILES:
+        total = sum(int(v) for v in q1_8) + int(q9) + int(q10)
+        print(f"    {label:25s}  total={total:2d}")
+
+
+# ------------------------------------------------------------------
 # Entry point
 # ------------------------------------------------------------------
 
@@ -215,6 +298,9 @@ def main() -> None:
         print()
         print("=== PROMIS-10 ===")
         generate_promis10(conn)
+        print()
+        print("=== AUDIT ===")
+        generate_audit(conn)
     finally:
         conn.close()
         os.unlink(tmp_path)

@@ -2,118 +2,14 @@
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/promis10",
+    "questionnaire": "http://quickq.io/instruments/audit",
     "authored": "2026-04-22T22:28:05Z",
     "subject": {
       "reference": "Patient/synthetic-001"
     },
     "item": [
       {
-        "linkId": "promis10.g1",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g2",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g3",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA13937-0",
-              "display": "Completely"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g7",
-        "answer": [
-          {
-            "valueDecimal": 0
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA137-2",
-              "display": "None"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g9",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9206-9",
-              "display": "Excellent"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g10",
+        "linkId": "audit.q1",
         "answer": [
           {
             "valueCoding": {
@@ -123,130 +19,242 @@
             }
           }
         ]
+      },
+      {
+        "linkId": "audit.q2",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA15694-5",
+              "display": "1 or 2"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q3",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q4",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q5",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q6",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q7",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q8",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA6270-8",
+              "display": "Never"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q9",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
       }
     ]
   },
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/promis10",
+    "questionnaire": "http://quickq.io/instruments/audit",
     "authored": "2026-04-22T22:28:05Z",
     "subject": {
       "reference": "Patient/synthetic-002"
     },
     "item": [
       {
-        "linkId": "promis10.g1",
+        "linkId": "audit.q1",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA18927-6",
+              "display": "2-4 times a month"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g2",
+        "linkId": "audit.q2",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA15695-2",
+              "display": "3 or 4"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g3",
+        "linkId": "audit.q3",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g4",
+        "linkId": "audit.q4",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g5",
+        "linkId": "audit.q5",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g6",
+        "linkId": "audit.q6",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13938-8",
-              "display": "Mostly"
+              "code": "LA6270-8",
+              "display": "Never"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g7",
-        "answer": [
-          {
-            "valueDecimal": 2
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g8",
+        "linkId": "audit.q7",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA6752-5",
-              "display": "Mild"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g9",
+        "linkId": "audit.q8",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13913-1",
-              "display": "Very good"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g10",
+        "linkId": "audit.q9",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA10066-1",
-              "display": "Rarely"
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32-8",
+              "display": "No"
             }
           }
         ]
@@ -256,124 +264,128 @@
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/promis10",
+    "questionnaire": "http://quickq.io/instruments/audit",
     "authored": "2026-04-22T22:28:05Z",
     "subject": {
       "reference": "Patient/synthetic-003"
     },
     "item": [
       {
-        "linkId": "promis10.g1",
+        "linkId": "audit.q1",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18928-4",
+              "display": "2-3 times a week"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g2",
+        "linkId": "audit.q2",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18930-0",
+              "display": "5 or 6"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g3",
+        "linkId": "audit.q3",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18876-5",
+              "display": "Monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g4",
+        "linkId": "audit.q4",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18876-5",
+              "display": "Monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g5",
+        "linkId": "audit.q5",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18876-5",
+              "display": "Monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g6",
+        "linkId": "audit.q6",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13939-6",
-              "display": "Moderately"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g7",
-        "answer": [
-          {
-            "valueDecimal": 5
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g8",
+        "linkId": "audit.q7",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA6751-7",
-              "display": "Moderate"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g9",
+        "linkId": "audit.q8",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8967-7",
-              "display": "Good"
+              "code": "LA18933-4",
+              "display": "Less than monthly"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g10",
+        "linkId": "audit.q9",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA10082-8",
-              "display": "Sometimes"
+              "code": "LA32-8",
+              "display": "No"
+            }
+          }
+        ]
+      },
+      {
+        "linkId": "audit.q10",
+        "answer": [
+          {
+            "valueCoding": {
+              "system": "http://loinc.org",
+              "code": "LA32279-4",
+              "display": "Yes, but not in the last year"
             }
           }
         ]
@@ -383,251 +395,128 @@
   {
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/promis10",
+    "questionnaire": "http://quickq.io/instruments/audit",
     "authored": "2026-04-22T22:28:05Z",
     "subject": {
       "reference": "Patient/synthetic-004"
     },
     "item": [
       {
-        "linkId": "promis10.g1",
+        "linkId": "audit.q1",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18929-2",
+              "display": "4 or more times a week"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g2",
+        "linkId": "audit.q2",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18932-6",
+              "display": "10 or more"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g3",
+        "linkId": "audit.q3",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g4",
+        "linkId": "audit.q4",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g5",
+        "linkId": "audit.q5",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g6",
+        "linkId": "audit.q6",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA13940-4",
-              "display": "A little"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g7",
-        "answer": [
-          {
-            "valueDecimal": 7
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g8",
+        "linkId": "audit.q7",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA6750-9",
-              "display": "Severe"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g9",
+        "linkId": "audit.q8",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8968-5",
-              "display": "Fair"
+              "code": "LA18934-2",
+              "display": "Daily or almost daily"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g10",
+        "linkId": "audit.q9",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA10044-8",
-              "display": "Often"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "resourceType": "QuestionnaireResponse",
-    "status": "completed",
-    "questionnaire": "http://quickq.io/instruments/promis10",
-    "authored": "2026-04-22T22:28:05Z",
-    "subject": {
-      "reference": "Patient/synthetic-005"
-    },
-    "item": [
-      {
-        "linkId": "promis10.g1",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
+              "code": "LA32280-2",
+              "display": "Yes, during the last year"
             }
           }
         ]
       },
       {
-        "linkId": "promis10.g2",
+        "linkId": "audit.q10",
         "answer": [
           {
             "valueCoding": {
               "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g3",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g4",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g5",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g6",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA6568-5",
-              "display": "Not at all"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g7",
-        "answer": [
-          {
-            "valueDecimal": 10
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g8",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA13958-6",
-              "display": "Very severe"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g9",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA8969-3",
-              "display": "Poor"
-            }
-          }
-        ]
-      },
-      {
-        "linkId": "promis10.g10",
-        "answer": [
-          {
-            "valueCoding": {
-              "system": "http://loinc.org",
-              "code": "LA9933-8",
-              "display": "Always"
+              "code": "LA32280-2",
+              "display": "Yes, during the last year"
             }
           }
         ]

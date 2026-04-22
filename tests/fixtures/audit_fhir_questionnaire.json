@@ -1,19 +1,19 @@
 {
   "resourceType": "Questionnaire",
-  "status": "draft",
-  "title": "PHQ-9 Patient Health Questionnaire",
-  "version": "1.0",
-  "url": "http://quickq.io/instruments/phq9",
-  "description": "9-item depression screening instrument (Kroenke & Spitzer, 2002)",
+  "status": "active",
+  "title": "AUDIT",
+  "version": "2001",
+  "url": "http://quickq.io/instruments/audit",
+  "description": "Alcohol Use Disorders Identification Test \u2014 10-item WHO screening instrument (LOINC panel 72110-0)",
   "date": "2026-04-22T22:28:05Z",
-  "name": "PHQ9PatientHealthQuestionnaire",
+  "name": "AUDIT",
   "extension": [
     {
       "url": "https://quickq.io/fhir/StructureDefinition/scoring-rule",
       "extension": [
         {
           "url": "name",
-          "valueString": "PHQ-9 Total Score"
+          "valueString": "AUDIT Total"
         },
         {
           "url": "formula",
@@ -21,43 +21,49 @@
         },
         {
           "url": "description",
-          "valueString": "Sum of items 1\u20139 (0\u201327)"
+          "valueString": "Sum of all 10 items. Scores 8+ indicate harmful or hazardous alcohol use."
         }
       ]
     }
   ],
   "item": [
     {
-      "linkId": "phq9.1",
-      "text": "Little interest or pleasure in doing things",
+      "linkId": "audit.q1",
+      "text": "How often do you have a drink containing alcohol?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Monthly or less",
+            "code": "LA18926-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "2-4 times a month",
+            "code": "LA18927-6",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "2-3 times a week",
+            "code": "LA18928-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "4 or more times a week",
+            "code": "LA18929-2",
             "system": "http://loinc.org"
           }
         }
@@ -65,45 +71,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-1"
+          "valueString": "AUDIT1"
         }
       ]
     },
     {
-      "linkId": "phq9.2",
-      "text": "Feeling down, depressed, or hopeless",
+      "linkId": "audit.q2",
+      "text": "How many standard drinks containing alcohol do you have on a typical day when you are drinking?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "1 or 2",
+            "code": "LA15694-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "3 or 4",
+            "code": "LA15695-2",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "5 or 6",
+            "code": "LA18930-0",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "7 to 9",
+            "code": "LA18931-8",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "10 or more",
+            "code": "LA18932-6",
             "system": "http://loinc.org"
           }
         }
@@ -111,45 +123,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-2"
+          "valueString": "AUDIT2"
         }
       ]
     },
     {
-      "linkId": "phq9.3",
-      "text": "Trouble falling or staying asleep, or sleeping too much",
+      "linkId": "audit.q3",
+      "text": "How often do you have six or more drinks on one occasion?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -157,45 +175,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-3"
+          "valueString": "AUDIT3"
         }
       ]
     },
     {
-      "linkId": "phq9.4",
-      "text": "Feeling tired or having little energy",
+      "linkId": "audit.q4",
+      "text": "How often during the last year have you found that you were not able to stop drinking once you had started?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -203,45 +227,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-4"
+          "valueString": "AUDIT4"
         }
       ]
     },
     {
-      "linkId": "phq9.5",
-      "text": "Poor appetite or overeating",
+      "linkId": "audit.q5",
+      "text": "How often during the last year have you failed to do what was normally expected from you because of drinking?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -249,45 +279,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-5"
+          "valueString": "AUDIT5"
         }
       ]
     },
     {
-      "linkId": "phq9.6",
-      "text": "Feeling bad about yourself \u2014 or that you are a failure or have let yourself or your family down",
+      "linkId": "audit.q6",
+      "text": "How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -295,45 +331,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-6"
+          "valueString": "AUDIT6"
         }
       ]
     },
     {
-      "linkId": "phq9.7",
-      "text": "Trouble concentrating on things, such as reading the newspaper or watching television",
+      "linkId": "audit.q7",
+      "text": "How often during the last year have you had a feeling of guilt or remorse after drinking?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -341,45 +383,51 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-7"
+          "valueString": "AUDIT7"
         }
       ]
     },
     {
-      "linkId": "phq9.8",
-      "text": "Moving or speaking so slowly that other people could have noticed \u2014 or being so fidgety or restless that you have been moving around a lot more than usual",
+      "linkId": "audit.q8",
+      "text": "How often during the last year have you been unable to remember what happened the night before because you had been drinking?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "Never",
+            "code": "LA6270-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Less than monthly",
+            "code": "LA18933-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
+            "display": "Monthly",
+            "code": "LA18876-5",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Weekly",
+            "code": "LA18891-4",
+            "system": "http://loinc.org"
+          }
+        },
+        {
+          "valueCoding": {
+            "display": "Daily or almost daily",
+            "code": "LA18934-2",
             "system": "http://loinc.org"
           }
         }
@@ -387,45 +435,37 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-8"
+          "valueString": "AUDIT8"
         }
       ]
     },
     {
-      "linkId": "phq9.9",
-      "text": "Thoughts that you would be better off dead, or of hurting yourself in some way",
+      "linkId": "audit.q9",
+      "text": "Have you or someone else been injured as a result of your drinking?",
       "type": "choice",
-      "required": true,
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not at all",
-            "code": "LA6568-5",
+            "display": "No",
+            "code": "LA32-8",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "Several days",
-            "code": "LA6569-3",
+            "display": "Yes, but not in the last year",
+            "code": "LA32279-4",
             "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
-            "display": "More than half the days",
-            "code": "LA6570-1",
-            "system": "http://loinc.org"
-          }
-        },
-        {
-          "valueCoding": {
-            "display": "Nearly every day",
-            "code": "LA6571-9",
+            "display": "Yes, during the last year",
+            "code": "LA32280-2",
             "system": "http://loinc.org"
           }
         }
@@ -433,79 +473,49 @@
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-9"
+          "valueString": "AUDIT9"
         }
       ]
     },
     {
-      "linkId": "phq9.difficulty",
-      "text": "If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?",
+      "linkId": "audit.q10",
+      "text": "Has a relative or friend, or a doctor or other health worker been concerned about your drinking or suggested you cut down?",
       "type": "choice",
       "answerOption": [
         {
           "valueCoding": {
-            "display": "Not difficult at all",
-            "code": "0"
-          }
-        },
-        {
-          "valueCoding": {
-            "display": "Somewhat difficult",
-            "code": "1"
-          }
-        },
-        {
-          "valueCoding": {
-            "display": "Very difficult",
-            "code": "2"
-          }
-        },
-        {
-          "valueCoding": {
-            "display": "Extremely difficult",
-            "code": "3"
-          }
-        }
-      ],
-      "enableWhen": [
-        {
-          "question": "phq9.1",
-          "operator": "!=",
-          "answerCoding": {
-            "code": "LA6568-5",
+            "display": "No",
+            "code": "LA32-8",
             "system": "http://loinc.org"
           }
         },
         {
-          "question": "phq9.2",
-          "operator": "!=",
-          "answerCoding": {
-            "code": "LA6568-5",
+          "valueCoding": {
+            "display": "Yes, but not in the last year",
+            "code": "LA32279-4",
             "system": "http://loinc.org"
           }
         },
         {
-          "question": "phq9.3",
-          "operator": "!=",
-          "answerCoding": {
-            "code": "LA6568-5",
+          "valueCoding": {
+            "display": "Yes, during the last year",
+            "code": "LA32280-2",
             "system": "http://loinc.org"
           }
         }
       ],
-      "enableBehavior": "any",
       "extension": [
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "PHQ-9"
+          "valueString": "AUDIT"
         },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "PHQ-9-10"
+          "valueString": "AUDIT10"
         }
       ]
     }

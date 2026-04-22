@@ -5,7 +5,7 @@
   "version": "1.2",
   "url": "http://quickq.io/instruments/promis10",
   "description": "10-item global health instrument assessing physical, mental, and social health (LOINC panel 85524-7)",
-  "date": "2026-04-22T21:59:58Z",
+  "date": "2026-04-22T22:28:05Z",
   "name": "PROMIS10GlobalHealth",
   "extension": [
     {

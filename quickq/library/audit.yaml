@@ -1,0 +1,147 @@
+library:
+  instrument: "AUDIT"
+  full_name: "Alcohol Use Disorders Identification Test"
+  version: "2001"
+  citation: "Babor TF, Higgins-Biddle JC, Saunders JB, Monteiro MG. AUDIT: The Alcohol Use Disorders Identification Test — Guidelines for Use in Primary Care (2nd ed.). WHO/MSD/MSB/01.6a. World Health Organization, 2001."
+  license: "World Health Organization. Freely reproducible for clinical and research use."
+
+  vocabularies:
+    - vocabulary_id: LOINC
+      vocabulary_name: "Logical Observation Identifiers Names and Codes"
+      vocabulary_reference: "https://loinc.org"
+
+  concepts:
+    # Questions — LOINC panel 72110-0
+    - { ref: "LOINC:68518-0", name: "How often do you have a drink containing alcohol",       domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:68519-8", name: "How many standard drinks on a typical drinking day",      domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:68520-6", name: "How often do you have six or more drinks on one occasion",domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97734-8", name: "Unable to stop drinking once started (past year)",        domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97735-5", name: "Failed to do expected things because of drinking (past year)", domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97736-3", name: "Needed morning drink after heavy session (past year)",    domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97737-1", name: "Feeling guilty or remorseful after drinking (past year)", domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97738-9", name: "Unable to remember night before due to drinking (past year)", domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97739-7", name: "Injury to self or others from drinking",                 domain: Question, class: Survey, standard: S }
+    - { ref: "LOINC:97740-5", name: "Concern from relatives/friends/doctor about drinking",   domain: Question, class: Survey, standard: S }
+    # LL2179-1 — drinking frequency (Q1)
+    - { ref: "LOINC:LA6270-8",  name: "Never",                  domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18926-8", name: "Monthly or less",        domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18927-6", name: "2-4 times a month",      domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18928-4", name: "2-3 times a week",       domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18929-2", name: "4 or more times a week", domain: Answer, class: Answer, standard: S }
+    # LL2180-9 — standard drinks quantity (Q2)
+    - { ref: "LOINC:LA15694-5", name: "1 or 2",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA15695-2", name: "3 or 4",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18930-0", name: "5 or 6",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18931-8", name: "7 to 9",    domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18932-6", name: "10 or more", domain: Answer, class: Answer, standard: S }
+    # LL2181-7 / LL5943-7 — harm frequency (Q3-Q8, same LA codes)
+    - { ref: "LOINC:LA18933-4", name: "Less than monthly",     domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18876-5", name: "Monthly",               domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18891-4", name: "Weekly",                domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA18934-2", name: "Daily or almost daily", domain: Answer, class: Answer, standard: S }
+    # LL5944-5 — No / Yes not last year / Yes last year (Q9-Q10)
+    - { ref: "LOINC:LA32-8",    name: "No",                       domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA32279-4", name: "Yes, but not in the last year", domain: Answer, class: Answer, standard: S }
+    - { ref: "LOINC:LA32280-2", name: "Yes, during the last year",     domain: Answer, class: Answer, standard: S }
+
+  option_sets:
+    # LL2179-1 — how often do you drink (Q1)
+    drinking_frequency:
+      - { text: "Never",                  value: "0", concept: "LOINC:LA6270-8"  }
+      - { text: "Monthly or less",        value: "1", concept: "LOINC:LA18926-8" }
+      - { text: "2-4 times a month",      value: "2", concept: "LOINC:LA18927-6" }
+      - { text: "2-3 times a week",       value: "3", concept: "LOINC:LA18928-4" }
+      - { text: "4 or more times a week", value: "4", concept: "LOINC:LA18929-2" }
+
+    # LL2180-9 — how many drinks on a typical day (Q2)
+    drinks_per_day:
+      - { text: "1 or 2",    value: "0", concept: "LOINC:LA15694-5" }
+      - { text: "3 or 4",    value: "1", concept: "LOINC:LA15695-2" }
+      - { text: "5 or 6",    value: "2", concept: "LOINC:LA18930-0" }
+      - { text: "7 to 9",    value: "3", concept: "LOINC:LA18931-8" }
+      - { text: "10 or more", value: "4", concept: "LOINC:LA18932-6" }
+
+    # LL2181-7 / LL5943-7 — harm behavior frequency (Q3-Q8, identical LA codes)
+    harm_frequency:
+      - { text: "Never",                value: "0", concept: "LOINC:LA6270-8"  }
+      - { text: "Less than monthly",    value: "1", concept: "LOINC:LA18933-4" }
+      - { text: "Monthly",              value: "2", concept: "LOINC:LA18876-5" }
+      - { text: "Weekly",               value: "3", concept: "LOINC:LA18891-4" }
+      - { text: "Daily or almost daily", value: "4", concept: "LOINC:LA18934-2" }
+
+    # LL5944-5 — injury / concern (Q9-Q10)
+    yes_no_lastyear:
+      - { text: "No",                          value: "0", concept: "LOINC:LA32-8"    }
+      - { text: "Yes, but not in the last year", value: "2", concept: "LOINC:LA32279-4" }
+      - { text: "Yes, during the last year",   value: "4", concept: "LOINC:LA32280-2" }
+
+  questions:
+    - link_id: audit.q1
+      text: "How often do you have a drink containing alcohol?"
+      type: likert
+      concept: "LOINC:68518-0"
+      source_item_id: "AUDIT1"
+      options: $drinking_frequency
+
+    - link_id: audit.q2
+      text: "How many standard drinks containing alcohol do you have on a typical day when you are drinking?"
+      type: likert
+      concept: "LOINC:68519-8"
+      source_item_id: "AUDIT2"
+      options: $drinks_per_day
+
+    - link_id: audit.q3
+      text: "How often do you have six or more drinks on one occasion?"
+      type: likert
+      concept: "LOINC:68520-6"
+      source_item_id: "AUDIT3"
+      options: $harm_frequency
+
+    - link_id: audit.q4
+      text: "How often during the last year have you found that you were not able to stop drinking once you had started?"
+      type: likert
+      concept: "LOINC:97734-8"
+      source_item_id: "AUDIT4"
+      options: $harm_frequency
+
+    - link_id: audit.q5
+      text: "How often during the last year have you failed to do what was normally expected from you because of drinking?"
+      type: likert
+      concept: "LOINC:97735-5"
+      source_item_id: "AUDIT5"
+      options: $harm_frequency
+
+    - link_id: audit.q6
+      text: "How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?"
+      type: likert
+      concept: "LOINC:97736-3"
+      source_item_id: "AUDIT6"
+      options: $harm_frequency
+
+    - link_id: audit.q7
+      text: "How often during the last year have you had a feeling of guilt or remorse after drinking?"
+      type: likert
+      concept: "LOINC:97737-1"
+      source_item_id: "AUDIT7"
+      options: $harm_frequency
+
+    - link_id: audit.q8
+      text: "How often during the last year have you been unable to remember what happened the night before because you had been drinking?"
+      type: likert
+      concept: "LOINC:97738-9"
+      source_item_id: "AUDIT8"
+      options: $harm_frequency
+
+    - link_id: audit.q9
+      text: "Have you or someone else been injured as a result of your drinking?"
+      type: likert
+      concept: "LOINC:97739-7"
+      source_item_id: "AUDIT9"
+      options: $yes_no_lastyear
+
+    - link_id: audit.q10
+      text: "Has a relative or friend, or a doctor or other health worker been concerned about your drinking or suggested you cut down?"
+      type: likert
+      concept: "LOINC:97740-5"
+      source_item_id: "AUDIT10"
+      options: $yes_no_lastyear
