@@ -128,6 +128,7 @@ def _parse_question(raw: dict) -> QuestionDef:
                           column_type=c.get("column_type", "single_choice"))
             for c in raw["columns"]
         ] if raw.get("columns") else None,
+        items=[_parse_question(q) for q in raw["items"]] if raw.get("items") else None,
     )
 
 
@@ -281,6 +282,25 @@ def load_def(
 
                 if q_def.show_when:
                     pending_skip.append((qq_id, q_def.show_when))
+
+                # Repeating group: place child questions with parent_qq_id
+                if q_def.type == "repeating_group" and q_def.items:
+                    for child_order, child_def in enumerate(q_def.items):
+                        child_q_id = upsert_question(conn, child_def)
+                        if child_def.options:
+                            insert_options(conn, child_q_id, child_def.options, None)
+                        child_qq_id = place_question(
+                            conn,
+                            questionnaire_id=questionnaire_id,
+                            question_id=child_q_id,
+                            display_order=child_order,
+                            section_id=section_id,
+                            required=child_def.required,
+                            parent_qq_id=qq_id,
+                        )
+                        link_id_to_qq_id[child_def.link_id] = child_qq_id
+                        if child_def.show_when:
+                            pending_skip.append((child_qq_id, child_def.show_when))
 
         # Pass 2: resolve skip rules now that all link_ids are mapped
         for qq_id, show_when in pending_skip:

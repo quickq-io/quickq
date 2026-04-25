@@ -142,27 +142,41 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
 # ------------------------------------------------------------------
 
 def _collect_items(items: list[dict]) -> list[dict]:
-    """Flatten the FHIR item tree, promoting group children and dropping display items."""
+    """
+    Flatten the FHIR item tree. Non-repeating groups are promoted (children
+    bubble up); repeating groups (group + repeats:true) are kept as-is so
+    their children can be imported with parent_qq_id set.
+    """
     result: list[dict] = []
     for item in items:
         fhir_type = item.get("type", "string")
-        if fhir_type == "group":
+        if fhir_type == "group" and item.get("repeats"):
+            result.append(item)          # repeating group: preserve with children
+        elif fhir_type == "group":
             result.extend(_collect_items(item.get("item", [])))
         elif fhir_type not in _SKIP_TYPES:
             result.append(item)
     return result
 
 
-def _import_item(conn: sqlite3.Connection, qnaire_id: int, item: dict, order: int) -> int:
+def _import_item(
+    conn: sqlite3.Connection,
+    qnaire_id: int,
+    item: dict,
+    order: int,
+    parent_qq_id: int | None = None,
+) -> int:
     link_id   = item["linkId"]
     fhir_type = item.get("type", "string")
     text      = item.get("text") or link_id
     required  = bool(item.get("required", False))
 
-    # Map FHIR type; choice+repeats → multiple_choice
+    # Map FHIR type
     qtype = _FHIR_TO_QTYPE.get(fhir_type, "text")
     if fhir_type == "choice" and item.get("repeats"):
         qtype = "multiple_choice"
+    if fhir_type == "group" and item.get("repeats"):
+        qtype = "repeating_group"
 
     # Parse our custom extensions
     ext_vals = _parse_quickq_extensions(item.get("extension", []))
@@ -194,7 +208,17 @@ def _import_item(conn: sqlite3.Connection, qnaire_id: int, item: dict, order: in
     elif "answerOption" in item:
         _import_answer_options(conn, q_id, item["answerOption"])
 
-    return place_question(conn, qnaire_id, q_id, display_order=order, required=required)
+    qq_id = place_question(
+        conn, qnaire_id, q_id, display_order=order, required=required,
+        parent_qq_id=parent_qq_id,
+    )
+
+    # Repeating group: import child items with parent_qq_id
+    if qtype == "repeating_group":
+        for child_order, child in enumerate(item.get("item", [])):
+            _import_item(conn, qnaire_id, child, child_order, parent_qq_id=qq_id)
+
+    return qq_id
 
 
 # ------------------------------------------------------------------

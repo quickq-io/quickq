@@ -59,6 +59,9 @@ def migrate_oltp(conn: sqlite3.Connection) -> list[str]:
                 "TEXT NOT NULL DEFAULT 'active'")
     _add_column("questionnaire_question", "status_changed_at", "TEXT")
     _add_column("questionnaire_question", "status_notes", "TEXT")
+    _add_column("questionnaire_question", "count_qq_id",
+                "INTEGER REFERENCES questionnaire_question (qq_id)")
+    _add_column("response", "repeat_index", "INTEGER")
 
     # New tables are handled by CREATE TABLE IF NOT EXISTS in the DDL
     create_oltp_schema(conn)

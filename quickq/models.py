@@ -51,6 +51,7 @@ class QuestionDef:
     options: list[OptionDef] | None = None
     rows: list[GridRowDef] | None = None
     columns: list[GridColumnDef] | None = None
+    items: list[QuestionDef] | None = None   # child questions for repeating_group
     option_set: str | None = None   # name of a shared option_set in the questionnaire
     show_when: ShowWhen | None = None
     required: bool = False

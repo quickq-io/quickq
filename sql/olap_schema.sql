@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS fact_response (
     option_id            INTEGER,                -- NULL for open/numeric/date answers
     grid_row_id          INTEGER,
     grid_column_id       INTEGER,
+    repeat_index         INTEGER,                 -- NULL for non-repeating; 0-based for repeating_group
 
     -- typed answer columns (same semantics as OLTP response)
     response_text        VARCHAR,

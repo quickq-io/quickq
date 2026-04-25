@@ -1,0 +1,31 @@
+name: Prenatal Visit Log
+version: "1.0"
+canonical_url: http://quickq.io/instruments/prenatal-visits
+description: Tracks individual prenatal care visits for a respondent.
+
+questions:
+  - link_id: visit_count
+    text: How many prenatal visits did you have in total?
+    type: numeric
+    required: true
+
+  - link_id: visits
+    text: Visit details
+    type: repeating_group
+    items:
+      - link_id: visits.week
+        text: Week of pregnancy at visit
+        type: numeric
+        required: true
+
+      - link_id: visits.provider
+        text: Type of provider seen
+        type: single_choice
+        options:
+          - { text: "OB/GYN",  value: ob }
+          - { text: "Midwife", value: midwife }
+          - { text: "NP/PA",   value: np }
+
+      - link_id: visits.concern
+        text: Were any concerns documented?
+        type: boolean

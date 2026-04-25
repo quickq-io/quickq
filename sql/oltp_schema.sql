@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS question (
                              CHECK (question_type IN (
                                  'single_choice', 'multiple_choice', 'sata_other',
                                  'boolean', 'text', 'numeric', 'date', 'datetime',
-                                 'likert', 'grid', 'ranked', 'slider')),
+                                 'likert', 'grid', 'ranked', 'slider', 'repeating_group')),
     help_text            TEXT,
     concept_id           INTEGER REFERENCES concept (concept_id),
     -- provenance: which standard instrument does this question come from?
@@ -177,6 +177,7 @@ CREATE TABLE IF NOT EXISTS questionnaire_question (
     display_order        INTEGER NOT NULL DEFAULT 0,
     is_required          INTEGER NOT NULL DEFAULT 0 CHECK (is_required IN (0, 1)),
     parent_qq_id         INTEGER REFERENCES questionnaire_question (qq_id),
+    count_qq_id          INTEGER REFERENCES questionnaire_question (qq_id),  -- drives repeat count
     -- display_condition is a FHIRPath expression fallback for logic that cannot be
     -- expressed as structured skip_rule rows (complex boolean chains, cross-section logic).
     display_condition    TEXT,
@@ -285,6 +286,7 @@ CREATE TABLE IF NOT EXISTS response (
     response_date        TEXT,                      -- ISO 8601
     grid_row_id          INTEGER REFERENCES grid_row (row_id),
     grid_column_id       INTEGER REFERENCES grid_column (column_id),
+    repeat_index         INTEGER,                 -- 0-based instance index for repeating_group; NULL otherwise
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     updated_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );

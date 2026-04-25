@@ -15,18 +15,19 @@ import sqlite3
 
 
 _FHIR_TYPE: dict[str, str] = {
-    "single_choice":   "choice",
-    "multiple_choice": "choice",
-    "sata_other":      "open-choice",
-    "boolean":         "boolean",
-    "text":            "text",
-    "numeric":         "decimal",
-    "date":            "date",
-    "datetime":        "dateTime",
-    "likert":          "choice",
-    "grid":            "group",
-    "ranked":          "choice",
-    "slider":          "integer",
+    "single_choice":    "choice",
+    "multiple_choice":  "choice",
+    "sata_other":       "open-choice",
+    "boolean":          "boolean",
+    "text":             "text",
+    "numeric":          "decimal",
+    "date":             "date",
+    "datetime":         "dateTime",
+    "likert":           "choice",
+    "grid":             "group",
+    "ranked":           "choice",
+    "slider":           "integer",
+    "repeating_group":  "group",
 }
 
 _REPEATS_TYPES = frozenset({"multiple_choice", "sata_other"})
@@ -104,7 +105,7 @@ def _build_items(conn: sqlite3.Connection, questionnaire_id: int) -> list[dict]:
         FROM questionnaire_question qq
         JOIN question q ON qq.question_id = q.question_id
         LEFT JOIN response_option_set ros ON q.option_set_id = ros.option_set_id
-        WHERE qq.questionnaire_id = ?
+        WHERE qq.questionnaire_id = ? AND qq.parent_qq_id IS NULL
         ORDER BY qq.display_order
         """,
         (questionnaire_id,),
@@ -200,6 +201,29 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
                              "code": "gtable"}]
             },
         })
+
+    # Repeating group: nested child items, repeats=true
+    if qtype == "repeating_group":
+        item["repeats"] = True
+        child_rows = conn.execute(
+            """
+            SELECT qq.qq_id, qq.display_order, qq.is_required,
+                   q.question_id, q.link_id, q.question_text, q.question_type,
+                   q.help_text, q.internal_note, q.option_set_id,
+                   q.source_instrument, q.source_item_id,
+                   q.numeric_min, q.numeric_max, q.numeric_step,
+                   q.slider_min_label, q.slider_max_label,
+                   ros.canonical_url AS option_set_url
+            FROM questionnaire_question qq
+            JOIN question q ON qq.question_id = q.question_id
+            LEFT JOIN response_option_set ros ON q.option_set_id = ros.option_set_id
+            WHERE qq.parent_qq_id = ?
+            ORDER BY qq.display_order
+            """,
+            (row["qq_id"],),
+        ).fetchall()
+        if child_rows:
+            item["item"] = [_build_item(conn, c) for c in child_rows]
 
     # Ranked: emit custom extension so consumers know to present for ordering
     if qtype == "ranked":
