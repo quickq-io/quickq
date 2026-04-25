@@ -745,6 +745,7 @@ source = { editable = "." }
 dependencies = [
     { name = "click" },
     { name = "duckdb" },
+    { name = "playwright" },
     { name = "pyyaml" },
 ]
 
@@ -760,6 +761,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.0" },
     { name = "duckdb", specifier = ">=0.10" },
+    { name = "playwright", specifier = ">=1.58.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
