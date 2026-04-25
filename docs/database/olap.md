@@ -8,7 +8,9 @@ ATTACH 'study.db' AS oltp (TYPE sqlite, READ_ONLY);
 
 ---
 
-## Star Schema
+## Core Schema
+
+One fact table surrounded by four key dimensions handles the vast majority of analytical queries.
 
 ```mermaid
 erDiagram
@@ -16,170 +18,101 @@ erDiagram
     FACT_RESPONSE }o--|| DIM_RESPONDENT : respondent_id
     FACT_RESPONSE }o--|| DIM_SESSION : session_id
     FACT_RESPONSE }o--|| DIM_QUESTIONNAIRE : questionnaire_id
-    FACT_RESPONSE }o--|| DIM_STUDY : study_id
-    FACT_RESPONSE }o--|| DIM_DATE : response_date_key
-    FACT_RESPONSE }o--o| DIM_RESPONSE_OPTION : option_id
-    FACT_RESPONSE }o--o| DIM_CONCEPT : question_concept_id
-    DIM_QUESTIONNAIRE }o--|| DIM_STUDY : study_id
-    DIM_SESSION }o--|| DIM_QUESTIONNAIRE : questionnaire_id
-    DIM_QUESTION }o--o| DIM_CONCEPT : concept_id
 
     FACT_RESPONSE {
         bigint response_id PK
-        int session_id FK
-        int question_id FK
         int repeat_index
         double response_numeric
         varchar response_text
         date response_date
         varchar option_value
-        varchar admin_mode
+        int question_concept_id
     }
-
     DIM_QUESTION {
         int question_id PK
         varchar link_id
         varchar question_type
         varchar source_instrument
-        int concept_id FK
         int equivalence_group_id
     }
-
+    DIM_RESPONDENT {
+        int respondent_id PK
+        varchar external_id
+        date enrollment_date
+    }
     DIM_SESSION {
         int session_id PK
-        boolean is_complete
         varchar admin_mode
+        boolean is_complete
         boolean is_proxy
         int duration_sec
     }
+    DIM_QUESTIONNAIRE {
+        int questionnaire_id PK
+        varchar canonical_url
+        varchar version
+    }
 ```
 
----
+**`fact_response`** — One row per answer atom, mirroring the OLTP `response` table but pre-joined with concept and dimension keys so analytical queries need no joins back to SQLite. `repeat_index` carries through from OLTP: `NULL` for non-repeating questions, 0-based for `repeating_group` children. `question_concept_id` and `option_value` are denormalized onto every row so concept-based and value-based filters are a single `WHERE` clause.
 
-## Fact Table
+**`dim_question`** — Question metadata. `source_instrument` records provenance (e.g., `PHQ-9`, `BRFSS-2022`). `equivalence_group_id` is a computed cluster ID — the connected-component of the `question_equivalence` graph — that lets a query span instruments without knowing their `link_id` values.
 
-`fact_response` holds one row per answer atom — the same granularity as the OLTP `response` table, but pre-joined with concept and dimension keys so analytical queries need no joins to OLTP.
+**`dim_respondent`** — De-identified participant. `external_id` is the researcher-assigned key, matching OLTP.
 
-| Column | Type | Notes |
-|---|---|---|
-| `response_id` | BIGINT PK | Mirrors OLTP `response.response_id` |
-| `session_id` | INTEGER | FK → `dim_session` |
-| `respondent_id` | INTEGER | FK → `dim_respondent` |
-| `questionnaire_id` | INTEGER | FK → `dim_questionnaire` |
-| `study_id` | INTEGER | FK → `dim_study` |
-| `question_id` | INTEGER | FK → `dim_question` |
-| `qq_id` | INTEGER | Placement key; preserves version context |
-| `option_id` | INTEGER | NULL for open / numeric / date answers |
-| `grid_row_id` / `grid_column_id` | INTEGER | Grid cell coordinates |
-| `repeat_index` | INTEGER | NULL for non-repeating; 0-based instance index for `repeating_group` |
-| `response_text` | VARCHAR | Boolean (`'true'`/`'false'`), text, coded answers |
-| `response_numeric` | DOUBLE | Numeric, slider, ranked ordinal |
-| `response_date` | DATE | Date and datetime answers |
-| `option_value` | VARCHAR | Denormalized from `response_option` for filter speed |
-| `question_concept_id` | INTEGER | Pre-joined; enables concept-based cross-study queries without joins |
-| `option_concept_id` | INTEGER | Pre-joined option concept |
-| `response_date_key` / `session_start_key` | DATE | FK → `dim_date` |
-| `admin_mode` | VARCHAR | `web` / `paper` / `phone` / `kiosk` / `api` — covariate for mode-effect analysis |
-| `is_proxy` | BOOLEAN | Proxy response flag |
-| `loaded_at` | TIMESTAMP | ETL load time |
+**`dim_session`** — Session-level covariates. `admin_mode` and `is_proxy` are first-class columns because mode effects matter in epi analysis. `duration_sec` is derived from `completed_at - started_at`.
+
+**`dim_questionnaire`** — Instrument version context. `canonical_url` + `version` are the stable identifiers for joining across studies.
 
 ---
 
-## Dimension Tables
+## Supporting Tables
 
-| Table | Key columns | Purpose |
-|---|---|---|
-| `dim_study` | `study_id`, `irb_number`, `pi` | Study-level filter |
-| `dim_questionnaire` | `questionnaire_id`, `canonical_url`, `version` | Instrument version context |
-| `dim_question` | `link_id`, `question_type`, `source_instrument`, `concept_id`, `equivalence_group_id` | Question metadata and cross-study grouping |
-| `dim_response_option` | `option_id`, `option_value`, `concept_id`, `is_other`, `is_exclusive` | Answer choice metadata |
-| `dim_respondent` | `respondent_id`, `external_id`, `enrollment_date` | Participant-level filter |
-| `dim_session` | `session_id`, `is_complete`, `admin_mode`, `duration_sec` | Session-level covariates |
-| `dim_date` | `date_key`, `year`, `quarter`, `month`, `week`, `is_weekend` | Time-series grouping |
-| `dim_concept` | `concept_id`, `vocabulary_id`, `concept_code`, `standard_concept` | Standard vocabulary reference |
+### Additional dimensions
 
-### Cross-study harmonization via `equivalence_group_id`
+**`dim_study`** — Study-level filter (`study_id`, `irb_number`, `principal_investigator`). Useful when a DuckDB file aggregates multiple studies.
 
-`dim_question.equivalence_group_id` is a computed cluster ID — the connected-component ID of the `question_equivalence` graph. Questions in the same group can be treated as measuring the same construct:
+**`dim_response_option`** — Answer choice metadata: `option_value`, `concept_id`, `is_other`, `is_exclusive`. Needed for queries that filter or label by option properties rather than just value.
+
+**`dim_concept`** — Standard vocabulary reference (`vocabulary_id`, `concept_code`, `standard_concept`). Populated from OLTP `concept`; used for concept-based cross-study joins.
+
+**`dim_date`** — Calendar dimension (`year`, `quarter`, `month`, `week`, `is_weekend`). `fact_response` carries `response_date_key` and `session_start_key` as foreign keys into this table for time-series grouping.
+
+### Aggregate tables
+
+Aggregates are materialized on every `quickq refresh`. Prefer them over scanning `fact_response` for dashboards and reports.
+
+**`agg_question_distribution`** — Response frequency and percentage per `(study, questionnaire, question, option_value)`. `pct` denominator is sessions with any answer to that question.
+
+**`agg_numeric_stats`** — Descriptive statistics for numeric questions: `mean`, `median`, `std_dev`, `min_val`, `max_val`, `p25`, `p75`.
+
+**`agg_session_completion`** — Daily enrollment and completion rates broken down by `admin_mode`. Includes `completion_rate` (0–1) and `median_duration_sec`.
+
+**`agg_respondent_scores`** — Computed scale scores (PHQ-9 total, GAD-7 severity, SF-12, etc.) per respondent per session per scoring rule. `items_answered / items_total` makes partial-completion analysis straightforward.
+
+### Versioning mirrors
+
+**`dim_question_lineage`** — Revision ancestry mirrored from OLTP: rewords, option changes, splits, merges. For provenance-aware queries that need to know when a question changed.
+
+**`dim_question_equivalence`** — Declared equivalences mirrored from OLTP, both directions stored. Used to compute `equivalence_group_id` on `dim_question`.
+
+### OMOP extraction
+
+For studies in federated networks (PCORnet, TriNetX, i2b2), three tables project data into OMOP CDM format. Populated during refresh when `person_map` is populated in the OLTP.
+
+**`omop_survey_conduct`** — One row per session. Maps to the OMOP `SurveyConducts` domain.
+
+**`omop_observation`** — One row per response atom that has a `concept_id`. Maps to the OMOP `Observations` domain.
+
+**`omop_unmapped_questions`** — Questions excluded from OMOP output due to missing `concept_id`, with their `response_count`. This is the pre-flight data quality check before any federated query: high counts mean real data is being silently excluded.
 
 ```sql
--- Prevalence of PHQ-9 "little interest" across studies,
--- regardless of exact question wording or instrument version
-SELECT study_id, AVG(response_numeric) AS mean_score
-FROM fact_response fr
-JOIN dim_question dq USING (question_id)
-WHERE dq.equivalence_group_id = 42
-GROUP BY study_id;
+-- Find mapping gaps before a federated export
+SELECT link_id, question_text, response_count
+FROM omop_unmapped_questions
+ORDER BY response_count DESC;
 ```
 
----
+### Refresh watermark
 
-## Aggregate Tables
-
-Aggregates are materialized on every `quickq refresh`. Prefer these over scanning `fact_response` for dashboards and reports.
-
-### `agg_question_distribution`
-Response frequency distribution per question. One row per `(study, questionnaire, question, option_value)`. `pct` denominator is sessions with any answer to that question.
-
-### `agg_numeric_stats`
-Descriptive statistics for numeric questions: `mean`, `median`, `std_dev`, `min_val`, `max_val`, `p25`, `p75`.
-
-### `agg_session_completion`
-Daily enrollment and completion rates, broken down by `admin_mode`. Includes `completion_rate` (0–1) and `median_duration_sec`.
-
-### `agg_respondent_scores`
-Computed scores per respondent per scoring rule (PHQ-9 sum, GAD-7 severity, etc.). Populated by evaluating `scoring_rule` + `scoring_rule_item` from OLTP. Includes `items_answered` / `items_total` so partial-completion analysis is straightforward.
-
----
-
-## Versioning & Equivalence
-
-Two mirror tables are populated during refresh for OLAP-side provenance queries:
-
-- **`dim_question_lineage`** — revision ancestry (rewords, option changes, splits, merges)
-- **`dim_question_equivalence`** — declared equivalences between questions, both directions stored
-
----
-
-## OMOP Extraction
-
-For studies participating in multi-center networks, three tables project data into OMOP CDM format:
-
-| Table | Maps to | Notes |
-|---|---|---|
-| `omop_survey_conduct` | `SurveyConducts` domain | One row per session |
-| `omop_observation` | `Observations` domain | One row per response atom with a `concept_id` |
-| `omop_unmapped_questions` | — | Questions excluded from OMOP export due to missing `concept_id` |
-
-`omop_unmapped_questions` is a data quality surface: it shows exactly what needs to be mapped before a study can contribute to a federated network query. Questions with high `response_count` and no `concept_id` are the priority mapping targets.
-
-OMOP extraction requires `person_map` to be populated in the OLTP database (linking `respondent.external_id` to `omop_person_id`). This is intentionally study-specific ETL — quickq populates the OMOP tables but does not own the identity resolution.
-
----
-
-## Refresh Watermark
-
-`refresh_log` tracks every incremental load:
-
-| Column | Purpose |
-|---|---|
-| `max_response_id` | High-water mark — next refresh reads `response_id > this value` |
-| `max_session_id` | Session high-water mark for session-level tables |
-| `rows_loaded` | Audit count for each run |
-| `status` | `running` / `complete` / `failed` |
-| `error_message` | Populated on failure so the cause is inspectable without log files |
-
-A failed refresh leaves `status = 'failed'` and does not advance the watermark, so the next run retries the same window cleanly.
-
----
-
-## Data Quality at the Analytical Layer
-
-!!! tip "OMOP unmapped questions are a first-class data quality signal"
-    Before running any cross-study query, check `omop_unmapped_questions` for the relevant instruments. High response counts on unmapped questions mean your query is silently excluding real data.
-
-The OLAP layer surfaces three quality signals that have no equivalent in OLTP:
-
-1. **`omop_unmapped_questions`** — concept mapping gaps that block federated queries
-2. **`agg_respondent_scores.items_answered / items_total`** — partial completion rate per scoring rule, indicating systematic skip patterns or delivery bugs
-3. **`dim_question.equivalence_group_id = NULL`** — questions with no declared equivalences; candidates for mapping before cross-study analysis
+**`refresh_log`** — One row per refresh run. `max_response_id` is the high-water mark: the next run reads `response_id > this value`. A failed run leaves `status = 'failed'` and does not advance the watermark, so the next run retries the same window cleanly. `error_message` is populated on failure so the cause is inspectable without log files.
