@@ -6,6 +6,10 @@ from .loader import load_yaml
 from .administration import data_dictionary, format_data_dict_markdown, format_data_dict_csv
 from .renderer_fhir import export_fhir_json
 from .parser_fhir import import_fhir
+from .parser_fhir_response import import_fhir_response
+from .olap_schema import refresh as olap_refresh, init_olap
+from .renderer_md import generate_report
+from .preview import preview as preview_questionnaire, build_preview_html
 
 
 @click.group()
@@ -91,6 +95,68 @@ def import_fhir_cmd(fhir_path: str, db_path: str) -> None:
     qid = import_fhir(conn, text)
     conn.commit()
     click.echo(f"Imported questionnaire id={qid}.")
+
+
+@main.command("refresh")
+@click.argument("db_path",   type=click.Path(exists=True))
+@click.argument("olap_path", type=click.Path())
+def refresh_cmd(db_path: str, olap_path: str) -> None:
+    """Refresh the OLAP analytics database from DB_PATH (OLTP SQLite)."""
+    stats = olap_refresh(olap_path, db_path)
+    click.echo(
+        f"Refresh complete: {stats['rows_loaded']} fact rows, "
+        f"{stats['sessions_loaded']} sessions, "
+        f"{stats['scores_computed']} scores computed."
+    )
+
+
+@main.command("preview")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.argument("questionnaire_id", type=int)
+@click.option("--port", default=5173, show_default=True, help="Local port for the preview server.")
+@click.option("--no-browser", is_flag=True, help="Start server without opening a browser tab.")
+@click.option("--output", "-o", type=click.Path(), default=None, help="Write static HTML to file instead of serving.")
+def preview_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool, output: str | None) -> None:
+    """Render a questionnaire in a local browser via LHC-Forms (read-only)."""
+    if output:
+        html = build_preview_html(db_path, questionnaire_id)
+        Path(output).write_text(html)
+        click.echo(f"Preview HTML written to {output}.")
+    else:
+        preview_questionnaire(db_path, questionnaire_id, port=port, open_browser=not no_browser)
+
+
+@main.command("report")
+@click.argument("olap_path", type=click.Path(exists=True))
+@click.argument("oltp_path", type=click.Path(exists=True))
+@click.argument("questionnaire_id", type=int)
+@click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
+def report_cmd(olap_path: str, oltp_path: str, questionnaire_id: int, output: str | None) -> None:
+    """Generate a Markdown report for a questionnaire from the OLAP database."""
+    oconn = init_olap(olap_path, oltp_path)
+    text = generate_report(oconn, questionnaire_id)
+    if output:
+        Path(output).write_text(text)
+        click.echo(f"Report written to {output}.")
+    else:
+        click.echo(text)
+
+
+@main.command("import-fhir-response")
+@click.argument("fhir_path", type=click.Path(exists=True))
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--study-id", type=int, default=None, help="Associate respondents with an existing study.")
+def import_fhir_response_cmd(fhir_path: str, db_path: str, study_id: int | None) -> None:
+    """Import a FHIR R4 QuestionnaireResponse (or JSON array) into DB_PATH."""
+    conn = open_oltp(db_path)
+    import json
+    data = json.loads(Path(fhir_path).read_text())
+    resources = data if isinstance(data, list) else [data]
+    session_ids = []
+    for resource in resources:
+        sid = import_fhir_response(conn, resource, study_id=study_id)
+        session_ids.append(sid)
+    click.echo(f"Imported {len(session_ids)} response session(s): ids={session_ids}.")
 
 
 @main.command("export-fhir")

@@ -104,10 +104,10 @@ questionnaire:
           source_instrument: "PHQ-9"
           source_item_id: "PHQ-9-10"
           options:
-            - { text: "Not difficult at all", value: "0" }
-            - { text: "Somewhat difficult",   value: "1" }
-            - { text: "Very difficult",        value: "2" }
-            - { text: "Extremely difficult",   value: "3" }
+            - { text: "Not difficult at all", value: "0", concept: "LOINC:LA6572-7" }
+            - { text: "Somewhat difficult",   value: "1", concept: "LOINC:LA6573-5" }
+            - { text: "Very difficult",        value: "2", concept: "LOINC:LA6574-3" }
+            - { text: "Extremely difficult",   value: "3", concept: "LOINC:LA6575-0" }
           show_when:
             behavior: any
             conditions:
