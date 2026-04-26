@@ -163,6 +163,8 @@ A narrative document for non-technical audiences: IRB reviewers, principal inves
 quickq render study.db 1 --output instrument.md
 ```
 
+See [Example: PHQ-9 Rendered Instrument](reference/example-phq9.md) for a complete example of the output.
+
 Output structure:
 
 - Instrument metadata (name, version, canonical URL)
