@@ -10,6 +10,9 @@ from .parser_fhir_response import import_fhir_response
 from .olap_schema import refresh as olap_refresh, init_olap
 from .renderer_md import generate_report
 from .preview import preview as preview_questionnaire, build_preview_html
+from .merge import merge_databases, MergeError
+from .pseudonymize import pseudonymize
+from .export_parquet import export_parquet
 
 
 @click.group()
@@ -142,6 +145,36 @@ def report_cmd(olap_path: str, oltp_path: str, questionnaire_id: int, output: st
         click.echo(text)
 
 
+@main.command("export-parquet")
+@click.argument("olap_path", type=click.Path(exists=True))
+@click.argument("output_dir", type=click.Path())
+@click.option("--table", "tables", multiple=True,
+              help="Table to export (repeatable). Defaults to all star schema tables.")
+@click.option("--overwrite", is_flag=True, help="Overwrite existing Parquet files.")
+def export_parquet_cmd(
+    olap_path: str, output_dir: str, tables: tuple[str, ...], overwrite: bool
+) -> None:
+    """Export OLAP tables from OLAP_PATH to Parquet files in OUTPUT_DIR."""
+    try:
+        result = export_parquet(
+            olap_path, output_dir,
+            tables=list(tables) if tables else None,
+            overwrite=overwrite,
+        )
+    except FileExistsError as exc:
+        raise click.ClickException(str(exc))
+
+    total_rows = sum(result.rows.values())
+    click.echo(
+        f"Exported {len(result.files)} table(s) to {result.output_dir} "
+        f"({total_rows:,} total rows)"
+    )
+    for table, path in result.files.items():
+        click.echo(f"  {table}: {result.rows[table]:,} rows → {Path(path).name}")
+    for table in result.skipped:
+        click.echo(f"  skipped (not found): {table}", err=True)
+
+
 @main.command("import-fhir-response")
 @click.argument("fhir_path", type=click.Path(exists=True))
 @click.argument("db_path", type=click.Path(exists=True))
@@ -157,6 +190,61 @@ def import_fhir_response_cmd(fhir_path: str, db_path: str, study_id: int | None)
         sid = import_fhir_response(conn, resource, study_id=study_id)
         session_ids.append(sid)
     click.echo(f"Imported {len(session_ids)} response session(s): ids={session_ids}.")
+
+
+@main.command("merge")
+@click.argument("sources", nargs=-1, required=True, type=click.Path(exists=True))
+@click.option("--output", "-o", required=True, type=click.Path(), help="Path for the merged output database.")
+@click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
+def merge_cmd(sources: tuple[str, ...], output: str, overwrite: bool) -> None:
+    """Merge multiple site databases into a single combined study database."""
+    try:
+        result = merge_databases(list(sources), output, overwrite=overwrite)
+    except MergeError as exc:
+        raise click.ClickException(str(exc))
+    click.echo(
+        f"Merged {len(result.sources)} source(s) into {result.output}:\n"
+        f"  {result.respondents_merged} respondents\n"
+        f"  {result.sessions_merged} sessions\n"
+        f"  {result.responses_merged} responses\n"
+        f"  {result.sessions_skipped_duplicate} duplicate sessions skipped"
+    )
+    for w in result.warnings:
+        click.echo(f"  warning: {w}", err=True)
+
+
+@main.command("pseudonymize")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--output", "-o", required=True, type=click.Path(), help="Path for the pseudonymized output database.")
+@click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
+@click.option("--key-file", type=click.Path(), default=None,
+              help="File to write the HMAC key to (hex). Store securely for reversibility.")
+def pseudonymize_cmd(db_path: str, output: str, overwrite: bool, key_file: str | None) -> None:
+    """Produce a pseudonymized copy of DB_PATH with participant IDs replaced by tokens."""
+    try:
+        result = pseudonymize(db_path, output, overwrite=overwrite)
+    except FileExistsError as exc:
+        raise click.ClickException(str(exc))
+
+    click.echo(
+        f"Pseudonymized {result.source} → {result.output}\n"
+        f"  {result.respondents_pseudonymized} respondents pseudonymized"
+    )
+
+    if key_file:
+        Path(key_file).write_bytes(result.key)
+        click.echo(f"  HMAC key written to {key_file} — keep this file secure.")
+    else:
+        click.echo(
+            f"  HMAC key (hex): {result.key.hex()}\n"
+            "  Store this key securely if you need to reverse the pseudonymization.",
+            err=True,
+        )
+
+    for w in result.warnings:
+        click.echo(f"  warning: {w}", err=True)
+
+    click.echo("\nNext step: quickq refresh <output.db> <analytics.duckdb>")
 
 
 @main.command("export-fhir")

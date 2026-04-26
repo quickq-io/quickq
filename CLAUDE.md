@@ -247,6 +247,7 @@ agg_respondent_scores       (respondent_id, questionnaire_id, scoring_rule_id,
 | Report generator | OLAP | Markdown/HTML summaries |
 | Data quality checker | OLAP | Range violations, cross-question rules |
 | Cross-study harmonizer | OLAP | Aligns questions across studies via `concept_id` |
+| `quickq pseudonymize` | OLTP | *(Planned)* Generates de-identified study file for sharing |
 
 ---
 
@@ -291,6 +292,75 @@ The practical consequence: quickq Python is the **authoring, administration, and
 **One file, one study.** A `quickq.db` SQLite file plus a `quickq_analytics.duckdb` file should be the complete deliverable for a study — portable, committable, openable in any SQL tool.
 
 **Never crash on a valid survey.** Admin flows and collection should be robust. Data quality issues go to a `data_quality_flag` table, not exceptions.
+
+---
+
+## Scaling Architecture
+
+quickq is designed for a spectrum from a solo PhD project on a laptop to a multi-site study with 200,000 participants. The data model does not change at any stage. What changes is the operational pattern around it.
+
+### The four tiers
+
+**Tier 1 — Solo / Local (up to ~5,000 participants)**
+One researcher, one `.db` file, everything on a laptop. `quickq refresh` takes seconds. No infrastructure required.
+
+**Tier 2 — Small multi-site (up to ~20,000 participants, 2–5 sites)**
+Survey delivery via LHC-Forms or any FHIR-compliant tool. Responses arrive as `QuestionnaireResponse` JSON; a single Python ingestor process imports them. SQLite with WAL mode sustains thousands of sequential writes per second — the bottleneck is never SQLite, it's the delivery pipeline. `quickq refresh` still runs in under a minute.
+
+**Tier 3 — Medium multi-site (up to ~100,000 participants, 5–20 sites)**
+Each site collects into its own `site_N.db`. A nightly or weekly `quickq merge` job assembles a combined database for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary, after review. Where central collection is preferred, a queue-backed ingestor (SQS or equivalent → single-threaded writer → S3) handles concurrent submissions cleanly.
+
+**Tier 4 — Large / institutional (200,000+ participants)**
+Site sharding remains viable at this scale (e.g. 50 sites × 4,000 participants). The new challenge is institutional analytics infrastructure. `quickq export-parquet` dumps the OLAP star schema to Parquet files for ingestion into BigQuery, Snowflake, or Databricks — without those tools needing to know anything about quickq. `quickq pseudonymize` is required before any data crosses an institutional boundary.
+
+### The one-writer rule
+
+SQLite enforces a single concurrent writer. This is a feature, not a limitation: it guarantees ACID correctness on every FHIR response import. At Tier 2 and above, enforce it explicitly — either by design (one ingestor process) or by a queue that serializes concurrent submissions.
+
+### The 10-year rule
+
+If a cloud provider shuts down or a university loses a software license, a researcher must be able to download their data and have a fully functional study on a laptop within minutes. This rules out any architecture where the data model is owned by the platform. SQLite + DuckDB + Parquet keeps the study portable regardless of where it runs.
+
+---
+
+## Federated Analytics
+
+For multi-institution studies where individual-level data cannot leave each site's boundary, quickq supports a federated analytics pattern:
+
+1. A coordinating center defines analysis queries against the standard OLAP schema (`fact_response`, `dim_question`, `dim_respondent`)
+2. Each site runs `quickq run-query --query analysis.sql` locally — results are aggregate only (counts, means, distributions)
+3. Only the aggregate results leave the site; individual rows never move
+4. The coordinating center assembles site results
+
+This sidesteps the DUA and IRB amendment process that direct data sharing requires, which is the primary adoption barrier for multi-institution studies. Because every quickq deployment shares the same star schema, a query written once runs identically at every site.
+
+The query executor must enforce aggregate-only output and minimum cell sizes for disclosure control. This is a small amount of code with significant privacy and adoption implications.
+
+---
+
+## Anonymization & Data Sharing
+
+**Pseudonymization** (removing direct identifiers: names, contact info, dates of birth) is straightforward. `quickq pseudonymize` strips the `respondent` table of PHI and replaces `external_id` with a stable random token. The pseudonymized file retains the full OLAP analytical model and can be shared under a standard DUA.
+
+**Re-identification risk** is harder and is out of scope for quickq. Even without direct identifiers, combinations of responses can uniquely identify participants (age + rare condition + region). Researchers sharing pseudonymized data should run an external k-anonymity analysis (ARX, pycanon) before release. quickq should make this easy by documenting the workflow, not by trying to implement it.
+
+**Anonymous studies** (where no PHI was collected by design) need no pseudonymization step — the `.db` file is already safe to share. Many epi studies are designed this way.
+
+---
+
+## Implementation Roadmap
+
+Ordered by adoption impact:
+
+1. **`quickq merge`** — combine multiple site `.db` files into a single study database. Unblocks Tier 3 multi-site adoption. Deduplication key is the FHIR `QuestionnaireResponse.id`; integer PKs are remapped on merge using external IDs as stable keys. Schema divergence (site imported a different questionnaire version) must be detected and surfaced clearly.
+
+2. **Federated query executor** — `quickq run-query` with aggregate-only enforcement and minimum cell size disclosure control. Makes quickq viable for institutional use without requiring data to leave any site.
+
+3. **`quickq pseudonymize`** — produces a PHI-free copy of the study database for direct data sharing. Strips the `respondent` table, replaces external IDs with stable tokens, preserves the full OLAP model.
+
+4. **`quickq export-parquet`** — dumps the OLAP star schema to Parquet. Enables ingestion into BigQuery, Snowflake, Databricks, or any columnar warehouse without those tools depending on quickq.
+
+These four commands, together with documented operational recipes for each tier, are what make quickq adoptable as a standard rather than a personal tool.
 
 ---
 

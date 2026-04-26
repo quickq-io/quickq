@@ -45,12 +45,18 @@ markdown_extensions:
 
 nav:
   - Welcome: index.md
-  - Tutorial: tutorial.md
+  - Why quickq?: why_quickq.md
+  - Tutorials:
+      - End-to-End Study: tutorial.md
+      - Authoring an Instrument: tutorials/authoring.md
   - Design Philosophy: philosophy.md
   - Architecture: architecture.md
   - Survey Authoring: authoring.md
   - FHIR Interoperability: fhir.md
   - Analytics & Data Model: analytics.md
+  - Reference:
+      - Query Patterns by Question Type: reference/query-patterns.md
+      - Instrument Versioning & Data Governance: reference/versioning.md
   - Database Schema:
       - OLTP (SQLite): database/oltp.md
       - OLAP (DuckDB): database/olap.md

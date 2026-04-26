@@ -186,6 +186,16 @@ def _run_refresh(conn: duckdb.DuckDBPyConnection, watermark: dict) -> dict:
 
     scores_computed = _compute_scores(conn)
 
+    # Lineage and equivalence mirrors
+    _sync_dim_question_lineage(conn)
+    _sync_dim_question_equivalence(conn)
+    _sync_equivalence_group_ids(conn)
+
+    # OMOP extraction — only runs if person_map is populated
+    _sync_omop_survey_conduct(conn)
+    _sync_omop_observation(conn)
+    _sync_omop_unmapped(conn)
+
     return {
         "rows_loaded":          rows_loaded,
         "sessions_loaded":      new_sessions,
@@ -566,6 +576,170 @@ def _lookup_category(
 # ------------------------------------------------------------------
 # dim_date
 # ------------------------------------------------------------------
+
+# ------------------------------------------------------------------
+# Lineage and equivalence mirrors
+# ------------------------------------------------------------------
+
+def _sync_dim_question_lineage(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("DELETE FROM dim_question_lineage")
+    conn.execute("""
+        INSERT INTO dim_question_lineage
+            (lineage_id, question_id, parent_question_id, change_type,
+             change_description, effective_date, refreshed_at)
+        SELECT lineage_id, question_id, parent_question_id, change_type,
+               change_description,
+               TRY_CAST(effective_date AS DATE),
+               NOW()
+        FROM oltp.question_lineage
+    """)
+
+
+def _sync_dim_question_equivalence(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("DELETE FROM dim_question_equivalence")
+    conn.execute("""
+        INSERT INTO dim_question_equivalence
+            (question_id_1, question_id_2, relationship, confidence,
+             harmonization_notes, refreshed_at)
+        SELECT question_id_1, question_id_2, relationship, confidence,
+               harmonization_notes, NOW()
+        FROM oltp.question_equivalence
+    """)
+
+
+def _sync_equivalence_group_ids(conn: duckdb.DuckDBPyConnection) -> None:
+    """
+    Compute connected components of the question_equivalence graph and write
+    equivalence_group_id onto dim_question.
+
+    Questions with no declared equivalences get NULL (singleton, no group).
+    Questions linked by equivalent/near_equivalent edges share a group_id.
+    """
+    edges = conn.execute(
+        "SELECT question_id_1, question_id_2 FROM oltp.question_equivalence "
+        "WHERE relationship IN ('equivalent', 'near_equivalent')"
+    ).fetchall()
+
+    all_ids = [r[0] for r in conn.execute(
+        "SELECT question_id FROM oltp.question"
+    ).fetchall()]
+
+    if not all_ids:
+        return
+
+    parent: dict[int, int] = {q: q for q in all_ids}
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(x: int, y: int) -> None:
+        px, py = find(x), find(y)
+        if px != py:
+            parent[min(px, py)] = max(px, py)
+
+    for q1, q2 in edges:
+        if q1 in parent and q2 in parent:
+            union(q1, q2)
+
+    # Only assign a group_id to questions in multi-member components
+    root_members: dict[int, list[int]] = {}
+    for q in all_ids:
+        root = find(q)
+        root_members.setdefault(root, []).append(q)
+
+    roots_with_group = sorted(r for r, members in root_members.items() if len(members) > 1)
+    root_to_group = {root: i + 1 for i, root in enumerate(roots_with_group)}
+
+    for q in all_ids:
+        group_id = root_to_group.get(find(q))  # None for singletons
+        conn.execute(
+            "UPDATE dim_question SET equivalence_group_id = ? WHERE question_id = ?",
+            [group_id, q],
+        )
+
+
+# ------------------------------------------------------------------
+# OMOP extraction
+# ------------------------------------------------------------------
+
+def _sync_omop_survey_conduct(conn: duckdb.DuckDBPyConnection) -> None:
+    """One row per response_session → omop_survey_conduct."""
+    conn.execute("DELETE FROM omop_survey_conduct")
+    conn.execute("""
+        INSERT INTO omop_survey_conduct
+            (survey_conduct_id, person_id, survey_concept_id,
+             survey_start_date, survey_end_date,
+             assisted_concept_id, survey_source_value, refreshed_at)
+        SELECT
+            rs.session_id,
+            pm.omop_person_id,
+            q.concept_id,
+            TRY_CAST(rs.started_at   AS DATE),
+            TRY_CAST(rs.completed_at AS DATE),
+            CASE WHEN rs.is_proxy = 1 THEN 532063 ELSE 0 END,
+            rs.admin_mode,
+            NOW()
+        FROM   oltp.response_session rs
+        JOIN   oltp.questionnaire     q  ON rs.questionnaire_id = q.questionnaire_id
+        LEFT JOIN oltp.person_map     pm ON rs.respondent_id    = pm.respondent_id
+    """)
+
+
+def _sync_omop_observation(conn: duckdb.DuckDBPyConnection) -> None:
+    """One row per concept-mapped answer atom → omop_observation."""
+    conn.execute("DELETE FROM omop_observation")
+    conn.execute("""
+        INSERT INTO omop_observation
+            (observation_id, person_id, observation_concept_id,
+             observation_date, questionnaire_response_id,
+             value_as_concept_id, value_as_string, value_as_number,
+             observation_source_value, observation_type_concept_id, refreshed_at)
+        SELECT
+            r.response_id,
+            pm.omop_person_id,
+            q.concept_id,
+            TRY_CAST(COALESCE(rs.completed_at, rs.started_at) AS DATE),
+            r.session_id,
+            ro.concept_id,
+            r.response_text,
+            COALESCE(r.response_numeric, TRY_CAST(ro.option_value AS DOUBLE)),
+            q.link_id,
+            32836,
+            NOW()
+        FROM   oltp.response              r
+        JOIN   oltp.response_session      rs  ON r.session_id    = rs.session_id
+        JOIN   oltp.questionnaire_question qq  ON r.qq_id         = qq.qq_id
+        JOIN   oltp.question              q   ON qq.question_id  = q.question_id
+        LEFT JOIN oltp.person_map         pm  ON rs.respondent_id = pm.respondent_id
+        LEFT JOIN oltp.response_option    ro  ON r.option_id      = ro.option_id
+        WHERE  q.concept_id IS NOT NULL
+    """)
+
+
+def _sync_omop_unmapped(conn: duckdb.DuckDBPyConnection) -> None:
+    """Questions with no concept_id — pre-flight data quality check."""
+    conn.execute("DELETE FROM omop_unmapped_questions")
+    conn.execute("""
+        INSERT INTO omop_unmapped_questions
+            (question_id, link_id, question_text, source_instrument,
+             response_count, refreshed_at)
+        SELECT
+            q.question_id,
+            q.link_id,
+            q.question_text,
+            q.source_instrument,
+            COUNT(r.response_id),
+            NOW()
+        FROM   oltp.question              q
+        JOIN   oltp.questionnaire_question qq ON q.question_id = qq.question_id
+        LEFT JOIN oltp.response            r  ON qq.qq_id      = r.qq_id
+        WHERE  q.concept_id IS NULL
+        GROUP  BY q.question_id, q.link_id, q.question_text, q.source_instrument
+    """)
+
 
 def _sync_dim_date(conn: duckdb.DuckDBPyConnection) -> None:
     conn.execute("""

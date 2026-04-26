@@ -342,3 +342,74 @@ def diff_questionnaire_versions(
                 )
 
     return diffs
+
+
+# ------------------------------------------------------------------
+# Study errata
+# ------------------------------------------------------------------
+
+_ERRATA_EVENT_TYPES = frozenset({
+    "delivery_bug", "question_error", "irb_action",
+    "correction", "deprecation", "note",
+})
+
+_ERRATA_SEVERITIES = frozenset({"critical", "major", "minor", "informational"})
+
+
+def record_errata(
+    conn: sqlite3.Connection,
+    event_type: str,
+    title: str,
+    description: str,
+    *,
+    severity: str = "minor",
+    study_id: int | None = None,
+    questionnaire_id: int | None = None,
+    question_id: int | None = None,
+    affects_session_from: int | None = None,
+    affects_session_to: int | None = None,
+    affects_date_from: str | None = None,
+    affects_date_to: str | None = None,
+    analyst_guidance: str | None = None,
+    reported_by: str | None = None,
+) -> int:
+    """
+    Record a study errata entry: bug, IRB action, correction, or informational note.
+
+    event_type:  delivery_bug | question_error | irb_action | correction | deprecation | note
+    severity:    critical | major | minor | informational
+
+    The affects_session_from/to and affects_date_from/to fields scope which
+    responses are affected. analyst_guidance is free text telling analysts
+    what to do with the affected data (e.g. exclude, recode, flag).
+
+    Returns the new errata_id.
+    Raises ValueError for invalid event_type or severity.
+    """
+    if event_type not in _ERRATA_EVENT_TYPES:
+        raise ValueError(
+            f"Invalid event_type {event_type!r}. "
+            f"Must be one of: {sorted(_ERRATA_EVENT_TYPES)}"
+        )
+    if severity not in _ERRATA_SEVERITIES:
+        raise ValueError(
+            f"Invalid severity {severity!r}. "
+            f"Must be one of: {sorted(_ERRATA_SEVERITIES)}"
+        )
+    conn.execute(
+        """
+        INSERT INTO study_errata_log
+            (study_id, questionnaire_id, question_id,
+             event_type, severity, title, description,
+             affects_session_from, affects_session_to,
+             affects_date_from, affects_date_to,
+             analyst_guidance, reported_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (study_id, questionnaire_id, question_id,
+         event_type, severity, title, description,
+         affects_session_from, affects_session_to,
+         affects_date_from, affects_date_to,
+         analyst_guidance, reported_by),
+    )
+    return conn.execute("SELECT last_insert_rowid()").fetchone()[0]

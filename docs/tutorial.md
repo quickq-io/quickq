@@ -8,7 +8,7 @@ The scenario is a perinatal mental health study. Participants are screened for d
 
 ## Generate the demo database
 
-The demo script loads both instruments, generates 250 PHQ-9 responses and 150 prenatal visit logs with realistic distributions, runs `quickq refresh`, and creates five analytical views.
+The demo script loads both instruments, generates 250 PHQ-9 responses and 150 prenatal visit logs with realistic distributions, runs `quickq refresh`, and creates six analytical views defined in `sql/demo_views.sql`.
 
 ```bash
 uv run python scripts/generate_demo.py
@@ -17,22 +17,27 @@ uv run python scripts/generate_demo.py
 Expected output:
 
 ```
+Seeding LOINC concepts...
 Loading instruments...
   PHQ-9 Patient Health Questionnaire
   Prenatal Visit Log
 
 Importing 250 PHQ-9 responses...
 Importing 150 prenatal visit logs...
+Populating person_map for OMOP export...
 
 Running quickq refresh...
 Creating analytical views...
 
 ── Demo data ready ─────────────────────────────────────────
-  OLTP:       demo/study.db
-  OLAP:       demo/analytics.duckdb
-  Sessions:   400
-  Responses:  4362
-  Scored:     250 PHQ-9 sessions
+  OLTP:             demo/study.db
+  OLAP:             demo/analytics.duckdb
+  Sessions:         400
+  Responses:        4362
+  Scored:           250 PHQ-9 sessions
+  OMOP SurveyConduct rows:  400
+  OMOP Observation rows:    2478
+  Unmapped questions:       5
 
 ── Open the DuckDB UI ──────────────────────────────────────
   duckdb -ui demo/analytics.duckdb
@@ -168,13 +173,20 @@ This reads all new responses from the SQLite OLTP into the DuckDB OLAP: loading 
 duckdb -ui demo/analytics.duckdb
 ```
 
-This opens a browser-based SQL interface connected to the analytical database. The five views created by the demo script are available immediately.
+This opens a browser-based SQL interface connected to the analytical database. The six views created by the demo script are available immediately.
 
 ---
 
 ## Step 6 — Analytics
 
-All five views are pre-built and queryable. The queries below work in the DuckDB UI or any SQL client.
+The demo pre-loads six analytical views from `sql/demo_views.sql`. They form a dependency chain: simpler views (`v_phq9_scores`, `v_prenatal_visits`) feed into aggregate views (`v_phq9_severity_distribution`, `v_prenatal_summary`) which feed into the cross-instrument join (`v_phq9_prenatal_overlap`). All six are queryable immediately after the demo script runs.
+
+Two design points worth noting before diving into the queries:
+
+- **`v_phq9_scores`** joins `agg_respondent_scores` to respondent and session context. No scoring logic lives in the view — `score_raw` and `score_category` were already computed by `quickq refresh` from the YAML scoring rule. `v_phq9_severity_distribution` and `v_phq9_by_admin_mode` both build on it, so a date filter added here propagates to both.
+- **`v_phq9_prenatal_overlap`** is one `JOIN ... USING (respondent)` — possible because both instruments share the same `respondent_id`. The multi-instrument linking happened at import time, not in the view.
+
+---
 
 ### PHQ-9 severity distribution
 
@@ -285,91 +297,23 @@ ORDER BY AVG(phq9_total);
 
 ### Exploring by question type
 
-`dim_question.question_type` reflects the type declared in the YAML. Use it to get a quick catalog of everything in the study and how much data each question has collected:
+Each question type stores responses in a specific column in `fact_response`. Use `dim_question.question_type` to build a catalog of what is in the study and how much data each item has collected:
 
 ```sql
-SELECT
-    question_type,
-    link_id,
-    question_text,
-    COUNT(fr.response_id) AS response_count
+SELECT question_type, link_id, question_text, COUNT(fr.response_id) AS response_count
 FROM dim_question dq
 LEFT JOIN fact_response fr USING (question_id)
 GROUP BY question_type, link_id, question_text
 ORDER BY question_type, response_count DESC;
 ```
 
-Notice that `repeating_group` shows `response_count = 0` — it is a container whose children hold the responses, not an answer-bearing item itself. That is expected.
+Note that `repeating_group` shows `response_count = 0` — it is a container whose children carry the responses, not an answer-bearing item itself.
 
-Different question types use different value columns in `fact_response`. The right analytical approach depends on the type:
-
-**`single_choice`** — responses are in `option_value`. Use grouping to get a distribution:
-
-```sql
-SELECT
-    dq.link_id,
-    fr.option_value,
-    COUNT(*)                                                AS n,
-    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY dq.link_id), 1) AS pct
-FROM fact_response fr
-JOIN dim_question dq USING (question_id)
-WHERE dq.question_type = 'single_choice'
-  AND dq.link_id = 'visits.provider'
-GROUP BY dq.link_id, fr.option_value
-ORDER BY n DESC;
-```
-
-| option_value | n | pct |
-|---|---|---|
-| ob | 319 | 55.2% |
-| midwife | 203 | 35.1% |
-| np | 56 | 9.7% |
-
-**`boolean`** — responses are in `response_text` as `'true'` or `'false'`. Use a conditional aggregate for the proportion:
-
-```sql
-SELECT
-    dq.link_id,
-    COUNT(*)                                                                   AS n,
-    ROUND(100.0 * SUM(CASE WHEN fr.response_text = 'true' THEN 1 ELSE 0 END)
-                / COUNT(*), 1)                                                 AS pct_true
-FROM fact_response fr
-JOIN dim_question dq USING (question_id)
-WHERE dq.question_type = 'boolean'
-GROUP BY dq.link_id;
-```
-
-| link_id | n | pct_true |
-|---|---|---|
-| visits.concern | 578 | 15.2% |
-
-**`numeric`** — responses are in `response_numeric`. Use standard aggregates:
-
-```sql
-SELECT
-    dq.link_id,
-    COUNT(*)                            AS n,
-    ROUND(AVG(fr.response_numeric), 1)  AS mean,
-    MEDIAN(fr.response_numeric)         AS median,
-    MIN(fr.response_numeric)            AS min,
-    MAX(fr.response_numeric)            AS max
-FROM fact_response fr
-JOIN dim_question dq USING (question_id)
-WHERE dq.question_type = 'numeric'
-GROUP BY dq.link_id;
-```
-
-| link_id | n | mean | median | min | max |
-|---|---|---|---|---|---|
-| visit_count | 150 | 3.9 | 4.0 | 2.0 | 5.0 |
-| visits.week | 578 | 23.5 | 24.0 | 8.0 | 38.0 |
-
-!!! tip "The type system is the interface"
-    Because `question_type` is a first-class column in `dim_question`, you can always know in advance which value column holds the answer and write the appropriate aggregation without inspecting raw data. This is the direct benefit of a typed response model over a generic key-value or JSON store.
+For query patterns by type (`single_choice`, `boolean`, `numeric`, `likert`, `grid`, and others), see the [Query Patterns reference](reference/query-patterns.md).
 
 ---
 
-## Data quality
+## Step 7 — Data quality
 
 ### Sparsity overview with SUMMARIZE
 
@@ -388,7 +332,7 @@ The null pattern in this demo is instructive:
 | `response_text` | ~87% | Most answers are numeric or coded, not text |
 | `grid_row_id` / `grid_column_id` | 100% | No grid questions in this study |
 | `response_date` | 100% | No date questions in this study |
-| `question_concept_id` | 100% | Concept mapping not yet applied (see below) |
+| `question_concept_id` | ~60% | Prenatal visit questions have no LOINC codes; PHQ-9 questions are mapped |
 
 !!! tip "Sparsity is by design"
     The `response` table stores one row per answer atom with typed value columns (`response_numeric`, `response_text`, `option_id`, `response_date`). Any question type uses exactly one or two of these columns and leaves the rest null. High null rates on value columns are expected — they reflect question type, not missing data.
@@ -422,9 +366,7 @@ All 22 non-answers have `phq9_total = 0` — the skip logic worked correctly. A 
 
 ### Concept mapping audit
 
-`question_concept_id` is 100% null in this demo. The PHQ-9 YAML defines LOINC codes (`concept: "LOINC:44250-9"`) but the concept vocabulary table is not pre-seeded — so no concept linkage was resolved at load time.
-
-This matters for OMOP export. Before contributing to a federated network query, check how many responses would be excluded:
+The demo seeds the LOINC vocabulary before loading the PHQ-9 YAML, so every PHQ-9 question resolves a `concept_id`. The prenatal visit fields have no LOINC codes, so they remain unmapped. Before contributing to a federated network query, inspect which questions would be excluded:
 
 ```sql
 SELECT
@@ -439,7 +381,7 @@ HAVING MAX(dq.concept_id) IS NULL
 ORDER BY response_count DESC;
 ```
 
-In a production study you would load the LOINC vocabulary, run the concept mapper, and re-run `quickq refresh`. The `omop_unmapped_questions` table gives the same list after refresh and is the recommended pre-export checklist.
+The `omop_unmapped_questions` table gives the same list post-refresh and is the recommended pre-export checklist. High `response_count` on an unmapped question means real data will be silently excluded from any federated query until the mapping is added.
 
 ---
 
@@ -457,6 +399,85 @@ ORDER BY n DESC;
 ```
 
 In this demo the table is empty — the synthetic responses were well-formed. In production, common sources of flags are FHIR responses from delivery tools that omit optional fields, or responses referencing a questionnaire version that has since been superseded.
+
+---
+
+## Step 8 — OMOP interoperability
+
+OMOP CDM is the standard data model for federated clinical research networks (PCORnet, TriNetX, All of Us). quickq projects concept-mapped responses into three OMOP-aligned tables on every `quickq refresh`:
+
+| Table | OMOP domain | Populated when |
+|---|---|---|
+| `omop_survey_conduct` | SurveyConducts | Always — one row per session |
+| `omop_observation` | Observations | `question.concept_id` is not null |
+| `omop_unmapped_questions` | — | `question.concept_id` is null (pre-flight checklist) |
+
+### Survey conduct
+
+Each response session becomes a row in `omop_survey_conduct`. The `person_id` column is populated from `person_map` — a table where each quickq `respondent_id` maps to the OMOP `person_id` used in the target network.
+
+```sql
+SELECT
+    survey_conduct_id,
+    person_id,
+    survey_concept_id,
+    survey_start_date,
+    survey_source_value   AS admin_mode
+FROM omop_survey_conduct
+LIMIT 10;
+```
+
+In this demo all 400 sessions are exported — 250 PHQ-9 and 150 prenatal visit log sessions. `person_id` is populated for all respondents because the demo seeds `person_map`.
+
+### Observation export
+
+Each concept-mapped answer atom becomes an `omop_observation` row. PHQ-9 questions carry LOINC codes, so all PHQ-9 responses appear here. The prenatal visit questions have no LOINC mappings, so they are excluded (they show up in `omop_unmapped_questions` instead).
+
+```sql
+-- PHQ-9 observations for one respondent
+SELECT
+    ob.person_id,
+    dc.concept_code    AS loinc_code,
+    dc.concept_name    AS question,
+    ob.value_as_number AS score,
+    ob.observation_date
+FROM omop_observation ob
+JOIN dim_concept dc ON ob.observation_concept_id = dc.concept_id
+WHERE ob.person_id = 1
+ORDER BY ob.observation_date, dc.concept_code;
+```
+
+### Cross-study query using LOINC codes
+
+The value of concept mapping is that instruments across studies can be queried without knowing their internal IDs. Any quickq database that maps PHQ-9 questions to the same LOINC codes will respond to this query identically:
+
+```sql
+-- PHQ-9 item 1 (anhedonia) across all participants
+-- LOINC 44250-9 = "Little interest or pleasure in doing things"
+SELECT
+    ob.person_id,
+    ob.value_as_number   AS item_score,
+    ob.observation_date
+FROM omop_observation ob
+WHERE ob.observation_concept_id = (
+    SELECT concept_id FROM dim_concept WHERE concept_code = '44250-9'
+)
+ORDER BY ob.person_id;
+```
+
+This is the core interoperability promise: a query written against OMOP concept IDs runs unchanged across sites, institutions, and time — as long as each site has mapped its questions to the same standard vocabulary.
+
+### Unmapped questions checklist
+
+Before any federated export, run the pre-flight check:
+
+```sql
+SELECT link_id, question_text, source_instrument, response_count
+FROM omop_unmapped_questions
+ORDER BY response_count DESC;
+```
+
+In this demo, the 5 prenatal visit questions appear here. Their FHIR codings use local codes (`ob`, `midwife`, `np`) rather than LOINC — a realistic situation for clinic-specific data elements. Adding LOINC or SNOMED codes to the YAML and re-running `quickq refresh` would move them from unmapped to exported.
 
 ---
 

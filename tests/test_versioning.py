@@ -12,6 +12,7 @@ from quickq.versioning import (
     record_question_lineage, get_lineage_ancestors,
     declare_equivalence, get_equivalence_group, compute_equivalence_groups,
     record_questionnaire_diff, diff_questionnaire_versions,
+    record_errata,
 )
 
 
@@ -325,3 +326,112 @@ def test_record_questionnaire_diff_invalid_type_raises(tmp_path):
     v2_id, _ = _make_questionnaire(conn, "v2", ["q.a"])
     with pytest.raises(ValueError, match="Invalid change_type"):
         record_questionnaire_diff(conn, v1_id, v2_id, change_type="typo_fixed")
+
+
+# ------------------------------------------------------------------
+# Study errata
+# ------------------------------------------------------------------
+
+def test_record_errata_basic(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+
+    # Create minimal respondent + questionnaire so FK session references are valid
+    conn.execute("INSERT INTO respondent (external_id) VALUES ('P001')")
+    respondent_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.execute("INSERT INTO questionnaire (name, version) VALUES ('Q', '1.0')")
+    q_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.execute(
+        "INSERT INTO response_session (questionnaire_id, respondent_id, started_at) VALUES (?, ?, '2025-01-01T00:00:00Z')",
+        (q_id, respondent_id),
+    )
+    sess_from = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.execute(
+        "INSERT INTO response_session (questionnaire_id, respondent_id, started_at) VALUES (?, ?, '2025-01-02T00:00:00Z')",
+        (q_id, respondent_id),
+    )
+    sess_to = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+    errata_id = record_errata(
+        conn,
+        event_type="delivery_bug",
+        title="Provider field reversed in sessions 1–50",
+        description="LHC-Forms option order mismatch caused ob/midwife swap.",
+        severity="critical",
+        affects_session_from=sess_from,
+        affects_session_to=sess_to,
+        analyst_guidance="Exclude affected sessions from provider-type analysis.",
+        reported_by="jane.doe",
+    )
+    conn.commit()
+    assert errata_id > 0
+
+    row = conn.execute(
+        "SELECT * FROM study_errata_log WHERE errata_id = ?", (errata_id,)
+    ).fetchone()
+    assert row["event_type"] == "delivery_bug"
+    assert row["severity"] == "critical"
+    assert row["affects_session_from"] == sess_from
+    assert row["affects_session_to"] == sess_to
+    assert row["status"] == "open"
+
+
+def test_record_errata_irb_action(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+    q_id = _make_question(conn, "gad7.3", "Worrying too much about different things")
+    conn.commit()
+
+    errata_id = record_errata(
+        conn,
+        event_type="irb_action",
+        title="GAD-7 item 3 reworded per amendment PA-2025-003",
+        description="IRB required age-appropriate language for adolescent cohort.",
+        severity="major",
+        question_id=q_id,
+        affects_date_to="2025-03-14",
+        analyst_guidance=(
+            "Sessions completed before 2025-03-15 used original wording. "
+            "Use equivalence group to span both versions."
+        ),
+    )
+    conn.commit()
+
+    row = conn.execute(
+        "SELECT * FROM study_errata_log WHERE errata_id = ?", (errata_id,)
+    ).fetchone()
+    assert row["event_type"] == "irb_action"
+    assert row["question_id"] == q_id
+    assert "2025-03-14" in row["affects_date_to"]
+
+
+def test_record_errata_date_scope(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+    errata_id = record_errata(
+        conn,
+        event_type="note",
+        title="Server outage during data collection window",
+        description="Platform was unavailable 2025-06-01 09:00–14:00 UTC.",
+        severity="informational",
+        affects_date_from="2025-06-01",
+        affects_date_to="2025-06-01",
+    )
+    conn.commit()
+
+    row = conn.execute(
+        "SELECT affects_date_from, affects_date_to FROM study_errata_log WHERE errata_id = ?",
+        (errata_id,),
+    ).fetchone()
+    assert row["affects_date_from"] == "2025-06-01"
+    assert row["affects_date_to"] == "2025-06-01"
+
+
+def test_record_errata_invalid_event_type(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+    with pytest.raises(ValueError, match="Invalid event_type"):
+        record_errata(conn, event_type="typo", title="x", description="y")
+
+
+def test_record_errata_invalid_severity(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+    with pytest.raises(ValueError, match="Invalid severity"):
+        record_errata(conn, event_type="note", title="x", description="y",
+                      severity="low")

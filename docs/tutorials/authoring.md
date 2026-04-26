@@ -1,0 +1,341 @@
+# Tutorial: Authoring an Instrument from Scratch
+
+This tutorial walks through building a complete questionnaire from nothing: defining question items, sharing an option set across questions, adding skip logic, writing a scoring rule, and verifying the result. The scenario is the **GAD-7** (Generalized Anxiety Disorder 7-item scale) — a standard clinical screening tool similar in structure to the PHQ-9 but independent of it, which makes it a good vehicle for learning the authoring workflow without leaning on the PHQ-9 fixtures already in the project.
+
+By the end you will have a working `gad7.yaml`, a loaded SQLite study database, and a FHIR export you can hand to any delivery tool.
+
+---
+
+## 1. Initialize a study database
+
+```bash
+quickq init anxiety_study.db
+```
+
+This creates the SQLite file and applies all schema migrations. The database is empty — no instruments, no responses.
+
+---
+
+## 2. Start the YAML
+
+Create `gad7.yaml`. Every quickq instrument YAML starts with a questionnaire header:
+
+```yaml
+questionnaire:
+  name: "GAD-7 Generalized Anxiety Disorder Scale"
+  canonical_url: "http://quickq.io/instruments/gad7"
+  version: "1.0"
+  description: "7-item anxiety screening instrument (Spitzer et al., 2006)"
+```
+
+`canonical_url` is the stable identifier used in FHIR exports and in `import_fhir_response` to look up which questionnaire a response belongs to. It does not need to be a live URL, but it must be unique across all instruments in a study and stable across versions.
+
+---
+
+## 3. Add the option set
+
+GAD-7 uses a 4-point frequency scale across all seven items. Define it once as a named option set so each question can reference it instead of repeating the definition:
+
+```yaml
+questionnaire:
+  name: "GAD-7 Generalized Anxiety Disorder Scale"
+  canonical_url: "http://quickq.io/instruments/gad7"
+  version: "1.0"
+  description: "7-item anxiety screening instrument (Spitzer et al., 2006)"
+
+  option_sets:
+    gad_frequency:
+      - { text: "Not at all",             value: "0", concept: "LOINC:LA6568-5" }
+      - { text: "Several days",           value: "1", concept: "LOINC:LA6569-3" }
+      - { text: "More than half the days", value: "2", concept: "LOINC:LA6570-1" }
+      - { text: "Nearly every day",       value: "3", concept: "LOINC:LA6571-9" }
+```
+
+The `concept` field on each option maps to a standard vocabulary code. `LOINC:LA6568-5` is the LOINC answer code for "Not at all" — the same codes used by the PHQ-9 in this project. When quickq loads this YAML and finds a `LOINC:` prefix it looks up the concept in the local concept table. If the concept is not yet seeded, the option loads without a `concept_id` and the field is left null — the instrument still works, but the option will not appear in OMOP observations.
+
+!!! note "Seeding concepts before loading"
+    If you want LOINC codes to resolve at load time, seed the vocabulary first:
+    ```python
+    from quickq.authoring import upsert_vocabulary, upsert_concept
+    upsert_vocabulary(conn, "LOINC", "Logical Observation Identifiers Names and Codes",
+                      "https://loinc.org", "2.77")
+    # then upsert_concept() for each code you reference
+    ```
+    The demo script in `scripts/generate_demo.py` shows a complete example.
+
+---
+
+## 4. Add the first question
+
+```yaml
+  sections:
+    - title: "Over the last 2 weeks, how often have you been bothered by the following problems?"
+      questions:
+        - link_id: gad7.1
+          text: "Feeling nervous, anxious, or on edge"
+          type: single_choice
+          concept: "LOINC:69725-0"
+          options: $gad_frequency
+```
+
+Three things to understand here:
+
+**`link_id`** is the permanent identifier for this question. It is immutable once created — if you load this YAML, run a study, and later try to load a revised YAML with a different `text` for `gad7.1`, quickq will raise an error rather than silently overwrite the question. To revise a question's wording you create a new `link_id` and record the relationship via `record_question_lineage()`. This is intentional: response rows reference `link_id` — changing the question text while keeping the ID would make historical data uninterpretable.
+
+**`concept: "LOINC:69725-0"`** maps this specific item to a standard clinical concept. At load time quickq looks it up in the local concept table. At refresh time it lands in `dim_question.concept_code` and in `omop_observation.observation_concept_id` for any session that answered this question. A question without a concept still works; it just won't appear in federated OMOP queries.
+
+**`options: $gad_frequency`** references the shared option set by name. All seven GAD-7 items will use this same line. The `$` prefix is the YAML syntax for referencing a named option set.
+
+---
+
+## 5. Add the remaining items
+
+Extend the questions list with items 2–7. The structure is identical to item 1 — only `link_id`, `text`, and `concept` change:
+
+```yaml
+        - link_id: gad7.2
+          text: "Not being able to stop or control worrying"
+          type: single_choice
+          concept: "LOINC:68509-9"
+          options: $gad_frequency
+
+        - link_id: gad7.3
+          text: "Worrying too much about different things"
+          type: single_choice
+          concept: "LOINC:69733-4"
+          options: $gad_frequency
+
+        - link_id: gad7.4
+          text: "Trouble relaxing"
+          type: single_choice
+          concept: "LOINC:69734-2"
+          options: $gad_frequency
+
+        - link_id: gad7.5
+          text: "Being so restless that it is hard to sit still"
+          type: single_choice
+          concept: "LOINC:69735-9"
+          options: $gad_frequency
+
+        - link_id: gad7.6
+          text: "Becoming easily annoyed or irritable"
+          type: single_choice
+          concept: "LOINC:69736-7"
+          options: $gad_frequency
+
+        - link_id: gad7.7
+          text: "Feeling afraid, as if something awful might happen"
+          type: single_choice
+          concept: "LOINC:69737-5"
+          options: $gad_frequency
+```
+
+---
+
+## 6. Add skip logic
+
+The GAD-7 includes an optional follow-up question — "How difficult have these problems made it to do your work, take care of things at home, or get along with other people?" — that should only appear when the total score is above zero. In FHIR terms this is an `enableWhen` condition; in quickq YAML it is a `show_when` block.
+
+Because we cannot compute a total score at the item level (scoring happens after all items are answered), the conventional approach is to show the difficulty question when *any* item is non-zero. We trigger on item 1 here as a proxy:
+
+```yaml
+        - link_id: gad7.difficulty
+          text: "How difficult have these problems made it to do your work, take care of things at home, or get along with other people?"
+          type: single_choice
+          options:
+            - { text: "Not difficult at all", value: "0" }
+            - { text: "Somewhat difficult",   value: "1" }
+            - { text: "Very difficult",        value: "2" }
+            - { text: "Extremely difficult",   value: "3" }
+          show_when:
+            - { question: gad7.1, operator: "!=", value: "0" }
+```
+
+`show_when` maps to FHIR `enableWhen`. The `operator` can be `=`, `!=`, `>`, `<`, `>=`, `<=`, or `exists`. Multiple conditions in the list are AND-ed by default; set `enable_behavior: any` on the question to OR them.
+
+The difficulty question deliberately has no `concept` field — it does not have a standard LOINC code in common clinical use. It will appear in `omop_unmapped_questions` after refresh, which is the expected and correct behavior for locally-defined items.
+
+---
+
+## 7. Add the scoring rule
+
+```yaml
+  scoring:
+    - name: "GAD-7 Total Score"
+      formula: sum
+      items: [gad7.1, gad7.2, gad7.3, gad7.4, gad7.5, gad7.6, gad7.7]
+      categories:
+        - { label: "Minimal anxiety",  min: 0,  max: 4  }
+        - { label: "Mild anxiety",     min: 5,  max: 9  }
+        - { label: "Moderate anxiety", min: 10, max: 14 }
+        - { label: "Severe anxiety",   min: 15, max: 21 }
+```
+
+`formula: sum` means the score is the sum of all item values. Each item uses `value` from the response option (`"0"` through `"3"`), coerced to numeric. The `categories` define the severity bands — `quickq refresh` populates `agg_respondent_scores.score_category` using these thresholds. If a respondent skips one or more items, `items_answered / items_total` in `agg_respondent_scores` captures the partial-completion rate.
+
+---
+
+## 8. The complete YAML
+
+Putting it all together:
+
+```yaml
+questionnaire:
+  name: "GAD-7 Generalized Anxiety Disorder Scale"
+  canonical_url: "http://quickq.io/instruments/gad7"
+  version: "1.0"
+  description: "7-item anxiety screening instrument (Spitzer et al., 2006)"
+
+  option_sets:
+    gad_frequency:
+      - { text: "Not at all",              value: "0", concept: "LOINC:LA6568-5" }
+      - { text: "Several days",            value: "1", concept: "LOINC:LA6569-3" }
+      - { text: "More than half the days", value: "2", concept: "LOINC:LA6570-1" }
+      - { text: "Nearly every day",        value: "3", concept: "LOINC:LA6571-9" }
+
+  sections:
+    - title: "Over the last 2 weeks, how often have you been bothered by the following problems?"
+      questions:
+        - link_id: gad7.1
+          text: "Feeling nervous, anxious, or on edge"
+          type: single_choice
+          concept: "LOINC:69725-0"
+          options: $gad_frequency
+
+        - link_id: gad7.2
+          text: "Not being able to stop or control worrying"
+          type: single_choice
+          concept: "LOINC:68509-9"
+          options: $gad_frequency
+
+        - link_id: gad7.3
+          text: "Worrying too much about different things"
+          type: single_choice
+          concept: "LOINC:69733-4"
+          options: $gad_frequency
+
+        - link_id: gad7.4
+          text: "Trouble relaxing"
+          type: single_choice
+          concept: "LOINC:69734-2"
+          options: $gad_frequency
+
+        - link_id: gad7.5
+          text: "Being so restless that it is hard to sit still"
+          type: single_choice
+          concept: "LOINC:69735-9"
+          options: $gad_frequency
+
+        - link_id: gad7.6
+          text: "Becoming easily annoyed or irritable"
+          type: single_choice
+          concept: "LOINC:69736-7"
+          options: $gad_frequency
+
+        - link_id: gad7.7
+          text: "Feeling afraid, as if something awful might happen"
+          type: single_choice
+          concept: "LOINC:69737-5"
+          options: $gad_frequency
+
+        - link_id: gad7.difficulty
+          text: "How difficult have these problems made it to do your work, take care of things at home, or get along with other people?"
+          type: single_choice
+          options:
+            - { text: "Not difficult at all", value: "0" }
+            - { text: "Somewhat difficult",   value: "1" }
+            - { text: "Very difficult",        value: "2" }
+            - { text: "Extremely difficult",   value: "3" }
+          show_when:
+            - { question: gad7.1, operator: "!=", value: "0" }
+
+  scoring:
+    - name: "GAD-7 Total Score"
+      formula: sum
+      items: [gad7.1, gad7.2, gad7.3, gad7.4, gad7.5, gad7.6, gad7.7]
+      categories:
+        - { label: "Minimal anxiety",  min: 0,  max: 4  }
+        - { label: "Mild anxiety",     min: 5,  max: 9  }
+        - { label: "Moderate anxiety", min: 10, max: 14 }
+        - { label: "Severe anxiety",   min: 15, max: 21 }
+```
+
+---
+
+## 9. Load and verify
+
+```bash
+quickq init anxiety_study.db
+quickq load-yaml gad7.yaml anxiety_study.db
+```
+
+If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
+
+Verify the instrument loaded correctly with a few direct SQL queries:
+
+```bash
+sqlite3 anxiety_study.db
+```
+
+```sql
+-- Confirm the questionnaire and its question count
+SELECT q.name, q.canonical_url, COUNT(qq.qq_id) AS n_questions
+FROM questionnaire q
+JOIN questionnaire_question qq USING (questionnaire_id)
+GROUP BY q.questionnaire_id;
+```
+
+```sql
+-- Inspect each question, its type, and whether concept_id resolved
+SELECT q.link_id, q.question_type, q.concept_id, q.question_text
+FROM question q
+JOIN questionnaire_question qq USING (question_id)
+ORDER BY qq.display_order;
+```
+
+```sql
+-- Check skip logic was recorded
+SELECT qq.qq_id, q.link_id, sr.operator, sr.trigger_value,
+       tq.link_id AS trigger_question
+FROM skip_rule sr
+JOIN questionnaire_question qq ON sr.qq_id = qq.qq_id
+JOIN question q  ON qq.question_id = q.question_id
+JOIN questionnaire_question tqq ON sr.trigger_qq_id = tqq.qq_id
+JOIN question tq ON tqq.question_id = tq.question_id;
+```
+
+```sql
+-- Check scoring rule items
+SELECT sr.name, sri.qq_id, q.link_id, sri.weight
+FROM scoring_rule sr
+JOIN scoring_rule_item sri USING (scoring_rule_id)
+JOIN questionnaire_question qq ON sri.qq_id = qq.qq_id
+JOIN question q ON qq.question_id = q.question_id
+ORDER BY qq.display_order;
+```
+
+---
+
+## 10. Export to FHIR
+
+```bash
+quickq export-fhir 1 anxiety_study.db > gad7_questionnaire.json
+```
+
+This produces a standard FHIR R4 Questionnaire JSON file. Inspect it to confirm:
+
+- Each item has the correct `linkId` (matching `link_id`)
+- The answer options carry `valueCoding` entries with the LOINC codes from the YAML
+- The difficulty question has an `enableWhen` block referencing `gad7.1`
+- The scoring rule is serialized as a FHIR extension
+
+The JSON file can be handed directly to [LHC-Forms](https://lhncbc.nlm.nih.gov/LHC-forms/) or any other FHIR-compliant delivery tool. Responses come back as FHIR QuestionnaireResponse JSON and are imported with `import_fhir_response`.
+
+---
+
+## What's next
+
+- **Add to an existing study** — pass `study_id` to `load_yaml` to associate the instrument with a specific study in a multi-instrument database.
+- **Co-administer with another instrument** — the end-to-end tutorial uses a PHQ-9 and Prenatal Visit Log in the same study database; the same `respondent_id` links sessions across instruments automatically.
+- **Collect responses** — `import_fhir_response(conn, response_json, admin_mode="web")` writes a FHIR QuestionnaireResponse to the OLTP. See [FHIR Interoperability](../fhir.md) for the import contract.
+- **Refresh and score** — `quickq refresh anxiety_study.db` loads the OLAP, computes GAD-7 scores, and materializes aggregate tables. The scoring result will be in `agg_respondent_scores` under the rule name `"GAD-7 Total Score"`.
