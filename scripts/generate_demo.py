@@ -13,8 +13,7 @@ Usage:
   uv run python scripts/generate_demo.py
 
 Then open the DuckDB UI:
-  duckdb demo/analytics.duckdb
-  D CALL start_ui();
+  duckdb -ui demo/analytics.duckdb
 """
 from __future__ import annotations
 
@@ -347,8 +346,7 @@ def main() -> None:
     print(f"  Views created: {', '.join(v[0] for v in _VIEWS)}")
     print()
     print("── Open the DuckDB UI ──────────────────────────────────────")
-    print("  duckdb demo/analytics.duckdb")
-    print("  D CALL start_ui();")
+    print("  duckdb -ui demo/analytics.duckdb")
     oconn.close()
 
 

@@ -35,8 +35,7 @@ Creating analytical views...
   Scored:     250 PHQ-9 sessions
 
 ── Open the DuckDB UI ──────────────────────────────────────
-  duckdb demo/analytics.duckdb
-  D CALL start_ui();
+  duckdb -ui demo/analytics.duckdb
 ```
 
 ---
@@ -166,8 +165,7 @@ This reads all new responses from the SQLite OLTP into the DuckDB OLAP: loading 
 ## Step 5 — Open the DuckDB UI
 
 ```bash
-duckdb demo/analytics.duckdb
-D CALL start_ui();
+duckdb -ui demo/analytics.duckdb
 ```
 
 This opens a browser-based SQL interface connected to the analytical database. The five views created by the demo script are available immediately.
