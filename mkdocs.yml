@@ -61,6 +61,7 @@ nav:
       - OMOP Interoperability: reference/omop.md
       - Survey Authoring (YAML): authoring.md
       - 'Example: PHQ-9 Rendered Instrument': reference/example-phq9.md
+      - 'Example: PRAPARE Data Dictionary': reference/example-prapare-data-dict.md
   - Going Deeper:
       - Architecture: architecture.md
       - Design Philosophy: philosophy.md

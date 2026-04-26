@@ -165,6 +165,8 @@ quickq render study.db 1 --output instrument.md
 
 See [Example: PHQ-9 Rendered Instrument](reference/example-phq9.md) for a complete example of the output.
 
+The [PRAPARE Data Dictionary](reference/example-prapare-data-dict.md) shows what `quickq data-dict` produces for a mixed-type instrument: 21 questions across six types (`single_choice`, `boolean`, `numeric`, `text`, `likert`, `sata_other`), all LOINC-mapped. It is a useful reference for understanding how different question types appear in the table and what the Type and Valid Values columns look like across a real social determinants screener.
+
 Output structure:
 
 - Instrument metadata (name, version, canonical URL)
