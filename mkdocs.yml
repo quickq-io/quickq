@@ -49,6 +49,7 @@ nav:
   - Tutorials:
       - End-to-End Study: tutorial.md
       - Authoring an Instrument: tutorials/authoring.md
+      - Multi-Site Study Operations: tutorials/multi-site.md
   - Design Philosophy: philosophy.md
   - Architecture: architecture.md
   - Survey Authoring: authoring.md
