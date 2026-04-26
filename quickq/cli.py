@@ -13,6 +13,7 @@ from .preview import preview as preview_questionnaire, build_preview_html
 from .merge import merge_databases, MergeError
 from .pseudonymize import pseudonymize
 from .export_parquet import export_parquet
+from .renderer_questionnaire import render_questionnaire_md
 
 
 @click.group()
@@ -245,6 +246,21 @@ def pseudonymize_cmd(db_path: str, output: str, overwrite: bool, key_file: str |
         click.echo(f"  warning: {w}", err=True)
 
     click.echo("\nNext step: quickq refresh <output.db> <analytics.duckdb>")
+
+
+@main.command("render")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.argument("questionnaire_id", type=int)
+@click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
+def render_cmd(db_path: str, questionnaire_id: int, output: str | None) -> None:
+    """Render a questionnaire definition as a human-readable Markdown document."""
+    conn = open_oltp(db_path, read_only=True)
+    text = render_questionnaire_md(conn, questionnaire_id)
+    if output:
+        Path(output).write_text(text)
+        click.echo(f"Rendered questionnaire to {output}.")
+    else:
+        click.echo(text)
 
 
 @main.command("export-fhir")
