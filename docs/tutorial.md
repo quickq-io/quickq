@@ -283,6 +283,92 @@ ORDER BY AVG(phq9_total);
 
 ---
 
+### Exploring by question type
+
+`dim_question.question_type` reflects the type declared in the YAML. Use it to get a quick catalog of everything in the study and how much data each question has collected:
+
+```sql
+SELECT
+    question_type,
+    link_id,
+    question_text,
+    COUNT(fr.response_id) AS response_count
+FROM dim_question dq
+LEFT JOIN fact_response fr USING (question_id)
+GROUP BY question_type, link_id, question_text
+ORDER BY question_type, response_count DESC;
+```
+
+Notice that `repeating_group` shows `response_count = 0` — it is a container whose children hold the responses, not an answer-bearing item itself. That is expected.
+
+Different question types use different value columns in `fact_response`. The right analytical approach depends on the type:
+
+**`single_choice`** — responses are in `option_value`. Use grouping to get a distribution:
+
+```sql
+SELECT
+    dq.link_id,
+    fr.option_value,
+    COUNT(*)                                                AS n,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY dq.link_id), 1) AS pct
+FROM fact_response fr
+JOIN dim_question dq USING (question_id)
+WHERE dq.question_type = 'single_choice'
+  AND dq.link_id = 'visits.provider'
+GROUP BY dq.link_id, fr.option_value
+ORDER BY n DESC;
+```
+
+| option_value | n | pct |
+|---|---|---|
+| ob | 319 | 55.2% |
+| midwife | 203 | 35.1% |
+| np | 56 | 9.7% |
+
+**`boolean`** — responses are in `response_text` as `'true'` or `'false'`. Use a conditional aggregate for the proportion:
+
+```sql
+SELECT
+    dq.link_id,
+    COUNT(*)                                                                   AS n,
+    ROUND(100.0 * SUM(CASE WHEN fr.response_text = 'true' THEN 1 ELSE 0 END)
+                / COUNT(*), 1)                                                 AS pct_true
+FROM fact_response fr
+JOIN dim_question dq USING (question_id)
+WHERE dq.question_type = 'boolean'
+GROUP BY dq.link_id;
+```
+
+| link_id | n | pct_true |
+|---|---|---|
+| visits.concern | 578 | 15.2% |
+
+**`numeric`** — responses are in `response_numeric`. Use standard aggregates:
+
+```sql
+SELECT
+    dq.link_id,
+    COUNT(*)                            AS n,
+    ROUND(AVG(fr.response_numeric), 1)  AS mean,
+    MEDIAN(fr.response_numeric)         AS median,
+    MIN(fr.response_numeric)            AS min,
+    MAX(fr.response_numeric)            AS max
+FROM fact_response fr
+JOIN dim_question dq USING (question_id)
+WHERE dq.question_type = 'numeric'
+GROUP BY dq.link_id;
+```
+
+| link_id | n | mean | median | min | max |
+|---|---|---|---|---|---|
+| visit_count | 150 | 3.9 | 4.0 | 2.0 | 5.0 |
+| visits.week | 578 | 23.5 | 24.0 | 8.0 | 38.0 |
+
+!!! tip "The type system is the interface"
+    Because `question_type` is a first-class column in `dim_question`, you can always know in advance which value column holds the answer and write the appropriate aggregation without inspecting raw data. This is the direct benefit of a typed response model over a generic key-value or JSON store.
+
+---
+
 ## Data quality
 
 ### Sparsity overview with SUMMARIZE
