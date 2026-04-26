@@ -134,3 +134,47 @@ Skip rules map directly to FHIR `item.enableWhen`. For complex multi-condition l
 Subscale scores (PHQ-9 total, GAD-7 severity, SF-12 PCS/MCS) are defined alongside the instrument and computed automatically during `quickq refresh`. A scoring rule names a formula (`sum`, `mean`, `count`, or an arithmetic expression referencing `link_id` values), lists which questions contribute (with optional weights and reverse-score flags), and defines severity bands.
 
 Results land in `agg_respondent_scores` in the OLAP — one row per respondent per scoring rule per session.
+
+---
+
+## Instrument documentation
+
+quickq generates two complementary documents from the database after loading an instrument. Neither requires a separate file to maintain — both are derived from the source of truth on demand.
+
+### Data dictionary (`quickq data-dict`)
+
+A tabular reference for technical audiences: analysts, data managers, programmers reviewing a pull request. Each row is one question, with columns for link ID, label, type, concept code, valid response values (with vocabulary codes in CSV), skip conditions, and scoring rule membership.
+
+```bash
+# Markdown — rendered table, suitable for methods appendices and PR review
+quickq data-dict study.db 1 --output instrument_data_dict.md
+
+# CSV — full spec including option concept codes, for pipelines and data managers
+quickq data-dict study.db 1 --format csv --output instrument_data_dict.csv
+```
+
+The skip conditions column (`show when gad7.1 ≠ 0`) makes branching logic auditable without tracing through the schema. The scoring rules column confirms which items contribute to each computed score.
+
+### Rendered instrument (`quickq render`)
+
+A narrative document for non-technical audiences: IRB reviewers, principal investigators, non-technical research leads, or anyone who needs to understand and approve the instrument without reading YAML or SQL.
+
+```bash
+quickq render study.db 1 --output instrument.md
+```
+
+Output structure:
+
+- Instrument metadata (name, version, canonical URL)
+- Sections and questions in display order
+- Each question: text, `link_id`, type, concept code, response options
+- Skip conditions in plain English (`Show when: phq9.1 ≠ 0 or phq9.2 ≠ 0`)
+- Scoring appendix: formula, contributing items, severity category thresholds
+
+**IRB submissions.** Attach the rendered output as the instrument specification exhibit. It shows exactly what participants will be asked, including conditional questions and their trigger conditions, in a form any reviewer can read.
+
+**PI or research lead approval.** A non-technical collaborator can review and sign off on the instrument before collection begins. The rendered document is the instrument — not a summary of it.
+
+**Methods sections and preregistrations.** The scoring appendix is authoritative: it comes from the same definition that drives `quickq refresh`, so the thresholds in your paper match the thresholds applied to your data.
+
+**Protocol versioning.** Commit the rendered output alongside the YAML. The diff between two versions shows exactly what changed — question wording, a new option, a revised skip condition — in a format any collaborator can review.

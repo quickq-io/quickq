@@ -271,48 +271,42 @@ quickq load-yaml gad7.yaml anxiety_study.db
 
 If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
 
-Verify the instrument loaded correctly with a few direct SQL queries:
+### For you: the data dictionary
+
+The data dictionary is the analyst's reference. It shows every question in order with its type, concept code, valid response values, skip conditions, and scoring rule membership — all derived directly from the database, not from a separate document.
 
 ```bash
-sqlite3 anxiety_study.db
+quickq data-dict anxiety_study.db 1
 ```
 
-```sql
--- Confirm the questionnaire and its question count
-SELECT q.name, q.canonical_url, COUNT(qq.qq_id) AS n_questions
-FROM questionnaire q
-JOIN questionnaire_question qq USING (questionnaire_id)
-GROUP BY q.questionnaire_id;
+To save it:
+
+```bash
+# Markdown table — for methods appendices, pull requests, code review
+quickq data-dict anxiety_study.db 1 --output gad7_data_dict.md
+
+# CSV — for import into analysis pipelines, sharing with data managers
+quickq data-dict anxiety_study.db 1 --format csv --output gad7_data_dict.csv
 ```
 
-```sql
--- Inspect each question, its type, and whether concept_id resolved
-SELECT q.link_id, q.question_type, q.concept_id, q.question_text
-FROM question q
-JOIN questionnaire_question qq USING (question_id)
-ORDER BY qq.display_order;
+The skip condition column confirms that your branching logic was recorded correctly — `show when gad7.1 ≠ 0` is more readable than tracing through a SQL join. The scoring rules column confirms which items contribute to the GAD-7 total.
+
+### For everyone else: the rendered instrument
+
+The rendered document presents the questionnaire the way a person would read it — sections and questions in order, response options as a list, skip conditions in plain English, and a scoring appendix. It is appropriate for audiences who should not need to open a database or read a data dictionary table.
+
+```bash
+quickq render anxiety_study.db 1 --output gad7_instrument.md
 ```
 
-```sql
--- Check skip logic was recorded
-SELECT qq.qq_id, q.link_id, sr.operator, sr.trigger_value,
-       tq.link_id AS trigger_question
-FROM skip_rule sr
-JOIN questionnaire_question qq ON sr.qq_id = qq.qq_id
-JOIN question q  ON qq.question_id = q.question_id
-JOIN questionnaire_question tqq ON sr.trigger_qq_id = tqq.qq_id
-JOIN question tq ON tqq.question_id = tq.question_id;
-```
+Typical uses:
 
-```sql
--- Check scoring rule items
-SELECT sr.name, sri.qq_id, q.link_id, sri.weight
-FROM scoring_rule sr
-JOIN scoring_rule_item sri USING (scoring_rule_id)
-JOIN questionnaire_question qq ON sri.qq_id = qq.qq_id
-JOIN question q ON qq.question_id = q.question_id
-ORDER BY qq.display_order;
-```
+- **IRB submissions** — attach as the instrument specification. The rendered document shows exactly what participants will be asked, including conditional questions and how they are triggered.
+- **Research lead or PI review** — a non-technical collaborator can read and approve the instrument before data collection begins, without needing to understand YAML or SQL.
+- **Methods sections and preregistrations** — paste the scoring appendix directly; the formula and category thresholds are authoritative because they come from the same definition that drives `quickq refresh`.
+- **Protocol documentation** — version-control the rendered output alongside the YAML. The diff tells you exactly what changed between instrument versions.
+
+Both outputs come from the source of truth — the database. There is no separate document to maintain or keep in sync.
 
 ---
 
