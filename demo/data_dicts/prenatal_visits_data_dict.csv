@@ -1,0 +1,6 @@
+order,section,variable,label,type,required,status,status_notes,source_instrument,source_item,concept,valid_values,skip_conditions,scoring_rules,analyst_note
+0,,visit_count,How many prenatal visits did you have in total?,numeric,yes,active,,,,,,,,
+0,,visits.week,Week of pregnancy at visit,numeric,yes,active,,,,,,,,
+1,,visits,Visit details,repeating_group,no,active,,,,,,,,
+1,,visits.provider,Type of provider seen,single_choice,no,active,,,,,ob=OB/GYN | midwife=Midwife | np=NP/PA,,,
+2,,visits.concern,Were any concerns documented?,boolean,no,active,,,,,,,,

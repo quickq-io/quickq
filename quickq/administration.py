@@ -199,15 +199,16 @@ def data_dictionary(
     Assemble a data dictionary for a questionnaire.
 
     Returns one dict per question placement, ordered by display_order.
-    Columns: order, variable, label, type, required, status, status_notes,
-             source_instrument, source_item, concept, valid_values,
-             respondent_note, analyst_note.
+    Columns: order, section, variable, label, type, required, status,
+             status_notes, source_instrument, source_item, concept,
+             valid_values, skip_conditions, scoring_rules, analyst_note.
     """
     status_filter = "" if include_deprecated else "AND qq.status = 'active'"
     rows = conn.execute(
         f"""
         SELECT
             qq.display_order           AS "order",
+            s.title                    AS section,
             q.link_id                  AS variable,
             q.question_text            AS label,
             q.question_type            AS type,
@@ -223,12 +224,32 @@ def data_dictionary(
                  ELSE NULL
             END                        AS concept,
             GROUP_CONCAT(
-                ro.option_value || '=' || ro.option_text, ' | '
+                CASE WHEN ro.concept_code IS NOT NULL
+                     THEN ro.option_value || '=' || ro.option_text || ' [' || ro.concept_system || ':' || ro.concept_code || ']'
+                     ELSE ro.option_value || '=' || ro.option_text
+                END, ' | '
             )                          AS valid_values,
-            q.help_text                AS respondent_note,
+            (
+                SELECT GROUP_CONCAT(
+                    sr.action || ' when ' || tq.link_id || ' ' || sr.operator
+                    || CASE WHEN sr.trigger_value IS NOT NULL THEN ' ' || sr.trigger_value ELSE '' END,
+                    '; '
+                )
+                FROM skip_rule sr
+                JOIN questionnaire_question tqq ON sr.trigger_qq_id = tqq.qq_id
+                JOIN question tq ON tqq.question_id = tq.question_id
+                WHERE sr.qq_id = qq.qq_id
+            )                          AS skip_conditions,
+            (
+                SELECT GROUP_CONCAT(scr.name, ' | ')
+                FROM scoring_rule_item sri
+                JOIN scoring_rule scr ON sri.scoring_rule_id = scr.scoring_rule_id
+                WHERE sri.qq_id = qq.qq_id
+            )                          AS scoring_rules,
             q.internal_note            AS analyst_note
         FROM questionnaire_question qq
         JOIN question q ON qq.question_id = q.question_id
+        LEFT JOIN section s ON qq.section_id = s.section_id
         LEFT JOIN concept c ON q.concept_id = c.concept_id
         LEFT JOIN response_option ro ON q.question_id = ro.question_id
         WHERE qq.questionnaire_id = ? {status_filter}
@@ -246,26 +267,33 @@ def format_data_dict_markdown(rows: list[dict], title: str = "Data Dictionary") 
         return f"# {title}\n\n_No active questions._\n"
 
     lines = [f"# {title}\n"]
-    header = "| # | Variable | Label | Type | Required | Status | Concept | Valid Values | Analyst Note |"
-    sep    = "|---|---|---|---|---|---|---|---|---|"
+    header = "| # | Variable | Label | Type | Concept | Valid Values | Skip Conditions | Scoring Rules |"
+    sep    = "|---|---|---|---|---|---|---|---|"
     lines += [header, sep]
 
-    for r in rows:
-        def _cell(v: object) -> str:
-            if v is None:
-                return ""
-            return str(v).replace("|", "\\|").replace("\n", " ")
+    def _cell(v: object) -> str:
+        if v is None:
+            return ""
+        return str(v).replace("|", "\\|").replace("\n", " ")
 
+    def _valid_values_md(raw: str | None) -> str:
+        if not raw:
+            return ""
+        import re
+        parts = raw.split(" | ")
+        cleaned = [re.sub(r"\s*\[.*?\]", "", p) for p in parts]
+        return "<br>".join(cleaned)
+
+    for r in rows:
         lines.append(
             f"| {r['order']} "
             f"| `{_cell(r['variable'])}` "
-            f"| {_cell(r['label'])[:80]} "
+            f"| {_cell(r['label'])} "
             f"| {_cell(r['type'])} "
-            f"| {_cell(r['required'])} "
-            f"| {_cell(r['status'])} "
             f"| {_cell(r['concept'])} "
-            f"| {_cell(r['valid_values'])[:60]} "
-            f"| {_cell(r['analyst_note'])} |"
+            f"| {_valid_values_md(r['valid_values'])} "
+            f"| {_cell(r['skip_conditions'])} "
+            f"| {_cell(r['scoring_rules'])} |"
         )
 
     return "\n".join(lines) + "\n"

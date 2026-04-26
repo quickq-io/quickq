@@ -46,18 +46,24 @@ markdown_extensions:
 nav:
   - Welcome: index.md
   - Why quickq?: why_quickq.md
+  - The Study Journey: tutorial.md
   - Tutorials:
-      - End-to-End Study: tutorial.md
-      - Authoring an Instrument: tutorials/authoring.md
-      - Multi-Site Study Operations: tutorials/multi-site.md
-  - Design Philosophy: philosophy.md
-  - Architecture: architecture.md
-  - Survey Authoring: authoring.md
-  - FHIR Interoperability: fhir.md
-  - Analytics & Data Model: analytics.md
+      - 1. Author an Instrument: tutorials/authoring.md
+      - 2. Collect Responses: tutorials/collect.md
+      - 3. Analyze: tutorials/analytics.md
+      - 4. Data Quality: tutorials/data-quality.md
+      - 5. Share & Publish: tutorials/share.md
+      - 6. Multi-Site Study Operations: tutorials/multi-site.md
   - Reference:
       - Query Patterns by Question Type: reference/query-patterns.md
       - Instrument Versioning & Data Governance: reference/versioning.md
+      - FHIR Interoperability: fhir.md
+      - OMOP Interoperability: reference/omop.md
+      - Survey Authoring (YAML): authoring.md
+  - Going Deeper:
+      - Architecture: architecture.md
+      - Design Philosophy: philosophy.md
+      - Analytics & Data Model: analytics.md
   - Database Schema:
       - OLTP (SQLite): database/oltp.md
       - OLAP (DuckDB): database/olap.md

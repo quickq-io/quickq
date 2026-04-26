@@ -113,6 +113,34 @@ See the [Instrument Versioning & Data Governance](reference/versioning.md) refer
 
 ---
 
+## The cost of an ad-hoc data model
+
+The most common alternative to a survey platform is a custom build: a web form or paper form, responses stored as flat CSV files or schemaless JSON, and a separate Excel data dictionary maintained by hand. This path feels cheaper at the start. It becomes expensive the moment analysis begins.
+
+The problems compound over time:
+
+**The wide-table problem.** Every question gets its own column. A study with 10 instruments and 50 questions each produces a table with hundreds or thousands of columns. Analysis requires knowing which column is which — not from the data, but from the external data dictionary. Joining two instruments means manually aligning hundreds of column names.
+
+**The disconnected data dictionary.** The Excel sheet describes what the data means. The data file contains the data. They drift apart. Column names change, questions get added, a question is revised mid-study. The Excel sheet is updated inconsistently. By the time analysis begins, the dictionary is partially wrong and nobody is sure which version to trust.
+
+**Per-question data quality.** Range checks, skip logic validation, and missingness analysis have to be written question by question. There is no shared abstraction. There is no way to ask "which Likert questions have unexpected null rates?" because the data model has no concept of question type — every column just has a name.
+
+**Skip logic is invisible.** When a question was correctly skipped, the cell is empty. When a question was genuinely missed, the cell is also empty. Without a record of the skip logic conditions, missingness and correct skipping are indistinguishable. Analysts make assumptions; the assumptions vary.
+
+quickq's architecture is a direct response to these failure modes:
+
+| Problem | Ad-hoc approach | quickq |
+|---|---|---|
+| Thousands of wide columns | One column per question | `fact_response` — one row per answer atom, typed value columns |
+| External data dictionary | Separate Excel sheet | `quickq data-dict` — generated from the schema itself, includes skip conditions and scoring membership |
+| Manual concept ID lookup | Look up each column in a sidecar file | Concept codes live on `dim_question` and `dim_response_option` — in the data |
+| Per-question QC | Write a new check for every item | `question_type` on `dim_question` — one query covers all Likert questions, all numeric items, etc. |
+| Skip logic invisible in data | Indistinguishable from missingness | `skip_rule` table — skip-logic non-response is a query, not a judgment call |
+| Scoring logic in analysis scripts | Reimplemented per study, per analyst | Scoring rules in the YAML — computed once on `quickq refresh`, live in `agg_respondent_scores` |
+| Instrument definition in a GUI or Word doc | Not version-controllable | YAML — version-controlled alongside your analysis code |
+
+---
+
 ## When to use quickq
 
 | Use a platform (REDCap, Qualtrics) if... | Use quickq if... |
@@ -122,3 +150,4 @@ See the [Instrument Versioning & Data Governance](reference/versioning.md) refer
 | You prefer a GUI over YAML and SQL | You want your study protocol version-controlled alongside your analysis code |
 | | You need to harmonize data across instrument versions or separate studies |
 | | You need to share data with institutions that have their own analytics infrastructure |
+| | You cannot get or afford REDCap institutional access |
