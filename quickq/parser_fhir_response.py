@@ -37,6 +37,7 @@ def import_fhir_response(
     resource: dict | str,
     *,
     study_id: int | None = None,
+    admin_mode: str = "api",
 ) -> int:
     """
     Parse a FHIR QuestionnaireResponse and write to OLTP.
@@ -70,7 +71,7 @@ def import_fhir_response(
             INSERT INTO response_session
                 (questionnaire_id, respondent_id, started_at, completed_at,
                  is_complete, admin_mode, fhir_response_id)
-            VALUES (?, ?, ?, ?, ?, 'api', ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 questionnaire_id,
@@ -78,6 +79,7 @@ def import_fhir_response(
                 authored or _now(),
                 authored if status == "completed" else None,
                 1 if status == "completed" else 0,
+                admin_mode,
                 fhir_id,
             ),
         )

@@ -45,6 +45,7 @@ markdown_extensions:
 
 nav:
   - Welcome: index.md
+  - Tutorial: tutorial.md
   - Design Philosophy: philosophy.md
   - Architecture: architecture.md
   - Survey Authoring: authoring.md
