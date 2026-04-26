@@ -283,6 +283,97 @@ ORDER BY AVG(phq9_total);
 
 ---
 
+## Data quality
+
+### Sparsity overview with SUMMARIZE
+
+DuckDB's built-in `SUMMARIZE` gives null counts and percentages for every column in one shot:
+
+```sql
+SUMMARIZE fact_response;
+```
+
+The null pattern in this demo is instructive:
+
+| Column | Null % | Why |
+|---|---|---|
+| `option_id` | ~30% | Numeric and boolean answers don't use options |
+| `repeat_index` | ~60% | Non-repeating questions have no instance index |
+| `response_text` | ~87% | Most answers are numeric or coded, not text |
+| `grid_row_id` / `grid_column_id` | 100% | No grid questions in this study |
+| `response_date` | 100% | No date questions in this study |
+| `question_concept_id` | 100% | Concept mapping not yet applied (see below) |
+
+!!! tip "Sparsity is by design"
+    The `response` table stores one row per answer atom with typed value columns (`response_numeric`, `response_text`, `option_id`, `response_date`). Any question type uses exactly one or two of these columns and leaves the rest null. High null rates on value columns are expected — they reflect question type, not missing data.
+
+---
+
+### Skip logic vs. missingness
+
+`phq9.difficulty` has a skip rule: it only appears when at least one of items 1–3 is non-zero. In the data, 22 respondents (8.8%) did not answer it. Before treating that as missingness, check whether those respondents simply scored zero:
+
+```sql
+SELECT
+    CASE WHEN phq9_total = 0 THEN 'score = 0 (correctly skipped)'
+         ELSE 'score > 0 (unexpectedly missing)'
+    END                          AS explanation,
+    COUNT(*)                     AS n
+FROM v_phq9_scores
+WHERE respondent NOT IN (
+    SELECT DISTINCT dr.external_id
+    FROM fact_response fr
+    JOIN dim_question   dq USING (question_id)
+    JOIN dim_respondent dr USING (respondent_id)
+    WHERE dq.link_id = 'phq9.difficulty'
+)
+GROUP BY 1;
+```
+
+All 22 non-answers have `phq9_total = 0` — the skip logic worked correctly. A genuine missingness problem would show respondents with `score > 0` who never answered the item.
+
+---
+
+### Concept mapping audit
+
+`question_concept_id` is 100% null in this demo. The PHQ-9 YAML defines LOINC codes (`concept: "LOINC:44250-9"`) but the concept vocabulary table is not pre-seeded — so no concept linkage was resolved at load time.
+
+This matters for OMOP export. Before contributing to a federated network query, check how many responses would be excluded:
+
+```sql
+SELECT
+    dq.link_id,
+    dq.question_text,
+    COUNT(*) AS response_count,
+    MAX(dq.concept_id) AS concept_id
+FROM fact_response fr
+JOIN dim_question dq USING (question_id)
+GROUP BY dq.link_id, dq.question_text
+HAVING MAX(dq.concept_id) IS NULL
+ORDER BY response_count DESC;
+```
+
+In a production study you would load the LOINC vocabulary, run the concept mapper, and re-run `quickq refresh`. The `omop_unmapped_questions` table gives the same list after refresh and is the recommended pre-export checklist.
+
+---
+
+### Import flags
+
+For any session where `import_fhir_response` encountered an unrecognised answer format or an unresolvable `linkId`, a row is written to `data_quality_flag` rather than raising an exception. Check it after any bulk import:
+
+```sql
+-- Query the OLTP directly; flags are not in the OLAP
+SELECT rule_name, severity, message, COUNT(*) AS n
+FROM data_quality_flag
+WHERE is_resolved = 0
+GROUP BY rule_name, severity, message
+ORDER BY n DESC;
+```
+
+In this demo the table is empty — the synthetic responses were well-formed. In production, common sources of flags are FHIR responses from delivery tools that omit optional fields, or responses referencing a questionnaire version that has since been superseded.
+
+---
+
 ## What the data model does for you
 
 Most survey platforms store responses as JSON blobs, key-value strings, or wide pivot tables. quickq's response model is purpose-built for analytical access:
