@@ -232,6 +232,13 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
             "valueBoolean": True,
         })
 
+    # Likert: emit custom extension so consumers render as a horizontal scale
+    if qtype == "likert":
+        item.setdefault("extension", []).append({
+            "url": f"{_EXT}/likert",
+            "valueBoolean": True,
+        })
+
     # Skip logic
     enable_when = _enable_when(conn, row["qq_id"])
     if enable_when:
