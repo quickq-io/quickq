@@ -1,6 +1,25 @@
-import click
+import rich_click as click
 import json
 from pathlib import Path
+
+# Configure rich-click
+click.rich_click.TEXT_MARKUP = True
+click.rich_click.SHOW_ARGUMENTS = True
+click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
+click.rich_click.COMMAND_GROUPS = {
+    "quickq": [
+        {
+            "name": "Everyday authoring & analysis",
+            "commands": ["init", "load", "library", "serve", "preview", "render",
+                         "data-dict", "refresh", "report", "export-parquet"],
+        },
+        {
+            "name": "Specialised workflows",
+            "commands": ["fhir", "compliance", "federated"],
+        },
+    ],
+}
+
 from .config import load_config
 from .schema import init_oltp, open_oltp
 from .library_loader import load_all_libraries, list_library_questions
@@ -21,6 +40,21 @@ from .renderer_questionnaire import render_questionnaire_md
 @click.group()
 def main() -> None:
     """quickq — health and epidemiology questionnaire tool."""
+
+
+@main.group()
+def fhir() -> None:
+    """FHIR-specific import and export."""
+
+
+@main.group()
+def compliance() -> None:
+    """IRB and data governance commands."""
+
+
+@main.group()
+def federated() -> None:
+    """Multi-site and federated analysis."""
 
 
 @main.command()
@@ -104,7 +138,7 @@ def data_dict_cmd(db_path: str, questionnaire_id: int, fmt: str | None, include_
         click.echo(text)
 
 
-@main.command("import-fhir")
+@fhir.command("import")
 @click.argument("fhir_path", type=click.Path(exists=True))
 @click.argument("db_path", type=click.Path(exists=True))
 def import_fhir_cmd(fhir_path: str, db_path: str) -> None:
@@ -195,7 +229,7 @@ def export_parquet_cmd(
         click.echo(f"  skipped (not found): {table}", err=True)
 
 
-@main.command("import-fhir-response")
+@fhir.command("import-response")
 @click.argument("fhir_path", type=click.Path(exists=True))
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=None, help="Associate respondents with an existing study.")
@@ -212,7 +246,7 @@ def import_fhir_response_cmd(fhir_path: str, db_path: str, study_id: int | None)
     click.echo(f"Imported {len(session_ids)} response session(s): ids={session_ids}.")
 
 
-@main.command("merge")
+@federated.command("merge")
 @click.argument("sources", nargs=-1, required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", required=True, type=click.Path(), help="Path for the merged output database.")
 @click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
@@ -233,7 +267,7 @@ def merge_cmd(sources: tuple[str, ...], output: str, overwrite: bool) -> None:
         click.echo(f"  warning: {w}", err=True)
 
 
-@main.command("pseudonymize")
+@compliance.command("pseudonymize")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--output", "-o", required=True, type=click.Path(), help="Path for the pseudonymized output database.")
 @click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
@@ -293,7 +327,7 @@ def render_cmd(db_path: str, questionnaire_id: int, output: str | None, fmt: str
             click.echo(text)
 
 
-@main.command("export-fhir")
+@fhir.command("export")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("questionnaire_id", type=int)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
@@ -346,7 +380,7 @@ def serve_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool) 
     uvicorn.run(app, host="127.0.0.1", port=port)
 
 
-@main.command("delete-respondent")
+@compliance.command("delete")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("external_id")
 @click.option("--study-id", type=int, default=None,
@@ -391,7 +425,7 @@ def delete_respondent_cmd(db_path: str, external_id: str, study_id: int | None, 
     )
 
 
-@main.command("withdraw-respondent")
+@compliance.command("withdraw")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("external_id")
 @click.option("--study-id", type=int, default=None,
@@ -429,7 +463,7 @@ def withdraw_respondent_cmd(db_path: str, external_id: str, study_id: int | None
     )
 
 
-@main.command("set-metadata")
+@compliance.command("set-metadata")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=1, show_default=True,
               help="Study to update.")
@@ -489,7 +523,7 @@ def set_metadata_cmd(
         click.echo("No fields provided — nothing updated.")
 
 
-@main.command("export-metadata")
+@compliance.command("export-metadata")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=1, show_default=True)
 @click.option("--format", "fmt", type=click.Choice(["datacite", "dublin-core"]),
@@ -504,7 +538,7 @@ def export_metadata_cmd(db_path: str, study_id: int, fmt: str, output: str | Non
     The output file can be submitted directly to Zenodo, OSF, or ICPSR.
     After the repository assigns a DOI, record it with:
 
-        quickq set-metadata study.db --doi <DOI>
+        quickq compliance set-metadata study.db --doi <DOI>
     """
     from .export_metadata import format_datacite_json, export_dublin_core
 
@@ -524,7 +558,7 @@ def export_metadata_cmd(db_path: str, study_id: int, fmt: str, output: str | Non
         click.echo(text)
 
 
-@main.command("fair-check")
+@compliance.command("fair-check")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=1, show_default=True)
 @click.option("--json", "as_json", is_flag=True, default=False,
@@ -568,7 +602,7 @@ def fair_check_cmd(db_path: str, study_id: int, as_json: bool) -> None:
         raise SystemExit(1)
 
 
-@main.command("federated-query")
+@federated.command("query")
 @click.argument("query_path", type=click.Path(exists=True))
 @click.argument("olap_path", type=click.Path(exists=True))
 @click.option("--min-cell", default=5, show_default=True,

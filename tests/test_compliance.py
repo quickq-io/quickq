@@ -251,7 +251,7 @@ def test_cli_delete_respondent(tmp_path):
     _seed_db(db)
     runner = CliRunner()
 
-    result = runner.invoke(main, ["delete-respondent", str(db), "PART-0000", "--yes"])
+    result = runner.invoke(main, ["compliance", "delete", str(db), "PART-0000", "--yes"])
     assert result.exit_code == 0
     assert "PART-0000" in result.output
     assert "1 session" in result.output
@@ -262,7 +262,7 @@ def test_cli_delete_respondent_unknown_exits_nonzero(tmp_path):
     _seed_db(db)
     runner = CliRunner()
 
-    result = runner.invoke(main, ["delete-respondent", str(db), "NOBODY", "--yes"])
+    result = runner.invoke(main, ["compliance", "delete", str(db), "NOBODY", "--yes"])
     assert result.exit_code != 0
 
 
@@ -272,7 +272,7 @@ def test_cli_delete_respondent_prompts_without_yes(tmp_path):
     runner = CliRunner()
 
     # Respond 'n' to the confirmation prompt — should abort
-    result = runner.invoke(main, ["delete-respondent", str(db), "PART-0000"], input="n\n")
+    result = runner.invoke(main, ["compliance", "delete", str(db), "PART-0000"], input="n\n")
     assert result.exit_code != 0
 
     # Respondent must still exist
@@ -386,7 +386,7 @@ def test_cli_set_metadata(tmp_path):
     runner = CliRunner()
 
     result = runner.invoke(main, [
-        "set-metadata", str(db),
+        "compliance", "set-metadata", str(db),
         "--study-id", str(info["study_id"]),
         "--license", "CC-BY-4.0",
         "--doi", "10.5281/zenodo.0000001",
@@ -401,7 +401,7 @@ def test_cli_set_metadata_no_args_says_nothing_updated(tmp_path):
     info = _seed_db(db)
     runner = CliRunner()
 
-    result = runner.invoke(main, ["set-metadata", str(db), "--study-id", str(info["study_id"])])
+    result = runner.invoke(main, ["compliance", "set-metadata", str(db), "--study-id", str(info["study_id"])])
     assert result.exit_code == 0
     assert "nothing updated" in result.output.lower()
 
@@ -482,7 +482,7 @@ def test_audit_event_recorded_after_delete(tmp_path):
     _seed_db(db)
     runner = CliRunner()
 
-    runner.invoke(main, ["delete-respondent", str(db), "PART-0000", "--yes"])
+    runner.invoke(main, ["compliance", "delete", str(db), "PART-0000", "--yes"])
 
     conn = init_oltp(db)
     row = conn.execute(
@@ -628,7 +628,7 @@ def test_cli_withdraw_respondent(tmp_path):
     _seed_db(db)
     runner = CliRunner()
 
-    result = runner.invoke(main, ["withdraw-respondent", str(db), "PART-0000"])
+    result = runner.invoke(main, ["compliance", "withdraw", str(db), "PART-0000"])
     assert result.exit_code == 0
     assert "PART-0000" in result.output
     assert "retained" in result.output
@@ -639,7 +639,7 @@ def test_cli_withdraw_preserves_responses(tmp_path):
     info = _seed_db(db)
     runner = CliRunner()
 
-    runner.invoke(main, ["withdraw-respondent", str(db), "PART-0000"])
+    runner.invoke(main, ["compliance", "withdraw", str(db), "PART-0000"])
 
     conn = init_oltp(db)
     n = conn.execute(

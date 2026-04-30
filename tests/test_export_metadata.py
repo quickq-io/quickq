@@ -291,7 +291,7 @@ def test_dublin_core_unknown_study_raises(tmp_path):
 def test_cli_export_metadata_datacite(tmp_path):
     db, conn, study_id = _full_study(tmp_path)
     runner = CliRunner()
-    result = runner.invoke(main, ["export-metadata", str(db), "--study-id", str(study_id)])
+    result = runner.invoke(main, ["compliance", "export-metadata", str(db), "--study-id", str(study_id)])
     assert result.exit_code == 0
     parsed = json.loads(result.output)
     assert "titles" in parsed
@@ -301,7 +301,7 @@ def test_cli_export_metadata_dublin_core(tmp_path):
     db, conn, study_id = _full_study(tmp_path)
     runner = CliRunner()
     result = runner.invoke(main, [
-        "export-metadata", str(db),
+        "compliance", "export-metadata", str(db),
         "--study-id", str(study_id),
         "--format", "dublin-core",
     ])
@@ -314,7 +314,7 @@ def test_cli_export_metadata_to_file(tmp_path):
     out = tmp_path / "metadata.json"
     runner = CliRunner()
     result = runner.invoke(main, [
-        "export-metadata", str(db),
+        "compliance", "export-metadata", str(db),
         "--study-id", str(study_id),
         "--output", str(out),
     ])
@@ -327,5 +327,5 @@ def test_cli_export_metadata_to_file(tmp_path):
 def test_cli_export_metadata_unknown_study(tmp_path):
     db, conn, _ = _minimal_study(tmp_path)
     runner = CliRunner()
-    result = runner.invoke(main, ["export-metadata", str(db), "--study-id", "9999"])
+    result = runner.invoke(main, ["compliance", "export-metadata", str(db), "--study-id", "9999"])
     assert result.exit_code != 0

@@ -474,7 +474,7 @@ def test_cli_run_query(phq9_olap, tmp_path):
     sql_file = tmp_path / "query.sql"
     sql_file.write_text("SELECT question_id, COUNT(*) AS n FROM fact_response GROUP BY question_id")
     runner = CliRunner()
-    result = runner.invoke(main, ["federated-query", str(sql_file), phq9_olap])
+    result = runner.invoke(main, ["federated", "query", str(sql_file), phq9_olap])
     assert result.exit_code == 0
     data = json.loads(result.output)
     assert "rows" in data
@@ -487,7 +487,7 @@ def test_cli_run_query_blocked_column_error(phq9_olap, tmp_path):
         "SELECT respondent_id, COUNT(*) AS n FROM fact_response GROUP BY respondent_id"
     )
     runner = CliRunner()
-    result = runner.invoke(main, ["federated-query", str(sql_file), phq9_olap])
+    result = runner.invoke(main, ["federated", "query", str(sql_file), phq9_olap])
     assert result.exit_code != 0
     assert "respondent_id" in result.output
 
@@ -497,7 +497,7 @@ def test_cli_run_query_output_file(phq9_olap, tmp_path):
     out_file = tmp_path / "results.json"
     sql_file.write_text("SELECT COUNT(*) AS n FROM fact_response")
     runner = CliRunner()
-    result = runner.invoke(main, ["federated-query", str(sql_file), phq9_olap, "--output", str(out_file)])
+    result = runner.invoke(main, ["federated", "query", str(sql_file), phq9_olap, "--output", str(out_file)])
     assert result.exit_code == 0
     assert out_file.exists()
     data = json.loads(out_file.read_text())
@@ -508,7 +508,7 @@ def test_cli_run_query_min_cell_flag(phq9_olap, tmp_path):
     sql_file = tmp_path / "query.sql"
     sql_file.write_text("SELECT question_id, COUNT(*) AS n FROM fact_response GROUP BY question_id")
     runner = CliRunner()
-    result = runner.invoke(main, ["federated-query", str(sql_file), phq9_olap, "--min-cell", "1000"])
+    result = runner.invoke(main, ["federated", "query", str(sql_file), phq9_olap, "--min-cell", "1000"])
     assert result.exit_code == 0
     data = json.loads(result.output)
     assert data["rows"] == []

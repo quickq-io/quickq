@@ -220,21 +220,21 @@ def test_format_includes_summary_line(tmp_path):
 def test_cli_fair_check_exits_nonzero_on_failures(tmp_path):
     db, conn, study_id = _minimal_study(tmp_path)
     runner = CliRunner()
-    result = runner.invoke(main, ["fair-check", str(db), "--study-id", str(study_id)])
+    result = runner.invoke(main, ["compliance", "fair-check", str(db), "--study-id", str(study_id)])
     assert result.exit_code != 0
 
 
 def test_cli_fair_check_exits_zero_on_full_study(tmp_path):
     db, conn, study_id = _full_study(tmp_path)
     runner = CliRunner()
-    result = runner.invoke(main, ["fair-check", str(db), "--study-id", str(study_id)])
+    result = runner.invoke(main, ["compliance", "fair-check", str(db), "--study-id", str(study_id)])
     assert result.exit_code == 0
 
 
 def test_cli_fair_check_json_output(tmp_path):
     db, conn, study_id = _minimal_study(tmp_path)
     runner = CliRunner()
-    result = runner.invoke(main, ["fair-check", str(db), "--study-id", str(study_id), "--json"])
+    result = runner.invoke(main, ["compliance", "fair-check", str(db), "--study-id", str(study_id), "--json"])
     data = json.loads(result.output)
     assert "items" in data
     assert "is_ready_to_share" in data
