@@ -9,17 +9,21 @@ click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
 click.rich_click.COMMAND_GROUPS = {
     "quickq": [
         {
-            "name": "Everyday authoring & analysis",
+            "name": "Core",
             "commands": ["init", "load", "serve", "preview", "render",
-                         "data-dict", "refresh", "report", "export"],
+                         "data-dict", "refresh", "report", "export", "list"],
         },
         {
-            "name": "Inspect",
-            "commands": ["list"],
+            "name": "FHIR",
+            "commands": ["fhir"],
         },
         {
-            "name": "Specialised workflows",
-            "commands": ["fhir", "compliance", "federated"],
+            "name": "Compliance & governance",
+            "commands": ["compliance"],
+        },
+        {
+            "name": "Federated & multi-site",
+            "commands": ["federated"],
         },
     ],
 }
