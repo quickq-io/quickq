@@ -52,6 +52,13 @@ CREATE TABLE IF NOT EXISTS study (
     irb_number           TEXT,
     start_date           TEXT,
     end_date             TEXT,
+    -- FAIR / regulatory metadata
+    population           TEXT,                      -- description of the study population
+    license              TEXT,                      -- SPDX ID or URL, e.g. 'CC-BY-4.0'
+    protocol_url         TEXT,                      -- ClinicalTrials.gov, OSF, etc.
+    doi                  TEXT,                      -- assigned after repository deposit
+    geographic_scope     TEXT,                      -- e.g. 'United States', 'Multi-country'
+    data_collection_end  TEXT,                      -- ISO 8601 date
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
@@ -68,6 +75,7 @@ CREATE TABLE IF NOT EXISTS questionnaire (
                              CHECK (fhir_status IN ('draft', 'active', 'retired', 'unknown')),
     concept_id           INTEGER REFERENCES concept (concept_id),
     superseded_by        INTEGER REFERENCES questionnaire (questionnaire_id),
+    license              TEXT,                      -- SPDX ID or URL; instruments can be licensed independently
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     UNIQUE (canonical_url, version)                -- FHIR: url+version is the composite identity
 );
@@ -262,6 +270,10 @@ CREATE TABLE IF NOT EXISTS response_session (
     is_proxy             INTEGER NOT NULL DEFAULT 0 CHECK (is_proxy IN (0, 1)),
     interviewer_id       TEXT,                      -- opaque staff identifier; not an FK
     fhir_response_id     TEXT,                      -- QuestionnaireResponse.id if imported from FHIR
+    -- Consent tracking: which consent form version was active at collection time.
+    -- NULL means not recorded (valid for anonymous studies or pre-migration sessions).
+    consent_version      TEXT,
+    consented_at         TEXT,                      -- ISO 8601 timestamp
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
@@ -434,6 +446,26 @@ CREATE TABLE IF NOT EXISTS person_map (
     omop_person_id        INTEGER NOT NULL UNIQUE,
     created_at            TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
+
+-- ============================================================
+-- TOOL AUDIT LOG
+-- Records key operations performed against the study database so that
+-- provenance travels with the file. Useful for HIPAA audit trail
+-- requirements and IRB data management documentation.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS tool_audit_log (
+    log_id               INTEGER PRIMARY KEY,
+    study_id             INTEGER REFERENCES study (study_id),
+    operation            TEXT    NOT NULL,          -- 'federated_query', 'pseudonymize', 'merge',
+                                                    -- 'export_parquet', 'delete_respondent', etc.
+    performed_at         TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+    performed_by         TEXT,                      -- username / process identifier if available
+    details              TEXT                       -- JSON blob: query hash, output path, counts, etc.
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_operation ON tool_audit_log (operation);
+CREATE INDEX IF NOT EXISTS idx_audit_study     ON tool_audit_log (study_id) WHERE study_id IS NOT NULL;
 
 -- ============================================================
 -- INDEXES

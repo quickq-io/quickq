@@ -35,6 +35,8 @@ EXPECTED_OLTP_TABLES = {
     "person_map",
     # administration
     "study_errata_log",
+    # compliance / audit
+    "tool_audit_log",
 }
 
 

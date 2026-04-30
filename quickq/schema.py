@@ -63,6 +63,21 @@ def migrate_oltp(conn: sqlite3.Connection) -> list[str]:
                 "INTEGER REFERENCES questionnaire_question (qq_id)")
     _add_column("response", "repeat_index", "INTEGER")
 
+    # FAIR / regulatory metadata on study
+    _add_column("study", "population",          "TEXT")
+    _add_column("study", "license",             "TEXT")
+    _add_column("study", "protocol_url",        "TEXT")
+    _add_column("study", "doi",                 "TEXT")
+    _add_column("study", "geographic_scope",    "TEXT")
+    _add_column("study", "data_collection_end", "TEXT")
+
+    # License on questionnaire (instruments can be licensed independently of the study)
+    _add_column("questionnaire", "license", "TEXT")
+
+    # Consent tracking on response_session
+    _add_column("response_session", "consent_version", "TEXT")
+    _add_column("response_session", "consented_at",    "TEXT")
+
     # New tables are handled by CREATE TABLE IF NOT EXISTS in the DDL
     create_oltp_schema(conn)
 
