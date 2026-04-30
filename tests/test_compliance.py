@@ -1,5 +1,5 @@
 """
-Tests for quickq.compliance: delete_respondent and set_study_metadata.
+Tests for quickq.compliance: delete_respondent, withdraw_respondent, set_study_metadata.
 """
 from __future__ import annotations
 
@@ -9,7 +9,10 @@ from pathlib import Path
 from quickq.schema import init_oltp
 from quickq.authoring import insert_study, insert_questionnaire, upsert_question, place_question
 from quickq.models import QuestionnaireDef, QuestionDef
-from quickq.compliance import delete_respondent, set_study_metadata, DeleteResult
+from quickq.compliance import (
+    delete_respondent, withdraw_respondent, is_withdrawn,
+    set_study_metadata, DeleteResult, WithdrawResult,
+)
 
 from click.testing import CliRunner
 from quickq.cli import main
@@ -489,6 +492,161 @@ def test_audit_event_recorded_after_delete(tmp_path):
     import json
     details = json.loads(row["details"])
     assert details["external_id"] == "PART-0000"
+
+
+# ---------------------------------------------------------------------------
+# withdraw_respondent — happy path
+# ---------------------------------------------------------------------------
+
+def test_withdraw_records_event(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    result = withdraw_respondent(conn, "PART-0000")
+
+    assert isinstance(result, WithdrawResult)
+    assert result.external_id == "PART-0000"
+    row = conn.execute(
+        "SELECT event_type, respondent_id FROM admin_event WHERE event_id = ?",
+        (result.event_id,),
+    ).fetchone()
+    assert row["event_type"] == "withdrawn"
+    assert row["respondent_id"] == info["respondent_ids"][0]
+
+
+def test_withdraw_retains_response_data(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    withdraw_respondent(conn, "PART-0000")
+
+    n = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?",
+        (info["session_ids"][0],),
+    ).fetchone()[0]
+    assert n == 1
+
+
+def test_withdraw_retains_session(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    withdraw_respondent(conn, "PART-0000")
+
+    n = conn.execute(
+        "SELECT COUNT(*) FROM response_session WHERE respondent_id = ?",
+        (info["respondent_ids"][0],),
+    ).fetchone()[0]
+    assert n == 1
+
+
+def test_is_withdrawn_true_after_withdrawal(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    withdraw_respondent(conn, "PART-0000")
+    assert is_withdrawn(conn, info["respondent_ids"][0]) is True
+
+
+def test_is_withdrawn_false_before_withdrawal(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    assert is_withdrawn(conn, info["respondent_ids"][0]) is False
+
+
+def test_withdraw_stores_notes(tmp_path):
+    db = tmp_path / "study.db"
+    _seed_db(db)
+    conn = init_oltp(db)
+
+    result = withdraw_respondent(conn, "PART-0000", notes="Participant requested withdrawal by email")
+
+    row = conn.execute(
+        "SELECT notes FROM admin_event WHERE event_id = ?", (result.event_id,)
+    ).fetchone()
+    assert "email" in row["notes"]
+
+
+def test_withdraw_does_not_affect_other_respondent(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    conn = init_oltp(db)
+
+    withdraw_respondent(conn, "PART-0000")
+    assert is_withdrawn(conn, info["respondent_ids"][1]) is False
+
+
+# ---------------------------------------------------------------------------
+# withdraw_respondent — error cases
+# ---------------------------------------------------------------------------
+
+def test_withdraw_unknown_raises(tmp_path):
+    db = tmp_path / "study.db"
+    _seed_db(db)
+    conn = init_oltp(db)
+
+    with pytest.raises(ValueError, match="No respondent found"):
+        withdraw_respondent(conn, "NOBODY")
+
+
+def test_withdraw_duplicate_raises(tmp_path):
+    db = tmp_path / "study.db"
+    _seed_db(db)
+    conn = init_oltp(db)
+
+    withdraw_respondent(conn, "PART-0000")
+    with pytest.raises(ValueError, match="already been withdrawn"):
+        withdraw_respondent(conn, "PART-0000")
+
+
+def test_withdraw_ambiguous_raises(tmp_path):
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+
+    sid1 = insert_study(conn, name="Study A")
+    sid2 = insert_study(conn, name="Study B")
+    conn.execute("INSERT INTO respondent (study_id, external_id) VALUES (?, 'P001')", (sid1,))
+    conn.execute("INSERT INTO respondent (study_id, external_id) VALUES (?, 'P001')", (sid2,))
+    conn.commit()
+
+    with pytest.raises(ValueError, match="multiple studies"):
+        withdraw_respondent(conn, "P001")
+
+
+# ---------------------------------------------------------------------------
+# withdraw_respondent — CLI
+# ---------------------------------------------------------------------------
+
+def test_cli_withdraw_respondent(tmp_path):
+    db = tmp_path / "study.db"
+    _seed_db(db)
+    runner = CliRunner()
+
+    result = runner.invoke(main, ["withdraw-respondent", str(db), "PART-0000"])
+    assert result.exit_code == 0
+    assert "PART-0000" in result.output
+    assert "retained" in result.output
+
+
+def test_cli_withdraw_preserves_responses(tmp_path):
+    db = tmp_path / "study.db"
+    info = _seed_db(db)
+    runner = CliRunner()
+
+    runner.invoke(main, ["withdraw-respondent", str(db), "PART-0000"])
+
+    conn = init_oltp(db)
+    n = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?",
+        (info["session_ids"][0],),
+    ).fetchone()[0]
+    assert n == 1
 
 
 def test_audit_log_silent_on_missing_table(tmp_path):

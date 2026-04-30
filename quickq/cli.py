@@ -391,6 +391,44 @@ def delete_respondent_cmd(db_path: str, external_id: str, study_id: int | None, 
     )
 
 
+@main.command("withdraw-respondent")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.argument("external_id")
+@click.option("--study-id", type=int, default=None,
+              help="Study ID to disambiguate when external_id appears in multiple studies.")
+@click.option("--notes", default=None, help="Reason for withdrawal (stored in audit log).")
+def withdraw_respondent_cmd(db_path: str, external_id: str, study_id: int | None, notes: str | None) -> None:
+    """Record a participant withdrawal without deleting their data.
+
+    Withdrawal stops future data collection for this participant while
+    retaining all previously collected responses. This is the legally
+    distinct operation from delete-respondent — most IRB withdrawal
+    protocols require data retention for already-consented responses.
+
+    A 'withdrawn' event is written to admin_event. Use delete-respondent
+    instead if the participant requests full erasure under GDPR.
+    """
+    from .compliance import withdraw_respondent
+
+    conn = open_oltp(db_path)
+    try:
+        result = withdraw_respondent(conn, external_id, study_id=study_id, notes=notes)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    from .compliance import record_audit_event
+    record_audit_event(conn, "withdraw_respondent", study_id=study_id, details={
+        "external_id": external_id,
+        "event_id": result.event_id,
+    })
+
+    click.echo(
+        f"Recorded withdrawal for external_id={result.external_id!r} "
+        f"(internal id={result.respondent_id}). "
+        f"Response data retained. Admin event id={result.event_id}."
+    )
+
+
 @main.command("set-metadata")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=1, show_default=True,
@@ -449,6 +487,50 @@ def set_metadata_cmd(
         click.echo(f"Updated {len(updated)} field(s) on study {study_id}.")
     else:
         click.echo("No fields provided — nothing updated.")
+
+
+@main.command("fair-check")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--study-id", type=int, default=1, show_default=True)
+@click.option("--json", "as_json", is_flag=True, default=False,
+              help="Output machine-readable JSON instead of formatted text.")
+def fair_check_cmd(db_path: str, study_id: int, as_json: bool) -> None:
+    """Audit a study against FAIR sub-principles and NIH DMS plan requirements.
+
+    Reports which metadata fields are populated (pass), incomplete (warn),
+    or missing (fail) — with specific guidance for each gap. Run this before
+    quickq export-metadata to ensure the metadata record is complete.
+    """
+    from .fair_check import fair_check, format_fair_check
+
+    conn = open_oltp(db_path, read_only=True)
+    try:
+        result = fair_check(conn, study_id)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    if as_json:
+        items = [
+            {
+                "principle": i.principle,
+                "label": i.label,
+                "status": i.status,
+                "detail": i.detail,
+                "guidance": i.guidance,
+            }
+            for i in result.items
+        ]
+        click.echo(json.dumps({
+            "study_id": result.study_id,
+            "study_name": result.study_name,
+            "is_ready_to_share": result.is_ready_to_share,
+            "items": items,
+        }, indent=2))
+    else:
+        click.echo(format_fair_check(result))
+
+    if result.failures:
+        raise SystemExit(1)
 
 
 @main.command("federated-query")

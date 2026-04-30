@@ -141,6 +141,90 @@ def delete_respondent(
     )
 
 
+@dataclass
+class WithdrawResult:
+    external_id: str
+    respondent_id: int
+    event_id: int
+
+
+def withdraw_respondent(
+    conn: sqlite3.Connection,
+    external_id: str,
+    *,
+    study_id: int | None = None,
+    notes: str | None = None,
+) -> WithdrawResult:
+    """
+    Record a withdrawal for the participant identified by external_id.
+
+    Withdrawal means: stop collecting data from this person; retain all
+    previously collected responses. This is the legally distinct operation
+    from delete_respondent — IRB protocols typically state that withdrawal
+    does not trigger data deletion for already-consented responses.
+
+    Writes a 'withdrawn' event to admin_event. Future sessions can be
+    blocked by checking for a withdrawn event before creating new ones.
+
+    Raises ValueError if the respondent is not found or is ambiguous.
+    """
+    if study_id is not None:
+        row = conn.execute(
+            "SELECT respondent_id FROM respondent WHERE external_id = ? AND study_id = ?",
+            (external_id, study_id),
+        ).fetchone()
+    else:
+        rows = conn.execute(
+            "SELECT respondent_id FROM respondent WHERE external_id = ?",
+            (external_id,),
+        ).fetchall()
+        if len(rows) > 1:
+            raise ValueError(
+                f"external_id {external_id!r} matches respondents in multiple studies. "
+                "Provide --study-id to disambiguate."
+            )
+        row = rows[0] if rows else None
+
+    if row is None:
+        raise ValueError(f"No respondent found with external_id {external_id!r}.")
+
+    respondent_id = row[0]
+
+    existing = conn.execute(
+        "SELECT event_id FROM admin_event WHERE respondent_id = ? AND event_type = 'withdrawn'",
+        (respondent_id,),
+    ).fetchone()
+    if existing:
+        raise ValueError(
+            f"Respondent {external_id!r} has already been withdrawn (event_id={existing[0]})."
+        )
+
+    conn.execute(
+        "INSERT INTO admin_event (study_id, respondent_id, event_type, notes) VALUES (?, ?, 'withdrawn', ?)",
+        (study_id, respondent_id, notes),
+    )
+    event_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.commit()
+
+    return WithdrawResult(
+        external_id=external_id,
+        respondent_id=respondent_id,
+        event_id=event_id,
+    )
+
+
+def is_withdrawn(
+    conn: sqlite3.Connection,
+    respondent_id: int,
+) -> bool:
+    """Return True if a withdrawal event exists for this respondent."""
+    row = conn.execute(
+        "SELECT 1 FROM admin_event WHERE respondent_id = ? AND event_type = 'withdrawn'",
+        (respondent_id,),
+    ).fetchone()
+    return row is not None
+
+
 # Columns on the study table that set_study_metadata may update.
 _STUDY_METADATA_FIELDS = frozenset({
     "description",

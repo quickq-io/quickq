@@ -145,6 +145,7 @@ class FederatedQueryResult:
     suppression_threshold: int
     count_columns: list[str]
     query_hash: str
+    reidentification_risk: str  # "low" | "medium" | "high"
 
 
 # ------------------------------------------------------------------
@@ -178,6 +179,7 @@ def run_federated_query(
 
     count_cols = _find_count_columns(columns, raw_rows, forced=count_agg_aliases)
     kept_rows, suppressed = _suppress_small_cells(raw_rows, count_cols, min_cell)
+    rows_visible = len(raw_rows) - suppressed
 
     return FederatedQueryResult(
         rows=kept_rows,
@@ -187,22 +189,55 @@ def run_federated_query(
         suppression_threshold=min_cell,
         count_columns=count_cols,
         query_hash=hashlib.sha256(sql.encode()).hexdigest()[:16],
+        reidentification_risk=_reidentification_risk(rows_visible),
     )
 
 
 def result_to_dict(result: FederatedQueryResult) -> dict:
     """Serialise a FederatedQueryResult to a JSON-compatible dict."""
+    dc: dict = {
+        "suppression_threshold": result.suppression_threshold,
+        "count_columns": result.count_columns,
+        "rows_total": result.rows_total,
+        "rows_suppressed": result.rows_suppressed,
+        "reidentification_risk": result.reidentification_risk,
+    }
+    if result.reidentification_risk != "low":
+        dc["reidentification_risk_note"] = (
+            "Fewer than 5 groups remain after suppression. Even aggregate results "
+            "may re-identify participants when the number of distinct groups is very "
+            "small. Review before sharing."
+        )
     return {
         "query_hash": result.query_hash,
         "columns": result.columns,
         "rows": result.rows,
-        "disclosure_control": {
-            "suppression_threshold": result.suppression_threshold,
-            "count_columns": result.count_columns,
-            "rows_total": result.rows_total,
-            "rows_suppressed": result.rows_suppressed,
-        },
+        "disclosure_control": dc,
     }
+
+
+# ------------------------------------------------------------------
+# Re-identification risk
+# ------------------------------------------------------------------
+
+def _reidentification_risk(rows_visible: int) -> str:
+    """
+    Classify re-identification risk based on the number of visible result rows.
+
+    Even with cell-size suppression applied, a result with very few distinct
+    groups can be re-identifying — a single remaining group trivially reveals
+    which participants are not in the suppressed groups.
+
+    Thresholds:
+      < 3 rows  → high   (coordinating center should flag before use)
+      3–4 rows  → medium (review recommended)
+      5+ rows   → low
+    """
+    if rows_visible < 3:
+        return "high"
+    if rows_visible < 5:
+        return "medium"
+    return "low"
 
 
 # ------------------------------------------------------------------

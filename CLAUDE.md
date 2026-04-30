@@ -647,6 +647,31 @@ This is the most practically significant compliance feature in quickq. It is wor
 
 ---
 
+### Compliance feature implementation status
+
+Tracks what has been built, what is in progress, and what is planned. Update this table as work is completed.
+
+| Feature | Command / location | Status | Regulation addressed |
+|---|---|---|---|
+| Cell-size suppression | `quickq federated-query --min-cell` | ✅ Done | IRB disclosure control, NCHS standard |
+| Re-identification warning (low row count) | `federated-query` output JSON | ✅ Done | IRB disclosure control |
+| Federated analysis without data transfer | `quickq federated-query` | ✅ Done | GDPR data minimisation, DUA avoidance |
+| Pseudonymisation | `quickq pseudonymize` | ✅ Done | HIPAA limited dataset, GDPR |
+| Participant deletion | `quickq delete-respondent` | ✅ Done | GDPR right to erasure, consent withdrawal |
+| Withdrawal without deletion | `quickq withdraw-respondent` | ✅ Done | IRB withdrawal protocol |
+| Consent version tracking | `response_session.consent_version` | ✅ Done | IRB consent documentation |
+| Tool audit log | `tool_audit_log` table | ✅ Done | HIPAA audit trail, IRB data management |
+| Study metadata fields | `quickq set-metadata` | ✅ Done | NIH DMS plan, FAIR F2/R1 |
+| FAIR self-audit | `quickq fair-check` | ✅ Done | NIH DMS plan, FAIR compliance |
+| Machine-readable metadata export | `quickq export-metadata` | ⬜ Planned | NIH DMS plan, Zenodo/OSF deposit |
+| Questionnaire license field | `questionnaire.license` | ✅ Done | FAIR R1.1 |
+
+**Planned work (in priority order):**
+
+1. **`quickq export-metadata`** — produces a DataCite JSON or Dublin Core XML metadata record from the study's populated metadata fields. Enables Zenodo, OSF, and ICPSR deposition. Run `quickq fair-check` first to ensure the record is complete before generating it.
+
+---
+
 Ordered by adoption impact:
 
 1. **`quickq merge`** — combine multiple site `.db` files into a single study database. Unblocks Tier 3 multi-site adoption. Deduplication key is the FHIR `QuestionnaireResponse.id`; integer PKs are remapped on merge using external IDs as stable keys. Schema divergence (site imported a different questionnaire version) must be detected and surfaced clearly.

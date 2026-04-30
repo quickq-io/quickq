@@ -385,6 +385,84 @@ def test_query_hash_is_deterministic(phq9_olap):
 
 
 # ------------------------------------------------------------------
+# Re-identification risk
+# ------------------------------------------------------------------
+
+from quickq.federated import _reidentification_risk
+
+
+def test_risk_high_for_zero_rows():
+    assert _reidentification_risk(0) == "high"
+
+
+def test_risk_high_for_one_row():
+    assert _reidentification_risk(1) == "high"
+
+
+def test_risk_high_for_two_rows():
+    assert _reidentification_risk(2) == "high"
+
+
+def test_risk_medium_for_three_rows():
+    assert _reidentification_risk(3) == "medium"
+
+
+def test_risk_medium_for_four_rows():
+    assert _reidentification_risk(4) == "medium"
+
+
+def test_risk_low_for_five_rows():
+    assert _reidentification_risk(5) == "low"
+
+
+def test_risk_low_for_many_rows():
+    assert _reidentification_risk(100) == "low"
+
+
+def test_result_includes_risk_field(phq9_olap):
+    result = run_federated_query(
+        phq9_olap,
+        "SELECT question_id, COUNT(*) AS n FROM fact_response GROUP BY question_id",
+        min_cell=1,
+    )
+    assert result.reidentification_risk in ("low", "medium", "high")
+
+
+def test_result_to_dict_includes_risk(phq9_olap):
+    result = run_federated_query(
+        phq9_olap,
+        "SELECT question_id, COUNT(*) AS n FROM fact_response GROUP BY question_id",
+        min_cell=1,
+    )
+    d = result_to_dict(result)
+    assert "reidentification_risk" in d["disclosure_control"]
+
+
+def test_high_risk_includes_note_in_dict(phq9_olap):
+    # min_cell=1000 suppresses all but possibly 0 rows → high risk
+    result = run_federated_query(
+        phq9_olap,
+        "SELECT COUNT(*) AS n FROM fact_response",
+        min_cell=1000,
+    )
+    d = result_to_dict(result)
+    dc = d["disclosure_control"]
+    if dc["reidentification_risk"] != "low":
+        assert "reidentification_risk_note" in dc
+
+
+def test_low_risk_omits_note_in_dict(phq9_olap):
+    result = run_federated_query(
+        phq9_olap,
+        "SELECT question_id, COUNT(*) AS n FROM fact_response GROUP BY question_id",
+        min_cell=1,
+    )
+    if result.reidentification_risk == "low":
+        d = result_to_dict(result)
+        assert "reidentification_risk_note" not in d["disclosure_control"]
+
+
+# ------------------------------------------------------------------
 # CLI
 # ------------------------------------------------------------------
 
