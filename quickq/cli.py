@@ -10,8 +10,8 @@ click.rich_click.COMMAND_GROUPS = {
     "quickq": [
         {
             "name": "Core",
-            "commands": ["init", "load", "serve", "preview", "render",
-                         "data-dict", "refresh", "report", "export", "list"],
+            "commands": ["init", "load", "preview", "serve",
+                         "refresh", "data-dict", "render", "report", "export", "list"],
         },
         {
             "name": "FHIR",
