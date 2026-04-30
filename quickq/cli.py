@@ -15,7 +15,7 @@ click.rich_click.COMMAND_GROUPS = {
         },
         {
             "name": "Inspect",
-            "commands": ["list", "ls"],
+            "commands": ["list"],
         },
         {
             "name": "Specialised workflows",
