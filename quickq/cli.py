@@ -1,5 +1,7 @@
 import click
+import json
 from pathlib import Path
+from .config import load_config
 from .schema import init_oltp, open_oltp
 from .library_loader import load_all_libraries, list_library_questions
 from .loader import load_yaml
@@ -7,12 +9,12 @@ from .administration import data_dictionary, format_data_dict_markdown, format_d
 from .renderer_fhir import export_fhir_json
 from .parser_fhir import import_fhir
 from .parser_fhir_response import import_fhir_response
-from .olap_schema import refresh as olap_refresh, init_olap
-from .renderer_md import generate_report
+# olap_schema, renderer_md, and export_parquet import duckdb — loaded lazily
+# inside the commands that need them so `quickq serve` works in envs without duckdb.
 from .preview import preview as preview_questionnaire, build_preview_html
 from .merge import merge_databases, MergeError
 from .pseudonymize import pseudonymize
-from .export_parquet import export_parquet
+
 from .renderer_questionnaire import render_questionnaire_md
 
 
@@ -40,10 +42,20 @@ def init(db_path: str, with_library: bool) -> None:
 @click.argument("yaml_path", type=click.Path(exists=True))
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=None, help="Associate with an existing study.")
-def load_cmd(yaml_path: str, db_path: str, study_id: int | None) -> None:
+@click.option("--strict-concepts/--no-strict-concepts", default=None,
+              help="Warn on concept code collisions (default: from quickq.yml, else true).")
+@click.option("--auto-concept/--no-auto-concept", default=None,
+              help="Auto-assign Local OMOP-range concept codes to unmapped items "
+                   "(default: from quickq.yml, else false).")
+def load_cmd(yaml_path: str, db_path: str, study_id: int | None,
+             strict_concepts: bool | None, auto_concept: bool | None) -> None:
     """Compile a YAML questionnaire definition into DB_PATH."""
+    cfg = load_config(Path(db_path).parent)
+    effective_strict = strict_concepts if strict_concepts is not None else cfg.authoring.strict_concepts
+    effective_auto = auto_concept if auto_concept is not None else cfg.authoring.auto_concept
     conn = open_oltp(db_path)
-    qid = load_yaml(conn, yaml_path, study_id=study_id)
+    qid = load_yaml(conn, yaml_path, study_id=study_id, strict_concepts=effective_strict,
+                    auto_concept=effective_auto)
     click.echo(f"Loaded questionnaire id={qid}.")
 
 
@@ -67,11 +79,14 @@ def library_cmd(db_path: str, instrument: str | None) -> None:
 @main.command("data-dict")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("questionnaire_id", type=int)
-@click.option("--format", "fmt", type=click.Choice(["markdown", "csv"]), default="markdown")
+@click.option("--format", "fmt", type=click.Choice(["markdown", "csv"]), default=None,
+              help="Output format (default: from quickq.yml, else markdown).")
 @click.option("--include-deprecated", is_flag=True, help="Include deprecated questions.")
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
-def data_dict_cmd(db_path: str, questionnaire_id: int, fmt: str, include_deprecated: bool, output: str | None) -> None:
+def data_dict_cmd(db_path: str, questionnaire_id: int, fmt: str | None, include_deprecated: bool, output: str | None) -> None:
     """Generate a data dictionary for a questionnaire."""
+    cfg = load_config(Path(db_path).parent)
+    fmt = fmt if fmt is not None else cfg.data_dict.format
     conn = open_oltp(db_path, read_only=True)
     rows = data_dictionary(conn, questionnaire_id, include_deprecated=include_deprecated)
     if fmt == "csv":
@@ -106,6 +121,7 @@ def import_fhir_cmd(fhir_path: str, db_path: str) -> None:
 @click.argument("olap_path", type=click.Path())
 def refresh_cmd(db_path: str, olap_path: str) -> None:
     """Refresh the OLAP analytics database from DB_PATH (OLTP SQLite)."""
+    from .olap_schema import refresh as olap_refresh
     stats = olap_refresh(olap_path, db_path)
     click.echo(
         f"Refresh complete: {stats['rows_loaded']} fact rows, "
@@ -137,6 +153,8 @@ def preview_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
 def report_cmd(olap_path: str, oltp_path: str, questionnaire_id: int, output: str | None) -> None:
     """Generate a Markdown report for a questionnaire from the OLAP database."""
+    from .olap_schema import init_olap
+    from .renderer_md import generate_report
     oconn = init_olap(olap_path, oltp_path)
     text = generate_report(oconn, questionnaire_id)
     if output:
@@ -156,6 +174,7 @@ def export_parquet_cmd(
     olap_path: str, output_dir: str, tables: tuple[str, ...], overwrite: bool
 ) -> None:
     """Export OLAP tables from OLAP_PATH to Parquet files in OUTPUT_DIR."""
+    from .export_parquet import export_parquet
     try:
         result = export_parquet(
             olap_path, output_dir,
@@ -252,15 +271,26 @@ def pseudonymize_cmd(db_path: str, output: str, overwrite: bool, key_file: str |
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("questionnaire_id", type=int)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write to file instead of stdout.")
-def render_cmd(db_path: str, questionnaire_id: int, output: str | None) -> None:
-    """Render a questionnaire definition as a human-readable Markdown document."""
+@click.option("--format", "fmt", type=click.Choice(["md", "pdf"]), default=None,
+              help="Output format (default: from quickq.yml, else md).")
+def render_cmd(db_path: str, questionnaire_id: int, output: str | None, fmt: str | None) -> None:
+    """Render a questionnaire definition as Markdown or PDF."""
+    cfg = load_config(Path(db_path).parent)
+    fmt = fmt if fmt is not None else cfg.render.format
     conn = open_oltp(db_path, read_only=True)
-    text = render_questionnaire_md(conn, questionnaire_id)
-    if output:
-        Path(output).write_text(text)
+    if fmt == "pdf":
+        if not output:
+            raise click.UsageError("--output is required when --format pdf is used.")
+        from .renderer_pdf import render_questionnaire_pdf
+        render_questionnaire_pdf(conn, questionnaire_id, output)
         click.echo(f"Rendered questionnaire to {output}.")
     else:
-        click.echo(text)
+        text = render_questionnaire_md(conn, questionnaire_id)
+        if output:
+            Path(output).write_text(text)
+            click.echo(f"Rendered questionnaire to {output}.")
+        else:
+            click.echo(text)
 
 
 @main.command("export-fhir")
@@ -276,3 +306,208 @@ def export_fhir_cmd(db_path: str, questionnaire_id: int, output: str | None) -> 
         click.echo(f"Wrote FHIR Questionnaire to {output}.")
     else:
         click.echo(text)
+
+
+@main.command("serve")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--questionnaire-id", default=1, show_default=True,
+              help="ID of the questionnaire to serve.")
+@click.option("--port", default=8000, show_default=True, help="Port for the API server.")
+@click.option("--no-browser", is_flag=True, default=False, help="Do not open a browser tab.")
+def serve_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool) -> None:
+    """Serve a questionnaire from DB_PATH as an interactive web form.
+
+    Starts the quickq-forms server with the local adapter pointed at DB_PATH.
+    Submitted responses are written directly to the study database.
+    Requires quickq-forms to be installed (pip install quickq-forms).
+    """
+    try:
+        import uvicorn
+        from server.main import create_app
+        from server.adapters.local import LocalAdapter
+    except ImportError as exc:
+        raise click.ClickException(
+            f"quickq-forms is not installed ({exc}). "
+            "Install it with: pip install quickq-forms"
+        )
+
+    db_path_abs = str(Path(db_path).resolve())
+    adapter = LocalAdapter(db_path=db_path_abs, questionnaire_id=questionnaire_id)
+    app = create_app(adapter)
+
+    if not no_browser:
+        import threading, webbrowser, time
+        def _open():
+            time.sleep(1.0)
+            webbrowser.open(f"http://localhost:{port}")
+        threading.Thread(target=_open, daemon=True).start()
+
+    click.echo(f"Serving questionnaire {questionnaire_id} from {db_path} on http://localhost:{port}")
+    uvicorn.run(app, host="127.0.0.1", port=port)
+
+
+@main.command("delete-respondent")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.argument("external_id")
+@click.option("--study-id", type=int, default=None,
+              help="Study ID to disambiguate when external_id appears in multiple studies.")
+@click.option("--yes", "-y", is_flag=True, default=False,
+              help="Skip confirmation prompt.")
+def delete_respondent_cmd(db_path: str, external_id: str, study_id: int | None, yes: bool) -> None:
+    """Permanently delete all data for a participant (GDPR right to erasure).
+
+    Removes the respondent's sessions, responses, quality flags, and identity
+    row. This operation is irreversible — use pseudonymize if you need to
+    retain anonymized data.
+    """
+    from .compliance import delete_respondent
+
+    if not yes:
+        click.confirm(
+            f"Permanently delete all data for external_id={external_id!r}? "
+            "This cannot be undone.",
+            abort=True,
+        )
+
+    conn = open_oltp(db_path)
+    try:
+        result = delete_respondent(conn, external_id, study_id=study_id)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    from .compliance import record_audit_event
+    record_audit_event(conn, "delete_respondent", study_id=study_id, details={
+        "external_id": external_id,
+        "sessions_deleted": result.sessions_deleted,
+        "responses_deleted": result.responses_deleted,
+    })
+
+    click.echo(
+        f"Deleted respondent external_id={result.external_id!r} "
+        f"(internal id={result.respondent_id}):\n"
+        f"  {result.sessions_deleted} session(s)\n"
+        f"  {result.responses_deleted} response(s)\n"
+        f"  {result.flags_deleted} data quality flag(s)"
+    )
+
+
+@main.command("set-metadata")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--study-id", type=int, default=1, show_default=True,
+              help="Study to update.")
+@click.option("--description",          default=None, help="Study description.")
+@click.option("--population",           default=None, help="Description of the study population.")
+@click.option("--license",              default=None, help="SPDX license ID or URL (e.g. CC-BY-4.0).")
+@click.option("--protocol-url",         default=None, help="ClinicalTrials.gov, OSF, or other registration URL.")
+@click.option("--doi",                  default=None, help="DOI assigned after repository deposit.")
+@click.option("--geographic-scope",     default=None, help="Geographic scope (e.g. 'United States').")
+@click.option("--data-collection-end",  default=None, help="Data collection end date (ISO 8601).")
+@click.option("--pi",                   default=None, help="Principal investigator name.")
+@click.option("--irb-number",           default=None, help="IRB protocol number.")
+def set_metadata_cmd(
+    db_path: str,
+    study_id: int,
+    description: str | None,
+    population: str | None,
+    license: str | None,
+    protocol_url: str | None,
+    doi: str | None,
+    geographic_scope: str | None,
+    data_collection_end: str | None,
+    pi: str | None,
+    irb_number: str | None,
+) -> None:
+    """Set regulatory and FAIR metadata fields on a study.
+
+    Only fields explicitly provided are updated; omitted fields are unchanged.
+    These fields satisfy NIH Data Management and Sharing Plan requirements
+    and support quickq fair-check and export-metadata (planned).
+    """
+    from .compliance import set_study_metadata
+
+    conn = open_oltp(db_path)
+    try:
+        updated = set_study_metadata(
+            conn,
+            study_id,
+            description=description,
+            population=population,
+            license=license,
+            protocol_url=protocol_url,
+            doi=doi,
+            geographic_scope=geographic_scope,
+            data_collection_end=data_collection_end,
+            principal_investigator=pi,
+            irb_number=irb_number,
+        )
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    if updated:
+        for k, v in updated.items():
+            click.echo(f"  {k} = {v!r}")
+        click.echo(f"Updated {len(updated)} field(s) on study {study_id}.")
+    else:
+        click.echo("No fields provided — nothing updated.")
+
+
+@main.command("federated-query")
+@click.argument("query_path", type=click.Path(exists=True))
+@click.argument("olap_path", type=click.Path(exists=True))
+@click.option("--min-cell", default=5, show_default=True,
+              help="Minimum cell size for disclosure control. Rows with counts below "
+                   "this threshold are suppressed entirely.")
+@click.option("--output", "-o", type=click.Path(), default=None,
+              help="Write JSON results to file instead of stdout.")
+def run_query_cmd(
+    query_path: str, olap_path: str, min_cell: int, output: str | None
+) -> None:
+    """Run a federated aggregate query against the OLAP database.
+
+    QUERY_PATH is a .sql file containing a single SELECT statement.
+    Results are aggregate-only: individual-identifier columns are blocked
+    and rows with cell counts below --min-cell are suppressed.
+
+    Output is a JSON document suitable for sharing with a coordinating center.
+    It includes a disclosure_control block reporting how many rows were suppressed.
+    """
+    from .federated import run_federated_query, result_to_dict
+
+    sql = Path(query_path).read_text()
+    try:
+        result = run_federated_query(olap_path, sql, min_cell=min_cell)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    out = json.dumps(result_to_dict(result), indent=2, default=str)
+
+    if output:
+        Path(output).write_text(out)
+        suppressed_msg = (
+            f"  {result.rows_suppressed} row(s) suppressed (cell size < {min_cell})"
+            if result.rows_suppressed else "  No rows suppressed."
+        )
+        click.echo(
+            f"Wrote {result.rows_total - result.rows_suppressed} row(s) to {output}.\n"
+            + suppressed_msg
+        )
+    else:
+        click.echo(out)
+
+    # Audit log: record against the OLAP file's companion OLTP if locatable.
+    # Best-effort — skip silently if the OLTP path cannot be inferred.
+    _oltp_candidate = Path(olap_path).with_suffix(".db")
+    if _oltp_candidate.exists():
+        try:
+            _aconn = open_oltp(str(_oltp_candidate))
+            from .compliance import record_audit_event
+            record_audit_event(_aconn, "federated_query", details={
+                "query_hash": result.query_hash,
+                "min_cell": min_cell,
+                "rows_total": result.rows_total,
+                "rows_suppressed": result.rows_suppressed,
+                "output": output,
+            })
+            _aconn.close()
+        except Exception:
+            pass
