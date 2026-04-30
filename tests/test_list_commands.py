@@ -121,3 +121,23 @@ def test_ls_surveys_alias(tmp_path):
     result = CliRunner().invoke(main, ["ls", "surveys", str(db)])
     assert result.exit_code == 0
     assert "PHQ-9" in result.output
+
+
+# ---------------------------------------------------------------------------
+# list library
+# ---------------------------------------------------------------------------
+
+def test_list_library_exits_zero(tmp_path):
+    db = tmp_path / "study.db"
+    from quickq.library_loader import load_all_libraries
+    conn = init_oltp(db)
+    load_all_libraries(conn)
+    conn.commit()
+    result = CliRunner().invoke(main, ["list", "library", str(db)])
+    assert result.exit_code == 0
+
+
+def test_library_not_flat_command(tmp_path):
+    db, _, _ = _seed(tmp_path)
+    result = CliRunner().invoke(main, ["library", str(db)])
+    assert result.exit_code != 0

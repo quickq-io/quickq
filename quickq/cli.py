@@ -10,7 +10,7 @@ click.rich_click.COMMAND_GROUPS = {
     "quickq": [
         {
             "name": "Everyday authoring & analysis",
-            "commands": ["init", "load", "library", "serve", "preview", "render",
+            "commands": ["init", "load", "serve", "preview", "render",
                          "data-dict", "refresh", "report", "export"],
         },
         {
@@ -157,7 +157,7 @@ def load_cmd(yaml_path: str, db_path: str, study_id: int | None,
     click.echo(f"Loaded questionnaire id={qid}.")
 
 
-@main.command("library")
+@list_cmd.command("library")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--instrument", default=None, help="Filter by instrument name.")
 def library_cmd(db_path: str, instrument: str | None) -> None:
