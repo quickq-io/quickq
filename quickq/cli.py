@@ -11,7 +11,11 @@ click.rich_click.COMMAND_GROUPS = {
         {
             "name": "Everyday authoring & analysis",
             "commands": ["init", "load", "library", "serve", "preview", "render",
-                         "data-dict", "refresh", "report", "export-parquet"],
+                         "data-dict", "refresh", "report", "export"],
+        },
+        {
+            "name": "Inspect",
+            "commands": ["list", "ls"],
         },
         {
             "name": "Specialised workflows",
@@ -55,6 +59,66 @@ def compliance() -> None:
 @main.group()
 def federated() -> None:
     """Multi-site and federated analysis."""
+
+
+@main.group("list")
+def list_cmd() -> None:
+    """List studies, surveys, or library instruments."""
+
+
+# `ls` is an alias for `list`
+main.add_command(list_cmd, "ls")
+
+
+@list_cmd.command("studies")
+@click.argument("db_path", type=click.Path(exists=True))
+def list_studies_cmd(db_path: str) -> None:
+    """List all studies in DB_PATH."""
+    conn = open_oltp(db_path)
+    rows = conn.execute(
+        """SELECT study_id, name, principal_investigator, start_date, doi
+           FROM study ORDER BY study_id"""
+    ).fetchall()
+    if not rows:
+        click.echo("No studies found.")
+        return
+    click.echo(f"{'ID':<4}  {'NAME':<35}  {'PI':<25}  {'START':<12}  DOI")
+    click.echo("-" * 95)
+    for r in rows:
+        pi = r["principal_investigator"] or ""
+        start = r["start_date"] or ""
+        doi = r["doi"] or ""
+        click.echo(f"{r['study_id']:<4}  {r['name']:<35}  {pi:<25}  {start:<12}  {doi}")
+
+
+@list_cmd.command("surveys")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--study-id", type=int, default=None, help="Filter by study.")
+def list_surveys_cmd(db_path: str, study_id: int | None) -> None:
+    """List questionnaires in DB_PATH."""
+    conn = open_oltp(db_path)
+    if study_id is not None:
+        rows = conn.execute(
+            """SELECT questionnaire_id, name, version, fhir_status, canonical_url
+               FROM questionnaire WHERE study_id = ? ORDER BY questionnaire_id""",
+            (study_id,),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            """SELECT questionnaire_id, name, version, fhir_status, canonical_url
+               FROM questionnaire ORDER BY questionnaire_id"""
+        ).fetchall()
+    if not rows:
+        click.echo("No surveys found.")
+        return
+    click.echo(f"{'ID':<4}  {'NAME':<30}  {'VER':<6}  {'STATUS':<10}  CANONICAL URL")
+    click.echo("-" * 90)
+    for r in rows:
+        url = r["canonical_url"] or ""
+        click.echo(
+            f"{r['questionnaire_id']:<4}  {r['name']:<30}  {r['version']:<6}  "
+            f"{r['fhir_status']:<10}  {url}"
+        )
 
 
 @main.command()
@@ -198,16 +262,18 @@ def report_cmd(olap_path: str, oltp_path: str, questionnaire_id: int, output: st
         click.echo(text)
 
 
-@main.command("export-parquet")
+@main.command("export")
 @click.argument("olap_path", type=click.Path(exists=True))
 @click.argument("output_dir", type=click.Path())
+@click.option("--format", "fmt", type=click.Choice(["parquet"]), default="parquet",
+              show_default=True, help="Output format.")
 @click.option("--table", "tables", multiple=True,
               help="Table to export (repeatable). Defaults to all star schema tables.")
-@click.option("--overwrite", is_flag=True, help="Overwrite existing Parquet files.")
-def export_parquet_cmd(
-    olap_path: str, output_dir: str, tables: tuple[str, ...], overwrite: bool
+@click.option("--overwrite", is_flag=True, help="Overwrite existing files.")
+def export_cmd(
+    olap_path: str, output_dir: str, fmt: str, tables: tuple[str, ...], overwrite: bool
 ) -> None:
-    """Export OLAP tables from OLAP_PATH to Parquet files in OUTPUT_DIR."""
+    """Export OLAP tables from OLAP_PATH to OUTPUT_DIR."""
     from .export_parquet import export_parquet
     try:
         result = export_parquet(
