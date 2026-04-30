@@ -52,17 +52,17 @@ def main() -> None:
 
 @main.group()
 def fhir() -> None:
-    """FHIR-specific import and export."""
+    """Exchange questionnaires and responses using the FHIR standard."""
 
 
 @main.group()
 def compliance() -> None:
-    """IRB and data governance commands."""
+    """Participant rights, IRB obligations, and study registration."""
 
 
 @main.group()
 def federated() -> None:
-    """Multi-site and federated analysis."""
+    """Query sites without sharing records, or merge site databases into one."""
 
 
 @main.group("list")
