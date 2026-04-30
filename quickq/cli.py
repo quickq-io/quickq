@@ -489,6 +489,41 @@ def set_metadata_cmd(
         click.echo("No fields provided — nothing updated.")
 
 
+@main.command("export-metadata")
+@click.argument("db_path", type=click.Path(exists=True))
+@click.option("--study-id", type=int, default=1, show_default=True)
+@click.option("--format", "fmt", type=click.Choice(["datacite", "dublin-core"]),
+              default="datacite", show_default=True,
+              help="Metadata schema to produce.")
+@click.option("--output", "-o", type=click.Path(), default=None,
+              help="Write to file instead of stdout.")
+def export_metadata_cmd(db_path: str, study_id: int, fmt: str, output: str | None) -> None:
+    """Export study metadata as a DataCite JSON or Dublin Core XML record.
+
+    Run quickq fair-check first to verify all required fields are populated.
+    The output file can be submitted directly to Zenodo, OSF, or ICPSR.
+    After the repository assigns a DOI, record it with:
+
+        quickq set-metadata study.db --doi <DOI>
+    """
+    from .export_metadata import format_datacite_json, export_dublin_core
+
+    conn = open_oltp(db_path, read_only=True)
+    try:
+        if fmt == "datacite":
+            text = format_datacite_json(conn, study_id)
+        else:
+            text = export_dublin_core(conn, study_id)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    if output:
+        Path(output).write_text(text)
+        click.echo(f"Wrote {fmt} metadata to {output}.")
+    else:
+        click.echo(text)
+
+
 @main.command("fair-check")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.option("--study-id", type=int, default=1, show_default=True)

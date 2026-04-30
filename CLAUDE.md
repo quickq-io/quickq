@@ -663,12 +663,18 @@ Tracks what has been built, what is in progress, and what is planned. Update thi
 | Tool audit log | `tool_audit_log` table | ✅ Done | HIPAA audit trail, IRB data management |
 | Study metadata fields | `quickq set-metadata` | ✅ Done | NIH DMS plan, FAIR F2/R1 |
 | FAIR self-audit | `quickq fair-check` | ✅ Done | NIH DMS plan, FAIR compliance |
-| Machine-readable metadata export | `quickq export-metadata` | ⬜ Planned | NIH DMS plan, Zenodo/OSF deposit |
+| Machine-readable metadata export | `quickq export-metadata` | ✅ Done | NIH DMS plan, Zenodo/OSF deposit |
 | Questionnaire license field | `questionnaire.license` | ✅ Done | FAIR R1.1 |
 
-**Planned work (in priority order):**
+**All compliance features complete.** The full workflow is:
 
-1. **`quickq export-metadata`** — produces a DataCite JSON or Dublin Core XML metadata record from the study's populated metadata fields. Enables Zenodo, OSF, and ICPSR deposition. Run `quickq fair-check` first to ensure the record is complete before generating it.
+```bash
+quickq set-metadata study.db --license CC-BY-4.0 --protocol-url <URL> ...
+quickq fair-check study.db          # verify no failures before export
+quickq export-metadata study.db --format datacite --output metadata.json
+# Deposit metadata.json to Zenodo/OSF; record the assigned DOI
+quickq set-metadata study.db --doi 10.5281/zenodo.XXXXXXX
+```
 
 ---
 
