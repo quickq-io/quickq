@@ -389,13 +389,22 @@ quickq report analytics.duckdb study.db 1 --output report.md
 
 ## Step 12 — Explore the analytics layer
 
-Install the [DuckDB CLI](https://duckdb.org/docs/installation/) (a single binary), then open the analytics file in the local browser UI:
+Open the analytics database in the local DuckDB UI:
 
 ```bash
-duckdb -ui analytics.duckdb
+quickq analytics
 ```
 
-This opens a SQL editor in your browser pointed at `analytics.duckdb`. Try these queries.
+`quickq analytics` defaults to `./analytics.duckdb` and opens a SQL editor in your browser. It requires the [DuckDB CLI](https://duckdb.org/docs/installation/) on your PATH (`brew install duckdb` on macOS); the interactive UI needs DuckDB ≥ 1.2.
+
+For a non-interactive run — handy for notebooks or scripts — pass `--queries-file`:
+
+```bash
+echo "SELECT COUNT(*) FROM dim_session;" > count.sql
+quickq analytics --queries-file count.sql
+```
+
+Try the following queries in the UI.
 
 ---
 

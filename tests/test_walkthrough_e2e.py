@@ -265,3 +265,18 @@ def test_walkthrough_round_trip(quickq_bin, tmp_path):
     """).fetchone()
     assert skip_violated == 0, f"skip-logic violated: {skip_violated} sessions"
     assert skip_respected and skip_respected > 0
+    conn.close()  # release the lock so `quickq analytics` subprocess can open the file
+
+    # `quickq analytics --queries-file` (yn5): non-interactive duckdb wrapper.
+    # Skip if the duckdb binary isn't on PATH — the test would only assert the
+    # error message in that case, which we test elsewhere via a unit test.
+    import shutil
+    if shutil.which("duckdb") is not None:
+        sql_path = tmp_path / "count.sql"
+        sql_path.write_text("SELECT COUNT(*) AS sessions FROM dim_session;")
+        r = run([quickq_bin, "analytics", str(olap), "--queries-file", str(sql_path)])
+        assert r.returncode == 0, r.stderr
+        assert "sessions" in r.stdout
+        # The seed count was 50; expect that exact value somewhere in DuckDB's
+        # ASCII table output (right-aligned in its own row).
+        assert "50" in r.stdout, f"expected 50 sessions in output, got: {r.stdout}"

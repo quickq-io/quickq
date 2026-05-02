@@ -264,6 +264,46 @@ def seed_cmd(db_path: str, questionnaire_id: int, n: int, study_id: int | None, 
     click.echo(f"Seeded {len(ids)} response session(s) (ids={range_str}).")
 
 
+@main.command("analytics")
+@click.argument("olap_path", type=click.Path(), default="analytics.duckdb", required=False)
+@click.option("--queries-file", type=click.Path(exists=True), default=None,
+              help="Path to a .sql file. Runs the queries non-interactively against "
+                   "OLAP_PATH and prints results to stdout (no browser).")
+def analytics_cmd(olap_path: str, queries_file: str | None) -> None:
+    """Open the analytics database in the DuckDB UI (or run queries non-interactively).
+
+    OLAP_PATH defaults to ./analytics.duckdb (the conventional sibling of
+    study.db produced by `quickq refresh`). Requires the duckdb binary on
+    PATH; the interactive UI mode also requires DuckDB >= 1.2.
+    """
+    import shutil
+    import subprocess
+
+    if not Path(olap_path).is_file():
+        raise click.ClickException(
+            f"OLAP database not found: {olap_path}\n"
+            "Run `quickq refresh study.db analytics.duckdb` first."
+        )
+
+    duckdb_bin = shutil.which("duckdb")
+    if duckdb_bin is None:
+        raise click.ClickException(
+            "duckdb binary not found on PATH. Install it first:\n"
+            "  macOS:  brew install duckdb\n"
+            "  Linux:  https://duckdb.org/docs/installation/\n"
+            "Note: the interactive UI requires DuckDB >= 1.2."
+        )
+
+    if queries_file:
+        sql = Path(queries_file).read_text()
+        result = subprocess.run([duckdb_bin, olap_path], input=sql, text=True)
+        raise SystemExit(result.returncode)
+
+    click.echo(f"Opening DuckDB UI for {olap_path} (Ctrl-C to exit)...")
+    result = subprocess.run([duckdb_bin, "-ui", olap_path])
+    raise SystemExit(result.returncode)
+
+
 @main.command("preview")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("questionnaire_id", type=int)
