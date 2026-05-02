@@ -151,17 +151,30 @@ def init(db_path: str, with_library: bool) -> None:
                    "(default: from quickq.yml, else false).")
 def load_cmd(yaml_path: str, db_path: str, study_id: int | None,
              strict_concepts: bool | None, auto_concept: bool | None) -> None:
-    """Compile a YAML questionnaire definition into DB_PATH."""
+    """Compile a YAML questionnaire definition into DB_PATH.
+
+    Re-loading a YAML whose canonical_url + version match an existing
+    questionnaire is supported when no responses have been collected yet:
+    the existing definition is replaced in place. After collection begins,
+    bump the YAML's `version` to author a new revision instead.
+    """
+    from .authoring import find_existing_questionnaire
     cfg = load_config(Path(db_path).parent)
     effective_strict = strict_concepts if strict_concepts is not None else cfg.authoring.strict_concepts
     effective_auto = auto_concept if auto_concept is not None else cfg.authoring.auto_concept
     conn = open_oltp(db_path)
+    # Detect replace-vs-fresh so we can render an honest verb after the load.
+    import yaml as _yaml
+    raw = _yaml.safe_load(Path(yaml_path).read_text())
+    body = raw.get("questionnaire", raw)
+    pre_existing_id = find_existing_questionnaire(conn, body.get("canonical_url"), str(body.get("version", "1.0")))
     try:
         qid = load_yaml(conn, yaml_path, study_id=study_id, strict_concepts=effective_strict,
                         auto_concept=effective_auto)
     except ValueError as exc:
         raise click.ClickException(str(exc))
-    click.echo(f"Loaded questionnaire id={qid}.")
+    verb = "Replaced" if pre_existing_id is not None else "Loaded"
+    click.echo(f"{verb} questionnaire id={qid}.")
 
 
 @list_cmd.command("library")

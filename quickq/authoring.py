@@ -207,6 +207,70 @@ def insert_questionnaire(
     return conn.execute("SELECT last_insert_rowid()").fetchone()[0]
 
 
+def find_existing_questionnaire(
+    conn: sqlite3.Connection,
+    canonical_url: str | None,
+    version: str,
+) -> int | None:
+    """Return the questionnaire_id of an existing row matching (canonical_url, version), or None."""
+    if not canonical_url:
+        return None
+    row = conn.execute(
+        "SELECT questionnaire_id FROM questionnaire WHERE canonical_url = ? AND version = ?",
+        (canonical_url, version),
+    ).fetchone()
+    return row["questionnaire_id"] if row else None
+
+
+def count_responses(conn: sqlite3.Connection, questionnaire_id: int) -> int:
+    """Count response_session rows associated with a questionnaire."""
+    return conn.execute(
+        "SELECT COUNT(*) AS n FROM response_session WHERE questionnaire_id = ?",
+        (questionnaire_id,),
+    ).fetchone()["n"]
+
+
+def clear_questionnaire_definition(conn: sqlite3.Connection, questionnaire_id: int) -> None:
+    """
+    Delete the definition rows that belong to a questionnaire (sections, placements,
+    skip rules, scoring rules) so the questionnaire can be re-loaded under the same
+    questionnaire_id. Does NOT touch responses, admin events, or errata logs.
+
+    Caller must verify no responses exist (count_responses) before invoking, or
+    the FK from response.qq_id will block the questionnaire_question delete.
+    """
+    qq_ids_subq = (
+        "SELECT qq_id FROM questionnaire_question WHERE questionnaire_id = ?"
+    )
+    rule_ids_subq = (
+        "SELECT scoring_rule_id FROM scoring_rule WHERE questionnaire_id = ?"
+    )
+    # Delete deepest-first to satisfy non-cascading FKs
+    conn.execute(f"DELETE FROM scoring_rule_item WHERE scoring_rule_id IN ({rule_ids_subq})", (questionnaire_id,))
+    conn.execute(f"DELETE FROM scoring_category  WHERE scoring_rule_id IN ({rule_ids_subq})", (questionnaire_id,))
+    conn.execute("DELETE FROM scoring_rule  WHERE questionnaire_id = ?", (questionnaire_id,))
+    conn.execute(f"DELETE FROM skip_rule         WHERE qq_id IN ({qq_ids_subq})", (questionnaire_id,))
+    conn.execute(f"DELETE FROM data_quality_flag WHERE qq_id IN ({qq_ids_subq})", (questionnaire_id,))
+    conn.execute("DELETE FROM questionnaire_question WHERE questionnaire_id = ?", (questionnaire_id,))
+    conn.execute("DELETE FROM section              WHERE questionnaire_id = ?", (questionnaire_id,))
+
+
+def update_questionnaire(
+    conn: sqlite3.Connection,
+    questionnaire_id: int,
+    defn: QuestionnaireDef,
+    study_id: int | None = None,
+) -> None:
+    """Update the metadata fields on an existing questionnaire row in place."""
+    fields = "name = ?, description = ?, fhir_status = ?"
+    params: list = [defn.name, defn.description, defn.fhir_status]
+    if study_id is not None:
+        fields += ", study_id = ?"
+        params.append(study_id)
+    params.append(questionnaire_id)
+    conn.execute(f"UPDATE questionnaire SET {fields} WHERE questionnaire_id = ?", params)
+
+
 def insert_section(
     conn: sqlite3.Connection,
     questionnaire_id: int,

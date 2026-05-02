@@ -28,6 +28,8 @@ from .authoring import (
     insert_questionnaire, insert_section, place_question,
     insert_skip_rule, insert_scoring_rule,
     insert_scoring_rule_item, insert_scoring_category,
+    find_existing_questionnaire, count_responses,
+    clear_questionnaire_definition, update_questionnaire,
 )
 
 
@@ -220,7 +222,13 @@ def load_yaml(
 ) -> int:
     """
     Compile a YAML questionnaire definition and write it to the database.
-    Returns the new questionnaire_id.  Runs in a single transaction.
+    Returns the questionnaire_id.  Runs in a single transaction.
+
+    If a questionnaire with the same canonical_url + version already exists
+    AND has zero responses, it is replaced silently (definition rows cleared
+    and re-inserted under the same questionnaire_id) — this supports
+    iterative authoring. If it has responses, ValueError is raised: bump
+    `version` in the YAML to author a new revision instead.
     """
     raw = yaml.safe_load(Path(path).read_text())
     defn = parse_questionnaire_def(raw)
@@ -237,9 +245,25 @@ def load_def(
 ) -> int:
     """
     Write a QuestionnaireDef to the database.  Returns questionnaire_id.
+    Replaces an existing (canonical_url, version) when no responses exist;
+    see load_yaml docstring.
     """
     with conn:
-        questionnaire_id = insert_questionnaire(conn, defn, study_id)
+        existing_id = find_existing_questionnaire(conn, defn.canonical_url, defn.version)
+        if existing_id is not None:
+            n_responses = count_responses(conn, existing_id)
+            if n_responses > 0:
+                raise ValueError(
+                    f"Questionnaire '{defn.name}' v{defn.version} (id={existing_id}) at "
+                    f"{defn.canonical_url} has {n_responses} response session(s). "
+                    f"Bump 'version' in your YAML to author a new revision rather than "
+                    f"overwriting the instrument respondents already saw."
+                )
+            clear_questionnaire_definition(conn, existing_id)
+            update_questionnaire(conn, existing_id, defn, study_id)
+            questionnaire_id = existing_id
+        else:
+            questionnaire_id = insert_questionnaire(conn, defn, study_id)
 
         # Register option_sets so they can be referenced by name in questions
         set_ids: dict[str, int] = {}
