@@ -453,33 +453,25 @@ def export_fhir_cmd(db_path: str, questionnaire_id: int, output: str | None) -> 
 def serve_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool) -> None:
     """Serve a questionnaire from DB_PATH as an interactive web form.
 
-    Starts the quickq-forms server with the local adapter pointed at DB_PATH.
-    Submitted responses are written directly to the study database.
-    Requires quickq-forms to be installed (pip install quickq-forms).
+    Thin shim: delegates to quickq_forms.serve.run, which constructs the
+    LocalAdapter and runs the FastAPI app. The implementation lives in
+    quickq-forms so the FHIR boundary stays clean (quickq-forms imports
+    quickq, never the reverse).
     """
     try:
-        import uvicorn
-        from server.main import create_app
-        from server.adapters.local import LocalAdapter
+        from quickq_forms.serve import run
     except ImportError as exc:
         raise click.ClickException(
             f"quickq-forms is not installed ({exc}). "
-            "Install it with: pip install quickq-forms"
+            "Install it with: pip install 'quickq[serve]'"
         )
 
-    db_path_abs = str(Path(db_path).resolve())
-    adapter = LocalAdapter(db_path=db_path_abs, questionnaire_id=questionnaire_id)
-    app = create_app(adapter)
-
-    if not no_browser:
-        import threading, webbrowser, time
-        def _open():
-            time.sleep(1.0)
-            webbrowser.open(f"http://localhost:{port}")
-        threading.Thread(target=_open, daemon=True).start()
-
-    click.echo(f"Serving questionnaire {questionnaire_id} from {db_path} on http://localhost:{port}")
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    run(
+        db_path=db_path,
+        questionnaire_id=questionnaire_id,
+        port=port,
+        open_browser=not no_browser,
+    )
 
 
 @compliance.command("delete")

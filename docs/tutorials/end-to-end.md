@@ -282,16 +282,16 @@ This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant deli
 
 ---
 
-## Step 6 — Install and start quickq-forms
+## Step 6 — Start the form server
 
-In a new terminal, clone `quickq-forms` into the same parent directory as `quickq` (the one you chose in Step 1) — its dev script imports `quickq` from a sibling path:
+`quickq serve` launches a web form for your study and opens it in your browser. Submitted responses write straight back to `study.db`.
+
+The serve command lives in a separate package, `quickq-forms`. Reinstall `quickq` with the `serve` extra so both end up on your PATH together:
 
 ```bash
 cd ~/code            # the parent directory from Step 1
 git clone https://github.com/quickq-io/quickq-forms.git
-cd quickq-forms
-uv sync
-cd frontend && npm install && cd ..
+uv tool install --reinstall ./quickq --with ./quickq-forms
 ```
 
 Your layout should now look like:
@@ -299,32 +299,24 @@ Your layout should now look like:
 ```
 ~/code/
 ├── quickq/          # cloned in Step 1
-├── quickq-forms/    # cloned just now — sibling of quickq
-└── gout-study/      # the study directory you created in Step 2
+├── quickq-forms/    # cloned just now
+└── gout-study/      # created in Step 2; contains study.db
 ```
 
-Start it pointing at your study database. Run this from inside `gout-study/` to get the absolute path, then use it in the command:
+Start the server from inside `gout-study/`:
 
 ```bash
-# From gout-study/
-pwd
-# → /Users/yourname/gout-study
-
-# From the quickq-forms directory
-bash scripts/dev.sh --db /Users/yourname/gout-study/study.db --questionnaire-id 1
+cd ~/code/gout-study
+quickq serve study.db
 ```
 
 You should see:
 
 ```
-Starting API server (local adapter) on :8000
-Starting Vite dev server on :5173
-
-  API   → http://localhost:8000/health
-  Form  → http://localhost:5173
+Serving questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://localhost:8000
 ```
 
-Open **http://localhost:5173**.
+A browser tab opens at **http://localhost:8000** showing the form.
 
 !!! note
     If the form doesn't load, try a private/incognito window — browser extensions sometimes block localhost requests.
