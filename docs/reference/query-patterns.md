@@ -206,7 +206,7 @@ GROUP BY dr.external_id, fr.session_id, fr.repeat_index
 ORDER BY respondent, visit_number;
 ```
 
-The demo pre-builds this pivot as `v_prenatal_visits`. See `sql/demo_views.sql`.
+The demo pre-builds this pivot as `v_prenatal_visits`. See `quickq/sql/demo_views.sql`.
 
 ---
 

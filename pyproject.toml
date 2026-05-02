@@ -26,6 +26,9 @@ pdf = [
 [tool.setuptools]
 packages = ["quickq"]
 
+[tool.setuptools.package-data]
+quickq = ["sql/*.sql", "library/*.yaml"]
+
 [dependency-groups]
 dev = [
     "mkdocs>=1.6.1",

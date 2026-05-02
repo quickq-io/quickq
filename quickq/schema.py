@@ -1,7 +1,8 @@
 import sqlite3
+from importlib.resources import files
 from pathlib import Path
 
-_SQL_DIR = Path(__file__).parent.parent / "sql"
+_SQL_DIR = files(__package__) / "sql"
 
 
 def _read_sql(name: str) -> str:

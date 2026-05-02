@@ -25,8 +25,9 @@ from pathlib import Path
 from typing import Any
 
 import duckdb
+from importlib.resources import files
 
-_SQL_DIR = Path(__file__).parent.parent / "sql"
+_SQL_DIR = files(__package__) / "sql"
 
 # choice-like types whose scoreable value lives in response_option.option_value
 _SCORED_CHOICE_TYPES = frozenset({

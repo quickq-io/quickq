@@ -144,7 +144,8 @@ def _prenatal_response(subject_id: str, n_visits: int, authored: str) -> dict:
     }
 
 
-_VIEWS_SQL = Path(__file__).parent.parent / "sql" / "demo_views.sql"
+from importlib.resources import files
+_VIEWS_SQL = files("quickq") / "sql" / "demo_views.sql"
 
 
 # ── LOINC seeding ───────────────────────────────────────────────────

@@ -20,7 +20,7 @@ After `quickq refresh`, the DuckDB OLAP contains:
 - **`agg_*`** tables — pre-computed distributions, scores, and completion stats materialized on refresh
 - **`omop_*`** tables — OMOP-aligned projection for federated network queries (see [OMOP Interoperability](../reference/omop.md))
 
-The six demo views (`v_phq9_scores`, `v_phq9_severity_distribution`, `v_phq9_by_admin_mode`, `v_prenatal_visits`, `v_prenatal_summary`, `v_phq9_prenatal_overlap`) are pre-loaded from `sql/demo_views.sql` and available immediately.
+The six demo views (`v_phq9_scores`, `v_phq9_severity_distribution`, `v_phq9_by_admin_mode`, `v_prenatal_visits`, `v_prenatal_summary`, `v_phq9_prenatal_overlap`) are pre-loaded from `quickq/sql/demo_views.sql` and available immediately.
 
 Two design points worth noting before diving into the queries:
 
