@@ -391,18 +391,16 @@ def _rebuild_agg_question_distribution(conn: duckdb.DuckDBPyConnection) -> None:
             f.study_id,
             f.questionnaire_id,
             f.question_id,
-            f.question_concept_id,
-            f.option_id,
+            MIN(f.question_concept_id)                                AS question_concept_id,
+            MIN(f.option_id)                                          AS option_id,
             f.option_value,
-            f.option_concept_id,
-            COUNT(*)                                                  AS n,
-            ROUND(100.0 * COUNT(*) / NULLIF(t.n_total, 0), 2)        AS pct
+            MIN(f.option_concept_id)                                  AS option_concept_id,
+            COUNT(*)                                                   AS n,
+            ROUND(100.0 * COUNT(*) / NULLIF(MAX(t.n_total), 0), 2)    AS pct
         FROM   fact_response f
         JOIN   totals t USING (questionnaire_id, question_id)
         WHERE  f.option_value IS NOT NULL
-        GROUP  BY f.study_id, f.questionnaire_id, f.question_id,
-                  f.question_concept_id, f.option_id, f.option_value,
-                  f.option_concept_id, t.n_total
+        GROUP  BY f.study_id, f.questionnaire_id, f.question_id, f.option_value
     """)
 
 
