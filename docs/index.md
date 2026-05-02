@@ -1,54 +1,44 @@
 # quickq
 
-**quickq** is a survey authoring and analytics toolkit for health and epidemiology research. It is designed around one idea: that a well-designed data model, expressed as a portable SQLite file, is a better foundation for research software than a bespoke web application.
+quickq is a survey authoring and analytics toolkit for health and epidemiology research, built on two open file formats with no server required.
 
-There is no application server. No cloud account. No proprietary format. A complete study lives in two files that any SQL tool can open.
+*A well-designed data model is the best foundation for a survey study.* It encodes claims about what exists in your research, claims that determine what data quality can be enforced at collection time and what analyses become possible later. quickq makes those claims explicit in a two-layer architecture.
 
----
+**`study.db` is the portable study artifact.** It is a standard SQLite file — any SQL tool or language with SQLite bindings can read it directly. The framework is built around open standards:
 
-## The Mental Model
+- Instruments are authored in YAML and validated against existing instruments in the database to avoid duplicating established questions; a preview renderer shows the instrument before deployment
+- Delivery is via FHIR: quickq exports a `Questionnaire.json`, any compliant tool renders and collects responses, and quickq ingests the `QuestionnaireResponse.json` back
+- Questions and response options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization
+- A Python SDK provides a clean interface to both databases; the SQLite schema is the contract for non-Python implementations
 
-quickq separates two concerns that survey platforms typically conflate:
+Together these are the building blocks of a complete, portable, questionnaire-driven study — hook up a delivery tool, collect responses, and the rest follows from the data model.
 
-**Authoring and analysis** are quickq's job. You define instruments, collect responses, score scales, and query results — all through a well-specified schema and a Python SDK that wraps it.
+**OLTP layer (`study.db`, SQLite): correctness and provenance**
 
-**Delivery** is not quickq's job. quickq exports a standard [FHIR Questionnaire](https://hl7.org/fhir/R4/questionnaire.html), hands it to any delivery tool (a web app, a mobile app, a clinical system), and imports back a standard [FHIR QuestionnaireResponse](https://hl7.org/fhir/R4/questionnaireresponse.html). The schema is the interface; FHIR is the handoff protocol.
+- Questions are immutable once used in a study; a reword or option change produces a new versioned definition, so every response points to exactly what was asked
+- Skip logic is stored as structured rules in the database, not in external documentation, making it auditable and testable
+- Foreign key constraints and typed response storage enforce integrity at collection time; data quality issues are flagged without interrupting collection
 
-```
-quickq export_fhir()
-  → FHIR Questionnaire JSON  →  any delivery tool
-                                  ↓ responses
-quickq import_fhir_response()
-  ← FHIR QuestionnaireResponse JSON
-  → quickq refresh → DuckDB OLAP → analysis
-```
+**OLAP layer (`analytics.duckdb`, DuckDB): standardized analysis**
 
----
-
-## Two Layers
-
-| Layer | Technology | Purpose |
-|---|---|---|
-| OLTP | SQLite | Instrument definition, response collection, data quality |
-| OLAP | DuckDB | Star schema, scoring, aggregates, OMOP extraction |
-
-The OLTP layer is normalized, FK-heavy, and designed for correctness. The OLAP layer is columnar, denormalized, and designed for analysis. They are connected by `quickq refresh`, which reads the SQLite file directly without an intermediary service.
+- Every answered question is one row in `fact_response`; the same query pattern works for every question type and every instrument, with no instrument-specific code
+- Skip logic violations, out-of-range values, and unexpected missing data are standard SQL queries against the star schema, not custom scripts per instrument
+- Subscale scores (PHQ-9, GAD-7, SF-12) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time
+- Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization of shared LOINC or SNOMED codes is a join
 
 ---
 
 ## Quick Start
 
 ```bash
-uv sync                              # install dependencies
-
-quickq init study.db                 # create a new OLTP database
-quickq import-fhir q.json study.db   # import a FHIR Questionnaire
-quickq refresh study.db              # load OLTP → DuckDB analytical model
-quickq report study.db               # generate a Markdown summary
-quickq export-fhir 1 study.db        # export questionnaire id=1 as FHIR JSON
+uv sync                                          # install dependencies
+quickq init study.db                             # create a new database
+quickq load instrument.yaml study.db             # load a YAML instrument definition
+quickq refresh study.db analytics.duckdb         # build the analytical layer
+quickq report analytics.duckdb study.db 1        # generate a Markdown summary
 ```
 
-Authoring from a YAML definition:
+Authoring from YAML:
 
 ```yaml
 name: PHQ-9
@@ -59,26 +49,28 @@ questions:
   - link_id: phq-1
     text: Little interest or pleasure in doing things?
     type: single_choice
+    concept: LOINC:44250-9
     required: true
     options:
-      - { text: "Not at all",             value: "0" }
-      - { text: "Several days",           value: "1" }
-      - { text: "More than half the days",value: "2" }
-      - { text: "Nearly every day",       value: "3" }
+      - { text: "Not at all",              value: "0", concept: LOINC:LA6568-5 }
+      - { text: "Several days",            value: "1", concept: LOINC:LA6569-3 }
+      - { text: "More than half the days", value: "2", concept: LOINC:LA6570-1 }
+      - { text: "Nearly every day",        value: "3", concept: LOINC:LA6571-9 }
 ```
 
 ---
 
-## What quickq Is Good At
+## What quickq is not
 
-- Authoring validated instruments (PHQ-9, GAD-7, BRFSS scales) in YAML or Python and loading them into a portable `.db`
-- Importing and exporting FHIR Questionnaire and QuestionnaireResponse resources for interoperability with clinical platforms
-- Computing subscale scores and population-level distributions on refresh
-- Cross-study harmonization via OMOP concept mappings and declared question equivalences
-- Capturing data quality issues without interrupting collection
-
-## What quickq Is Not
-
-- A survey web application — use LHC-Forms, REDCap, or a FHIR-compliant platform for delivery
+- A survey web application — use LHC-Forms, REDCap, or any FHIR-compliant platform for delivery
 - A patient portal or EMR integration layer — quickq hands off FHIR and accepts it back
-- An always-on service — the refresh model is batch/on-demand, not streaming
+- An always-on service — the refresh model is batch/on-demand, appropriate for research use
+
+---
+
+## Going deeper
+
+- [Design Decisions](design_decisions.md) — delivery independence, scaling patterns, federated analytics, and data sovereignty
+- [The Study Journey](tutorial.md) — end-to-end walkthrough from instrument authoring to published results
+- [Survey Authoring](authoring.md) — YAML format, question types, skip logic, scoring rules, concept mapping
+- [What We Struggle With](articles/survey-data-challenges.md) — a field perspective on the structural problems this tool addresses

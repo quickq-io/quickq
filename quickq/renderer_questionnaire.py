@@ -142,6 +142,8 @@ def _render_question(
     qtype = q["question_type"]
     if qtype in ("single_choice", "multiple_choice", "sata_other", "likert", "ranked"):
         _render_options(conn, lines, q["question_id"], pad)
+    elif qtype == "grid":
+        _render_grid(conn, lines, q["question_id"], pad)
     elif qtype == "boolean":
         lines += [f"{pad}- Yes / No", ""]
     elif qtype == "numeric":
@@ -152,6 +154,8 @@ def _render_question(
         lines += [f"{pad}*Free-text response*", ""]
     elif qtype == "date":
         lines += [f"{pad}*Date*", ""]
+    elif qtype == "datetime":
+        lines += [f"{pad}*Date and time*", ""]
     elif qtype == "repeating_group":
         lines += [f"{pad}*Repeating group — one set of sub-questions per instance*", ""]
         _render_children(conn, lines, q["qq_id"], indent)
@@ -179,6 +183,31 @@ def _render_options(
         )
         other = " *(free text)*" if opt["is_other"] else ""
         lines.append(f"{pad}- `{opt['option_value']}` {opt['option_text']}{concept}{other}")
+    lines.append("")
+
+
+def _render_grid(
+    conn: sqlite3.Connection,
+    lines: list[str],
+    question_id: int,
+    pad: str,
+) -> None:
+    rows = conn.execute(
+        "SELECT row_text FROM grid_row WHERE question_id = ? ORDER BY display_order",
+        (question_id,),
+    ).fetchall()
+    cols = conn.execute(
+        "SELECT column_text, column_value FROM grid_column WHERE question_id = ? ORDER BY display_order",
+        (question_id,),
+    ).fetchall()
+    if not rows or not cols:
+        return
+    header = "| |" + "".join(f" {c['column_text']} (`{c['column_value']}`) |" for c in cols)
+    sep = "|---|" + "---|" * len(cols)
+    lines.append(f"{pad}{header}")
+    lines.append(f"{pad}{sep}")
+    for r in rows:
+        lines.append(f"{pad}| {r['row_text']} |" + " |" * len(cols))
     lines.append("")
 
 

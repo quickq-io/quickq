@@ -882,3 +882,40 @@ def test_roundtrip_required_flag(tmp_path):
     req = {r["link_id"]: r["is_required"] for r in rows}
     assert req["rt.packs"] == 1
     assert req["rt.smoke"] == 0
+
+
+# ------------------------------------------------------------------
+# Slider round-trip
+# ------------------------------------------------------------------
+
+def test_slider_roundtrip_preserves_type(tmp_path):
+    src_conn = init_oltp(tmp_path / "src.db")
+    q_id = upsert_question(src_conn, QuestionDef(
+        link_id="q.vas", text="Pain level?", type="slider",
+        numeric_min=0, numeric_max=100,
+        slider_min_label="No pain", slider_max_label="Worst imaginable",
+    ))
+    qid = insert_questionnaire(src_conn, QuestionnaireDef(name="VAS"))
+    place_question(src_conn, qid, q_id, display_order=0)
+    src_conn.commit()
+
+    fhir_dict = export_fhir(src_conn, qid)
+    dst_conn = init_oltp(tmp_path / "dst.db")
+    dst_qid = import_fhir(dst_conn, fhir_dict)
+    dst_conn.commit()
+
+    row = dst_conn.execute(
+        """
+        SELECT q.question_type, q.slider_min_label, q.slider_max_label,
+               q.numeric_min, q.numeric_max
+        FROM questionnaire_question qq
+        JOIN question q ON qq.question_id = q.question_id
+        WHERE qq.questionnaire_id = ?
+        """,
+        (dst_qid,),
+    ).fetchone()
+    assert row["question_type"] == "slider"
+    assert row["slider_min_label"] == "No pain"
+    assert row["slider_max_label"] == "Worst imaginable"
+    assert row["numeric_min"] == 0.0
+    assert row["numeric_max"] == 100.0

@@ -88,7 +88,7 @@ def load_library_file(conn: sqlite3.Connection, path: Path) -> list[int]:
                 numeric_max=q_raw.get("numeric_max"),
                 numeric_step=q_raw.get("numeric_step"),
             )
-            question_id = upsert_question(conn, q_def)
+            question_id = upsert_question(conn, q_def, strict_concepts=False)
 
             # Only insert options if this question has none yet (idempotent)
             has_options = conn.execute(

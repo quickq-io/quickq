@@ -40,6 +40,7 @@ def _parse_option(raw: dict) -> OptionDef:
         text=raw["text"],
         value=str(raw["value"]),
         concept=raw.get("concept"),
+        concept_id=int(raw["concept_id"]) if raw.get("concept_id") is not None else None,
         is_other=bool(raw.get("is_other", False)),
         is_exclusive=bool(raw.get("is_exclusive", False)),
     )
@@ -110,6 +111,7 @@ def _parse_question(raw: dict) -> QuestionDef:
         type=raw["type"],
         help_text=raw.get("help_text"),
         concept=raw.get("concept"),
+        concept_id=int(raw["concept_id"]) if raw.get("concept_id") is not None else None,
         options=options,
         option_set=option_set,
         show_when=show_when,
@@ -122,10 +124,22 @@ def _parse_question(raw: dict) -> QuestionDef:
         numeric_step=raw.get("numeric_step"),
         slider_min_label=raw.get("slider_min_label"),
         slider_max_label=raw.get("slider_max_label"),
-        rows=[GridRowDef(text=r["text"]) for r in raw["rows"]] if raw.get("rows") else None,
+        rows=[
+            GridRowDef(
+                text=r["text"],
+                concept=r.get("concept"),
+                concept_id=int(r["concept_id"]) if r.get("concept_id") is not None else None,
+            )
+            for r in raw["rows"]
+        ] if raw.get("rows") else None,
         columns=[
-            GridColumnDef(text=c["text"], value=str(c["value"]) if "value" in c else None,
-                          column_type=c.get("column_type", "single_choice"))
+            GridColumnDef(
+                text=c["text"],
+                value=str(c["value"]) if "value" in c else None,
+                column_type=c.get("column_type", "single_choice"),
+                concept=c.get("concept"),
+                concept_id=int(c["concept_id"]) if c.get("concept_id") is not None else None,
+            )
             for c in raw["columns"]
         ] if raw.get("columns") else None,
         items=[_parse_question(q) for q in raw["items"]] if raw.get("items") else None,
@@ -194,6 +208,8 @@ def load_yaml(
     conn: sqlite3.Connection,
     path: str | Path,
     study_id: int | None = None,
+    strict_concepts: bool = True,
+    auto_concept: bool = False,
 ) -> int:
     """
     Compile a YAML questionnaire definition and write it to the database.
@@ -201,13 +217,16 @@ def load_yaml(
     """
     raw = yaml.safe_load(Path(path).read_text())
     defn = parse_questionnaire_def(raw)
-    return load_def(conn, defn, study_id=study_id)
+    return load_def(conn, defn, study_id=study_id, strict_concepts=strict_concepts,
+                    auto_concept=auto_concept)
 
 
 def load_def(
     conn: sqlite3.Connection,
     defn: QuestionnaireDef,
     study_id: int | None = None,
+    strict_concepts: bool = True,
+    auto_concept: bool = False,
 ) -> int:
     """
     Write a QuestionnaireDef to the database.  Returns questionnaire_id.
@@ -248,7 +267,8 @@ def load_def(
                     effective_link_id = row["link_id"]
                     # skip option insertion — library question already has options
                 else:
-                    question_id = upsert_question(conn, q_def)
+                    question_id = upsert_question(conn, q_def, strict_concepts=strict_concepts,
+                                                  auto_concept=auto_concept)
                     effective_link_id = q_def.link_id
 
                     # Resolve options: inline list or shared option_set reference
@@ -265,10 +285,12 @@ def load_def(
                         effective_set_id = set_ids[set_name]
 
                     if effective_options:
-                        insert_options(conn, question_id, effective_options, effective_set_id)
+                        insert_options(conn, question_id, effective_options, effective_set_id,
+                                       auto_concept=auto_concept)
 
                     if q_def.rows and q_def.columns:
-                        insert_grid_rows_columns(conn, question_id, q_def.rows, q_def.columns)
+                        insert_grid_rows_columns(conn, question_id, q_def.rows, q_def.columns,
+                                                 auto_concept=auto_concept)
 
                 qq_id = place_question(
                     conn,
@@ -286,9 +308,10 @@ def load_def(
                 # Repeating group: place child questions with parent_qq_id
                 if q_def.type == "repeating_group" and q_def.items:
                     for child_order, child_def in enumerate(q_def.items):
-                        child_q_id = upsert_question(conn, child_def)
+                        child_q_id = upsert_question(conn, child_def, auto_concept=auto_concept)
                         if child_def.options:
-                            insert_options(conn, child_q_id, child_def.options, None)
+                            insert_options(conn, child_q_id, child_def.options, None,
+                                           auto_concept=auto_concept)
                         child_qq_id = place_question(
                             conn,
                             questionnaire_id=questionnaire_id,

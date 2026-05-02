@@ -40,6 +40,11 @@ library:
       type: date
       source_item_id: "GOUT-H1"
 
+    - link_id: gout.last_attack_datetime
+      text: "Date and time your most recent gout attack began (if known):"
+      type: datetime
+      source_item_id: "GOUT-H1b"
+
     - link_id: gout.attacks_12mo
       text: "How many gout attacks have you had in the past 12 months?"
       type: numeric
@@ -109,6 +114,15 @@ library:
       text: "Date of that uric acid blood test:"
       type: date
       source_item_id: "GOUT-M3"
+
+    - link_id: gout.pain_vas
+      text: "How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)"
+      type: slider
+      source_item_id: "GOUT-M4"
+      numeric_min: 0
+      numeric_max: 100
+      slider_min_label: "No pain"
+      slider_max_label: "Worst imaginable pain"
 
     # ── Priorities ───────────────────────────────────────────────��───
     - link_id: gout.treatment_priorities

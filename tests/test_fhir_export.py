@@ -484,3 +484,56 @@ def test_export_fhir_json_is_valid_json(tmp_path):
     text = export_fhir_json(conn, qid)
     parsed = json.loads(text)
     assert parsed["resourceType"] == "Questionnaire"
+
+
+# ------------------------------------------------------------------
+# Slider export
+# ------------------------------------------------------------------
+
+def test_slider_type_is_integer(tmp_path):
+    conn = _db(tmp_path)
+    q_id = upsert_question(conn, QuestionDef(
+        link_id="q.vas", text="Pain level?", type="slider",
+        numeric_min=0, numeric_max=100,
+        slider_min_label="No pain", slider_max_label="Worst imaginable",
+    ))
+    qid = insert_questionnaire(conn, QuestionnaireDef(name="VAS"))
+    place_question(conn, qid, q_id, display_order=0)
+    conn.commit()
+    item = export_fhir(conn, qid)["item"][0]
+    assert item["type"] == "integer"
+
+
+def test_slider_has_itemcontrol_extension(tmp_path):
+    conn = _db(tmp_path)
+    q_id = upsert_question(conn, QuestionDef(
+        link_id="q.vas", text="Pain level?", type="slider",
+        numeric_min=0, numeric_max=100,
+        slider_min_label="No pain", slider_max_label="Worst imaginable",
+    ))
+    qid = insert_questionnaire(conn, QuestionnaireDef(name="VAS"))
+    place_question(conn, qid, q_id, display_order=0)
+    conn.commit()
+    exts = export_fhir(conn, qid)["item"][0]["extension"]
+    ctrl = next(
+        e for e in exts
+        if e["url"] == "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl"
+    )
+    codes = [c["code"] for c in ctrl["valueCodeableConcept"]["coding"]]
+    assert "slider" in codes
+
+
+def test_slider_min_max_labels_in_extensions(tmp_path):
+    conn = _db(tmp_path)
+    q_id = upsert_question(conn, QuestionDef(
+        link_id="q.vas", text="Pain level?", type="slider",
+        numeric_min=0, numeric_max=100,
+        slider_min_label="No pain", slider_max_label="Worst imaginable",
+    ))
+    qid = insert_questionnaire(conn, QuestionnaireDef(name="VAS"))
+    place_question(conn, qid, q_id, display_order=0)
+    conn.commit()
+    exts = export_fhir(conn, qid)["item"][0]["extension"]
+    by_url = {e["url"]: e for e in exts}
+    assert by_url["https://quickq.io/fhir/StructureDefinition/slider-min-label"]["valueString"] == "No pain"
+    assert by_url["https://quickq.io/fhir/StructureDefinition/slider-max-label"]["valueString"] == "Worst imaginable"

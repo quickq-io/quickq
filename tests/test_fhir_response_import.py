@@ -318,3 +318,90 @@ def test_accepts_json_string(tmp_path):
     conn = _setup_minimal(tmp_path)
     sid = import_fhir_response(conn, json.dumps(_MINIMAL_RESPONSE))
     assert sid is not None
+
+
+# ------------------------------------------------------------------
+# Slider response import
+# ------------------------------------------------------------------
+
+def test_datetime_answer_stored_as_response_date(tmp_path):
+    from quickq.authoring import upsert_question, insert_questionnaire, place_question
+    from quickq.models import QuestionDef, QuestionnaireDef
+    from quickq.parser_fhir import import_fhir
+    from quickq.renderer_fhir import export_fhir
+
+    conn = _db(tmp_path)
+    q_id = upsert_question(conn, QuestionDef(
+        link_id="q.ts", text="When exactly?", type="datetime",
+    ))
+    qid = insert_questionnaire(conn, QuestionnaireDef(
+        name="Datetime Test",
+        canonical_url="http://quickq.io/instruments/datetime-test",
+    ))
+    place_question(conn, qid, q_id, display_order=0)
+    conn.commit()
+
+    fhir_response = {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "http://quickq.io/instruments/datetime-test",
+        "status": "completed",
+        "authored": "2026-03-10T09:00:00Z",
+        "subject": {"identifier": {"value": "respondent-dt-001"}},
+        "item": [{"linkId": "q.ts", "answer": [{"valueDateTime": "2026-03-09T14:30:00Z"}]}],
+    }
+    sid = import_fhir_response(conn, fhir_response)
+
+    row = conn.execute(
+        """
+        SELECT r.response_date
+        FROM response r
+        JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+        JOIN question q ON qq.question_id = q.question_id
+        WHERE r.session_id = ? AND q.link_id = 'q.ts'
+        """,
+        (sid,),
+    ).fetchone()
+    assert row is not None
+    assert row["response_date"] == "2026-03-09T14:30:00Z"
+
+
+def test_slider_response_stored_as_numeric(tmp_path):
+    from quickq.authoring import upsert_question, insert_questionnaire, place_question
+    from quickq.models import QuestionDef, QuestionnaireDef
+    from quickq.renderer_fhir import export_fhir
+
+    conn = _db(tmp_path)
+    q_id = upsert_question(conn, QuestionDef(
+        link_id="q.vas", text="Pain level?", type="slider",
+        numeric_min=0, numeric_max=100,
+        slider_min_label="No pain", slider_max_label="Worst imaginable",
+    ))
+    qid = insert_questionnaire(conn, QuestionnaireDef(
+        name="VAS",
+        canonical_url="http://quickq.io/instruments/vas-test",
+    ))
+    place_question(conn, qid, q_id, display_order=0)
+    conn.commit()
+
+    fhir_response = {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "http://quickq.io/instruments/vas-test",
+        "status": "completed",
+        "authored": "2026-01-15T10:00:00Z",
+        "subject": {"identifier": {"value": "respondent-vas-001"}},
+        "item": [{"linkId": "q.vas", "answer": [{"valueInteger": 72}]}],
+    }
+    sid = import_fhir_response(conn, fhir_response)
+
+    row = conn.execute(
+        """
+        SELECT r.response_numeric
+        FROM response r
+        JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+        JOIN question q ON qq.question_id = q.question_id
+        WHERE r.session_id = ? AND q.link_id = 'q.vas'
+        """,
+        (sid,),
+    ).fetchone()
+    assert row is not None
+    assert row["response_numeric"] == 72.0

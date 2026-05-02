@@ -1,8 +1,16 @@
-# Why quickq?
+# Design Decisions
 
-Researchers starting a new study usually choose between a **proprietary platform** (REDCap, Qualtrics, Kobo) or a **bespoke custom build**. Both paths have the same failure mode: the data model is owned by the tool, and moving out is painful.
+At an international workshop, someone asked: *"If we wanted to run the Connect for Cancer Prevention Cohort Study in our country, how would we do that?"*
 
-quickq takes a different position. It is an **authoring, administration, and analytics layer** built on open file formats. It does not serve surveys — it produces a standard FHIR Questionnaire that any compliant delivery tool can render, and it ingests the resulting FHIR responses back. The study lives in a portable SQLite file and a DuckDB analytics database. No server required. No vendor lock-in.
+That question is the standard quickq is designed to clear. Not data sharing. Not harmonization. Running the same study — same instruments, same skip logic, same scoring rules, same analytical queries, same provenance — at a new site in a different country, from a standing start. The answer should be: download this file, run this command, and you are running the same study.
+
+Every architectural decision in quickq is evaluated against that bar.
+
+---
+
+The data model argument has a practical consequence: the model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes.
+
+quickq is an authoring, administration, and analytics layer, not a survey platform. The two-layer design follows directly from that position: SQLite as the operational source of truth (normalized, FK-constrained, FHIR-compatible, readable by any SQL tool without quickq installed) and DuckDB as the analytical layer, pre-scored and denormalized into a star schema that is identical for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable. Survey delivery is handled by exporting a FHIR `Questionnaire.json` and ingesting a `QuestionnaireResponse.json` back, keeping the data model independent of whichever tool a respondent actually sees.
 
 ---
 
@@ -18,13 +26,13 @@ YAML / FHIR Questionnaire
    SQL · Notebooks · Reports · Parquet export
 ```
 
-The two-layer design is intentional. The SQLite layer is the source of truth — FHIR-compatible, FK-constrained, suitable for response collection and auditing. The DuckDB layer is purpose-built for analysis — columnar, pre-scored, denormalized into a star schema that is the same for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable.
+The two-layer design is intentional. The SQLite layer is the source of truth: FHIR-compatible, FK-constrained, suitable for response collection and auditing. The DuckDB layer is purpose-built for analysis: columnar, pre-scored, denormalized into a star schema that is the same for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable.
 
 ---
 
 ## Delivery independence
 
-Most platforms lock data collection to their own interface. quickq is headless by design: it produces a FHIR Questionnaire JSON file and accepts a FHIR QuestionnaireResponse JSON file back. What happens in between — a React app, a clinical portal, LHC-Forms, a native mobile app — is not quickq's concern.
+Most platforms lock data collection to their own interface. quickq is headless by design: it produces a FHIR Questionnaire JSON file and accepts a FHIR QuestionnaireResponse JSON file back. What happens in between (a React app, a clinical portal, LHC-Forms, a native mobile app) is not quickq's concern.
 
 This matters in three situations:
 
@@ -38,21 +46,21 @@ This matters in three situations:
 
 quickq is designed for a spectrum from a solo PhD project to a multi-site study with 200,000 participants. The data model does not change at any stage.
 
-### Tier 1 — Solo or small study (up to ~5,000 participants)
+### Tier 1: Solo or small study (up to ~5,000 participants)
 
 Zero infrastructure. One `.db` file on a laptop. `quickq refresh` takes seconds. Your entire study is one file you can commit to git, back up to a thumb drive, or hand to a collaborator.
 
-### Tier 2 — Small multi-site (up to ~20,000 participants)
+### Tier 2: Small multi-site (up to ~20,000 participants)
 
-A single ingestor process imports FHIR responses as they arrive. SQLite with WAL mode sustains thousands of sequential writes per second — the bottleneck is never the database. `quickq refresh` still runs in under a minute.
+A single ingestor process imports FHIR responses as they arrive. SQLite with WAL mode sustains thousands of sequential writes per second; the bottleneck is never the database. `quickq refresh` still runs in under a minute.
 
-### Tier 3 — Medium multi-site (up to ~100,000 participants)
+### Tier 3: Medium multi-site (up to ~100,000 participants)
 
 Each site collects into its own `site_N.db`. A periodic `quickq merge` assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.
 
-### Tier 4 — Large or institutional (200,000+ participants)
+### Tier 4: Large or institutional (200,000+ participants)
 
-Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, `quickq export-parquet` dumps the star schema to Parquet files those warehouses can ingest directly — without them needing to know anything about quickq.
+Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, `quickq export-parquet` dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.
 
 ```mermaid
 flowchart LR
@@ -83,7 +91,7 @@ flowchart LR
 
 ## Federated analytics
 
-For studies where individual-level data cannot leave each institution's boundary, quickq supports a federated analytics pattern. A coordinating center defines analysis queries against the standard OLAP schema. Each site runs `quickq run-query` locally — only aggregate results (counts, means, distributions) leave the site. Individual rows never move.
+For studies where individual-level data cannot leave each institution's boundary, quickq supports a federated analytics pattern. A coordinating center defines analysis queries against the standard OLAP schema. Each site runs `quickq run-query` locally; only aggregate results (counts, means, distributions) leave the site. Individual rows never move.
 
 This sidesteps the data use agreement and IRB amendment process that direct data sharing requires, which is the primary adoption barrier for multi-institution studies. Because every quickq deployment shares the same `fact_response` / `dim_question` / `dim_respondent` schema, a query written once runs identically at every site.
 
@@ -93,7 +101,7 @@ This sidesteps the data use agreement and IRB amendment process that direct data
 
 Research data needs to be readable not just today but in 10 or 20 years.
 
-**The 10-year rule:** If your research platform shuts down or your institution loses the license, can you still read your data? With cloud platforms, the answer is often "only if you have the CSV export." With quickq, the answer is always yes — SQLite and DuckDB are open-source, widely supported formats readable by any SQL tool, in any language, without quickq installed.
+**The 10-year rule:** If your research platform shuts down or your institution loses the license, can you still read your data? With cloud platforms, the answer is often "only if you have the CSV export." With quickq, the answer is always yes: SQLite and DuckDB are open-source, widely supported formats readable by any SQL tool, in any language, without quickq installed.
 
 **Pseudonymization.** Before sharing data across institutions, `quickq pseudonymize` produces a PHI-free copy of the study: direct identifiers are stripped from the respondent table and replaced with stable random tokens. The full analytical model is preserved. For studies designed to be anonymous from the start, no pseudonymization step is needed.
 
@@ -105,9 +113,9 @@ Research data needs to be readable not just today but in 10 or 20 years.
 
 Survey instruments change. IRBs request wording revisions. A useful question turns up in a second study. quickq tracks all of this without touching collected response data:
 
-- **Question lineage** — when a question is revised, the original row is immutable; a new row is created and linked via `record_question_lineage`
-- **Equivalence declarations** — `declare_equivalence` marks two questions as analytically equivalent across versions or instruments; `quickq refresh` uses this to set `equivalence_group_id` on the OLAP dimension
-- **Cross-version queries** — filter by `equivalence_group_id` in `dim_question` to span all versions of an item in a single query, regardless of which wording a respondent saw
+- **Question lineage:** when a question is revised, the original row is immutable; a new row is created and linked via `record_question_lineage`
+- **Equivalence declarations:** `declare_equivalence` marks two questions as analytically equivalent across versions or instruments; `quickq refresh` uses this to set `equivalence_group_id` on the OLAP dimension
+- **Cross-version queries:** filter by `equivalence_group_id` in `dim_question` to span all versions of an item in a single query, regardless of which wording a respondent saw
 
 See the [Instrument Versioning & Data Governance](reference/versioning.md) reference for full workflows.
 
@@ -119,11 +127,11 @@ The most common alternative to a survey platform is a custom build: a web form o
 
 The problems compound over time:
 
-**The wide-table problem.** Every question gets its own column. A study with 10 instruments and 50 questions each produces a table with hundreds or thousands of columns. Analysis requires knowing which column is which — not from the data, but from the external data dictionary. Joining two instruments means manually aligning hundreds of column names.
+**The wide-table problem.** Every question gets its own column. A study with 10 instruments and 50 questions each produces a table with hundreds or thousands of columns. Analysis requires knowing which column is which, not from the data but from the external data dictionary. Joining two instruments means manually aligning hundreds of column names.
 
 **The disconnected data dictionary.** The Excel sheet describes what the data means. The data file contains the data. They drift apart. Column names change, questions get added, a question is revised mid-study. The Excel sheet is updated inconsistently. By the time analysis begins, the dictionary is partially wrong and nobody is sure which version to trust.
 
-**Per-question data quality.** Range checks, skip logic validation, and missingness analysis have to be written question by question. There is no shared abstraction. There is no way to ask "which Likert questions have unexpected null rates?" because the data model has no concept of question type — every column just has a name.
+**Per-question data quality.** Range checks, skip logic validation, and missingness analysis have to be written question by question. There is no shared abstraction. There is no way to ask "which Likert questions have unexpected null rates?" because the data model has no concept of question type; every column just has a name.
 
 **Skip logic is invisible.** When a question was correctly skipped, the cell is empty. When a question was genuinely missed, the cell is also empty. Without a record of the skip logic conditions, missingness and correct skipping are indistinguishable. Analysts make assumptions; the assumptions vary.
 

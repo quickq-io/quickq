@@ -20,3 +20,12 @@ htmlcov/
 # DB files (generated artifacts, not source)
 *.db
 *.duckdb
+*.db-shm
+*.db-wal
+*.duckdb.wal
+
+# Build artifacts
+build/
+
+# Claude Code memory (local session data)
+.claude/

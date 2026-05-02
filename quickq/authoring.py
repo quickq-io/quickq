@@ -96,6 +96,69 @@ def upsert_concept(
     return row[0]
 
 
+def auto_upsert_local_concept(
+    conn: sqlite3.Connection,
+    name: str,
+    domain_id: str = "Survey",
+    concept_class_id: str = "Question",
+) -> int:
+    """
+    Create a new Local concept with an OMOP-range code (2000000001+), or return
+    the existing concept_id if one with this name already exists in the Local vocab.
+
+    Codes are assigned sequentially within the OMOP local-concept range so they
+    are stable, portable, and recognisable to OMOP-adjacent teams.  The Local
+    vocabulary row is seeded automatically if it is not already present.
+    """
+    upsert_vocabulary(conn, "Local", "Local", "http://quickq.io/concepts/local")
+
+    # Re-use if an identical (name, domain, class) Local concept already exists
+    existing = conn.execute(
+        """
+        SELECT concept_id FROM concept
+        WHERE vocabulary_id = 'Local' AND concept_name = ?
+          AND domain_id = ? AND concept_class_id = ?
+        LIMIT 1
+        """,
+        (name, domain_id, concept_class_id),
+    ).fetchone()
+    if existing:
+        return existing["concept_id"]
+
+    row = conn.execute(
+        """
+        SELECT MAX(CAST(concept_code AS INTEGER))
+        FROM concept
+        WHERE vocabulary_id = 'Local'
+          AND concept_code GLOB '[0-9]*'
+          AND CAST(concept_code AS INTEGER) >= 2000000001
+        """
+    ).fetchone()
+    next_code = str((row[0] or 2000000000) + 1)
+    return upsert_concept(conn, name, domain_id, "Local", concept_class_id, next_code)
+
+
+def upsert_concept_relationship(
+    conn: sqlite3.Connection,
+    concept_id_1: int,
+    concept_id_2: int,
+    relationship_id: str,
+) -> None:
+    """
+    Record a directed relationship between two concepts (e.g. 'Maps to').
+    Both directions should be inserted separately per the OMOP convention.
+    Idempotent: a second call with the same triple is a no-op.
+    """
+    conn.execute(
+        """
+        INSERT INTO concept_relationship (concept_id_1, concept_id_2, relationship_id)
+        VALUES (?, ?, ?)
+        ON CONFLICT (concept_id_1, concept_id_2, relationship_id) DO NOTHING
+        """,
+        (concept_id_1, concept_id_2, relationship_id),
+    )
+
+
 # ------------------------------------------------------------------
 # Instrument plane
 # ------------------------------------------------------------------
@@ -174,13 +237,81 @@ def upsert_option_set(conn: sqlite3.Connection, name: str, canonical_url: str | 
     ).fetchone()[0]
 
 
-def upsert_question(conn: sqlite3.Connection, defn: QuestionDef) -> int:
+def _warn_unresolved_concept(
+    conn: sqlite3.Connection,
+    link_id: str,
+    concept_ref: str,
+) -> None:
+    """
+    Warn only when the vocabulary is seeded but the specific code is missing.
+    Silent when the vocabulary hasn't been loaded at all — that's expected in
+    lightweight setups and assign-first workflows.
+    """
+    import warnings
+    try:
+        vocab, code = _parse_concept_ref(concept_ref)
+    except Exception:
+        return
+    vocab_exists = conn.execute(
+        "SELECT 1 FROM vocabulary WHERE vocabulary_id = ?", (vocab,)
+    ).fetchone()
+    if vocab_exists:
+        warnings.warn(
+            f"concept '{concept_ref}' not found in {vocab} vocabulary — "
+            f"'{link_id}' loaded as unmapped. "
+            f"Add the missing concept or remove the concept field.",
+            stacklevel=5,
+        )
+
+
+def _warn_concept_collision(
+    conn: sqlite3.Connection,
+    new_link_id: str,
+    concept_ref: str,
+) -> None:
+    """Emit a warning if concept_ref is already mapped to a different link_id."""
+    import warnings
+    try:
+        vocab, code = _parse_concept_ref(concept_ref)
+    except Exception:
+        return
+    row = conn.execute(
+        """
+        SELECT q.link_id FROM question q
+        JOIN concept c ON q.concept_id = c.concept_id
+        WHERE c.vocabulary_id = ? AND c.concept_code = ?
+          AND q.link_id != ?
+        LIMIT 1
+        """,
+        (vocab, code, new_link_id),
+    ).fetchone()
+    if row:
+        warnings.warn(
+            f"{concept_ref} is already mapped to '{row['link_id']}'. "
+            f"Consider using '{{{{ library: {row['link_id']} }}}}' instead of "
+            f"authoring a new question.",
+            stacklevel=4,
+        )
+
+
+def upsert_question(
+    conn: sqlite3.Connection,
+    defn: QuestionDef,
+    strict_concepts: bool = True,
+    auto_concept: bool = False,
+) -> int:
     """
     Insert a question if its link_id does not exist; otherwise return the existing id.
 
     Raises ValueError if the existing question text differs from defn.text — questions
     are immutable once created.  To intentionally revise a question, create a new
     question with a new link_id and record the change via record_question_lineage().
+
+    When strict_concepts=True (default), emits a warning if the question's concept
+    code is already mapped to a different link_id in this database.
+
+    When auto_concept=True and no concept is specified, creates a Local concept with
+    an OMOP-range code (2000000001+) so every question carries a stable identifier.
     """
     existing = conn.execute(
         "SELECT question_id, question_text FROM question WHERE link_id = ?",
@@ -197,7 +328,18 @@ def upsert_question(conn: sqlite3.Connection, defn: QuestionDef) -> int:
             )
         return existing["question_id"]
 
-    concept_id = resolve_concept(conn, defn.concept)
+    if defn.concept_id is not None:
+        concept_id: int | None = defn.concept_id
+    elif defn.concept:
+        if strict_concepts:
+            _warn_concept_collision(conn, defn.link_id, defn.concept)
+        concept_id = resolve_concept(conn, defn.concept)
+        if concept_id is None:
+            _warn_unresolved_concept(conn, defn.link_id, defn.concept)
+    elif auto_concept:
+        concept_id = auto_upsert_local_concept(conn, defn.text, "Survey", "Question")
+    else:
+        concept_id = None
     conn.execute(
         """
         INSERT INTO question (
@@ -222,17 +364,38 @@ def insert_options(
     question_id: int,
     options: list[OptionDef],
     option_set_id: int | None = None,
+    auto_concept: bool = False,
 ) -> dict[str, int]:
     """Insert response options. Returns {option_value: option_id}."""
     result: dict[str, int] = {}
     for i, opt in enumerate(options):
-        concept_id = resolve_concept(conn, opt.concept)
         concept_code: str | None = None
         concept_system: str | None = None
-        if opt.concept:
+
+        if opt.concept_id is not None:
+            concept_id: int | None = opt.concept_id
+            row = conn.execute(
+                "SELECT vocabulary_id, concept_code FROM concept WHERE concept_id = ?",
+                (opt.concept_id,),
+            ).fetchone()
+            if row:
+                concept_code = row["concept_code"]
+                concept_system = _vocab_system(row["vocabulary_id"])
+        elif opt.concept:
+            concept_id = resolve_concept(conn, opt.concept)
             vocab, code = _parse_concept_ref(opt.concept)
             concept_code = code
             concept_system = _vocab_system(vocab)
+            if concept_id is None:
+                _warn_unresolved_concept(conn, f"option:{opt.value}", opt.concept)
+        elif auto_concept:
+            concept_id = auto_upsert_local_concept(conn, opt.text, "Meas Value", "Answer")
+            concept_code = conn.execute(
+                "SELECT concept_code FROM concept WHERE concept_id = ?", (concept_id,)
+            ).fetchone()["concept_code"]
+            concept_system = _vocab_system("Local")
+        else:
+            concept_id = None
 
         conn.execute(
             """
@@ -256,6 +419,7 @@ def insert_grid_rows_columns(
     question_id: int,
     rows: list[GridRowDef],
     columns: list[GridColumnDef],
+    auto_concept: bool = False,
 ) -> None:
     """Insert grid row and column definitions. Idempotent — skips if already present."""
     if conn.execute(
@@ -263,17 +427,37 @@ def insert_grid_rows_columns(
     ).fetchone()[0]:
         return
     for i, row in enumerate(rows):
+        if row.concept_id is not None:
+            row_concept_id: int | None = row.concept_id
+        elif row.concept:
+            row_concept_id = resolve_concept(conn, row.concept)
+            if row_concept_id is None:
+                _warn_unresolved_concept(conn, f"grid_row:{row.text}", row.concept)
+        elif auto_concept:
+            row_concept_id = auto_upsert_local_concept(conn, row.text, "Survey", "Survey")
+        else:
+            row_concept_id = None
         conn.execute(
-            "INSERT INTO grid_row (question_id, row_text, display_order) VALUES (?, ?, ?)",
-            (question_id, row.text, i),
+            "INSERT INTO grid_row (question_id, row_text, display_order, concept_id) VALUES (?, ?, ?, ?)",
+            (question_id, row.text, i, row_concept_id),
         )
     for i, col in enumerate(columns):
+        if col.concept_id is not None:
+            col_concept_id: int | None = col.concept_id
+        elif col.concept:
+            col_concept_id = resolve_concept(conn, col.concept)
+            if col_concept_id is None:
+                _warn_unresolved_concept(conn, f"grid_col:{col.text}", col.concept)
+        elif auto_concept:
+            col_concept_id = auto_upsert_local_concept(conn, col.text, "Survey", "Survey")
+        else:
+            col_concept_id = None
         conn.execute(
             """
-            INSERT INTO grid_column (question_id, column_text, column_value, column_type, display_order)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO grid_column (question_id, column_text, column_value, column_type, display_order, concept_id)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (question_id, col.text, col.value, col.column_type, i),
+            (question_id, col.text, col.value, col.column_type, i, col_concept_id),
         )
 
 

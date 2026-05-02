@@ -134,6 +134,7 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
                 continue  # unresolvable reference — skip silently
             _insert_skip_rule(conn, qq_id, trigger_qq, ew, behavior)
 
+    conn.commit()
     return qnaire_id
 
 
@@ -177,6 +178,13 @@ def _import_item(
         qtype = "multiple_choice"
     if fhir_type == "group" and item.get("repeats"):
         qtype = "repeating_group"
+    if fhir_type == "integer":
+        for ext in item.get("extension", []):
+            if ext.get("url") == "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl":
+                codes = [c.get("code") for c in ext.get("valueCodeableConcept", {}).get("coding", [])]
+                if "slider" in codes:
+                    qtype = "slider"
+                    break
 
     # Parse our custom extensions
     ext_vals = _parse_quickq_extensions(item.get("extension", []))
@@ -194,6 +202,8 @@ def _import_item(
         source_item_id=ext_vals.get("source-item-id"),
         numeric_min=numeric_min,
         numeric_max=numeric_max,
+        slider_min_label=ext_vals.get("slider-min-label"),
+        slider_max_label=ext_vals.get("slider-max-label"),
     ))
 
     if ext_vals.get("internal-note"):
@@ -365,5 +375,6 @@ def _parse_quickq_extensions(extensions: list[dict]) -> dict[str, str]:
 def _ext_decimal(extensions: list[dict], url: str) -> float | None:
     for ext in extensions:
         if ext.get("url") == url:
-            return ext.get("valueDecimal")
+            val = ext.get("valueDecimal") if ext.get("valueDecimal") is not None else ext.get("valueInteger")
+            return float(val) if val is not None else None
     return None

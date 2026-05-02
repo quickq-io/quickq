@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 class GridRowDef:
     text: str
     concept: str | None = None
+    concept_id: int | None = None   # direct integer FK — takes precedence over concept string
 
 
 @dataclass
@@ -14,6 +15,7 @@ class GridColumnDef:
     value: str | None = None
     column_type: str = "single_choice"  # single_choice | boolean | numeric | text
     concept: str | None = None
+    concept_id: int | None = None   # direct integer FK — takes precedence over concept string
 
 
 @dataclass
@@ -21,6 +23,7 @@ class OptionDef:
     text: str
     value: str
     concept: str | None = None      # 'VOCAB:code', e.g. 'SNOMED:373066001'
+    concept_id: int | None = None   # direct integer FK — takes precedence over concept string
     is_other: bool = False
     is_exclusive: bool = False
 
@@ -47,7 +50,8 @@ class QuestionDef:
     type: str = ""
     library_ref: str | None = None  # link_id of a pre-loaded library question
     help_text: str | None = None
-    concept: str | None = None      # 'VOCAB:code'
+    concept: str | None = None      # 'VOCAB:code' string — resolved to concept_id at load time
+    concept_id: int | None = None   # direct integer FK — takes precedence over concept string
     options: list[OptionDef] | None = None
     rows: list[GridRowDef] | None = None
     columns: list[GridColumnDef] | None = None

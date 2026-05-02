@@ -289,3 +289,18 @@ def test_unknown_skip_rule_link_id_raises(tmp_path):
     )
     with pytest.raises(ValueError, match="unknown link_id"):
         load_def(conn, defn)
+
+
+def test_load_datetime_type(tmp_path):
+    conn = init_oltp(tmp_path / "test.db")
+    defn = QuestionnaireDef(
+        name="Datetime Test",
+        sections=[SectionDef(questions=[
+            QuestionDef(link_id="q.ts", text="When exactly?", type="datetime"),
+        ])],
+    )
+    load_def(conn, defn)
+    row = conn.execute(
+        "SELECT question_type FROM question WHERE link_id='q.ts'"
+    ).fetchone()
+    assert row["question_type"] == "datetime"
