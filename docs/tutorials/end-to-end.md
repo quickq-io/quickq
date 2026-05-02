@@ -344,7 +344,7 @@ quickq refresh study.db analytics.duckdb
 quickq report analytics.duckdb study.db 1
 ```
 
-To save it:
+To export a human-readable document for sharing with colleagues, an IRB, or a coordinating center:
 
 ```bash
 quickq report analytics.duckdb study.db 1 --output report.md
