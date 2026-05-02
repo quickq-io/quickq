@@ -60,7 +60,7 @@ Each site collects into its own `site_N.db`. A periodic `quickq merge` assembles
 
 ### Tier 4: Large or institutional (200,000+ participants)
 
-Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, `quickq export-parquet` dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.
+Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, `quickq export` dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.
 
 ```mermaid
 flowchart LR
@@ -80,7 +80,7 @@ flowchart LR
         C_Merge --> C_Combined[(combined.db)]
         C_Combined --> C_Refresh[quickq refresh]
         C_Refresh --> C_OLAP[(analytics.duckdb)]
-        C_OLAP --> C_Parquet[quickq export-parquet]
+        C_OLAP --> C_Parquet[quickq export]
         C_Parquet --> C_Warehouse{{BigQuery / Snowflake\nDatabricks}}
     end
 

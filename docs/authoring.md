@@ -1,6 +1,6 @@
 # Survey Authoring
 
-Questionnaires are defined in YAML and loaded into the OLTP database with `quickq load-yaml`. FHIR Questionnaire JSON from an external source can be imported directly with `quickq import-fhir`. Both paths produce the same internal representation.
+Questionnaires are defined in YAML and loaded into the OLTP database with `quickq load`. FHIR Questionnaire JSON from an external source can be imported directly with `quickq fhir import`. Both paths produce the same internal representation.
 
 ---
 
@@ -33,7 +33,7 @@ questions:
 Load it:
 
 ```bash
-quickq load-yaml phq9.yaml study.db
+quickq load phq9.yaml study.db
 ```
 
 ---

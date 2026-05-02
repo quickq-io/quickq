@@ -177,5 +177,5 @@ For query patterns by type (`single_choice`, `boolean`, `numeric`, `likert`, `gr
 | Repeating/loop data | JSON parsing or bespoke ETL | `repeat_index` — each instance is a standard row |
 | Mode-effect analysis | Join to a separate metadata table | `admin_mode` on every session |
 | Cross-instrument joins | Manual ID reconciliation | Shared `respondent_id` across all instruments |
-| FHIR export | Custom mapping per instrument | `quickq export-fhir` — lossless, one command |
+| FHIR export | Custom mapping per instrument | `quickq fhir export` — lossless, one command |
 | Federated analysis | Manual OMOP mapping | `omop_observation` table on refresh (when concepts mapped) |

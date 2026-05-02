@@ -24,9 +24,9 @@ The Connect study was designed to be as FAIR as possible. The question still fel
 - Can a researcher in another country receive the complete study definition and load it without manual transcription? → FHIR export + `.db` as the study artifact
 - Can they deploy collection infrastructure without bespoke engineering? → `quickq serve` / quickq-forms
 - Can they run the same analytical queries against their local data? → the star schema is identical at every site
-- Can they contribute to a federated analysis without transferring individual-level data? → `quickq federated-query` with aggregate-only enforcement
+- Can they contribute to a federated analysis without transferring individual-level data? → `quickq federated query` with aggregate-only enforcement
 - Can they pool their data with the original study? → `quickq merge` with concept-code-based harmonization
-- Can they cite and register the study locally with full provenance? → `quickq export-metadata` + FAIR metadata fields
+- Can they cite and register the study locally with full provenance? → `quickq compliance export-metadata` + FAIR metadata fields
 
 The SQLite file is not just a database. It is the encoded study — instruments, skip logic, scoring rules, concept mappings, provenance, and metadata — in a form that any institution can receive, inspect, deploy, and extend without proprietary software, without a vendor relationship, and without losing the thread back to the original study.
 
@@ -455,7 +455,7 @@ Survey delivery via LHC-Forms or any FHIR-compliant tool. Responses arrive as `Q
 Each site collects into its own `site_N.db`. A nightly or weekly `quickq merge` job assembles a combined database for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary, after review. Where central collection is preferred, a queue-backed ingestor (SQS or equivalent → single-threaded writer → S3) handles concurrent submissions cleanly.
 
 **Tier 4 — Large / institutional (200,000+ participants)**
-Site sharding remains viable at this scale (e.g. 50 sites × 4,000 participants). The new challenge is institutional analytics infrastructure. `quickq export-parquet` dumps the OLAP star schema to Parquet files for ingestion into BigQuery, Snowflake, or Databricks — without those tools needing to know anything about quickq. `quickq pseudonymize` is required before any data crosses an institutional boundary.
+Site sharding remains viable at this scale (e.g. 50 sites × 4,000 participants). The new challenge is institutional analytics infrastructure. `quickq export` dumps the OLAP star schema to Parquet files for ingestion into BigQuery, Snowflake, or Databricks — without those tools needing to know anything about quickq. `quickq pseudonymize` is required before any data crosses an institutional boundary.
 
 ### The one-writer rule
 
@@ -472,7 +472,7 @@ If a cloud provider shuts down or a university loses a software license, a resea
 For multi-institution studies where individual-level data cannot leave each site's boundary, quickq supports a federated analytics pattern:
 
 1. A coordinating center defines analysis queries against the standard OLAP schema (`fact_response`, `dim_question`, `dim_respondent`)
-2. Each site runs `quickq federated-query --query analysis.sql` locally — results are aggregate only (counts, means, distributions)
+2. Each site runs `quickq federated query --query analysis.sql` locally — results are aggregate only (counts, means, distributions)
 3. Only the aggregate results leave the site; individual rows never move
 4. The coordinating center assembles site results
 
@@ -527,21 +527,21 @@ ALTER TABLE study ADD COLUMN data_collection_end DATE;
 
 Add `license` to `questionnaire` as well — instruments should be licenseable independently of the study data.
 
-**2. `quickq export-metadata`**
+**2. `quickq compliance export-metadata`**
 
 Produces a separable metadata record in DataCite JSON or Dublin Core XML. This record can be submitted to Zenodo, OSF, or Dataverse independently of the data file — satisfying A2 (metadata accessible even when data is not).
 
 ```bash
-quickq export-metadata study.db --format datacite --output study_metadata.json
-quickq export-metadata study.db --format dublin-core --output study_metadata.xml
+quickq compliance export-metadata study.db --format datacite --output study_metadata.json
+quickq compliance export-metadata study.db --format dublin-core --output study_metadata.xml
 ```
 
-**3. `quickq fair-check`**
+**3. `quickq compliance fair-check`**
 
 Audits a study against FAIR sub-principles and reports what is satisfied, what is partial, and what is missing — with specific guidance on which fields to populate.
 
 ```bash
-quickq fair-check study.db
+quickq compliance fair-check study.db
 # F1: canonical_url set ✓  |  doi missing ✗
 # F2: description missing ✗  |  population missing ✗
 # R1.1: license missing ✗
@@ -550,11 +550,11 @@ quickq fair-check study.db
 
 **4. FAIR reference documentation**
 
-A docs page explaining how quickq maps to each FAIR sub-principle, which fields satisfy which requirements, and a publication-preparation workflow: fill metadata → `fair-check` → `export-metadata` → register with repository → record DOI back into `study.doi`.
+A docs page explaining how quickq maps to each FAIR sub-principle, which fields satisfy which requirements, and a publication-preparation workflow: fill metadata → `compliance fair-check` → `compliance export-metadata` → register with repository → record DOI back into `study.doi`.
 
 ### Implementation note
 
-The schema additions are purely additive (`ALTER TABLE ADD COLUMN`) — no breaking changes to existing databases. `export-metadata` and `fair-check` are new CLI surface only. Scope this as a dedicated session; do not interleave with other roadmap items.
+The schema additions are purely additive (`ALTER TABLE ADD COLUMN`) — no breaking changes to existing databases. `compliance export-metadata` and `compliance fair-check` are new CLI surface only. Scope this as a dedicated session; do not interleave with other roadmap items.
 
 ---
 
@@ -565,7 +565,7 @@ This section describes the compliance obligations that research teams commonly e
 ### What quickq directly addresses
 
 **Cell-size suppression (disclosure control)**
-`quickq federated-query` enforces minimum cell sizes before any aggregate result leaves a site. The default threshold (`--min-cell 5`) aligns with the NCHS standard used in BRFSS and NHANES. Researchers should verify the threshold required by their specific IRB — some require 10 or higher. The suppression mechanism removes entire rows rather than nulling individual cells, which prevents information leakage via subtraction (known total − visible cells = suppressed cell value). The output JSON includes a `disclosure_control` block reporting how many rows were suppressed so the coordinating center knows the result set is incomplete.
+`quickq federated query` enforces minimum cell sizes before any aggregate result leaves a site. The default threshold (`--min-cell 5`) aligns with the NCHS standard used in BRFSS and NHANES. Researchers should verify the threshold required by their specific IRB — some require 10 or higher. The suppression mechanism removes entire rows rather than nulling individual cells, which prevents information leakage via subtraction (known total − visible cells = suppressed cell value). The output JSON includes a `disclosure_control` block reporting how many rows were suppressed so the coordinating center knows the result set is incomplete.
 
 **Pseudonymization**
 `quickq pseudonymize` removes direct identifiers from the `respondent` table and replaces `external_id` with a stable HMAC token. This is the correct first step toward a limited dataset under HIPAA and toward data sharing under a DUA. It does not constitute Safe Harbor de-identification — see the HIPAA section below.
@@ -574,7 +574,7 @@ This section describes the compliance obligations that research teams commonly e
 The federated query pattern (each site runs queries locally, only aggregates leave) directly reduces the data sharing surface that IRBs, DUAs, and GDPR data transfer restrictions govern. For multi-institution studies where individual-level sharing is blocked by data governance or regulation, this is often the only viable path to pooled analysis.
 
 **FAIR metadata**
-`quickq export-metadata` *(planned)* produces DataCite or Dublin Core records that satisfy NIH Data Management and Sharing Plan requirements for structured metadata. `quickq fair-check` *(planned)* audits a study against FAIR sub-principles and reports gaps. See the FAIR Compliance section for detail.
+`quickq compliance export-metadata` *(planned)* produces DataCite or Dublin Core records that satisfy NIH Data Management and Sharing Plan requirements for structured metadata. `quickq compliance fair-check` *(planned)* audits a study against FAIR sub-principles and reports gaps. See the FAIR Compliance section for detail.
 
 **Portable, inspectable study artifact**
 The SQLite `.db` file is readable by any SQL tool without proprietary software. This satisfies the "accessible format" requirement in NIH data sharing plans and supports long-term preservation. It does not substitute for deposition in a recognized data repository (Zenodo, ICPSR, OSF) — that step is outside quickq's scope.
@@ -596,7 +596,7 @@ For studies that collect no PHI by design (anonymous epi surveys), none of this 
 quickq provides the technical infrastructure that IRB protocols describe, but the protocol itself is the researcher's responsibility. Key points to document accurately in an IRB application:
 
 - Data are stored in a SQLite file on the institution's infrastructure (or researcher's laptop for Tier 1 studies). quickq does not transmit data to any external service.
-- For multi-site studies using `quickq federated-query`, individual-level data remain at each site; only aggregate results with cell-size suppression applied are shared with the coordinating center.
+- For multi-site studies using `quickq federated query`, individual-level data remain at each site; only aggregate results with cell-size suppression applied are shared with the coordinating center.
 - For multi-site studies using `quickq merge`, individual-level data are combined. This typically requires a DUA between all contributing sites and is the data sharing event that IRBs review.
 - The 2018 Common Rule (45 CFR 46) requires single IRB review for federally funded multi-site studies in the US. Each site's local IRB must cede review to the designated single IRB. quickq's architecture does not change this requirement, but the federated query pattern can reduce the scope of what is shared.
 - FHIR QuestionnaireResponse resources generated by third-party delivery tools (quickq-forms, LHC-Forms) should be described in the data flow section of the IRB protocol.
@@ -641,7 +641,7 @@ quickq records that a session occurred and whether it was completed. It does not
 
 ### A note on the federated pattern and institutional adoption
 
-The primary adoption barrier for multi-institution studies is not technical — it is the legal and governance overhead of data sharing. A DUA between two institutions can take months to negotiate. IRB amendments to cover a new data sharing relationship add further delay. The federated query pattern (`quickq federated-query`) is designed to sidestep this entirely: if individual-level data never leave a site, there is nothing to share, no DUA to negotiate, and no IRB amendment required for the data transfer itself. The aggregate results are summary statistics, not human subjects data.
+The primary adoption barrier for multi-institution studies is not technical — it is the legal and governance overhead of data sharing. A DUA between two institutions can take months to negotiate. IRB amendments to cover a new data sharing relationship add further delay. The federated query pattern (`quickq federated query`) is designed to sidestep this entirely: if individual-level data never leave a site, there is nothing to share, no DUA to negotiate, and no IRB amendment required for the data transfer itself. The aggregate results are summary statistics, not human subjects data.
 
 This is the most practically significant compliance feature in quickq. It is worth explaining explicitly in any study protocol or data management plan that describes the multi-site analysis workflow.
 
@@ -653,27 +653,27 @@ Tracks what has been built, what is in progress, and what is planned. Update thi
 
 | Feature | Command / location | Status | Regulation addressed |
 |---|---|---|---|
-| Cell-size suppression | `quickq federated-query --min-cell` | ✅ Done | IRB disclosure control, NCHS standard |
-| Re-identification warning (low row count) | `federated-query` output JSON | ✅ Done | IRB disclosure control |
-| Federated analysis without data transfer | `quickq federated-query` | ✅ Done | GDPR data minimisation, DUA avoidance |
+| Cell-size suppression | `quickq federated query --min-cell` | ✅ Done | IRB disclosure control, NCHS standard |
+| Re-identification warning (low row count) | `federated query` output JSON | ✅ Done | IRB disclosure control |
+| Federated analysis without data transfer | `quickq federated query` | ✅ Done | GDPR data minimisation, DUA avoidance |
 | Pseudonymisation | `quickq pseudonymize` | ✅ Done | HIPAA limited dataset, GDPR |
-| Participant deletion | `quickq delete-respondent` | ✅ Done | GDPR right to erasure, consent withdrawal |
-| Withdrawal without deletion | `quickq withdraw-respondent` | ✅ Done | IRB withdrawal protocol |
+| Participant deletion | `quickq compliance delete` | ✅ Done | GDPR right to erasure, consent withdrawal |
+| Withdrawal without deletion | `quickq compliance withdraw` | ✅ Done | IRB withdrawal protocol |
 | Consent version tracking | `response_session.consent_version` | ✅ Done | IRB consent documentation |
 | Tool audit log | `tool_audit_log` table | ✅ Done | HIPAA audit trail, IRB data management |
-| Study metadata fields | `quickq set-metadata` | ✅ Done | NIH DMS plan, FAIR F2/R1 |
-| FAIR self-audit | `quickq fair-check` | ✅ Done | NIH DMS plan, FAIR compliance |
-| Machine-readable metadata export | `quickq export-metadata` | ✅ Done | NIH DMS plan, Zenodo/OSF deposit |
+| Study metadata fields | `quickq compliance set-metadata` | ✅ Done | NIH DMS plan, FAIR F2/R1 |
+| FAIR self-audit | `quickq compliance fair-check` | ✅ Done | NIH DMS plan, FAIR compliance |
+| Machine-readable metadata export | `quickq compliance export-metadata` | ✅ Done | NIH DMS plan, Zenodo/OSF deposit |
 | Questionnaire license field | `questionnaire.license` | ✅ Done | FAIR R1.1 |
 
 **All compliance features complete.** The full workflow is:
 
 ```bash
-quickq set-metadata study.db --license CC-BY-4.0 --protocol-url <URL> ...
-quickq fair-check study.db          # verify no failures before export
-quickq export-metadata study.db --format datacite --output metadata.json
+quickq compliance set-metadata study.db --license CC-BY-4.0 --protocol-url <URL> ...
+quickq compliance fair-check study.db          # verify no failures before export
+quickq compliance export-metadata study.db --format datacite --output metadata.json
 # Deposit metadata.json to Zenodo/OSF; record the assigned DOI
-quickq set-metadata study.db --doi 10.5281/zenodo.XXXXXXX
+quickq compliance set-metadata study.db --doi 10.5281/zenodo.XXXXXXX
 ```
 
 ---
@@ -682,11 +682,11 @@ Ordered by adoption impact:
 
 1. **`quickq merge`** — combine multiple site `.db` files into a single study database. Unblocks Tier 3 multi-site adoption. Deduplication key is the FHIR `QuestionnaireResponse.id`; integer PKs are remapped on merge using external IDs as stable keys. Schema divergence (site imported a different questionnaire version) must be detected and surfaced clearly.
 
-2. **Federated query executor** — `quickq federated-query` with aggregate-only enforcement and minimum cell size disclosure control. Makes quickq viable for institutional use without requiring data to leave any site.
+2. **Federated query executor** — `quickq federated query` with aggregate-only enforcement and minimum cell size disclosure control. Makes quickq viable for institutional use without requiring data to leave any site.
 
 3. **`quickq pseudonymize`** — produces a PHI-free copy of the study database for direct data sharing. Strips the `respondent` table, replaces external IDs with stable tokens, preserves the full OLAP model.
 
-4. **`quickq export-parquet`** — dumps the OLAP star schema to Parquet. Enables ingestion into BigQuery, Snowflake, Databricks, or any columnar warehouse without those tools depending on quickq.
+4. **`quickq export`** — dumps the OLAP star schema to Parquet. Enables ingestion into BigQuery, Snowflake, Databricks, or any columnar warehouse without those tools depending on quickq.
 
 These four commands, together with documented operational recipes for each tier, are what make quickq adoptable as a standard rather than a personal tool.
 
@@ -745,19 +745,24 @@ quickq render study.db 1 --format pdf --output instrument.pdf
 ## Commands
 
 ```bash
-uv sync                              # install dependencies
-uv run pytest                        # run all tests
-uv run quickq init study.db          # create new OLTP database
-uv run quickq refresh study.db       # load OLTP → DuckDB OLAP
-uv run quickq import-fhir q.json     # import FHIR Questionnaire
-uv run quickq export-fhir 1          # export questionnaire id=1 as FHIR JSON
-uv run quickq load-yaml instrument.yaml study.db   # load YAML instrument definition
-uv run quickq data-dict study.db 1   # print data dictionary (Markdown)
+uv sync                                               # install dependencies
+uv run pytest                                         # run all tests
+uv run quickq init study.db                           # create new OLTP database
+uv run quickq load instrument.yaml study.db           # load YAML instrument definition
+uv run quickq preview study.db 1                      # preview questionnaire in browser
+uv run quickq refresh study.db analytics.duckdb       # load OLTP → DuckDB OLAP
+uv run quickq fhir import q.json study.db             # import FHIR Questionnaire
+uv run quickq fhir export study.db 1                  # export questionnaire id=1 as FHIR JSON
+uv run quickq fhir import-response response.json study.db  # import QuestionnaireResponse
+uv run quickq data-dict study.db 1                    # print data dictionary (Markdown)
 uv run quickq data-dict study.db 1 --format csv --output dict.csv  # CSV with concept codes
-uv run quickq render study.db 1      # print rendered instrument (Markdown)
+uv run quickq render study.db 1                       # print rendered instrument (Markdown)
 uv run quickq render study.db 1 --format pdf --output instrument.pdf  # PDF (requires quickq[pdf])
-uv run quickq report study.db        # generate Markdown summary from OLAP
-uv run python scripts/generate_fixtures.py  # regenerate FHIR test fixtures
+uv run quickq report analytics.duckdb study.db 1      # generate Markdown summary from OLAP
+uv run quickq list studies study.db                   # list studies in database
+uv run quickq list surveys study.db                   # list questionnaires in database
+uv run quickq list library study.db                   # list bundled library instruments
+uv run python scripts/generate_fixtures.py            # regenerate FHIR test fixtures
 ```
 
 ### Test fixture notes

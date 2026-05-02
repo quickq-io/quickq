@@ -96,8 +96,8 @@ Research fields with no FHIR R4 base equivalent are serialized as extensions und
 Any FHIR Questionnaire that can be imported can be exported back to valid FHIR without loss of structure or semantics. The round-trip is tested against the HL7 reference example suite, including the US Surgeon General Family Health Portrait (USSG-FHT, LOINC 54127-6) which exercises nested repeating groups at two levels.
 
 ```bash
-quickq import-fhir ussg_fht.json study.db
-quickq export-fhir 1 study.db > ussg_exported.json
+quickq fhir import ussg_fht.json study.db
+quickq fhir export 1 study.db > ussg_exported.json
 ```
 
 The FHIR E2E test suite (in `tests/test_e2e_lhcforms.py`) validates the full pipeline against LHC-Forms using Playwright headless rendering.

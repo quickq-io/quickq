@@ -35,8 +35,8 @@ flowchart TD
         OMOP["omop_survey_conduct\nomop_observation"]
     end
 
-    YAML -->|"quickq load-yaml"| OLTP
-    FHIR_IN -->|"quickq import-fhir"| OLTP
+    YAML -->|"quickq load"| OLTP
+    FHIR_IN -->|"quickq fhir import"| OLTP
     OLTP -->|"export_fhir()"| FHIR_OUT
     FHIR_OUT --> TOOL
     TOOL --> FHIR_RESP

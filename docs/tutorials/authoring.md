@@ -266,7 +266,7 @@ questionnaire:
 
 ```bash
 quickq init anxiety_study.db
-quickq load-yaml gad7.yaml anxiety_study.db
+quickq load gad7.yaml anxiety_study.db
 ```
 
 If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
@@ -313,7 +313,7 @@ Both outputs come from the source of truth — the database. There is no separat
 ## 10. Export to FHIR
 
 ```bash
-quickq export-fhir 1 anxiety_study.db > gad7_questionnaire.json
+quickq fhir export 1 anxiety_study.db > gad7_questionnaire.json
 ```
 
 This produces a standard FHIR R4 Questionnaire JSON file. Inspect it to confirm:

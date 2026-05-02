@@ -56,7 +56,7 @@ quickq load phq9.yaml site_c.db
 Verify the load:
 
 ```bash
-quickq library site_a.db
+quickq list library site_a.db
 ```
 
 ---
@@ -91,14 +91,14 @@ Survey delivery is handled outside quickq — the PHQ-9 YAML is exported as FHIR
 
 ```bash
 # Export the FHIR Questionnaire for delivery
-quickq export-fhir site_a.db 1 --output phq9_fhir.json
+quickq fhir export site_a.db 1 --output phq9_fhir.json
 ```
 
 As responses arrive, import them at each site:
 
 ```bash
-quickq import-fhir-response responses_batch_01.json site_a.db --study-id 1
-quickq import-fhir-response responses_batch_02.json site_a.db --study-id 1
+quickq fhir import-response responses_batch_01.json site_a.db --study-id 1
+quickq fhir import-response responses_batch_02.json site_a.db --study-id 1
 ```
 
 Each site operates independently. There is no shared infrastructure — just files. The `--study-id` flag associates each respondent with the site's study row.
@@ -193,9 +193,9 @@ END;
 Before merging, confirm that all three sites loaded the same questionnaire definition:
 
 ```bash
-quickq export-fhir site_a.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
-quickq export-fhir site_b.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
-quickq export-fhir site_c.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
+quickq fhir export site_a.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
+quickq fhir export site_b.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
+quickq fhir export site_c.db 1 | python3 -c "import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())"
 ```
 
 All three hashes must match. If they differ, investigate which YAML was loaded at each site before merging — a `MergeError` will result if the same `link_id` has different question text across sites.
@@ -393,7 +393,7 @@ ORDER BY dq.link_id, fr.option_value;
 If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:
 
 ```bash
-quickq export-parquet analytics_anon.duckdb ./parquet_export/
+quickq export analytics_anon.duckdb ./parquet_export/
 ```
 
 ```
@@ -414,7 +414,7 @@ Upload `parquet_export/` to your cloud storage bucket and point your warehouse a
 To export only the tables needed for a specific analysis:
 
 ```bash
-quickq export-parquet analytics_anon.duckdb ./parquet_export/ \
+quickq export analytics_anon.duckdb ./parquet_export/ \
     --table fact_response \
     --table dim_question \
     --table dim_respondent \
@@ -440,7 +440,7 @@ Coordinating center:
   quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
-  quickq export-parquet analytics_anon.duckdb ./parquet_export/   # optional
+  quickq export analytics_anon.duckdb ./parquet_export/   # optional
 ```
 
 The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.

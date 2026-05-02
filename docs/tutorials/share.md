@@ -111,7 +111,7 @@ SELECT severity, title FROM study_errata_log WHERE status = 'open';
 For sharing with analysts using BigQuery, Snowflake, Databricks, or any columnar warehouse, export the OLAP to Parquet files:
 
 ```bash
-quickq export-parquet analytics_anon.duckdb ./parquet_export/
+quickq export analytics_anon.duckdb ./parquet_export/
 ```
 
 ```
@@ -130,7 +130,7 @@ Exported 19 table(s) to parquet_export/ (1215 total rows)
 To export only the tables needed for a specific analysis:
 
 ```bash
-quickq export-parquet analytics_anon.duckdb ./parquet_export/ \
+quickq export analytics_anon.duckdb ./parquet_export/ \
     --table fact_response \
     --table dim_question \
     --table dim_respondent \

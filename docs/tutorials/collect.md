@@ -11,7 +11,7 @@ Survey delivery is intentionally out of scope for quickq. The FHIR handoff is th
 After loading your instrument, export it as a FHIR R4 Questionnaire JSON:
 
 ```bash
-quickq export-fhir study.db 1 --output phq9_questionnaire.json
+quickq fhir export study.db 1 --output phq9_questionnaire.json
 ```
 
 This produces a standard FHIR Questionnaire resource. Hand it to any delivery tool that accepts FHIR Questionnaire JSON — a web app, a mobile app, a clinical portal, REDCap, or LHC-Forms.
@@ -36,10 +36,10 @@ When FHIR QuestionnaireResponse JSON files come back from the delivery tool, imp
 
 ```bash
 # Single response file
-quickq import-fhir-response response.json study.db
+quickq fhir import-response response.json study.db
 
 # Batch: a JSON array of multiple QuestionnaireResponse resources
-quickq import-fhir-response batch.json study.db --study-id 1
+quickq fhir import-response batch.json study.db --study-id 1
 ```
 
 The `--study-id` flag associates respondents with a study row. If omitted, respondents are created without a study association.
