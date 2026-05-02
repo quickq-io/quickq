@@ -57,6 +57,7 @@ nav:
       - 5. Share & Publish: tutorials/share.md
       - 6. Multi-Site Study Operations: tutorials/multi-site.md
   - Reference:
+      - Question Types: reference/question-types.md
       - Query Patterns by Question Type: reference/query-patterns.md
       - Instrument Versioning & Data Governance: reference/versioning.md
       - FHIR Interoperability: fhir.md

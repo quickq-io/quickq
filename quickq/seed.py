@@ -208,7 +208,7 @@ def _generate_answer(rng: random.Random, q: dict) -> Any:
     """Return a generated answer in the internal format used by _write_response."""
     qtype = q["type"]
 
-    if qtype == "single_choice" and q["options"]:
+    if qtype in ("single_choice", "likert") and q["options"]:
         eligible = [o for o in q["options"] if not o["is_other"]]
         return rng.choice(eligible) if eligible else None
 
@@ -248,8 +248,16 @@ def _generate_answer(rng: random.Random, q: dict) -> Any:
             "No change since last visit.",
         ])
 
+    if qtype == "ranked" and q["options"]:
+        shuffled = rng.sample(q["options"], len(q["options"]))
+        return [{"opt": opt, "rank": i + 1} for i, opt in enumerate(shuffled)]
+
     if qtype == "grid" and q["grid_rows"] and q["grid_columns"]:
-        return q  # signal to _write_response to handle grid specially
+        # For each row pick one random column (covers single_choice grids).
+        return [
+            {"row_id": row["row_id"], "col_id": rng.choice(q["grid_columns"])["column_id"]}
+            for row in q["grid_rows"]
+        ]
 
     return None
 
@@ -260,6 +268,8 @@ def _representative_value(answer: Any, qtype: str) -> Any:
         return answer.get("option_value")
     if qtype in ("multiple_choice", "sata_other") and isinstance(answer, list):
         return answer[0].get("option_value") if answer else None
+    if qtype == "ranked" and isinstance(answer, list):
+        return answer[0]["opt"].get("option_value") if answer else None
     return answer
 
 
@@ -276,7 +286,7 @@ def _write_response(
     qtype = q["type"]
     qq_id = q["qq_id"]
 
-    if qtype == "single_choice" and isinstance(answer, dict):
+    if qtype in ("single_choice", "likert") and isinstance(answer, dict):
         conn.execute(
             "INSERT INTO response (session_id, qq_id, option_id) VALUES (?, ?, ?)",
             (session_id, qq_id, answer["option_id"]),
@@ -289,13 +299,20 @@ def _write_response(
                 (session_id, qq_id, opt["option_id"]),
             )
 
+    elif qtype == "ranked" and isinstance(answer, list):
+        for item in answer:
+            conn.execute(
+                "INSERT INTO response (session_id, qq_id, option_id, response_numeric) VALUES (?, ?, ?, ?)",
+                (session_id, qq_id, item["opt"]["option_id"], item["rank"]),
+            )
+
     elif qtype == "boolean":
         conn.execute(
             "INSERT INTO response (session_id, qq_id, response_text) VALUES (?, ?, ?)",
             (session_id, qq_id, answer),
         )
 
-    elif qtype in ("numeric", "slider", "likert"):
+    elif qtype in ("numeric", "slider"):
         conn.execute(
             "INSERT INTO response (session_id, qq_id, response_numeric) VALUES (?, ?, ?)",
             (session_id, qq_id, answer),
@@ -313,39 +330,12 @@ def _write_response(
             (session_id, qq_id, answer),
         )
 
-    elif qtype == "grid" and isinstance(answer, dict):
-        # answer is the question dict itself (signal from _generate_answer)
-        for row in q["grid_rows"]:
-            for col in q["grid_columns"]:
-                rng_local = random.Random()
-                cell = _generate_grid_cell(rng_local, col["column_type"],
-                                           q["numeric_min"], q["numeric_max"])
-                conn.execute(
-                    """INSERT INTO response
-                       (session_id, qq_id, grid_row_id, grid_column_id,
-                        response_text, response_numeric)
-                       VALUES (?, ?, ?, ?, ?, ?)""",
-                    (session_id, qq_id,
-                     row["row_id"], col["column_id"],
-                     cell.get("text"), cell.get("numeric")),
-                )
-
-
-def _generate_grid_cell(
-    rng: random.Random,
-    column_type: str,
-    numeric_min: float | None,
-    numeric_max: float | None,
-) -> dict:
-    if column_type == "boolean":
-        return {"text": rng.choice(["true", "false"])}
-    if column_type == "numeric":
-        lo = numeric_min if numeric_min is not None else 0.0
-        hi = numeric_max if numeric_max is not None else 10.0
-        return {"numeric": round(rng.uniform(lo, hi), 2)}
-    if column_type == "text":
-        return {"text": "n/a"}
-    return {}  # single_choice grid cells — not yet handled
+    elif qtype == "grid" and isinstance(answer, list):
+        for cell in answer:
+            conn.execute(
+                "INSERT INTO response (session_id, qq_id, grid_row_id, grid_column_id) VALUES (?, ?, ?, ?)",
+                (session_id, qq_id, cell["row_id"], cell["col_id"]),
+            )
 
 
 # ---------------------------------------------------------------------------

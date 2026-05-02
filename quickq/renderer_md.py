@@ -189,6 +189,8 @@ def _render_questions(
             _render_boolean_question(lines, oconn, questionnaire_id, question_id)
         elif question_type in ("text", "date", "datetime"):
             _render_open_question(lines, oconn, questionnaire_id, question_id, question_type)
+        elif question_type == "grid":
+            _render_grid_question(lines, oconn, questionnaire_id, question_id)
         else:
             _render_choice_question(lines, oconn, questionnaire_id, question_id)
 
@@ -300,6 +302,67 @@ def _render_open_question(
         [questionnaire_id, question_id],
     ).fetchone()[0]
     lines += [f"_{n} response(s) — open-ended {question_type}._", ""]
+
+
+def _render_grid_question(
+    lines: list[str],
+    oconn: duckdb.DuckDBPyConnection,
+    questionnaire_id: int,
+    question_id: int,
+) -> None:
+    """Render a grid as a row × column distribution table."""
+    rows = oconn.execute(
+        """
+        SELECT gr.row_text, gc.column_text, COUNT(*) AS n
+        FROM fact_response fr
+        JOIN oltp.grid_row   gr ON gr.row_id    = fr.grid_row_id
+        JOIN oltp.grid_column gc ON gc.column_id = fr.grid_column_id
+        WHERE fr.questionnaire_id = ? AND fr.question_id = ?
+        GROUP BY gr.row_id, gr.row_text, gc.display_order, gc.column_text
+        ORDER BY gr.row_id, gc.display_order
+        """,
+        [questionnaire_id, question_id],
+    ).fetchall()
+
+    if not rows:
+        lines += ["_No responses._", ""]
+        return
+
+    # Pivot: collect unique columns
+    col_texts: list[str] = []
+    seen: set[str] = set()
+    for _, col_text, _ in rows:
+        if col_text not in seen:
+            col_texts.append(col_text)
+            seen.add(col_text)
+
+    # Build per-row totals for pct
+    row_totals: dict[str, int] = {}
+    for row_text, _, n in rows:
+        row_totals[row_text] = row_totals.get(row_text, 0) + n
+
+    header = "| |" + "".join(f" {c} |" for c in col_texts)
+    sep = "|---|" + "".join("---|" for _ in col_texts)
+    lines += [header, sep]
+
+    # Group counts by (row_text, col_text)
+    counts: dict[tuple[str, str], int] = {}
+    for row_text, col_text, n in rows:
+        counts[(row_text, col_text)] = n
+
+    current_row = None
+    for row_text, col_text, _ in rows:
+        if row_text != current_row:
+            current_row = row_text
+            total = row_totals[row_text]
+            cells = ""
+            for c in col_texts:
+                n = counts.get((row_text, c), 0)
+                pct = round(100 * n / total) if total else 0
+                cells += f" {n} ({pct}%) |"
+            lines.append(f"| **{row_text}** |{cells}")
+
+    lines += [""]
 
 
 # ------------------------------------------------------------------

@@ -1,0 +1,128 @@
+# Chronic Condition Health Assessment — Demo Instrument
+#
+# Covers every implemented quickq question type in a coherent clinical context.
+# Not for clinical use. Load with:
+#
+#   quickq load examples/health_intake_demo.yaml study.db
+#   quickq seed study.db <id> --n 50
+
+questionnaire:
+  name: "Chronic Condition Health Assessment — Demo"
+  canonical_url: "http://example.com/instruments/health-intake-demo"
+  version: "1.0"
+  description: >
+    A general chronic condition intake demonstrating all supported question
+    types: boolean, date, single_choice, numeric, slider, sata_other,
+    multiple_choice, likert, grid, ranked, and text.
+
+  option_sets:
+    agreement:
+      - { text: "Strongly disagree", value: "1" }
+      - { text: "Disagree",          value: "2" }
+      - { text: "Neutral",           value: "3" }
+      - { text: "Agree",             value: "4" }
+      - { text: "Strongly agree",    value: "5" }
+
+  questions:
+
+    # ── boolean ──────────────────────────────────────────────────────────────
+    - link_id: demo.has_chronic_condition
+      text: "Have you been diagnosed with a chronic health condition by a physician?"
+      type: boolean
+
+    # ── date (conditional on boolean) ────────────────────────────────────────
+    - link_id: demo.diagnosis_date
+      text: "When were you first diagnosed?"
+      type: date
+      show_when:
+        question: demo.has_chronic_condition
+        operator: "="
+        value: "true"
+
+    # ── single_choice ─────────────────────────────────────────────────────────
+    - link_id: demo.general_health
+      text: "How would you rate your general health today?"
+      type: single_choice
+      options:
+        - { text: "Excellent", value: "5" }
+        - { text: "Very good", value: "4" }
+        - { text: "Good",      value: "3" }
+        - { text: "Fair",      value: "2" }
+        - { text: "Poor",      value: "1" }
+
+    # ── numeric ───────────────────────────────────────────────────────────────
+    - link_id: demo.symptom_days
+      text: "In the past 30 days, how many days did symptoms limit your usual activities?"
+      type: numeric
+      range: [0, 30]
+
+    # ── slider ────────────────────────────────────────────────────────────────
+    - link_id: demo.pain_vas
+      text: "Rate your current pain level."
+      type: slider
+      range: [0, 100]
+      slider_min_label: "No pain"
+      slider_max_label: "Worst imaginable"
+
+    # ── sata_other ────────────────────────────────────────────────────────────
+    - link_id: demo.current_symptoms
+      text: "Which symptoms are you currently experiencing? Select all that apply."
+      type: sata_other
+      options:
+        - { text: "Fatigue",      value: "fatigue" }
+        - { text: "Pain",         value: "pain" }
+        - { text: "Poor sleep",   value: "sleep" }
+        - { text: "Nausea",       value: "nausea" }
+        - { text: "Mood changes", value: "mood" }
+        - { text: "Other",        value: "other", is_other: true }
+
+    # ── multiple_choice ───────────────────────────────────────────────────────
+    - link_id: demo.management_strategies
+      text: "Which of the following do you currently use to manage your condition? Select all that apply."
+      type: multiple_choice
+      options:
+        - { text: "Prescription medication",     value: "rx" }
+        - { text: "Over-the-counter medication", value: "otc" }
+        - { text: "Physical therapy",            value: "pt" }
+        - { text: "Dietary changes",             value: "diet" }
+        - { text: "Exercise",                    value: "exercise" }
+        - { text: "Mind-body practices",         value: "mind_body" }
+
+    # ── likert ────────────────────────────────────────────────────────────────
+    - link_id: demo.self_management
+      text: "I feel confident managing my condition on a day-to-day basis."
+      type: likert
+      options: $agreement
+
+    # ── grid ──────────────────────────────────────────────────────────────────
+    - link_id: demo.daily_impact
+      text: "In the past week, how much has your condition affected each of the following?"
+      type: grid
+      rows:
+        - { text: "Work or daily activities" }
+        - { text: "Sleep quality" }
+        - { text: "Physical mobility" }
+        - { text: "Social activities" }
+        - { text: "Emotional wellbeing" }
+      columns:
+        - { text: "Not at all",  value: "0" }
+        - { text: "A little",    value: "1" }
+        - { text: "Moderately",  value: "2" }
+        - { text: "Quite a bit", value: "3" }
+        - { text: "Extremely",   value: "4" }
+
+    # ── ranked ────────────────────────────────────────────────────────────────
+    - link_id: demo.care_priorities
+      text: "Rank the following from most important (1) to least important (5) to you right now."
+      type: ranked
+      options:
+        - { text: "Reducing pain",        value: "pain" }
+        - { text: "Improving sleep",      value: "sleep" }
+        - { text: "Maintaining mobility", value: "mobility" }
+        - { text: "Emotional wellbeing",  value: "emotional" }
+        - { text: "Staying independent",  value: "independence" }
+
+    # ── text ──────────────────────────────────────────────────────────────────
+    - link_id: demo.additional_notes
+      text: "Is there anything else you would like your care team to know?"
+      type: text
