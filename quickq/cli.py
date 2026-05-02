@@ -156,8 +156,11 @@ def load_cmd(yaml_path: str, db_path: str, study_id: int | None,
     effective_strict = strict_concepts if strict_concepts is not None else cfg.authoring.strict_concepts
     effective_auto = auto_concept if auto_concept is not None else cfg.authoring.auto_concept
     conn = open_oltp(db_path)
-    qid = load_yaml(conn, yaml_path, study_id=study_id, strict_concepts=effective_strict,
-                    auto_concept=effective_auto)
+    try:
+        qid = load_yaml(conn, yaml_path, study_id=study_id, strict_concepts=effective_strict,
+                        auto_concept=effective_auto)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
     click.echo(f"Loaded questionnaire id={qid}.")
 
 

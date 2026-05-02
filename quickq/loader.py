@@ -174,6 +174,13 @@ def _parse_scoring(raw: dict) -> ScoringRuleDef:
 
 def parse_questionnaire_def(raw: dict) -> QuestionnaireDef:
     """Parse the top-level YAML dict into a QuestionnaireDef."""
+    if "library" in raw and "questionnaire" not in raw:
+        raise ValueError(
+            "This file is a quickq library instrument, not a questionnaire definition. "
+            "Library instruments are loaded automatically via `quickq init --with-library`. "
+            "To author a questionnaire using library questions, create a new YAML with a "
+            "`questionnaire:` key and reference library items with `{ library: <link_id> }`."
+        )
     body = raw.get("questionnaire", raw)   # allow with or without top-level key
 
     option_sets: dict[str, list[OptionDef]] = {}

@@ -1,10 +1,10 @@
-# End-to-End User Testing Walkthrough
+# End-to-End Testing Walkthrough
 
-This guide walks through the complete quickq loop: creating a study, loading an instrument, collecting a response through the web form, and viewing results. It is intended for early testers validating the full pipeline.
+This guide walks through the complete quickq loop using a gout symptoms survey as the running example. You will author the instrument from scratch, build it up incrementally, collect a response through the web form, and view the results.
 
 By the end you will have:
 
-- A working study database with a PHQ-9 questionnaire
+- A study database with a custom questionnaire
 - A running web form that accepts responses
 - An imported response in the analytics layer
 - A summary report
@@ -13,33 +13,21 @@ By the end you will have:
 
 ## Prerequisites
 
-- **Python 3.11+** and **[uv](https://docs.astral.sh/uv/)** — for quickq
-- **Node.js 18+** and **npm** — for the quickq-forms web frontend
-
-Check what you have:
+- **Python 3.11+** and **[uv](https://docs.astral.sh/uv/)**
+- **Node.js 18+** and **npm**
 
 ```bash
-python --version
-uv --version
-node --version
-npm --version
+python --version && uv --version && node --version && npm --version
 ```
 
 ---
 
 ## Step 1 — Install quickq
 
-Clone the repo and install dependencies:
-
 ```bash
 git clone https://github.com/quickq-io/quickq.git
 cd quickq
 uv sync
-```
-
-Verify:
-
-```bash
 uv run quickq --help
 ```
 
@@ -51,47 +39,175 @@ uv run quickq --help
 uv run quickq init study.db --with-library
 ```
 
-`--with-library` seeds the bundled question library so you can browse available instruments.
-
-Confirm it worked:
-
-```bash
-uv run quickq list studies study.db
-```
+`--with-library` loads the bundled question bank (PHQ-9, GAD-7, PRAPARE, and others) so you can reference their questions in your own instruments.
 
 ---
 
-## Step 3 — Load the PHQ-9
+## Step 3 — Author the questionnaire
 
-The PHQ-9 is included in the bundled library. Load it into your study:
+Create a file called `gout.yaml`. We will build it up in three stages.
 
-```bash
-uv run quickq load quickq/library/phq9.yaml study.db
+### Stage 1 — Minimal instrument
+
+Start with two plain questions:
+
+```yaml
+questionnaire:
+  name: "Gout Symptoms Check-In"
+  canonical_url: "http://example.com/instruments/gout-checkin"
+  version: "1.0"
+
+  questions:
+    - link_id: gout.last_attack
+      text: "When did you last have a gout attack?"
+      type: date
+
+    - link_id: gout.pain_now
+      text: "How would you rate your current joint pain? (0 = none, 10 = worst)"
+      type: numeric
+      range: [0, 10]
 ```
 
-Confirm it loaded:
+Load and verify:
 
 ```bash
+uv run quickq load gout.yaml study.db
 uv run quickq list surveys study.db
 ```
 
-You should see PHQ-9 with ID `1`.
+Preview it in your browser:
+
+```bash
+uv run quickq preview study.db 1
+```
+
+### Stage 2 — Add an option set
+
+Option sets define a reusable list of choices that multiple questions can share. Add a frequency scale and two questions that use it:
+
+```yaml
+questionnaire:
+  name: "Gout Symptoms Check-In"
+  canonical_url: "http://example.com/instruments/gout-checkin"
+  version: "1.0"
+
+  option_sets:
+    frequency:
+      - { text: "Never",       value: "never" }
+      - { text: "Rarely",      value: "rarely" }
+      - { text: "Sometimes",   value: "sometimes" }
+      - { text: "Often",       value: "often" }
+      - { text: "Very often",  value: "very_often" }
+
+  questions:
+    - link_id: gout.last_attack
+      text: "When did you last have a gout attack?"
+      type: date
+
+    - link_id: gout.pain_now
+      text: "How would you rate your current joint pain? (0 = none, 10 = worst)"
+      type: numeric
+      range: [0, 10]
+
+    - link_id: gout.alcohol
+      text: "How often do you drink alcohol?"
+      type: single_choice
+      options: $frequency
+
+    - link_id: gout.red_meat
+      text: "How often do you eat red meat or shellfish?"
+      type: single_choice
+      options: $frequency
+```
+
+Reload — quickq will overwrite the previous version since the `canonical_url` matches:
+
+```bash
+uv run quickq load gout.yaml study.db
+uv run quickq preview study.db 1
+```
+
+The `$frequency` reference means the option list is defined once and shared across both questions. If you add a sixth option later, both questions pick it up automatically.
+
+### Stage 3 — Add skip logic and a multiple-choice question
+
+Skip logic hides or shows questions based on earlier answers:
+
+```yaml
+questionnaire:
+  name: "Gout Symptoms Check-In"
+  canonical_url: "http://example.com/instruments/gout-checkin"
+  version: "1.0"
+
+  option_sets:
+    frequency:
+      - { text: "Never",       value: "never" }
+      - { text: "Rarely",      value: "rarely" }
+      - { text: "Sometimes",   value: "sometimes" }
+      - { text: "Often",       value: "often" }
+      - { text: "Very often",  value: "very_often" }
+
+    joints:
+      - { text: "Big toe",     value: "big_toe" }
+      - { text: "Ankle",       value: "ankle" }
+      - { text: "Knee",        value: "knee" }
+      - { text: "Wrist",       value: "wrist" }
+      - { text: "Elbow",       value: "elbow" }
+      - { text: "Other",       value: "other", is_other: true }
+
+  questions:
+    - link_id: gout.last_attack
+      text: "When did you last have a gout attack?"
+      type: date
+
+    - link_id: gout.attack_joints
+      text: "Which joints were affected? Select all that apply."
+      type: multiple_choice
+      options: $joints
+      show_when:
+        question: gout.last_attack
+        operator: exists
+
+    - link_id: gout.pain_now
+      text: "How would you rate your current joint pain? (0 = none, 10 = worst)"
+      type: numeric
+      range: [0, 10]
+
+    - link_id: gout.alcohol
+      text: "How often do you drink alcohol?"
+      type: single_choice
+      options: $frequency
+
+    - link_id: gout.red_meat
+      text: "How often do you eat red meat or shellfish?"
+      type: single_choice
+      options: $frequency
+
+    - link_id: gout.notes
+      text: "Any other symptoms or concerns?"
+      type: text
+```
+
+```bash
+uv run quickq load gout.yaml study.db
+uv run quickq preview study.db 1
+```
+
+The joint question now only appears if the date question has been answered.
 
 ---
 
 ## Step 4 — Export as FHIR
 
-Export the questionnaire as a FHIR R4 JSON file for the web form:
-
 ```bash
-uv run quickq fhir export study.db 1 --output phq9.json
+uv run quickq fhir export study.db 1 --output gout.json
 ```
 
 ---
 
 ## Step 5 — Install and start quickq-forms
 
-In a separate terminal, clone quickq-forms and install its dependencies:
+In a new terminal, clone and install quickq-forms:
 
 ```bash
 git clone https://github.com/quickq-io/quickq-forms.git
@@ -100,13 +216,11 @@ uv sync
 cd frontend && npm install && cd ..
 ```
 
-Start the form pointing at your study database:
+Start it pointing at your study database (use the absolute path):
 
 ```bash
-bash scripts/dev.sh --db /path/to/study.db --questionnaire-id 1
+bash scripts/dev.sh --db /absolute/path/to/study.db --questionnaire-id 1
 ```
-
-Replace `/path/to/study.db` with the absolute path to the database you created in Step 2.
 
 You should see:
 
@@ -118,33 +232,31 @@ Starting Vite dev server on :5173
   Form  → http://localhost:5173
 ```
 
-Open **http://localhost:5173** in your browser.
+Open **http://localhost:5173**.
+
+!!! note
+    If the form doesn't load, try a private/incognito window — browser extensions sometimes block localhost requests.
 
 ---
 
 ## Step 6 — Submit a response
 
-Fill out the PHQ-9 form and submit it. The response is written directly to `study.db` by the local adapter.
+Fill out the form and submit. The response is written directly to `study.db`.
 
-!!! note
-    If the form does not load, check that no browser extensions are blocking localhost requests. Try a private/incognito window if needed.
-
-Confirm the response was recorded:
+Confirm it arrived:
 
 ```bash
 uv run python -c "
 from quickq.schema import open_oltp
 conn = open_oltp('study.db', read_only=True)
 n = conn.execute('SELECT COUNT(*) FROM response_session').fetchone()[0]
-print(f'{n} session(s) in database')
+print(f'{n} session(s) recorded')
 "
 ```
 
 ---
 
 ## Step 7 — Build the analytics layer
-
-Run `refresh` to load the collected responses into the DuckDB OLAP layer:
 
 ```bash
 uv run quickq refresh study.db analytics.duckdb
@@ -158,7 +270,7 @@ uv run quickq refresh study.db analytics.duckdb
 uv run quickq report analytics.duckdb study.db 1
 ```
 
-This prints a Markdown summary of response distributions for the PHQ-9. To save it:
+To save it:
 
 ```bash
 uv run quickq report analytics.duckdb study.db 1 --output report.md
@@ -168,10 +280,13 @@ uv run quickq report analytics.duckdb study.db 1 --output report.md
 
 ## What to look for
 
-As you test, note any points where you got stuck, received an unhelpful error message, or had to guess what to do next. Specifically:
+Note anything that caused friction, confusion, or required guessing. Specifically:
 
-- Did the form render correctly and match the PHQ-9 as you know it?
-- Did submission feel complete — clear confirmation, no silent failures?
-- Did the report output make sense given the answers you submitted?
+- Did the YAML format feel natural? Were any field names or structures surprising?
+- Did the option set feature feel useful and clear?
+- Did skip logic behave as expected in the preview?
+- Did the form render correctly and match what you authored?
+- Was submission clearly confirmed?
+- Did the report reflect the answers you submitted?
 
-Feed back anything that felt off. No issue is too small.
+All feedback is useful — the goal is to find rough edges before real studies depend on this.
