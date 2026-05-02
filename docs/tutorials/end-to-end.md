@@ -275,6 +275,8 @@ quickq list library study.db
 quickq fhir export study.db 1 --output gout.json
 ```
 
+This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant delivery tool can render it. In the next step, quickq-forms reads directly from `study.db`, so you won't need this file today — but it's what you'd hand to an external tool like LHC-Forms or REDCap.
+
 ---
 
 ## Step 6 — Install and start quickq-forms
