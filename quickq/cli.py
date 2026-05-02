@@ -11,7 +11,7 @@ click.rich_click.COMMAND_GROUPS = {
         {
             "name": "Core",
             "commands": ["init", "load", "preview", "serve",
-                         "refresh", "data-dict", "render", "report", "export", "list"],
+                         "refresh", "seed", "data-dict", "render", "report", "export", "list"],
         },
         {
             "name": "FHIR",
@@ -233,6 +233,22 @@ def refresh_cmd(db_path: str, olap_path: str) -> None:
         f"{stats['sessions_loaded']} sessions, "
         f"{stats['scores_computed']} scores computed."
     )
+
+
+@main.command("seed")
+@click.argument("db_path",          type=click.Path(exists=True))
+@click.argument("questionnaire_id", type=int)
+@click.option("--n",        default=50,   show_default=True, help="Number of synthetic responses to generate.")
+@click.option("--study-id", type=int,     default=None,      help="Associate responses with this study.")
+@click.option("--seed",     type=int,     default=None,      help="Random seed for reproducible output.")
+def seed_cmd(db_path: str, questionnaire_id: int, n: int, study_id: int | None, seed: int | None) -> None:
+    """Generate synthetic responses in DB_PATH for development and testing."""
+    from .seed import seed_responses
+    conn = open_oltp(db_path)
+    ids = seed_responses(conn, questionnaire_id, n, study_id=study_id, rng_seed=seed)
+    lo, hi = ids[0], ids[-1]
+    range_str = str(lo) if lo == hi else f"{lo}–{hi}"
+    click.echo(f"Seeded {len(ids)} response session(s) (ids={range_str}).")
 
 
 @main.command("preview")

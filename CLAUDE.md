@@ -789,24 +789,45 @@ Survey delivery is out of scope for quickq. The FHIR handoff is the interface: q
 
 This does not mean quickq requires LHC-Forms. Any FHIR-compliant delivery tool works. LHC-Forms is the tool we test against, document against, and recommend to users as the default path.
 
-### End-to-end test strategy
+### Synthetic data generation (`quickq seed`)
 
-The FHIR handoff must be validated against a real delivery tool, not just by schema checks. The E2E test pipeline:
+`quickq seed` generates N plausible synthetic responses directly into the OLTP, respecting question types, option sets, numeric ranges, and skip logic. It is the primary tool for populating the analytics layer during development, testing scoring rules, and demonstrating the pipeline to new users before real data is collected.
+
+```bash
+quickq seed study.db 1 --n 50 --seed 42
+# Seeded 50 response session(s) (ids=1–50).
+```
+
+Options: `--n` (default 50), `--seed` (random seed for reproducibility), `--study-id`.
+
+Implementation: `quickq/seed.py`. Tests: `tests/test_seed.py`.
+
+### End-to-end test strategy (planned — `tests/test_e2e_lhcforms.py`)
+
+`quickq seed` validates the data model but not the FHIR delivery contract. The FHIR handoff must be validated against a real delivery tool. The planned E2E test pipeline:
 
 ```
-quickq export_fhir()
+quickq fhir export
   → FHIR Questionnaire JSON
   → LHC-Forms renders (Playwright headless)
   → synthetic responses submitted via Playwright
   → FHIR QuestionnaireResponse JSON captured
-  → quickq import_fhir_response()
+  → quickq fhir import-response
   → quickq refresh
   → assert OLAP outputs match expected values
 ```
 
 This validates both the export format and the response import in a single pipeline. It is the only test that can confirm the FHIR contract is correct end-to-end.
 
-The LHC-Forms E2E test suite lives in `tests/test_e2e_lhcforms.py` and requires Playwright. It is kept separate from the unit test suite and gated in CI so it does not block fast local iteration.
+**Status:** `tests/test_e2e_lhcforms.py` exists as a stub. Playwright is installed as a dev dependency. The test suite is gated in CI (marked `@pytest.mark.e2e`) so it does not block fast local iteration.
+
+**What needs to be built:**
+- Playwright fixture that serves the LHC-Forms widget locally (avoiding CDN blocking)
+- Form-filling helper that drives LHC-Forms fields by FHIR linkId
+- Response capture: intercept the QuestionnaireResponse POST and write it to a temp file
+- Assertions against OLAP outputs after refresh
+
+**When to prioritise:** Before the first external user hands off a questionnaire to a third-party delivery tool. Until then, `quickq seed` + the existing unit tests are sufficient coverage.
 
 ---
 

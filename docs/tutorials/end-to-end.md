@@ -344,23 +344,35 @@ The response count next to your questionnaire should now show 1.
 
 ---
 
-## Step 9 — Build the analytics layer
+## Step 9 — Seed synthetic responses
+
+One response produces a sparse report. To see realistic distributions across all questions, generate a batch of synthetic responses:
+
+```bash
+quickq seed study.db 1 --n 50 --seed 42
+```
+
+This generates 50 plausible responses that respect the questionnaire's question types, option sets, numeric ranges, and skip logic — the joint question only gets answers in sessions where the date question was answered. Your real response from Step 7 is still in the database alongside the synthetic ones.
+
+---
+
+## Step 10 — Build the analytics layer
 
 ```bash
 quickq refresh study.db analytics.duckdb
 ```
 
-This reads the responses from `study.db` and builds the analytical layer in `analytics.duckdb` — scoring, distributions, and session summaries.
+This reads all responses from `study.db` and builds the analytical layer in `analytics.duckdb` — answer distributions, session summaries, and scores for any scoring rules on the instrument.
 
 ---
 
-## Step 10 — View the report
+## Step 11 — View the report
 
 ```bash
 quickq report analytics.duckdb study.db 1
 ```
 
-The report prints to your terminal and shows a summary of the responses collected so far: answer distributions for each question, completion status, and scores for any scoring rules defined on the instrument. With one response it will be sparse, but you should be able to see your answers reflected in the output.
+The report shows answer distributions for each question, completion statistics, and scores for any scoring rules defined on the instrument. With 50+ responses you should see meaningful distributions — how often each frequency option was chosen, the spread of pain ratings, which joints came up most often.
 
 To export a human-readable document for sharing with colleagues, an IRB, or a coordinating center:
 
