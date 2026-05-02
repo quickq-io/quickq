@@ -44,5 +44,5 @@ packages = ["quickq"]
 [tool.pytest.ini_options]
 addopts = "-m 'not e2e'"
 markers = [
-    "e2e: end-to-end tests that require network access and a browser (run with -m e2e)",
+    "e2e: end-to-end tests that build real wheels, boot subprocesses, or require network/browser (run with -m e2e)",
 ]
