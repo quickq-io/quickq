@@ -72,7 +72,19 @@ You should see the full command list grouped by function — Core, FHIR, Complia
 
 ---
 
-## Step 2 — Create a study database
+## Step 2 — Create a study directory
+
+quickq is a tool you install once and use across many studies. Your study files — the YAML instrument definitions, the SQLite database, and any exported files — live in their own directory, separate from the quickq source code.
+
+```bash
+mkdir gout-study && cd gout-study
+```
+
+Everything from here on happens inside `gout-study/`. The YAML files you author and the `study.db` database will both live here. If you add a `quickq.yml` config file later (for things like default output format), it goes here too.
+
+---
+
+## Step 3 — Create a study database
 
 ```bash
 quickq init study.db --with-library
@@ -82,7 +94,7 @@ quickq init study.db --with-library
 
 ---
 
-## Step 3 — Author the questionnaire
+## Step 4 — Author the questionnaire
 
 Create a file called `gout.yaml`. We will build it up in three stages.
 
@@ -257,7 +269,7 @@ quickq list library study.db
 
 ---
 
-## Step 4 — Export as FHIR
+## Step 5 — Export as FHIR
 
 ```bash
 quickq fhir export study.db 1 --output gout.json
@@ -265,7 +277,7 @@ quickq fhir export study.db 1 --output gout.json
 
 ---
 
-## Step 5 — Install and start quickq-forms
+## Step 6 — Install and start quickq-forms
 
 In a new terminal, clone and install quickq-forms:
 
@@ -299,7 +311,7 @@ Open **http://localhost:5173**.
 
 ---
 
-## Step 6 — Submit a response
+## Step 7 — Submit a response
 
 Fill out the form and submit. The response is written directly to `study.db`.
 
@@ -316,7 +328,7 @@ print(f'{n} session(s) recorded')
 
 ---
 
-## Step 7 — Build the analytics layer
+## Step 8 — Build the analytics layer
 
 ```bash
 quickq refresh study.db analytics.duckdb
@@ -324,7 +336,7 @@ quickq refresh study.db analytics.duckdb
 
 ---
 
-## Step 8 — View the report
+## Step 9 — View the report
 
 ```bash
 quickq report analytics.duckdb study.db 1
