@@ -183,9 +183,7 @@ questionnaire:
       type: single_choice
       options: $frequency
 
-    - link_id: gout.notes
-      text: "Any other symptoms or concerns?"
-      type: text
+    - { library: gout.notes }
 ```
 
 ```bash
@@ -194,6 +192,29 @@ uv run quickq preview study.db 1
 ```
 
 The joint question now only appears if the date question has been answered.
+
+### Stage 4 — Pull a validated question from the library
+
+The `--with-library` flag in Step 2 loaded a bank of validated questions, including both PHQ-9 items. You can pull any of them into your questionnaire with a single line instead of redefining them:
+
+```yaml
+    - { library: gout.notes }
+    - { library: phq9.1 }
+    - { library: phq9.2 }
+```
+
+This inserts the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
+
+```bash
+uv run quickq load gout.yaml study.db
+uv run quickq preview study.db 1
+```
+
+You can browse all available link_ids with:
+
+```bash
+uv run quickq list library study.db
+```
 
 ---
 
