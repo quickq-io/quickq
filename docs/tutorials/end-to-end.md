@@ -13,12 +13,45 @@ By the end you will have:
 
 ## Prerequisites
 
-- **Python 3.11+** and **[uv](https://docs.astral.sh/uv/)**
-- **Node.js 18+** and **npm**
+### Python 3.11+
+
+Check if you have it:
 
 ```bash
-python --version && uv --version && node --version && npm --version
+python --version
 ```
+
+If not, download it from [python.org](https://www.python.org/downloads/) or use your system package manager (`brew install python@3.11`, `apt install python3.11`, etc.).
+
+### uv
+
+uv is the package manager used to install quickq. Check if you have it:
+
+```bash
+uv --version
+```
+
+If not, install it with a single command — no pip required:
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then open a new terminal so `uv` is on your PATH.
+
+### Node.js 18+ and npm
+
+Check if you have them:
+
+```bash
+node --version && npm --version
+```
+
+If not, download from [nodejs.org](https://nodejs.org/) (the LTS release includes npm).
 
 ---
 
