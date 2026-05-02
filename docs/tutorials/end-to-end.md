@@ -290,10 +290,15 @@ uv sync
 cd frontend && npm install && cd ..
 ```
 
-Start it pointing at your study database (use the absolute path):
+Start it pointing at your study database. Run this from inside `gout-study/` to get the absolute path, then use it in the command:
 
 ```bash
-bash scripts/dev.sh --db /absolute/path/to/study.db --questionnaire-id 1
+# From gout-study/
+pwd
+# → /Users/yourname/gout-study
+
+# From the quickq-forms directory
+bash scripts/dev.sh --db /Users/yourname/gout-study/study.db --questionnaire-id 1
 ```
 
 You should see:
@@ -313,36 +318,49 @@ Open **http://localhost:5173**.
 
 ---
 
-## Step 7 — Submit a response
+## Step 7 — Take the survey
 
-Fill out the form and submit. The response is written directly to `study.db`.
+You should see the Gout Symptoms Check-In form rendered in your browser. Work through it:
 
-Confirm it arrived:
+1. **When did you last have a gout attack?** — enter a date. As soon as you do, the next question appears.
+2. **Which joints were affected?** — this question is hidden until the date field is answered. This is the skip logic you defined with `show_when` in Stage 3. Select one or more joints.
+3. **Current joint pain** — enter a number between 0 and 10.
+4. **Alcohol frequency** and **red meat frequency** — select from the frequency scale you defined as an option set.
+5. **Notes**, **PHQ-9 items** — complete the remaining questions.
 
-```bash
-python -c "
-from quickq.schema import open_oltp
-conn = open_oltp('study.db', read_only=True)
-n = conn.execute('SELECT COUNT(*) FROM response_session').fetchone()[0]
-print(f'{n} session(s) recorded')
-"
-```
+Submit the form. You should see a confirmation that your response was recorded.
 
 ---
 
-## Step 8 — Build the analytics layer
+## Step 8 — Confirm the response arrived
+
+Back in your `gout-study/` terminal:
+
+```bash
+quickq list surveys study.db
+```
+
+The response count next to your questionnaire should now show 1.
+
+---
+
+## Step 9 — Build the analytics layer
 
 ```bash
 quickq refresh study.db analytics.duckdb
 ```
 
+This reads the responses from `study.db` and builds the analytical layer in `analytics.duckdb` — scoring, distributions, and session summaries.
+
 ---
 
-## Step 9 — View the report
+## Step 10 — View the report
 
 ```bash
 quickq report analytics.duckdb study.db 1
 ```
+
+The report prints to your terminal and shows a summary of the responses collected so far: answer distributions for each question, completion status, and scores for any scoring rules defined on the instrument. With one response it will be sparse, but you should be able to see your answers reflected in the output.
 
 To export a human-readable document for sharing with colleagues, an IRB, or a coordinating center:
 
