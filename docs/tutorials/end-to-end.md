@@ -384,59 +384,76 @@ quickq report analytics.duckdb study.db 1 --output report.md
 
 ## Step 12 — Explore the analytics layer
 
-`analytics.duckdb` contains the full analytical data model and can be queried directly. Open a Python session from your `gout-study/` directory:
-
-```python
-import duckdb
-conn = duckdb.connect("analytics.duckdb", read_only=True)
-```
-
-**Answer distributions** — what did respondents choose for each question?
-
-```python
-conn.sql("""
-    SELECT q.link_id, d.option_text, a.n, a.pct
-    FROM agg_question_distribution a
-    JOIN dim_question q USING (question_id)
-    JOIN dim_response_option d USING (option_id)
-    ORDER BY q.link_id, a.pct DESC
-""").show()
-```
-
-**Pain score statistics** — mean, median, spread:
-
-```python
-conn.sql("""
-    SELECT n, ROUND(mean, 1) AS mean, median,
-           ROUND(std_dev, 1) AS std_dev, min_val, max_val
-    FROM agg_numeric_stats
-    JOIN dim_question USING (question_id)
-    WHERE link_id = 'gout.pain_now'
-""").show()
-```
-
-**Verify skip logic** — the joints question should only have answers in sessions where the date question was also answered. `skip_violated` should be 0:
-
-```python
-conn.sql("""
-    SELECT
-        SUM(CASE WHEN date_answered AND joints_answered THEN 1 ELSE 0 END) AS skip_respected,
-        SUM(CASE WHEN NOT date_answered AND joints_answered THEN 1 ELSE 0 END) AS skip_violated
-    FROM (
-        SELECT session_id,
-               BOOL_OR(q.link_id = 'gout.last_attack')   AS date_answered,
-               BOOL_OR(q.link_id = 'gout.attack_joints') AS joints_answered
-        FROM fact_response f
-        JOIN dim_question q USING (question_id)
-        GROUP BY session_id
-    )
-""").show()
-```
-
-For interactive exploration, the [DuckDB CLI](https://duckdb.org/docs/installation/) lets you open the file in a local browser-based SQL editor:
+Install the [DuckDB CLI](https://duckdb.org/docs/installation/) (a single binary), then open the analytics file in the local browser UI:
 
 ```bash
 duckdb -ui analytics.duckdb
+```
+
+This opens a SQL editor in your browser pointed at `analytics.duckdb`. Try these queries.
+
+---
+
+**Which joints were most commonly affected?**
+
+Each selected option in a multiple-choice question is its own row in `fact_response`. The same GROUP BY pattern works for every question type — no schema knowledge required.
+
+```sql
+SELECT ro.option_text AS joint, COUNT(*) AS n
+FROM fact_response f
+JOIN dim_question q USING (question_id)
+JOIN dim_response_option ro USING (option_id)
+WHERE q.link_id = 'gout.attack_joints'
+GROUP BY ro.option_text
+ORDER BY n DESC;
+```
+
+---
+
+**Does alcohol frequency correlate with pain score?**
+
+Two questions with completely different types — a choice and a numeric — joined only by `session_id`. This query is structurally identical for any pair of questions in any instrument, without any schema changes.
+
+```sql
+SELECT
+    alcohol.option_text AS alcohol_frequency,
+    COUNT(*)            AS n,
+    ROUND(AVG(pain.response_numeric), 1) AS avg_pain_score
+FROM (
+    SELECT f.session_id, ro.option_text
+    FROM fact_response f
+    JOIN dim_question q USING (question_id)
+    JOIN dim_response_option ro USING (option_id)
+    WHERE q.link_id = 'gout.alcohol'
+) alcohol
+JOIN (
+    SELECT f.session_id, f.response_numeric
+    FROM fact_response f
+    JOIN dim_question q USING (question_id)
+    WHERE q.link_id = 'gout.pain_now'
+) pain USING (session_id)
+GROUP BY alcohol.option_text
+ORDER BY avg_pain_score DESC;
+```
+
+---
+
+**Did skip logic fire correctly?**
+
+The questionnaire structure is queryable. `skip_violated` should be 0 — no session should have answered the joints question without first answering the date question.
+
+```sql
+SELECT
+    SUM(CASE WHEN date_answered AND joints_answered THEN 1 ELSE 0 END)       AS skip_respected,
+    SUM(CASE WHEN NOT date_answered AND joints_answered THEN 1 ELSE 0 END)    AS skip_violated
+FROM (
+    SELECT session_id,
+           BOOL_OR(q.link_id = 'gout.last_attack')   AS date_answered,
+           BOOL_OR(q.link_id = 'gout.attack_joints') AS joints_answered
+    FROM fact_response f
+    JOIN dim_question q USING (question_id)
+    GROUP BY session_id
+);
 ```
 
 ---
