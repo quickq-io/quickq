@@ -26,17 +26,23 @@ python --version && uv --version && node --version && npm --version
 
 ```bash
 git clone https://github.com/quickq-io/quickq.git
-cd quickq
-uv sync
-uv run quickq --help
+uv tool install ./quickq
 ```
+
+This installs `quickq` as a standalone command on your PATH. Verify it and get a quick overview of what the tool does:
+
+```bash
+quickq --help
+```
+
+You should see the full command list grouped by function — Core, FHIR, Compliance, and Federated. Spend a moment reading through it before continuing.
 
 ---
 
 ## Step 2 — Create a study database
 
 ```bash
-uv run quickq init study.db --with-library
+quickq init study.db --with-library
 ```
 
 `--with-library` loads the bundled question bank (PHQ-9, GAD-7, PRAPARE, and others) so you can reference their questions in your own instruments.
@@ -71,14 +77,14 @@ questionnaire:
 Load and verify:
 
 ```bash
-uv run quickq load gout.yaml study.db
-uv run quickq list surveys study.db
+quickq load gout.yaml study.db
+quickq list surveys study.db
 ```
 
 Preview it in your browser:
 
 ```bash
-uv run quickq preview study.db 1
+quickq preview study.db 1
 ```
 
 ### Stage 2 — Add an option set
@@ -123,8 +129,8 @@ questionnaire:
 Reload — quickq will overwrite the previous version since the `canonical_url` matches:
 
 ```bash
-uv run quickq load gout.yaml study.db
-uv run quickq preview study.db 1
+quickq load gout.yaml study.db
+quickq preview study.db 1
 ```
 
 The `$frequency` reference means the option list is defined once and shared across both questions. If you add a sixth option later, both questions pick it up automatically.
@@ -187,8 +193,8 @@ questionnaire:
 ```
 
 ```bash
-uv run quickq load gout.yaml study.db
-uv run quickq preview study.db 1
+quickq load gout.yaml study.db
+quickq preview study.db 1
 ```
 
 The joint question now only appears if the date question has been answered.
@@ -206,14 +212,14 @@ The `--with-library` flag in Step 2 loaded a bank of validated questions, includ
 This inserts the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
 
 ```bash
-uv run quickq load gout.yaml study.db
-uv run quickq preview study.db 1
+quickq load gout.yaml study.db
+quickq preview study.db 1
 ```
 
 You can browse all available link_ids with:
 
 ```bash
-uv run quickq list library study.db
+quickq list library study.db
 ```
 
 ---
@@ -221,7 +227,7 @@ uv run quickq list library study.db
 ## Step 4 — Export as FHIR
 
 ```bash
-uv run quickq fhir export study.db 1 --output gout.json
+quickq fhir export study.db 1 --output gout.json
 ```
 
 ---
@@ -267,7 +273,7 @@ Fill out the form and submit. The response is written directly to `study.db`.
 Confirm it arrived:
 
 ```bash
-uv run python -c "
+python -c "
 from quickq.schema import open_oltp
 conn = open_oltp('study.db', read_only=True)
 n = conn.execute('SELECT COUNT(*) FROM response_session').fetchone()[0]
@@ -280,7 +286,7 @@ print(f'{n} session(s) recorded')
 ## Step 7 — Build the analytics layer
 
 ```bash
-uv run quickq refresh study.db analytics.duckdb
+quickq refresh study.db analytics.duckdb
 ```
 
 ---
@@ -288,13 +294,13 @@ uv run quickq refresh study.db analytics.duckdb
 ## Step 8 — View the report
 
 ```bash
-uv run quickq report analytics.duckdb study.db 1
+quickq report analytics.duckdb study.db 1
 ```
 
 To save it:
 
 ```bash
-uv run quickq report analytics.duckdb study.db 1 --output report.md
+quickq report analytics.duckdb study.db 1 --output report.md
 ```
 
 ---
