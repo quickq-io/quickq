@@ -1,7 +1,7 @@
 site_name: quickq
 site_description: Health and Epidemiology Survey Authoring & Analytics
 site_author: quickq Contributors
-repo_url: https://github.com/ssis2dbt/quickq
+repo_url: https://github.com/quickq-io/quickq
 
 theme:
   name: material
@@ -49,6 +49,7 @@ nav:
   - Design Decisions: design_decisions.md
   - The Study Journey: tutorial.md
   - Tutorials:
+      - End-to-End Testing Walkthrough: tutorials/end-to-end.md
       - 1. Author an Instrument: tutorials/authoring.md
       - 2. Collect Responses: tutorials/collect.md
       - 3. Analyze: tutorials/analytics.md
