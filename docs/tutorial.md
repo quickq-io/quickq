@@ -87,7 +87,7 @@ Check for unexpected sparsity, distinguish skip-logic non-responses from genuine
 
 Pseudonymize participant identifiers, refresh the OLAP, and export to Parquet for warehouse ingestion or data repository deposit.
 
-`quickq pseudonymize` replaces `external_id` values with stable HMAC tokens and warns about free-text fields and institutional metadata that require manual review. The resulting database is analytically complete and safe to share.
+`quickq compliance pseudonymize` replaces `external_id` values with stable HMAC tokens and warns about free-text fields and institutional metadata that require manual review. The resulting database is analytically complete and safe to share.
 
 **→ [Tutorial: Sharing & Publishing](tutorials/share.md)**
 

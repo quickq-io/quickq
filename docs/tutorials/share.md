@@ -10,14 +10,14 @@ For the multi-site equivalent (merge → pseudonymize → share), see [Multi-Sit
 
 A `study.db` file at the end of collection contains PHI: `external_id` values (your participant identifiers), potentially free-text responses, and institutional fields like PI name and IRB number. It is not safe to share directly.
 
-`quickq pseudonymize` produces a copy with participant identifiers replaced by stable HMAC tokens. The analytical structure is fully preserved — all queries that work on the original work on the pseudonymized copy.
+`quickq compliance pseudonymize` produces a copy with participant identifiers replaced by stable HMAC tokens. The analytical structure is fully preserved — all queries that work on the original work on the pseudonymized copy.
 
 ---
 
 ## Step 1 — Pseudonymize
 
 ```bash
-quickq pseudonymize study.db \
+quickq compliance pseudonymize study.db \
     --output study_anon.db \
     --key-file pseudonymization_key.bin
 ```
@@ -61,7 +61,7 @@ The same key applied to the same source database always produces the same tokens
 If you do not pass `--key-file`, the key is printed to stderr in hex:
 
 ```bash
-quickq pseudonymize study.db --output study_anon.db
+quickq compliance pseudonymize study.db --output study_anon.db
 # stderr: HMAC key (hex): a3f8...
 ```
 

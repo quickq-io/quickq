@@ -7,7 +7,7 @@ The analytical layer is a DuckDB star schema populated on demand from the SQLite
 ## Refresh
 
 ```bash
-quickq refresh study.db
+quickq refresh study.db analytics.duckdb
 ```
 
 Refresh is incremental. It reads `refresh_log` to find the high-water mark from the last run, loads only new `response` and `response_session` rows, recomputes scores and aggregates, and updates the watermark on success. A failed run leaves the watermark unchanged so the next run retries the same window cleanly.
@@ -127,7 +127,7 @@ ORDER BY response_count DESC;
 ## Reports
 
 ```bash
-quickq report study.db
+quickq report analytics.duckdb study.db <questionnaire_id>
 ```
 
-Generates a Markdown summary from the OLAP: enrollment counts, completion rates, question distributions, and scored scale summaries. The report reads exclusively from aggregate tables and requires a prior `quickq refresh`.
+Generates a Markdown summary from the OLAP: enrollment counts, completion rates, question distributions, and scored scale summaries. The report reads exclusively from aggregate tables and requires a prior `quickq refresh`. Pass `--output report.md` to write to a file instead of stdout.

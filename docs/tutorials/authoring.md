@@ -313,7 +313,7 @@ Both outputs come from the source of truth — the database. There is no separat
 ## 10. Export to FHIR
 
 ```bash
-quickq fhir export 1 anxiety_study.db > gad7_questionnaire.json
+quickq fhir export anxiety_study.db 1 > gad7_questionnaire.json
 ```
 
 This produces a standard FHIR R4 Questionnaire JSON file. Inspect it to confirm:

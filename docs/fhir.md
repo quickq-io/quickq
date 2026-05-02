@@ -97,7 +97,7 @@ Any FHIR Questionnaire that can be imported can be exported back to valid FHIR w
 
 ```bash
 quickq fhir import ussg_fht.json study.db
-quickq fhir export 1 study.db > ussg_exported.json
+quickq fhir export study.db 1 > ussg_exported.json
 ```
 
 The FHIR E2E test suite (in `tests/test_e2e_lhcforms.py`) validates the full pipeline against LHC-Forms using Playwright headless rendering.

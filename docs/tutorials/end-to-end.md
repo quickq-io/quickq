@@ -57,7 +57,10 @@ If not, download from [nodejs.org](https://nodejs.org/) (the LTS release include
 
 ## Step 1 — Install quickq
 
+Pick a parent directory to hold both quickq repos (e.g. `~/code`) and clone there. Step 6 will clone `quickq-forms` next to `quickq` in the same parent — `quickq-forms`'s dev script expects the two repos to live as siblings.
+
 ```bash
+mkdir -p ~/code && cd ~/code
 git clone https://github.com/quickq-io/quickq.git
 uv tool install ./quickq
 ```
@@ -211,7 +214,7 @@ questionnaire:
       text: "When did you last have a gout attack?"
       type: date
 
-    - link_id: gout.attack_joints
+    - link_id: gout.joints_today
       text: "Which joints were affected? Select all that apply."
       type: multiple_choice
       options: $joints
@@ -281,13 +284,23 @@ This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant deli
 
 ## Step 6 — Install and start quickq-forms
 
-In a new terminal, clone and install quickq-forms:
+In a new terminal, clone `quickq-forms` into the same parent directory as `quickq` (the one you chose in Step 1) — its dev script imports `quickq` from a sibling path:
 
 ```bash
+cd ~/code            # the parent directory from Step 1
 git clone https://github.com/quickq-io/quickq-forms.git
 cd quickq-forms
 uv sync
 cd frontend && npm install && cd ..
+```
+
+Your layout should now look like:
+
+```
+~/code/
+├── quickq/          # cloned in Step 1
+├── quickq-forms/    # cloned just now — sibling of quickq
+└── gout-study/      # the study directory you created in Step 2
 ```
 
 Start it pointing at your study database. Run this from inside `gout-study/` to get the absolute path, then use it in the command:
@@ -403,7 +416,7 @@ SELECT ro.option_text AS joint, COUNT(*) AS n
 FROM fact_response f
 JOIN dim_question q USING (question_id)
 JOIN dim_response_option ro USING (option_id)
-WHERE q.link_id = 'gout.attack_joints'
+WHERE q.link_id = 'gout.joints_today'
 GROUP BY ro.option_text
 ORDER BY n DESC;
 ```
@@ -449,7 +462,7 @@ SELECT
 FROM (
     SELECT session_id,
            BOOL_OR(q.link_id = 'gout.last_attack')   AS date_answered,
-           BOOL_OR(q.link_id = 'gout.attack_joints') AS joints_answered
+           BOOL_OR(q.link_id = 'gout.joints_today') AS joints_answered
     FROM fact_response f
     JOIN dim_question q USING (question_id)
     GROUP BY session_id

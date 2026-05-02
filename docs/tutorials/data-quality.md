@@ -70,9 +70,8 @@ SELECT
 FROM dim_session ds
 CROSS JOIN dim_question dq
 LEFT JOIN fact_response fr
-    ON fr.session_id = dq.question_id   -- simplified: join on question_id
-    AND fr.question_id = dq.question_id
-    AND fr.session_id = ds.session_id
+    ON fr.question_id = dq.question_id
+   AND fr.session_id  = ds.session_id
 WHERE dq.question_type NOT IN ('repeating_group')
 GROUP BY dq.link_id, dq.question_text
 HAVING missing > 0

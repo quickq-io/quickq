@@ -116,10 +116,13 @@ There are three authoring patterns. Teams rarely pick one and stick to it — mo
 Before authoring a new question, search for an existing validated instrument that already covers the construct. This eliminates duplication and gives you external vocabulary codes for free.
 
 ```bash
-# Search the local question bank (library questions + previously loaded instruments)
-quickq search "little interest"
+# Browse the local question bank (library questions + previously loaded instruments)
+quickq list library study.db
 
-# If found — reference it by link_id instead of re-authoring
+# Filter to a specific instrument
+quickq list library study.db --instrument phq9
+
+# If you find a match, reference it by link_id instead of re-authoring.
 # In your YAML:
 #   - { library: phq9.1 }
 ```
@@ -242,7 +245,7 @@ The question is attached to your internal concept. The LOINC mapping is discover
 
 ### Merge-time collision handling
 
-If two sites independently use `auto_concept` and assign Local:2000000001 to different constructs, `quickq merge` detects the collision (same code, different concept_name/domain) and surfaces it as a conflict to resolve before the merge completes. The resolution options are: remap one site's code to a new range, or declare them equivalent via `concept_relationship`. This is the same deduplication challenge that arises for external vocabulary codes shared between sites — the merge step handles it uniformly.
+If two sites independently use `auto_concept` and assign Local:2000000001 to different constructs, `quickq federated merge` detects the collision (same code, different concept_name/domain) and surfaces it as a conflict to resolve before the merge completes. The resolution options are: remap one site's code to a new range, or declare them equivalent via `concept_relationship`. This is the same deduplication challenge that arises for external vocabulary codes shared between sites — the merge step handles it uniformly.
 
 ---
 
@@ -258,19 +261,30 @@ Importing the same `canonical_url` + `version` twice is a no-op — the import i
 
 ## Skip Logic
 
-Branching logic is expressed as `skip_rules` in YAML (or populated via the Python SDK). Each rule names a trigger question, an operator, and a value. Multiple rules for the same question are combined with `enable_behavior: all` (AND) or `any` (OR).
+Branching logic is expressed as `show_when` in YAML (or populated via the Python SDK). Each condition names a trigger question, an operator, and a value. For a single condition, use the shorthand form. For multiple conditions, wrap them in a `conditions` list and set `behavior: all` (AND) or `any` (OR).
 
 ```yaml
+# Shorthand — single condition
   - link_id: alcohol-frequency
     text: How often do you have a drink?
     type: single_choice
-    skip_if:
-      - trigger: drinks-alcohol
-        operator: "="
-        value: "no"
+    show_when:
+      question: drinks-alcohol
+      operator: "="
+      value: "yes"
+
+# Multi-condition
+  - link_id: alcohol-amount
+    text: On a typical drinking day, how many drinks?
+    type: numeric
+    show_when:
+      behavior: all
+      conditions:
+        - { question: drinks-alcohol,    operator: "=", value: "yes" }
+        - { question: alcohol-frequency, operator: "!=", value: "never" }
 ```
 
-Skip rules map directly to FHIR `item.enableWhen`. For complex multi-condition logic that exceeds what structured rules can express, `display_condition` accepts a FHIRPath expression as a fallback.
+Operators: `exists`, `=`, `!=`, `>`, `<`, `>=`, `<=`. Skip rules map directly to FHIR `item.enableWhen`. For complex multi-condition logic that exceeds what structured rules can express, `display_condition` accepts a FHIRPath expression as a fallback.
 
 ---
 
