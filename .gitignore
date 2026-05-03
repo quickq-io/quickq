@@ -29,3 +29,6 @@ build/
 
 # Claude Code memory (local session data)
 .claude/
+
+# Internal AI-agent design notes; not synced to git but preserved locally
+CLAUDE.md
