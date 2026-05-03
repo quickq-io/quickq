@@ -235,3 +235,113 @@ def test_agg_question_distribution_pct_sums(phq9_olap):
     assert len(rows) > 0
     for qid, total_pct in rows:
         assert abs(total_pct - 100.0) < 1.0, f"q{qid}: pct sum {total_pct} != 100"
+
+
+# ------------------------------------------------------------------
+# Cast-failure surfacing (closes t2m)
+# ------------------------------------------------------------------
+
+def test_refresh_flags_session_timestamp_cast_failures(tmp_path):
+    """When a response_session has a non-ISO timestamp that DuckDB cannot
+    cast, the refresh writes a data_quality_flag with rule_name='cast_failure'
+    so analysts see the loss instead of a silent NULL in dim_session."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+    raw = sqlite3.connect(str(db_path))
+    raw.executescript("""
+        INSERT INTO study (study_id, name) VALUES (1, 'S');
+        INSERT INTO questionnaire (questionnaire_id, study_id, name, version,
+            canonical_url, fhir_status)
+            VALUES (1, 1, 'Q', '1.0', 'http://ex/q', 'active');
+        INSERT INTO respondent (respondent_id, study_id, external_id)
+            VALUES (1, 1, 'r1');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, completed_at, is_complete, admin_mode)
+            VALUES (1, 1, 1, 'tomorrow', '2024-99-99', 1, 'api');
+    """)
+    raw.commit()
+    raw.close()
+
+    olap_path = str(tmp_path / "analytics.duckdb")
+    stats = refresh(olap_path, str(db_path))
+    assert stats.get("cast_failures_flagged", 0) >= 2
+
+    raw = sqlite3.connect(str(db_path))
+    flags = raw.execute(
+        "SELECT message FROM data_quality_flag WHERE rule_name = 'cast_failure' "
+        "ORDER BY flag_id"
+    ).fetchall()
+    raw.close()
+    assert len(flags) >= 2
+    messages = " | ".join(m[0] for m in flags)
+    assert "started_at" in messages and "tomorrow" in messages
+    assert "completed_at" in messages and "2024-99-99" in messages
+
+
+def test_refresh_cast_failure_dedup(tmp_path):
+    """Re-running refresh against the same bad data should not accumulate
+    duplicate cast_failure flags."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+    raw = sqlite3.connect(str(db_path))
+    raw.executescript("""
+        INSERT INTO study (study_id, name) VALUES (1, 'S');
+        INSERT INTO questionnaire (questionnaire_id, study_id, name, version,
+            canonical_url, fhir_status)
+            VALUES (1, 1, 'Q', '1.0', 'http://ex/q', 'active');
+        INSERT INTO respondent (respondent_id, study_id, external_id)
+            VALUES (1, 1, 'r1');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, is_complete, admin_mode)
+            VALUES (1, 1, 1, 'not-a-date', 1, 'api');
+    """)
+    raw.commit()
+    raw.close()
+
+    olap_path = str(tmp_path / "analytics.duckdb")
+    refresh(olap_path, str(db_path))
+    refresh(olap_path, str(db_path))  # second run should be a no-op for flagging
+
+    raw = sqlite3.connect(str(db_path))
+    n_flags = raw.execute(
+        "SELECT COUNT(*) FROM data_quality_flag WHERE rule_name = 'cast_failure'"
+    ).fetchone()[0]
+    raw.close()
+    assert n_flags == 1, f"expected dedup; got {n_flags} flags after two refreshes"
+
+
+def test_refresh_no_cast_failures_on_clean_data(tmp_path):
+    """A study with all-valid timestamps produces zero cast_failure flags."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+    raw = sqlite3.connect(str(db_path))
+    raw.executescript("""
+        INSERT INTO study (study_id, name, start_date, end_date)
+            VALUES (1, 'S', '2024-01-01', '2024-12-31');
+        INSERT INTO questionnaire (questionnaire_id, study_id, name, version,
+            canonical_url, fhir_status)
+            VALUES (1, 1, 'Q', '1.0', 'http://ex/q', 'active');
+        INSERT INTO respondent (respondent_id, study_id, external_id)
+            VALUES (1, 1, 'r1');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, completed_at, is_complete, admin_mode)
+            VALUES (1, 1, 1, '2024-06-01T10:00:00', '2024-06-01T10:15:00', 1, 'api');
+    """)
+    raw.commit()
+    raw.close()
+
+    olap_path = str(tmp_path / "analytics.duckdb")
+    stats = refresh(olap_path, str(db_path))
+    assert stats.get("cast_failures_flagged", 0) == 0

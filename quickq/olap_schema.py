@@ -75,6 +75,9 @@ def refresh(olap_path: str, oltp_path: str) -> dict[str, Any]:
     try:
         watermark = _read_watermark(conn)
         stats = _run_refresh(conn, watermark)
+        # Surface OLTP→OLAP cast failures as data_quality_flag rows so they
+        # are visible to analysts instead of presenting as silent NULLs.
+        stats["cast_failures_flagged"] = _flag_cast_failures(conn, oltp_path)
         completed_at = _now()
 
         conn.execute(
@@ -204,6 +207,111 @@ def _run_refresh(conn: duckdb.DuckDBPyConnection, watermark: dict) -> dict:
         "new_max_response_id":  new_max_r,
         "new_max_session_id":   new_max_s,
     }
+
+
+def _flag_cast_failures(
+    olap_conn: duckdb.DuckDBPyConnection, oltp_path: str
+) -> int:
+    """
+    After a refresh, find OLTP source values that are non-NULL but produced
+    NULL via TRY_CAST during the refresh. Each represents a silent data-
+    quality loss (a value the OLTP retains but the OLAP could not parse).
+
+    Writes a data_quality_flag row in the OLTP for each new finding with
+    severity='warning' and rule_name='cast_failure'. Deduped by
+    (session_id, qq_id, rule_name, message) so re-running refresh against
+    the same bad data does not accumulate duplicates.
+
+    Returns the count of new flag rows written.
+    """
+    import sqlite3 as _sqlite3
+
+    findings: list[tuple[int | None, int | None, str]] = []
+    # (session_id, qq_id, message) — qq_id may be None for session-level
+    # or study-level cast failures.
+
+    # Session timestamps that failed to cast
+    rows = olap_conn.execute("""
+        SELECT rs.session_id, 'started_at' AS field, rs.started_at AS value
+        FROM   oltp.response_session rs
+        WHERE  rs.started_at IS NOT NULL
+          AND  TRY_CAST(rs.started_at AS TIMESTAMP) IS NULL
+        UNION ALL
+        SELECT rs.session_id, 'completed_at', rs.completed_at
+        FROM   oltp.response_session rs
+        WHERE  rs.completed_at IS NOT NULL
+          AND  TRY_CAST(rs.completed_at AS TIMESTAMP) IS NULL
+    """).fetchall()
+    for session_id, field, value in rows:
+        findings.append((
+            session_id, None,
+            f"response_session.{field}={value!r} could not be cast to TIMESTAMP "
+            f"(stored as TEXT in OLTP; OLAP dim_session has NULL)"
+        ))
+
+    # Study dates that failed to cast
+    rows = olap_conn.execute("""
+        SELECT s.study_id, 'start_date' AS field, s.start_date AS value
+        FROM   oltp.study s
+        WHERE  s.start_date IS NOT NULL
+          AND  TRY_CAST(s.start_date AS DATE) IS NULL
+        UNION ALL
+        SELECT s.study_id, 'end_date', s.end_date
+        FROM   oltp.study s
+        WHERE  s.end_date IS NOT NULL
+          AND  TRY_CAST(s.end_date AS DATE) IS NULL
+    """).fetchall()
+    for study_id, field, value in rows:
+        findings.append((
+            None, None,
+            f"study(study_id={study_id}).{field}={value!r} could not be cast to DATE"
+        ))
+
+    # Response-date cast failures (date / datetime questions)
+    rows = olap_conn.execute("""
+        SELECT r.session_id, r.qq_id, r.response_date AS value
+        FROM   oltp.response r
+        WHERE  r.response_date IS NOT NULL
+          AND  TRY_CAST(r.response_date AS DATE) IS NULL
+    """).fetchall()
+    for session_id, qq_id, value in rows:
+        findings.append((
+            session_id, qq_id,
+            f"response.response_date={value!r} could not be cast to DATE"
+        ))
+
+    if not findings:
+        return 0
+
+    # Write to OLTP via a fresh sqlite3 connection (DuckDB attaches OLTP
+    # READ_ONLY so we cannot write through it).
+    n_new = 0
+    with _sqlite3.connect(oltp_path) as oltp_conn:
+        for session_id, qq_id, message in findings:
+            existing = oltp_conn.execute(
+                """
+                SELECT 1 FROM data_quality_flag
+                WHERE rule_name = 'cast_failure'
+                  AND message = ?
+                  AND COALESCE(session_id, -1) = COALESCE(?, -1)
+                  AND COALESCE(qq_id,      -1) = COALESCE(?, -1)
+                LIMIT 1
+                """,
+                (message, session_id, qq_id),
+            ).fetchone()
+            if existing:
+                continue
+            oltp_conn.execute(
+                """
+                INSERT INTO data_quality_flag
+                    (session_id, qq_id, rule_name, message, severity)
+                VALUES (?, ?, 'cast_failure', ?, 'warning')
+                """,
+                (session_id, qq_id, message),
+            )
+            n_new += 1
+        oltp_conn.commit()
+    return n_new
 
 
 # ------------------------------------------------------------------
