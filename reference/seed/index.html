@@ -1503,7 +1503,7 @@
 <tbody>
 <tr>
 <td><strong>Question types</strong></td>
-<td><code>single_choice</code>, <code>multiple_choice</code>, <code>sata_other</code>, <code>boolean</code>, <code>numeric</code>, <code>date</code>, <code>datetime</code>, <code>slider</code>, <code>likert</code>, <code>ranked</code>, <code>grid</code>, <code>text</code> all produce values shaped to their type and constraints. <code>repeating_group</code> is the one gap: synthetic data does not include repeating instances (<a href="https://github.com/quickq-io/quickq/issues">quickq-io-82y</a>, see <a href="../question-types/#repeating_group-partial">Question Types reference</a>).</td>
+<td>All 12 supported types (<code>single_choice</code>, <code>multiple_choice</code>, <code>sata_other</code>, <code>boolean</code>, <code>numeric</code>, <code>date</code>, <code>datetime</code>, <code>slider</code>, <code>likert</code>, <code>ranked</code>, <code>grid</code>, <code>text</code>, <code>repeating_group</code>) produce values shaped to their type and constraints. For repeating groups, seed honors <code>count_from</code>: if the group is linked to a numeric count question, the seeded answer to that question drives the number of instances. For free-add groups (no <code>count_from</code>) seed picks a small random N (0–5).</td>
 </tr>
 <tr>
 <td><strong>Option sets</strong></td>
@@ -1561,7 +1561,7 @@
 </tr>
 </tbody>
 </table>
-<p>For repeating-group instruments, <code>quickq seed</code> will skip the loop sub-questions entirely. Use <code>quickq fhir import-response</code> against synthetic FHIR <code>QuestionnaireResponse</code> JSON instead; the demo script (<code>scripts/generate_demo.py</code>) does this for the prenatal-visit-log example and is a useful template.</p>
+<p>For repeating-group instruments, <code>quickq seed</code> writes child sub-question rows with sequential <code>repeat_index</code> values per session. Per-instance skip logic is not evaluated (each instance gets the same set of children); for fully realistic per-instance behaviour, <code>quickq fhir import-response</code> against synthetic FHIR <code>QuestionnaireResponse</code> JSON gives finer control. The demo script (<code>scripts/generate_demo.py</code>) takes that route for the prenatal-visit-log example.</p>
 <hr />
 <h2 id="where-seed-fits-in-the-pipeline">Where seed fits in the pipeline<a class="headerlink" href="#where-seed-fits-in-the-pipeline" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>   YAML
