@@ -2,6 +2,8 @@
 
 quickq is a survey authoring and analytics toolkit for health and epidemiology research, built on two open file formats with no server required.
 
+<div style="max-width: 50%; margin: 0 auto;">
+
 ```mermaid
 graph TD
     A["<b>Authoring</b><br/>YAML"]
@@ -15,6 +17,8 @@ graph TD
     B -->|quickq refresh| D
     D --> E
 ```
+
+</div>
 
 *A well-designed data model is the best foundation for a survey study.* It encodes claims about what exists in your research, claims that determine what data quality can be enforced at collection time and what analyses become possible later. quickq makes those claims explicit in the two-layer architecture above.
 
