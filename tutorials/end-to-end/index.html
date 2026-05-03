@@ -29,7 +29,7 @@
     
     
       
-        <title>End-to-End Testing Walkthrough - quickq</title>
+        <title>Quickstart: End-to-End Walkthrough - quickq</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#end-to-end-testing-walkthrough" class="md-skip">
+        <a href="#quickstart-end-to-end-walkthrough" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              End-to-End Testing Walkthrough
+              Quickstart: End-to-End Walkthrough
             
           </span>
         </div>
@@ -440,7 +440,7 @@
   <span class="md-ellipsis">
     
   
-    End-to-End Testing Walkthrough
+    Quickstart: End-to-End Walkthrough
   
 
     
@@ -458,7 +458,7 @@
   <span class="md-ellipsis">
     
   
-    End-to-End Testing Walkthrough
+    Quickstart: End-to-End Walkthrough
   
 
     
@@ -491,45 +491,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#python-311" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Python 3.11+
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#uv" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        uv
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nodejs-18-and-npm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Node.js 18+ and npm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -749,7 +710,7 @@
   <span class="md-ellipsis">
     
   
-    1. Author an Instrument
+    Authoring an Instrument
   
 
     
@@ -777,7 +738,7 @@
   <span class="md-ellipsis">
     
   
-    2. Collect Responses
+    Demo phase: Collect Responses
   
 
     
@@ -805,7 +766,7 @@
   <span class="md-ellipsis">
     
   
-    3. Analyze
+    Demo phase: Analyze
   
 
     
@@ -833,7 +794,7 @@
   <span class="md-ellipsis">
     
   
-    4. Data Quality
+    Demo phase: Data Quality
   
 
     
@@ -861,7 +822,7 @@
   <span class="md-ellipsis">
     
   
-    5. Share & Publish
+    Demo phase: Share & Publish
   
 
     
@@ -889,7 +850,7 @@
   <span class="md-ellipsis">
     
   
-    6. Multi-Site Study Operations
+    Multi-Site Study Operations
   
 
     
@@ -1492,45 +1453,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#python-311" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Python 3.11+
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#uv" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        uv
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nodejs-18-and-npm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Node.js 18+ and npm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1746,7 +1668,7 @@
   
 
 
-<h1 id="end-to-end-testing-walkthrough">End-to-End Testing Walkthrough<a class="headerlink" href="#end-to-end-testing-walkthrough" title="Permanent link">&para;</a></h1>
+<h1 id="quickstart-end-to-end-walkthrough">Quickstart: End-to-End Walkthrough<a class="headerlink" href="#quickstart-end-to-end-walkthrough" title="Permanent link">&para;</a></h1>
 <p>This guide walks through the complete quickq loop using a gout symptoms survey as the running example. You will author the instrument from scratch, build it up incrementally, collect a response through the web form, and view the results.</p>
 <p>By the end you will have:</p>
 <ul>
@@ -1757,31 +1679,18 @@
 </ul>
 <hr />
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<h3 id="python-311">Python 3.11+<a class="headerlink" href="#python-311" title="Permanent link">&para;</a></h3>
-<p>Check if you have it:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>--version
-</code></pre></div>
-<p>If not, download it from <a href="https://www.python.org/downloads/">python.org</a> or use your system package manager (<code>brew install python@3.11</code>, <code>apt install python3.11</code>, etc.).</p>
-<h3 id="uv">uv<a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
-<p>uv is the package manager used to install quickq. Check if you have it:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>--version
-</code></pre></div>
-<p>If not, install it with a single command — no pip required:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux</span>
-curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
-
-<span class="c1"># Windows (PowerShell)</span>
-powershell<span class="w"> </span>-ExecutionPolicy<span class="w"> </span>ByPass<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;irm https://astral.sh/uv/install.ps1 | iex&quot;</span>
-</code></pre></div>
-<p>Then open a new terminal so <code>uv</code> is on your PATH.</p>
-<h3 id="nodejs-18-and-npm">Node.js 18+ and npm<a class="headerlink" href="#nodejs-18-and-npm" title="Permanent link">&para;</a></h3>
-<p>Check if you have them:</p>
-<div class="highlight"><pre><span></span><code>node<span class="w"> </span>--version<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>--version
-</code></pre></div>
-<p>If not, download from <a href="https://nodejs.org/">nodejs.org</a> (the LTS release includes npm).</p>
+<div class="admonition info">
+<p class="admonition-title">You will need</p>
+<ul>
+<li><strong>Python 3.11+</strong> (<a href="https://www.python.org/downloads/">python.org</a> or your system package manager)</li>
+<li><strong>uv</strong> (<a href="https://docs.astral.sh/uv/getting-started/installation/">installation guide</a>)</li>
+<li><strong>Node.js 18+</strong> with npm (<a href="https://nodejs.org/">nodejs.org</a>, LTS includes npm)</li>
+</ul>
+<p>If a command below fails because one of these is missing, install it and re-run.</p>
+</div>
 <hr />
 <h2 id="step-1-install-quickq">Step 1 — Install quickq<a class="headerlink" href="#step-1-install-quickq" title="Permanent link">&para;</a></h2>
-<p>Pick a parent directory to hold both quickq repos (e.g. <code>~/code</code>) and clone there. Step 6 will clone <code>quickq-forms</code> next to <code>quickq</code> in the same parent — <code>quickq-forms</code>'s dev script expects the two repos to live as siblings.</p>
+<p>Pick a parent directory to hold the cloned repos (this tutorial uses <code>~/code</code>). In Step 6 you will clone <code>quickq-forms</code> next to <code>quickq</code> in the same parent and install both together.</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/code<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/code
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/quickq-io/quickq.git
 uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>./quickq
