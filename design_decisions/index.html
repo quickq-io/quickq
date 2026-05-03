@@ -1540,9 +1540,10 @@
 <p>At an international workshop, someone asked: <em>"If we wanted to run a major prospective cohort study in our own country, how would we do that?"</em></p>
 <p>For the questionnaire layer, the answer should be: receive a <code>study.db</code>, deploy collection, refresh analytics. Same instruments, same skip logic, same scoring rules, same analytical queries, same provenance, from a standing start.</p>
 <p>That is the standard quickq is designed to clear. Every architectural decision is evaluated against it.</p>
-<hr />
-<p>The data model argument has a practical consequence: the model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes.</p>
-<p>quickq is an authoring, administration, and analytics layer, not a survey platform. The two-layer design follows directly from that position: SQLite as the operational source of truth (normalized, FK-constrained, FHIR-compatible, readable by any SQL tool without quickq installed) and DuckDB as the analytical layer, pre-scored and denormalized into a star schema that is identical for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable. Survey delivery is handled by exporting a FHIR <code>Questionnaire.json</code> and ingesting a <code>QuestionnaireResponse.json</code> back, keeping the data model independent of whichever tool a respondent actually sees.</p>
+<p>The data model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes. quickq is an authoring, administration, and analytics layer, not a survey platform.</p>
+<blockquote>
+<p><em>This page lays out the design choices and the use cases they enable. For the schema-level mechanics (planes, refresh model, file layout) see <a href="../architecture/">Architecture</a>. For the underlying invariants that the architecture and the use cases both follow from, see <a href="../philosophy/">Design Philosophy</a>.</em></p>
+</blockquote>
 <hr />
 <h2 id="the-core-architecture">The core architecture<a class="headerlink" href="#the-core-architecture" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>YAML / FHIR Questionnaire

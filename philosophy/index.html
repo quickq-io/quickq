@@ -1394,6 +1394,9 @@
 
 <h1 id="design-philosophy">Design Philosophy<a class="headerlink" href="#design-philosophy" title="Permanent link">&para;</a></h1>
 <p>quickq is built on a small number of firm design decisions. Understanding them makes the architecture legible and prevents a recurring class of mistakes when extending the tool.</p>
+<blockquote>
+<p><em>This page is the invariants: the principles every other doc assumes. For the architectural choices that follow from these principles, see <a href="../design_decisions/">Design Decisions</a>. For the schema-level mechanics those choices realize, see <a href="../architecture/">Architecture</a>.</em></p>
+</blockquote>
 <hr />
 <h2 id="the-schema-is-the-contract">The schema is the contract<a class="headerlink" href="#the-schema-is-the-contract" title="Permanent link">&para;</a></h2>
 <p>The SQLite <code>.db</code> file is the primary deliverable of a study — not a dashboard, not an export, not a PDF report. Any language with SQLite bindings can read and write it directly. The schema DDL is the specification; the quickq Python package is the reference implementation.</p>

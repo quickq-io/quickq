@@ -1372,6 +1372,9 @@
 
 <h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
 <p>quickq is organized around two local file stores connected by a one-way ETL. There is no application server, no message bus, and no cloud dependency.</p>
+<blockquote>
+<p><em>This page covers the schema mechanics: planes, refresh model, file layout. For the design choices these mechanics serve and the use cases they enable, see <a href="../design_decisions/">Design Decisions</a>. For the underlying invariants both follow from, see <a href="../philosophy/">Design Philosophy</a>.</em></p>
+</blockquote>
 <hr />
 <h2 id="system-diagram">System Diagram<a class="headerlink" href="#system-diagram" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TD
