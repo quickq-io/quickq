@@ -165,15 +165,29 @@ def _render_questions(
     oconn: duckdb.DuckDBPyConnection,
     questionnaire_id: int,
 ) -> None:
+    # Pull each answered question with its display order plus any parent
+    # repeating_group context (parent_text and parent_qq_id). The questionnaire
+    # structure (parent_qq_id, display_order) lives in the attached OLTP.
     questions = oconn.execute(
         """
-        SELECT DISTINCT dq.question_id, dq.link_id, dq.question_text, dq.question_type
+        SELECT DISTINCT
+            dq.question_id, dq.link_id, dq.question_text, dq.question_type,
+            qq.display_order,
+            qq.parent_qq_id,
+            parent_q.question_text AS parent_text
         FROM fact_response fr
         JOIN dim_question dq USING (question_id)
+        JOIN oltp.questionnaire_question qq
+             ON qq.question_id = dq.question_id
+            AND qq.questionnaire_id = ?
+        LEFT JOIN oltp.questionnaire_question parent_qq
+             ON parent_qq.qq_id = qq.parent_qq_id
+        LEFT JOIN oltp.question parent_q
+             ON parent_q.question_id = parent_qq.question_id
         WHERE fr.questionnaire_id = ?
-        ORDER BY dq.question_id
+        ORDER BY qq.display_order
         """,
-        [questionnaire_id],
+        [questionnaire_id, questionnaire_id],
     ).fetchall()
 
     if not questions:
@@ -181,8 +195,24 @@ def _render_questions(
 
     lines += ["## Questions", ""]
 
-    for question_id, link_id, question_text, question_type in questions:
-        lines += [f"### {question_text}", ""]
+    seen_groups: set[int] = set()  # parent_qq_ids whose header has already been rendered
+
+    for (question_id, link_id, question_text, question_type,
+         display_order, parent_qq_id, parent_text) in questions:
+
+        # If this question is a child of a repeating_group, ensure the group
+        # header is emitted once (with per-respondent instance summary), then
+        # render the child as a nested heading prefixed with the group label.
+        if parent_qq_id is not None:
+            if parent_qq_id not in seen_groups:
+                _render_repeating_group_header(
+                    lines, oconn, questionnaire_id, parent_qq_id, parent_text or ""
+                )
+                seen_groups.add(parent_qq_id)
+            lines += [f"#### {parent_text} / {question_text}", ""]
+        else:
+            lines += [f"### {question_text}", ""]
+
         if question_type in ("numeric", "slider"):
             _render_numeric_question(lines, oconn, questionnaire_id, question_id)
         elif question_type == "boolean":
@@ -191,8 +221,58 @@ def _render_questions(
             _render_open_question(lines, oconn, questionnaire_id, question_id, question_type)
         elif question_type == "grid":
             _render_grid_question(lines, oconn, questionnaire_id, question_id)
+        elif question_type == "repeating_group":
+            # Parent group rows themselves have no responses; their children
+            # are rendered above. Skip silently if one slipped into the loop.
+            continue
         else:
             _render_choice_question(lines, oconn, questionnaire_id, question_id)
+
+
+def _render_repeating_group_header(
+    lines: list[str],
+    oconn: duckdb.DuckDBPyConnection,
+    questionnaire_id: int,
+    parent_qq_id: int,
+    parent_text: str,
+) -> None:
+    """Emit a section header for a repeating_group with per-instance summary.
+
+    Reports total sessions that touched the group, total instance count
+    (max repeat_index + 1, summed across sessions), and mean instances per
+    respondent.
+    """
+    # Count instances per session for this group (max repeat_index + 1).
+    row = oconn.execute(
+        """
+        WITH per_session AS (
+            SELECT fr.session_id,
+                   MAX(fr.repeat_index) + 1 AS n_instances
+            FROM   fact_response fr
+            JOIN   oltp.questionnaire_question qq USING (qq_id)
+            WHERE  fr.questionnaire_id = ?
+              AND  qq.parent_qq_id    = ?
+              AND  fr.repeat_index IS NOT NULL
+            GROUP BY fr.session_id
+        )
+        SELECT COUNT(*)        AS n_sessions,
+               SUM(n_instances) AS total_instances,
+               ROUND(AVG(n_instances), 1) AS avg_instances
+        FROM per_session
+        """,
+        [questionnaire_id, parent_qq_id],
+    ).fetchone()
+    n_sessions, total_instances, avg_instances = row or (0, 0, 0.0)
+
+    lines += [f"### {parent_text}", ""]
+    if n_sessions:
+        lines += [
+            f"_{n_sessions} session(s) reported a total of {int(total_instances or 0)} "
+            f"instance(s); average {avg_instances or 0} per respondent._",
+            "",
+        ]
+    else:
+        lines += ["_No instances reported._", ""]
 
 
 def _render_choice_question(

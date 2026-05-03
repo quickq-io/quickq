@@ -646,3 +646,66 @@ questionnaire:
         indices = [r[1] for r in group]
         assert all(i is not None for i in indices)
         assert indices == list(range(len(indices)))
+
+
+# ------------------------------------------------------------------
+# Markdown report renders repeating_group as nested section (closes miy)
+# ------------------------------------------------------------------
+
+def test_report_renders_repeating_group_as_nested_section(tmp_path):
+    """End-to-end: load prenatal fixture, import a synthetic FHIR response with
+    two visits, refresh OLAP, generate the Markdown report, and assert the
+    output groups child questions under a parent section header with a
+    per-instance summary line."""
+    from quickq.renderer_md import generate_report
+
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    qid = load_yaml(conn, str(FIXTURES / "prenatal_visits.yaml"))
+
+    # Synthesize one response with two visits
+    response = {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "http://quickq.io/instruments/prenatal-visits",
+        "status": "completed",
+        "subject": {"reference": "Patient/p1"},
+        "item": [
+            {"linkId": "visit_count", "answer": [{"valueDecimal": 2}]},
+            {"linkId": "visits", "item": [
+                {"linkId": "visits.week",     "answer": [{"valueDecimal": 12}]},
+                {"linkId": "visits.provider", "answer": [{"valueCoding": {"code": "ob"}}]},
+                {"linkId": "visits.concern",  "answer": [{"valueBoolean": False}]},
+            ]},
+            {"linkId": "visits", "item": [
+                {"linkId": "visits.week",     "answer": [{"valueDecimal": 20}]},
+                {"linkId": "visits.provider", "answer": [{"valueCoding": {"code": "midwife"}}]},
+                {"linkId": "visits.concern",  "answer": [{"valueBoolean": True}]},
+            ]},
+        ],
+    }
+    import_fhir_response(conn, response)
+    conn.commit()
+
+    olap = str(tmp_path / "analytics.duckdb")
+    refresh(olap, str(db))
+    oconn = init_olap(olap, str(db))
+
+    md = generate_report(oconn, qid)
+
+    # Parent group header is emitted (the "Visit details" question text)
+    assert "### Visit details" in md, f"missing parent group header. report:\n{md}"
+
+    # Per-instance summary line is emitted (1 session, 2 instances, mean 2.0)
+    assert "1 session" in md and "2 instance" in md, (
+        f"missing per-instance summary. report:\n{md}"
+    )
+
+    # Children are rendered as nested H4 with the parent text as prefix
+    assert "#### Visit details / Week of pregnancy at visit" in md, (
+        f"missing nested child heading. report:\n{md}"
+    )
+    assert "#### Visit details / Type of provider seen" in md
+    assert "#### Visit details / Were any concerns documented?" in md
+
+    # Top-level (non-repeating) question still renders as H3
+    assert "### How many prenatal visits did you have in total?" in md

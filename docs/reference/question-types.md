@@ -21,13 +21,13 @@ The table below reflects a formal audit of each type across the five pipeline la
 | `likert` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `grid` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `ranked` | ✅ | ✅ | ✅ | ✅ | ✅ | **Full** |
-| `repeating_group` | ✅ | ✅ | ✅ | ✅ | ❌ | **Partial** |
+| `repeating_group` | ✅ | ✅ | ✅ | ✅ | ✅ | **Full** |
 
 **Partial — likert:** Collected and exported correctly. The report renders it as a categorical distribution rather than an ordinal scale; `agg_numeric_stats` excludes it. Scoring and analysis work correctly via `fact_response`.
 
 **Partial — grid:** Definition, FHIR export, seed, and OLAP storage all work. The report renders grid cells as a flat list rather than a row × column matrix. The underlying data is correct and queryable.
 
-**Partial — repeating_group:** YAML definition, FHIR export, FHIR import, and OLAP storage all work end-to-end. Responses arriving via the FHIR-import path populate `fact_response.repeat_index` correctly; see the bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) for example pivots. Two real gaps: `quickq seed` does not generate repeating instances synthetically (the seed pathway is the only entry point that misses), and the Markdown report does not yet render repeating groups as nested tables. For studies whose responses arrive via FHIR import (the realistic production path), the data flow is complete and queryable.
+**Full — repeating_group:** YAML definition (with optional `count_from` linkage to a numeric count question), FHIR export (with the `count-from` and SDC `questionnaire-maxOccurs` extensions when linked), FHIR import (preserves the linkage on round-trip), OLAP storage (`fact_response.repeat_index`), Markdown report (nested section with per-respondent instance summary), and `quickq seed` (honors `count_from` to drive N from a prior numeric answer, falls back to a small random N for free-add groups). The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.
 
 ---
 
@@ -217,7 +217,7 @@ Drag-to-rank ordering. Each option is stored as a `response` row with `option_id
 
 ---
 
-### `repeating_group` *(partial)*
+### `repeating_group` *(full)*
 
 A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; `fact_response.repeat_index` is the per-instance counter.
 
@@ -228,4 +228,4 @@ Two repetition patterns are supported:
 
 Both patterns produce identical storage. See [Repeating Groups](../authoring.md#repeating-groups) for the YAML syntax.
 
-One gap remains: the Markdown report does not yet render repeating groups as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`. `quickq seed` honors `count_from` (using the seeded count question's answer to drive N) and falls back to a small random N for free-add groups.
+All five pipeline layers cover repeating groups end-to-end: YAML defines them, FHIR export emits them as `group + repeats:true` items (with the count-from extension when linked), FHIR import preserves the linkage, OLAP refresh propagates `repeat_index`, the Markdown report renders them as a nested section with per-respondent instance summary, and `quickq seed` honors `count_from` to drive N from a prior numeric answer (or a small random N for free-add groups). The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.
