@@ -105,28 +105,7 @@ Each site operates independently. There is no shared infrastructure — just fil
 
 ### The one-writer rule in practice
 
-SQLite enforces a single concurrent writer. For automated ingestion pipelines, run a single ingestor process per site:
-
-```python
-# ingestor.py — watch a directory for incoming FHIR response files
-import time, json
-from pathlib import Path
-from quickq.schema import open_oltp
-from quickq.parser_fhir_response import import_fhir_response
-
-INBOX = Path("inbox/")
-conn  = open_oltp("site_a.db")
-
-while True:
-    for f in sorted(INBOX.glob("*.json")):
-        data = json.loads(f.read_text())
-        resources = data if isinstance(data, list) else [data]
-        for r in resources:
-            import_fhir_response(conn, r, study_id=1)
-        conn.commit()
-        f.rename(f.with_suffix(".imported"))
-    time.sleep(5)
-```
+SQLite enforces a single concurrent writer. For automated ingestion pipelines, run a single ingestor process per site. The canonical reference implementation (a directory-watcher that processes incoming FHIR response files in arrival order, commits each atomically, and renames processed files so they are not reprocessed) lives in the [Collect Responses tutorial](collect.md#the-one-writer-rule). The same script applies per site here; replace the database path with `site_a.db` (etc.) and run one process per site.
 
 ---
 
@@ -280,24 +259,7 @@ warning: Free-text responses not redacted: link_id='phq9.comments' (text, 42 non
 warning: Study 'PHQ-9 Screening — Boston Medical Center' contains institutional fields (principal_investigator='Dr. Jane Smith', irb_number='IRB-2025-BMC-042') that were not redacted. Remove manually if not appropriate to share.
 ```
 
-### What was changed
-
-| Field | Action |
-|-------|--------|
-| `respondent.external_id` | Replaced with a 32-char HMAC token |
-| `person_map` | Cleared (OMOP identity bridge) |
-| `response_session.interviewer_id` | Set to NULL |
-| Free-text `response.response_text` | **Left in place** — flagged in warnings |
-| `study.principal_investigator`, `irb_number` | **Left in place** — flagged in warnings |
-
-Free-text fields are not auto-redacted because doing so blindly would destroy data. Review those responses manually. If they contain participant names or identifying details, redact them in `combined_anon.db` before sharing.
-
-### The pseudonymization key
-
-`pseudonymization_key.bin` is a 32-byte HMAC key. Store it securely and separately from the database:
-
-- **Keep it** if you need to re-identify participants later (e.g. for a data correction or adverse event follow-up). The coordinating center should hold this key; sharing partners should not.
-- **Destroy it** if the study protocol calls for full anonymization. Once the key is gone, the mapping is irreversible.
+For the per-field changes the pseudonymizer makes, the key-management options, and what the warnings mean, see the canonical [Pseudonymize](share.md#step-1-pseudonymize) section in the single-site share tutorial. The behaviour is identical against `combined.db`; only the database path differs. In multi-site practice, the coordinating center holds the HMAC key and sharing partners do not.
 
 The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g. annual data releases).
 

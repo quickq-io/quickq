@@ -317,7 +317,7 @@ quickq render study.db 1 --format pdf --output instrument.pdf
 
 See [Example: PHQ-9 Rendered Instrument](reference/example-phq9.md) for a complete example of the output with skip logic and a scoring appendix.
 
-The [Gout Check-In Rendered Instrument](reference/example-gout-checkin.md) shows all nine question types in a single instrument: `date`, `datetime`, `multiple_choice`, `grid`, `slider`, `ranked`, `boolean`, `numeric`, and `text`. It is the reference to use when authoring or reviewing instruments that use any of these types.
+The [Gout Check-In Rendered Instrument](reference/example-gout-checkin.md) covers 9 of the 12 supported types in a single instrument: `date`, `datetime`, `multiple_choice`, `grid`, `slider`, `ranked`, `boolean`, `numeric`, and `text`. It is the reference to use when authoring or reviewing instruments that use any of these types.
 
 The [PRAPARE Data Dictionary](reference/example-prapare-data-dict.md) shows what `quickq data-dict` produces for a mixed-type instrument: 21 questions across six types (`single_choice`, `boolean`, `numeric`, `text`, `likert`, `sata_other`), all LOINC-mapped. It is a useful reference for understanding how different question types appear in the table and what the Type and Valid Values columns look like across a real social determinants screener.
 

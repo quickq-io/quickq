@@ -286,7 +286,7 @@ Serving questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://
 A browser tab opens at **http://localhost:8000** showing the form.
 
 !!! note
-    If the form doesn't load, try a private/incognito window — browser extensions sometimes block localhost requests.
+    If the form does not load, try a private/incognito window. Some browser extensions block localhost requests or third-party scripts; an incognito profile typically bypasses both. (Same family of issue noted for the LHC-Forms preview in [Collect Responses](collect.md#reference-delivery-tool-lhc-forms).)
 
 ---
 

@@ -56,14 +56,7 @@ Free-text fields are not auto-redacted because doing so blindly would destroy da
 - **Keep it** if you need to re-identify participants later (e.g., for a data correction or adverse event follow-up).
 - **Destroy it** if the study protocol calls for full anonymization. Once the key is gone, the mapping is irreversible.
 
-The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g., annual data releases from a longitudinal study).
-
-If you do not pass `--key-file`, the key is printed to stderr in hex:
-
-```bash
-quickq compliance pseudonymize study.db --output study_anon.db
-# stderr: HMAC key (hex): a3f8...
-```
+The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g., annual data releases from a longitudinal study). If you omit `--key-file`, the key is printed to stderr in hex; redirect or capture it before continuing.
 
 ---
 

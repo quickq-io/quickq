@@ -73,13 +73,15 @@ The SQLite database is organized into five logical planes:
 quickq owns authoring, administration, and analysis. Delivery is intentionally out of scope.
 
 ```
-quickq export_fhir(questionnaire_id)
+quickq fhir export study.db <id>            # writes Questionnaire JSON
   → valid FHIR Questionnaire R4 JSON
     → delivered by any FHIR-compliant tool
       → FHIR QuestionnaireResponse JSON returned
-        → quickq import_fhir_response(conn, resource)
+        → quickq fhir import-response response.json study.db
           → response rows written to OLTP
 ```
+
+(Equivalent Python SDK calls: `export_fhir(conn, questionnaire_id)` and `import_fhir_response(conn, resource)`. The CLI wraps these.)
 
 The reference delivery tool is **[LHC-Forms](https://lhncbc.nlm.nih.gov/LHC-forms/)** (NLM) — purpose-built for FHIR Questionnaire rendering, open source, embeddable as a JavaScript widget with no server dependency. Any FHIR-compliant tool works; LHC-Forms is what the E2E test suite validates against.
 
@@ -110,6 +112,6 @@ A complete study consists of exactly two files:
 | File | Contents |
 |---|---|
 | `study.db` | SQLite OLTP — instrument definitions, responses, data quality, versioning |
-| `study_analytics.duckdb` | DuckDB OLAP — star schema, aggregates, scores, OMOP tables |
+| `analytics.duckdb` | DuckDB OLAP — star schema, aggregates, scores, OMOP tables |
 
 Both are standard database files openable in any SQL tool. `study.db` alone is sufficient to re-derive the entire OLAP from scratch.
