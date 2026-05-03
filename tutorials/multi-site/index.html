@@ -799,34 +799,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 7 — Pseudonymize for sharing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-was-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What was changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-pseudonymization-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The pseudonymization key
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1694,34 +1666,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 7 — Pseudonymize for sharing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-was-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What was changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-pseudonymization-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The pseudonymization key
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1877,26 +1821,7 @@ quickq<span class="w"> </span>fhir<span class="w"> </span>import-response<span c
 </code></pre></div>
 <p>Each site operates independently. There is no shared infrastructure — just files. The <code>--study-id</code> flag associates each respondent with the site's study row.</p>
 <h3 id="the-one-writer-rule-in-practice">The one-writer rule in practice<a class="headerlink" href="#the-one-writer-rule-in-practice" title="Permanent link">&para;</a></h3>
-<p>SQLite enforces a single concurrent writer. For automated ingestion pipelines, run a single ingestor process per site:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># ingestor.py — watch a directory for incoming FHIR response files</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_oltp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.parser_fhir_response</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_fhir_response</span>
-
-<span class="n">INBOX</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;inbox/&quot;</span><span class="p">)</span>
-<span class="n">conn</span>  <span class="o">=</span> <span class="n">open_oltp</span><span class="p">(</span><span class="s2">&quot;site_a.db&quot;</span><span class="p">)</span>
-
-<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">INBOX</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
-        <span class="n">resources</span> <span class="o">=</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
-            <span class="n">import_fhir_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">study_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.imported&quot;</span><span class="p">))</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</code></pre></div>
+<p>SQLite enforces a single concurrent writer. For automated ingestion pipelines, run a single ingestor process per site. The canonical reference implementation (a directory-watcher that processes incoming FHIR response files in arrival order, commits each atomically, and renames processed files so they are not reprocessed) lives in the <a href="../collect/#the-one-writer-rule">Collect Responses tutorial</a>. The same script applies per site here; replace the database path with <code>site_a.db</code> (etc.) and run one process per site.</p>
 <hr />
 <h2 id="step-4-handle-a-data-quality-issue-at-site-b">Step 4 — Handle a data quality issue at Site B<a class="headerlink" href="#step-4-handle-a-data-quality-issue-at-site-b" title="Permanent link">&para;</a></h2>
 <p>Mid-collection, Site B's coordinator discovers that a delivery platform bug caused the PHQ-9 response scale to display in reverse order for sessions 1 through 20. The raw responses cannot be corrected — there is no ground truth for what participants intended to select.</p>
@@ -2012,44 +1937,7 @@ quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">expor
 <div class="highlight"><pre><span></span><code>warning: Free-text responses not redacted: link_id=&#39;phq9.comments&#39; (text, 42 non-empty responses). Review for PHI before sharing.
 warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains institutional fields (principal_investigator=&#39;Dr. Jane Smith&#39;, irb_number=&#39;IRB-2025-BMC-042&#39;) that were not redacted. Remove manually if not appropriate to share.
 </code></pre></div>
-<h3 id="what-was-changed">What was changed<a class="headerlink" href="#what-was-changed" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>respondent.external_id</code></td>
-<td>Replaced with a 32-char HMAC token</td>
-</tr>
-<tr>
-<td><code>person_map</code></td>
-<td>Cleared (OMOP identity bridge)</td>
-</tr>
-<tr>
-<td><code>response_session.interviewer_id</code></td>
-<td>Set to NULL</td>
-</tr>
-<tr>
-<td>Free-text <code>response.response_text</code></td>
-<td><strong>Left in place</strong> — flagged in warnings</td>
-</tr>
-<tr>
-<td><code>study.principal_investigator</code>, <code>irb_number</code></td>
-<td><strong>Left in place</strong> — flagged in warnings</td>
-</tr>
-</tbody>
-</table>
-<p>Free-text fields are not auto-redacted because doing so blindly would destroy data. Review those responses manually. If they contain participant names or identifying details, redact them in <code>combined_anon.db</code> before sharing.</p>
-<h3 id="the-pseudonymization-key">The pseudonymization key<a class="headerlink" href="#the-pseudonymization-key" title="Permanent link">&para;</a></h3>
-<p><code>pseudonymization_key.bin</code> is a 32-byte HMAC key. Store it securely and separately from the database:</p>
-<ul>
-<li><strong>Keep it</strong> if you need to re-identify participants later (e.g. for a data correction or adverse event follow-up). The coordinating center should hold this key; sharing partners should not.</li>
-<li><strong>Destroy it</strong> if the study protocol calls for full anonymization. Once the key is gone, the mapping is irreversible.</li>
-</ul>
+<p>For the per-field changes the pseudonymizer makes, the key-management options, and what the warnings mean, see the canonical <a href="../share/#step-1-pseudonymize">Pseudonymize</a> section in the single-site share tutorial. The behaviour is identical against <code>combined.db</code>; only the database path differs. In multi-site practice, the coordinating center holds the HMAC key and sharing partners do not.</p>
 <p>The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g. annual data releases).</p>
 <hr />
 <h2 id="step-8-refresh-the-olap">Step 8 — Refresh the OLAP<a class="headerlink" href="#step-8-refresh-the-olap" title="Permanent link">&para;</a></h2>
