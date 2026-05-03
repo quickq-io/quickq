@@ -4,6 +4,9 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![Status: beta](https://img.shields.io/badge/status-beta-orange.svg)](https://github.com/quickq-io/quickq/issues)
+
+> **Status:** v0.1.x · beta. APIs may change before 1.0. Feedback welcome via [Issues](https://github.com/quickq-io/quickq/issues).
 
 quickq is a survey research toolkit built around two open file formats:
 
