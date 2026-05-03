@@ -28,10 +28,14 @@
         "linkId": "gout.attack_joints",
         "answer": [
           {
-            "valueString": "big_toe"
+            "valueCoding": {
+              "code": "big_toe"
+            }
           },
           {
-            "valueString": "ankle"
+            "valueCoding": {
+              "code": "ankle"
+            }
           }
         ]
       },
@@ -105,7 +109,9 @@
         "linkId": "gout.family_gout",
         "answer": [
           {
-            "valueString": "father"
+            "valueCoding": {
+              "code": "father"
+            }
           }
         ]
       },
@@ -268,16 +274,24 @@
         "linkId": "gout.attack_joints",
         "answer": [
           {
-            "valueString": "big_toe"
+            "valueCoding": {
+              "code": "big_toe"
+            }
           },
           {
-            "valueString": "ankle"
+            "valueCoding": {
+              "code": "ankle"
+            }
           },
           {
-            "valueString": "knee"
+            "valueCoding": {
+              "code": "knee"
+            }
           },
           {
-            "valueString": "wrist"
+            "valueCoding": {
+              "code": "wrist"
+            }
           }
         ]
       },
@@ -351,13 +365,19 @@
         "linkId": "gout.family_gout",
         "answer": [
           {
-            "valueString": "father"
+            "valueCoding": {
+              "code": "father"
+            }
           },
           {
-            "valueString": "mat_gp"
+            "valueCoding": {
+              "code": "mat_gp"
+            }
           },
           {
-            "valueString": "pat_gp"
+            "valueCoding": {
+              "code": "pat_gp"
+            }
           }
         ]
       },

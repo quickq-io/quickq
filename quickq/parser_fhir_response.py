@@ -28,6 +28,55 @@ import sqlite3
 from typing import Any
 
 
+# Expected FHIR value-key(s) per question_type. Used by the importer to
+# verify that an incoming valueXxx field matches the question's declared
+# type before routing it to a typed column. Mismatches produce a
+# data_quality_flag with severity='error' and the response is not inserted.
+#
+# Empty tuple = qtype is not directly answered (handled via nested items)
+# or has no enforced rule.
+_EXPECTED_VALUE_KEYS: dict[str, tuple[str, ...]] = {
+    "numeric":         ("valueDecimal", "valueInteger"),
+    "slider":          ("valueDecimal", "valueInteger"),
+    "likert":          ("valueCoding",),       # rendered as choice in FHIR
+    "date":            ("valueDate",),
+    "datetime":        ("valueDateTime", "valueDate"),
+    "text":            ("valueString",),
+    "boolean":         ("valueBoolean",),
+    "single_choice":   ("valueCoding",),
+    "multiple_choice": ("valueCoding",),
+    "sata_other":      ("valueCoding", "valueString"),  # "Other" can be free text
+    "ranked":          ("valueCoding",),
+    "grid":            (),                     # composite, via nested items
+    "repeating_group": (),                     # not directly answered
+}
+
+
+def _validate_answer_type(qtype: str, answer: dict) -> str | None:
+    """Return None if the answer's value key matches the question's qtype;
+    return an error message string otherwise.
+
+    Skips validation for qtypes with no rule (grid, repeating_group, unknown).
+    Skips validation when no valueXxx key is present (the existing
+    "Unrecognised answer format" branch in _write_answer handles that case
+    with its own warning flag).
+    """
+    expected = _EXPECTED_VALUE_KEYS.get(qtype, ())
+    if not expected:
+        return None
+    present = [k for k in answer if k.startswith("value")]
+    if not present:
+        return None  # _write_answer's bottom branch handles "no valueXxx key"
+    if any(k in expected for k in present):
+        return None
+    expected_str = " or ".join(expected)
+    actual_str = ", ".join(present)
+    return (
+        f"Type mismatch: question_type={qtype!r} expects {expected_str}; "
+        f"got {actual_str}"
+    )
+
+
 # ------------------------------------------------------------------
 # Public API
 # ------------------------------------------------------------------
@@ -247,6 +296,17 @@ class _ImportContext:
     def _write_answer(
         self, qq_id: int, link_id: str, answer: dict, repeat_index: int | None = None
     ) -> None:
+        # Type validation: the FHIR value key must match the question's
+        # declared type. A mismatch (e.g. valueString to a numeric question)
+        # would silently land in the wrong typed column and corrupt downstream
+        # analytics; flag it as an error and skip the INSERT instead.
+        qtype = self._qtype_cache.get(link_id)
+        if qtype:
+            err = _validate_answer_type(qtype, answer)
+            if err:
+                self._flag(qq_id, err, rule_name="type_mismatch", severity="error")
+                return
+
         # ranked: valueCoding + ordinalValue extension → response_numeric = rank
         if "valueCoding" in answer:
             question_id = self._qid_cache[link_id]
@@ -358,11 +418,17 @@ class _ImportContext:
         self._grid_col_cache[key] = row[0]
         return row[0]
 
-    def _flag(self, qq_id: int, message: str) -> None:
+    def _flag(
+        self,
+        qq_id: int,
+        message: str,
+        rule_name: str = "import_fhir_response",
+        severity: str = "warning",
+    ) -> None:
         self.conn.execute(
             """
             INSERT INTO data_quality_flag (session_id, qq_id, rule_name, message, severity)
-            VALUES (?, ?, 'import_fhir_response', ?, 'warning')
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (self.session_id, qq_id, message),
+            (self.session_id, qq_id, rule_name, message, severity),
         )

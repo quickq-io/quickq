@@ -405,3 +405,131 @@ def test_slider_response_stored_as_numeric(tmp_path):
     ).fetchone()
     assert row is not None
     assert row["response_numeric"] == 72.0
+
+
+# ------------------------------------------------------------------
+# Type-validation at FHIR import (closes ehg)
+# ------------------------------------------------------------------
+
+def _bad_response(linkid: str, value_key: str, value: object) -> dict:
+    """Build a single-answer QuestionnaireResponse with a deliberately-wrong
+    value type for the named question."""
+    return {
+        "resourceType": "QuestionnaireResponse",
+        "status": "completed",
+        "questionnaire": "http://quickq.io/instruments/minimal-test",
+        "authored": "2026-01-01T10:00:00Z",
+        "subject": {"reference": "Patient/typetest"},
+        "item": [{"linkId": linkid, "answer": [{value_key: value}]}],
+    }
+
+
+def test_value_string_to_numeric_question_flagged_not_inserted(tmp_path):
+    """A FHIR valueString to a numeric question should produce an error
+    flag and skip the INSERT (silent miscategorization is the core
+    failure mode this guard exists to prevent)."""
+    conn = _setup_minimal(tmp_path)
+    sid = import_fhir_response(conn, _bad_response("min.age", "valueString", "forty-two"))
+
+    # The response row should NOT have been inserted
+    n_rows = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?", (sid,)
+    ).fetchone()[0]
+    assert n_rows == 0, "type-mismatched answer should not write to response table"
+
+    # A type_mismatch flag should exist
+    flags = conn.execute(
+        "SELECT rule_name, severity, message FROM data_quality_flag WHERE session_id = ?",
+        (sid,),
+    ).fetchall()
+    assert len(flags) == 1
+    rule_name, severity, message = flags[0]
+    assert rule_name == "type_mismatch"
+    assert severity == "error"
+    assert "numeric" in message
+    assert "valueString" in message
+
+
+def test_value_decimal_to_boolean_question_flagged(tmp_path):
+    """valueDecimal to a boolean question is also a type collision."""
+    conn = _setup_minimal(tmp_path)
+    sid = import_fhir_response(conn, _bad_response("min.smoke", "valueDecimal", 1.0))
+
+    n_rows = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?", (sid,)
+    ).fetchone()[0]
+    assert n_rows == 0
+    n_flags = conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'type_mismatch'",
+        (sid,),
+    ).fetchone()[0]
+    assert n_flags == 1
+
+
+def test_value_date_to_text_question_flagged(tmp_path):
+    """valueDate to a text question."""
+    conn = _setup_minimal(tmp_path)
+    sid = import_fhir_response(conn, _bad_response("min.notes", "valueDate", "2024-01-01"))
+
+    assert conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?", (sid,)
+    ).fetchone()[0] == 0
+    assert conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'type_mismatch'",
+        (sid,),
+    ).fetchone()[0] == 1
+
+
+def test_correct_value_types_no_flags(tmp_path):
+    """The minimal fixture exercises all four value-type pathways correctly;
+    after import there should be zero data_quality_flag rows."""
+    conn = _setup_minimal(tmp_path)
+    sid = import_fhir_response(conn, _MINIMAL_RESPONSE)
+
+    n_flags = conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?", (sid,)
+    ).fetchone()[0]
+    assert n_flags == 0
+
+    # All four answer rows landed in their correct typed columns
+    rows = conn.execute(
+        "SELECT response_text, response_numeric, response_date "
+        "FROM response WHERE session_id = ? ORDER BY response_id",
+        (sid,),
+    ).fetchall()
+    assert len(rows) == 4
+
+
+def test_mixed_session_partial_failure_continues(tmp_path):
+    """One bad answer in a multi-answer session should not abort the import:
+    the other answers still land, and the bad one is flagged."""
+    conn = _setup_minimal(tmp_path)
+    bad_then_good = {
+        "resourceType": "QuestionnaireResponse",
+        "status": "completed",
+        "questionnaire": "http://quickq.io/instruments/minimal-test",
+        "authored": "2026-01-01T10:00:00Z",
+        "subject": {"reference": "Patient/mixed"},
+        "item": [
+            {"linkId": "min.age",   "answer": [{"valueString": "old"}]},   # bad
+            {"linkId": "min.smoke", "answer": [{"valueBoolean": False}]},  # good
+            {"linkId": "min.notes", "answer": [{"valueString": "ok"}]},    # good
+        ],
+    }
+    sid = import_fhir_response(conn, bad_then_good)
+
+    # Two good answers landed
+    n_responses = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?", (sid,)
+    ).fetchone()[0]
+    assert n_responses == 2
+
+    # One type_mismatch flag for the bad answer
+    n_flags = conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'type_mismatch'",
+        (sid,),
+    ).fetchone()[0]
+    assert n_flags == 1
