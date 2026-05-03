@@ -60,6 +60,7 @@ nav:
   - Reference:
       - Question Types: reference/question-types.md
       - Query Patterns by Question Type: reference/query-patterns.md
+      - Synthetic Data (seed): reference/seed.md
       - Instrument Versioning & Data Governance: reference/versioning.md
       - Compliance & Governance: reference/compliance.md
       - Federated Analytics: reference/federated.md
