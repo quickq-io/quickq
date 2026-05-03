@@ -2,6 +2,8 @@
 
 quickq is built on a small number of firm design decisions. Understanding them makes the architecture legible and prevents a recurring class of mistakes when extending the tool.
 
+> *This page is the invariants: the principles every other doc assumes. For the architectural choices that follow from these principles, see [Design Decisions](design_decisions.md). For the schema-level mechanics those choices realize, see [Architecture](architecture.md).*
+
 ---
 
 ## The schema is the contract

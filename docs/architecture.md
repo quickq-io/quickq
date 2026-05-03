@@ -2,6 +2,8 @@
 
 quickq is organized around two local file stores connected by a one-way ETL. There is no application server, no message bus, and no cloud dependency.
 
+> *This page covers the schema mechanics: planes, refresh model, file layout. For the design choices these mechanics serve and the use cases they enable, see [Design Decisions](design_decisions.md). For the underlying invariants both follow from, see [Design Philosophy](philosophy.md).*
+
 ---
 
 ## System Diagram

@@ -6,11 +6,9 @@ For the questionnaire layer, the answer should be: receive a `study.db`, deploy 
 
 That is the standard quickq is designed to clear. Every architectural decision is evaluated against it.
 
----
+The data model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes. quickq is an authoring, administration, and analytics layer, not a survey platform.
 
-The data model argument has a practical consequence: the model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes.
-
-quickq is an authoring, administration, and analytics layer, not a survey platform. The two-layer design follows directly from that position: SQLite as the operational source of truth (normalized, FK-constrained, FHIR-compatible, readable by any SQL tool without quickq installed) and DuckDB as the analytical layer, pre-scored and denormalized into a star schema that is identical for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable. Survey delivery is handled by exporting a FHIR `Questionnaire.json` and ingesting a `QuestionnaireResponse.json` back, keeping the data model independent of whichever tool a respondent actually sees.
+> *This page lays out the design choices and the use cases they enable. For the schema-level mechanics (planes, refresh model, file layout) see [Architecture](architecture.md). For the underlying invariants that the architecture and the use cases both follow from, see [Design Philosophy](philosophy.md).*
 
 ---
 
