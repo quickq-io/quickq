@@ -1,0 +1,2137 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Health and Epidemiology Survey Authoring & Analytics">
+      
+      
+        <meta name="author" content="quickq Contributors">
+      
+      
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/tutorials/multi-site/">
+      
+      
+        <link rel="prev" href="../share/">
+      
+      
+        <link rel="next" href="../../reference/question-types/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>6. Multi-Site Study Operations - quickq</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial-multi-site-study-operations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            quickq
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              6. Multi-Site Study Operations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    quickq
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design_decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Study Journey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Testing Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Author an Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Collect Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Analyze
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Data Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../share/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Share & Publish
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Multi-Site Study Operations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Multi-Site Study Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scenario">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#study-design-note-identifying-sites-after-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Study design note: identifying sites after merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-initialize-each-site-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Initialize each site database
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-create-the-study-at-each-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Create the study at each site
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-collect-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Collect responses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3 — Collect responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-writer-rule-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one-writer rule in practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-handle-a-data-quality-issue-at-site-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Handle a data quality issue at Site B
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-pre-merge-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Pre-merge checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-merge-at-the-coordinating-center" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Merge at the coordinating center
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6 — Merge at the coordinating center">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-merge-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the merge does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-pseudonymize-for-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Pseudonymize for sharing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7 — Pseudonymize for sharing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pseudonymization-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The pseudonymization key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-refresh-the-olap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Refresh the OLAP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-9-cross-site-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Cross-site analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-10-export-to-a-warehouse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — Export to a warehouse
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-workflow-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full workflow summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/question-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Question Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/query-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query Patterns by Question Type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument Versioning & Data Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fhir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FHIR Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/omop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OMOP Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey Authoring (YAML)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-phq9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PHQ-9 Rendered Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-prapare-data-dict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PRAPARE Data Dictionary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-gout-checkin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Gout Check-In (all question types)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Going Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Going Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics & Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Database Schema
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/oltp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLTP (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/olap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLAP (DuckDB)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scenario">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#study-design-note-identifying-sites-after-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Study design note: identifying sites after merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-initialize-each-site-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Initialize each site database
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-create-the-study-at-each-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Create the study at each site
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-collect-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Collect responses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3 — Collect responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-writer-rule-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one-writer rule in practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-handle-a-data-quality-issue-at-site-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Handle a data quality issue at Site B
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-pre-merge-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Pre-merge checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-merge-at-the-coordinating-center" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Merge at the coordinating center
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6 — Merge at the coordinating center">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-merge-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the merge does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-pseudonymize-for-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Pseudonymize for sharing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7 — Pseudonymize for sharing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pseudonymization-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The pseudonymization key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-refresh-the-olap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Refresh the OLAP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-9-cross-site-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Cross-site analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-10-export-to-a-warehouse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — Export to a warehouse
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-workflow-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full workflow summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tutorial-multi-site-study-operations">Tutorial: Multi-Site Study Operations<a class="headerlink" href="#tutorial-multi-site-study-operations" title="Permanent link">&para;</a></h1>
+<p>This tutorial covers the full lifecycle of a multi-site study: initializing independent collection databases at each site, handling a data quality issue discovered mid-collection, merging the sites into a combined database, pseudonymizing for sharing, refreshing the analytical layer, and exporting to a warehouse.</p>
+<p>The scenario is a three-site community mental health study screening for depression with the PHQ-9. Collection happens independently at each site; a coordinating center assembles the combined dataset at the end of each collection period.</p>
+<hr />
+<h2 id="scenario">Scenario<a class="headerlink" href="#scenario" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Name</th>
+<th>Participants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Boston Medical Center</td>
+<td>60</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Cambridge Health Alliance</td>
+<td>45</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Lowell General Hospital</td>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+<p>Each site runs its own quickq database. The same PHQ-9 YAML definition is loaded at every site. The coordinating center runs the merge, pseudonymization, and analysis.</p>
+<h3 id="study-design-note-identifying-sites-after-merge">Study design note: identifying sites after merge<a class="headerlink" href="#study-design-note-identifying-sites-after-merge" title="Permanent link">&para;</a></h3>
+<p>Each site creates its study with a <strong>unique name</strong>. After merge the <code>study_id</code> column becomes a site identifier — every respondent and session carries the <code>study_id</code> of the database it came from.</p>
+<div class="highlight"><pre><span></span><code>study_name = &quot;PHQ-9 Screening — Boston Medical Center&quot;   → study_id 1
+study_name = &quot;PHQ-9 Screening — Cambridge Health Alliance&quot; → study_id 2
+study_name = &quot;PHQ-9 Screening — Lowell General Hospital&quot;  → study_id 3
+</code></pre></div>
+<p>This is the cleanest approach with the current schema. An alternative is to namespace <code>external_id</code> values with a site prefix (e.g. <code>BMC::P001</code>) — this gives you a human-readable site label before pseudonymization, at the cost of slightly more complex participant ID management.</p>
+<hr />
+<h2 id="step-1-initialize-each-site-database">Step 1 — Initialize each site database<a class="headerlink" href="#step-1-initialize-each-site-database" title="Permanent link">&para;</a></h2>
+<p>At each site, a coordinator runs:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Site A</span>
+quickq<span class="w"> </span>init<span class="w"> </span>site_a.db
+
+<span class="c1"># Site B</span>
+quickq<span class="w"> </span>init<span class="w"> </span>site_b.db
+
+<span class="c1"># Site C</span>
+quickq<span class="w"> </span>init<span class="w"> </span>site_c.db
+</code></pre></div>
+<p>Each site then loads the shared PHQ-9 YAML. Using the same <code>canonical_url</code> and <code>version</code> in the YAML is critical — the merge deduplicates questionnaires by <code>(canonical_url, version)</code>, so all three sites must have an identical definition.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>load<span class="w"> </span>phq9.yaml<span class="w"> </span>site_a.db
+quickq<span class="w"> </span>load<span class="w"> </span>phq9.yaml<span class="w"> </span>site_b.db
+quickq<span class="w"> </span>load<span class="w"> </span>phq9.yaml<span class="w"> </span>site_c.db
+</code></pre></div>
+<p>Verify the load:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>list<span class="w"> </span>library<span class="w"> </span>site_a.db
+</code></pre></div>
+<hr />
+<h2 id="step-2-create-the-study-at-each-site">Step 2 — Create the study at each site<a class="headerlink" href="#step-2-create-the-study-at-each-site" title="Permanent link">&para;</a></h2>
+<p>The study must be created with a unique name before collection begins. Use the Python SDK or a short setup script at each site:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># run_once_site_a.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_oltp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.authoring</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert_study</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">open_oltp</span><span class="p">(</span><span class="s2">&quot;site_a.db&quot;</span><span class="p">)</span>
+<span class="n">insert_study</span><span class="p">(</span>
+    <span class="n">conn</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;PHQ-9 Screening — Boston Medical Center&quot;</span><span class="p">,</span>
+    <span class="n">principal_investigator</span><span class="o">=</span><span class="s2">&quot;Dr. Jane Smith&quot;</span><span class="p">,</span>
+    <span class="n">irb_number</span><span class="o">=</span><span class="s2">&quot;IRB-2025-BMC-042&quot;</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2025-03-01&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+<p>Run the equivalent script at each site with its own name, PI, and IRB number.</p>
+<hr />
+<h2 id="step-3-collect-responses">Step 3 — Collect responses<a class="headerlink" href="#step-3-collect-responses" title="Permanent link">&para;</a></h2>
+<p>Survey delivery is handled outside quickq — the PHQ-9 YAML is exported as FHIR and handed to a delivery tool (LHC-Forms, a clinical portal, a mobile app). The delivery tool returns <code>QuestionnaireResponse</code> JSON files.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Export the FHIR Questionnaire for delivery</span>
+quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>site_a.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>phq9_fhir.json
+</code></pre></div>
+<p>As responses arrive, import them at each site:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span>import-response<span class="w"> </span>responses_batch_01.json<span class="w"> </span>site_a.db<span class="w"> </span>--study-id<span class="w"> </span><span class="m">1</span>
+quickq<span class="w"> </span>fhir<span class="w"> </span>import-response<span class="w"> </span>responses_batch_02.json<span class="w"> </span>site_a.db<span class="w"> </span>--study-id<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+<p>Each site operates independently. There is no shared infrastructure — just files. The <code>--study-id</code> flag associates each respondent with the site's study row.</p>
+<h3 id="the-one-writer-rule-in-practice">The one-writer rule in practice<a class="headerlink" href="#the-one-writer-rule-in-practice" title="Permanent link">&para;</a></h3>
+<p>SQLite enforces a single concurrent writer. For automated ingestion pipelines, run a single ingestor process per site:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ingestor.py — watch a directory for incoming FHIR response files</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_oltp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.parser_fhir_response</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_fhir_response</span>
+
+<span class="n">INBOX</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;inbox/&quot;</span><span class="p">)</span>
+<span class="n">conn</span>  <span class="o">=</span> <span class="n">open_oltp</span><span class="p">(</span><span class="s2">&quot;site_a.db&quot;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">INBOX</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
+            <span class="n">import_fhir_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">study_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.imported&quot;</span><span class="p">))</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="step-4-handle-a-data-quality-issue-at-site-b">Step 4 — Handle a data quality issue at Site B<a class="headerlink" href="#step-4-handle-a-data-quality-issue-at-site-b" title="Permanent link">&para;</a></h2>
+<p>Mid-collection, Site B's coordinator discovers that a delivery platform bug caused the PHQ-9 response scale to display in reverse order for sessions 1 through 20. The raw responses cannot be corrected — there is no ground truth for what participants intended to select.</p>
+<p>Record the issue in the errata log at Site B before the merge:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quickq.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_oltp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quickq.versioning</span><span class="w"> </span><span class="kn">import</span> <span class="n">record_errata</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">open_oltp</span><span class="p">(</span><span class="s2">&quot;site_b.db&quot;</span><span class="p">)</span>
+
+<span class="c1"># Retrieve the session IDs for the affected range</span>
+<span class="n">sess_from</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+    <span class="s2">&quot;SELECT session_id FROM response_session ORDER BY session_id LIMIT 1&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">sess_to</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+    <span class="s2">&quot;SELECT session_id FROM response_session ORDER BY session_id LIMIT 1 OFFSET 19&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">record_errata</span><span class="p">(</span>
+    <span class="n">conn</span><span class="p">,</span>
+    <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;delivery_bug&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PHQ-9 response scale reversed in sessions 1–20 at Site B&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Delivery platform rendered the PHQ-9 frequency scale in reverse order &quot;</span>
+        <span class="s2">&quot;(3→0 instead of 0→3) for the first 20 sessions. &quot;</span>
+        <span class="s2">&quot;Root cause: LHC-Forms display_order indexing bug in build v2.1.4.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+    <span class="n">affects_session_from</span><span class="o">=</span><span class="n">sess_from</span><span class="p">,</span>
+    <span class="n">affects_session_to</span><span class="o">=</span><span class="n">sess_to</span><span class="p">,</span>
+    <span class="n">analyst_guidance</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Exclude Site B sessions 1–20 from all PHQ-9 scoring analyses. &quot;</span>
+        <span class="s2">&quot;Non-scoring items (demographics, dates) in those sessions are unaffected.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">reported_by</span><span class="o">=</span><span class="s2">&quot;coordinator@cha.org&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+<p>After the merge, this errata entry will appear in the combined database's <code>study_errata_log</code>. Analysts running queries against the OLAP should check for open critical errata before any publication:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">errata_id</span><span class="p">,</span><span class="w"> </span><span class="n">event_type</span><span class="p">,</span><span class="w"> </span><span class="n">severity</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="p">,</span>
+<span class="w">       </span><span class="n">affects_session_from</span><span class="p">,</span><span class="w"> </span><span class="n">affects_session_to</span><span class="p">,</span><span class="w"> </span><span class="n">analyst_guidance</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">study_errata_log</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;open&#39;</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">CASE</span><span class="w"> </span><span class="n">severity</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="s1">&#39;critical&#39;</span><span class="w">      </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="s1">&#39;major&#39;</span><span class="w">         </span><span class="k">THEN</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="s1">&#39;minor&#39;</span><span class="w">         </span><span class="k">THEN</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="s1">&#39;informational&#39;</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">4</span>
+<span class="k">END</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="step-5-pre-merge-checklist">Step 5 — Pre-merge checklist<a class="headerlink" href="#step-5-pre-merge-checklist" title="Permanent link">&para;</a></h2>
+<p>Before merging, confirm that all three sites loaded the same questionnaire definition:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>site_a.db<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())&quot;</span>
+quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>site_b.db<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())&quot;</span>
+quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>site_c.db<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys,json,hashlib; d=json.load(sys.stdin); print(hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest())&quot;</span>
+</code></pre></div>
+<p>All three hashes must match. If they differ, investigate which YAML was loaded at each site before merging — a <code>MergeError</code> will result if the same <code>link_id</code> has different question text across sites.</p>
+<hr />
+<h2 id="step-6-merge-at-the-coordinating-center">Step 6 — Merge at the coordinating center<a class="headerlink" href="#step-6-merge-at-the-coordinating-center" title="Permanent link">&para;</a></h2>
+<p>The coordinating center receives the three <code>.db</code> files (via secure transfer — they contain PHI at this stage) and runs:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>federated<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
+</code></pre></div>
+<p>Expected output:</p>
+<div class="highlight"><pre><span></span><code>Merged 3 source(s) into combined.db:
+  135 respondents
+  135 sessions
+  1215 responses
+  0 duplicate sessions skipped
+</code></pre></div>
+<h3 id="what-the-merge-does">What the merge does<a class="headerlink" href="#what-the-merge-does" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Instrument definitions</strong> (questionnaire, questions, options, scoring rules) are deduplicated by natural key. The PHQ-9 appears once in <code>combined.db</code> regardless of how many sites loaded it.</li>
+<li><strong>Respondents</strong> are deduplicated by <code>(study_id, external_id)</code>. Since each site has a unique study name, the same participant ID at two sites would create two separate respondents — which is correct for independent participants. If you are tracking the same individuals across sites, use a shared external ID scheme agreed on before collection begins.</li>
+<li><strong>Sessions</strong> are deduplicated by <code>fhir_response_id</code>. If the same FHIR response JSON was imported at two sites, it appears once in the merged database.</li>
+<li><strong>Errata</strong> from all sites are preserved. The Site B critical errata entry will be visible in <code>combined.db</code>.</li>
+</ul>
+<h3 id="verify-the-merge">Verify the merge<a class="headerlink" href="#verify-the-merge" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quickq.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_oltp</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">open_oltp</span><span class="p">(</span><span class="s2">&quot;combined.db&quot;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Respondents and sessions by site</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT s.name AS site, COUNT(DISTINCT r.respondent_id) AS respondents,</span>
+<span class="s2">           COUNT(DISTINCT rs.session_id) AS sessions</span>
+<span class="s2">    FROM respondent r</span>
+<span class="s2">    JOIN study s USING (study_id)</span>
+<span class="s2">    JOIN response_session rs USING (respondent_id)</span>
+<span class="s2">    GROUP BY s.name</span>
+<span class="s2">    ORDER BY s.name</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+
+<span class="c1"># Open errata</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT severity, title, affects_session_from, affects_session_to</span>
+<span class="s2">    FROM study_errata_log WHERE status = &#39;open&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+</code></pre></div>
+<hr />
+<h2 id="step-7-pseudonymize-for-sharing">Step 7 — Pseudonymize for sharing<a class="headerlink" href="#step-7-pseudonymize-for-sharing" title="Permanent link">&para;</a></h2>
+<p><code>combined.db</code> contains PHI (<code>external_id</code> values, potentially free-text responses). Before sharing with analysts outside the coordinating center — or depositing in a data repository — pseudonymize it:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>pseudonymize<span class="w"> </span>combined.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>combined_anon.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--key-file<span class="w"> </span>pseudonymization_key.bin
+</code></pre></div>
+<p>Expected output:</p>
+<div class="highlight"><pre><span></span><code>Pseudonymized combined.db → combined_anon.db
+  135 respondents pseudonymized
+</code></pre></div>
+<p>Warnings printed to stderr (review each one):</p>
+<div class="highlight"><pre><span></span><code>warning: Free-text responses not redacted: link_id=&#39;phq9.comments&#39; (text, 42 non-empty responses). Review for PHI before sharing.
+warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains institutional fields (principal_investigator=&#39;Dr. Jane Smith&#39;, irb_number=&#39;IRB-2025-BMC-042&#39;) that were not redacted. Remove manually if not appropriate to share.
+</code></pre></div>
+<h3 id="what-was-changed">What was changed<a class="headerlink" href="#what-was-changed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>respondent.external_id</code></td>
+<td>Replaced with a 32-char HMAC token</td>
+</tr>
+<tr>
+<td><code>person_map</code></td>
+<td>Cleared (OMOP identity bridge)</td>
+</tr>
+<tr>
+<td><code>response_session.interviewer_id</code></td>
+<td>Set to NULL</td>
+</tr>
+<tr>
+<td>Free-text <code>response.response_text</code></td>
+<td><strong>Left in place</strong> — flagged in warnings</td>
+</tr>
+<tr>
+<td><code>study.principal_investigator</code>, <code>irb_number</code></td>
+<td><strong>Left in place</strong> — flagged in warnings</td>
+</tr>
+</tbody>
+</table>
+<p>Free-text fields are not auto-redacted because doing so blindly would destroy data. Review those responses manually. If they contain participant names or identifying details, redact them in <code>combined_anon.db</code> before sharing.</p>
+<h3 id="the-pseudonymization-key">The pseudonymization key<a class="headerlink" href="#the-pseudonymization-key" title="Permanent link">&para;</a></h3>
+<p><code>pseudonymization_key.bin</code> is a 32-byte HMAC key. Store it securely and separately from the database:</p>
+<ul>
+<li><strong>Keep it</strong> if you need to re-identify participants later (e.g. for a data correction or adverse event follow-up). The coordinating center should hold this key; sharing partners should not.</li>
+<li><strong>Destroy it</strong> if the study protocol calls for full anonymization. Once the key is gone, the mapping is irreversible.</li>
+</ul>
+<p>The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g. annual data releases).</p>
+<hr />
+<h2 id="step-8-refresh-the-olap">Step 8 — Refresh the OLAP<a class="headerlink" href="#step-8-refresh-the-olap" title="Permanent link">&para;</a></h2>
+<p>Generate the analytical layer from the pseudonymized database:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>refresh<span class="w"> </span>combined_anon.db<span class="w"> </span>analytics_anon.duckdb
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Refresh complete: 1215 fact rows, 135 sessions, 135 scores computed.
+</code></pre></div>
+<p>The OLAP's <code>dim_respondent.external_id</code> will contain pseudonymized tokens, not original identifiers.</p>
+<hr />
+<h2 id="step-9-cross-site-analysis">Step 9 — Cross-site analysis<a class="headerlink" href="#step-9-cross-site-analysis" title="Permanent link">&para;</a></h2>
+<p>Open the DuckDB UI to explore the combined data:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>analytics_anon.duckdb
+</code></pre></div>
+<p><strong>PHQ-9 score distribution by site:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="w">                                     </span><span class="k">AS</span><span class="w"> </span><span class="n">site</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sc</span><span class="p">.</span><span class="n">score_category</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">                                    </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">))</span>
+<span class="w">          </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span><span class="n">PARTITION</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">       </span><span class="k">AS</span><span class="w"> </span><span class="n">pct</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">agg_respondent_scores</span><span class="w"> </span><span class="n">ars</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_session</span><span class="w"> </span><span class="n">sess</span><span class="w">  </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_study</span><span class="w">   </span><span class="n">ds</span><span class="w">    </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">study_id</span><span class="p">)</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">scoring_rule_id</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">score_category</span><span class="p">,</span><span class="w"> </span><span class="n">min_score</span><span class="p">,</span><span class="w"> </span><span class="n">max_score</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">scoring_category</span>
+<span class="p">)</span><span class="w"> </span><span class="n">sc</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ars</span><span class="p">.</span><span class="n">score_raw</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">min_score</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">max_score</span>
+<span class="w">     </span><span class="k">AND</span><span class="w"> </span><span class="n">ars</span><span class="p">.</span><span class="n">scoring_rule_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">scoring_rule_id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">score_category</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ars</span><span class="p">.</span><span class="n">score_raw</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Excluding errata-flagged sessions:</strong></p>
+<p>Site B's critical errata affects sessions 1–20 at that site. Filter them out of scoring analyses:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">ars</span><span class="p">.</span><span class="n">score_raw</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mean_phq9</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">agg_respondent_scores</span><span class="w"> </span><span class="n">ars</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_session</span><span class="w"> </span><span class="n">sess</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_study</span><span class="w">   </span><span class="n">ds</span><span class="w">   </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">study_id</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">ars</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">rs</span><span class="p">.</span><span class="n">session_id</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">study_errata_log</span><span class="w"> </span><span class="n">el</span>
+<span class="w">    </span><span class="k">JOIN</span><span class="w"> </span><span class="n">response_session</span><span class="w"> </span><span class="n">rs</span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">rs</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="n">el</span><span class="p">.</span><span class="n">affects_session_from</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">el</span><span class="p">.</span><span class="n">affects_session_to</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">el</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;open&#39;</span>
+<span class="w">      </span><span class="k">AND</span><span class="w"> </span><span class="n">el</span><span class="p">.</span><span class="n">severity</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;critical&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;major&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Item-level response distribution across all sites:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">dq</span><span class="p">.</span><span class="n">question_text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fr</span><span class="p">.</span><span class="n">option_value</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">                                                        </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">))</span>
+<span class="w">          </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span><span class="n">PARTITION</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">question_id</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">                   </span><span class="k">AS</span><span class="w"> </span><span class="n">pct</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span><span class="w"> </span><span class="n">fr</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="n">dq</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">question_id</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">question_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;likert&#39;</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">question_text</span><span class="p">,</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">option_value</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">option_value</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="step-10-export-to-a-warehouse">Step 10 — Export to a warehouse<a class="headerlink" href="#step-10-export-to-a-warehouse" title="Permanent link">&para;</a></h2>
+<p>If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Exported 19 table(s) to parquet_export/ (1215 total rows)
+  dim_date: 0 rows → dim_date.parquet
+  dim_study: 3 rows → dim_study.parquet
+  dim_questionnaire: 1 rows → dim_questionnaire.parquet
+  dim_question: 9 rows → dim_question.parquet
+  dim_respondent: 135 rows → dim_respondent.parquet
+  dim_session: 135 rows → dim_session.parquet
+  fact_response: 1215 rows → fact_response.parquet
+  agg_respondent_scores: 135 rows → agg_respondent_scores.parquet
+  ...
+</code></pre></div>
+<p>Upload <code>parquet_export/</code> to your cloud storage bucket and point your warehouse at it. The star schema is self-contained — no quickq dependency on the warehouse side.</p>
+<p>To export only the tables needed for a specific analysis:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>fact_response<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>dim_question<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>dim_respondent<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>dim_session<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>dim_study<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--table<span class="w"> </span>agg_respondent_scores<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--overwrite
+</code></pre></div>
+<hr />
+<h2 id="full-workflow-summary">Full workflow summary<a class="headerlink" href="#full-workflow-summary" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Each site:
+  quickq init site_N.db
+  quickq load phq9.yaml site_N.db
+  [create study with unique name]
+  [collect responses via FHIR import]
+  [record errata if data quality issues arise]
+
+Coordinating center:
+  quickq federated merge site_a.db site_b.db site_c.db --output combined.db
+  quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
+  quickq refresh combined_anon.db analytics_anon.duckdb
+  quickq export analytics_anon.duckdb ./parquet_export/   # optional
+</code></pre></div>
+<p>The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

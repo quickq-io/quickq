@@ -1,0 +1,1747 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Health and Epidemiology Survey Authoring & Analytics">
+      
+      
+        <meta name="author" content="quickq Contributors">
+      
+      
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/design_decisions/">
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../tutorial/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Design Decisions - quickq</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#design-decisions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            quickq
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design Decisions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    quickq
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delivery-independence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery independence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scales-with-your-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scales with your study
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scales with your study">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-solo-or-small-study-up-to-5000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Solo or small study (up to ~5,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-small-multi-site-up-to-20000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Small multi-site (up to ~20,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-medium-multi-site-up-to-100000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Medium multi-site (up to ~100,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-4-large-or-institutional-200000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 4: Large or institutional (200,000+ participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#federated-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Federated analytics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sovereignty-and-the-10-year-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data sovereignty and the 10-year rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#harmonization-across-versions-and-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Harmonization across versions and studies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-of-an-ad-hoc-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost of an ad-hoc data model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-quickq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use quickq
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Study Journey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Testing Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Author an Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/collect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Collect Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Analyze
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Data Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/share/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Share & Publish
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Multi-Site Study Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/question-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Question Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/query-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query Patterns by Question Type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument Versioning & Data Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fhir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FHIR Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/omop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OMOP Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey Authoring (YAML)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/example-phq9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PHQ-9 Rendered Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/example-prapare-data-dict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PRAPARE Data Dictionary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/example-gout-checkin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Gout Check-In (all question types)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Going Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Going Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics & Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Database Schema
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database/oltp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLTP (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database/olap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLAP (DuckDB)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delivery-independence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery independence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scales-with-your-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scales with your study
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scales with your study">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-solo-or-small-study-up-to-5000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Solo or small study (up to ~5,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-small-multi-site-up-to-20000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Small multi-site (up to ~20,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-medium-multi-site-up-to-100000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Medium multi-site (up to ~100,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-4-large-or-institutional-200000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 4: Large or institutional (200,000+ participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#federated-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Federated analytics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sovereignty-and-the-10-year-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data sovereignty and the 10-year rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#harmonization-across-versions-and-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Harmonization across versions and studies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-of-an-ad-hoc-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost of an ad-hoc data model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-quickq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use quickq
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="design-decisions">Design Decisions<a class="headerlink" href="#design-decisions" title="Permanent link">&para;</a></h1>
+<p>At an international workshop, someone asked: <em>"If we wanted to run a major prospective cohort study in our own country, how would we do that?"</em></p>
+<p>For the questionnaire layer, the answer should be: receive a <code>study.db</code>, deploy collection, refresh analytics. Same instruments, same skip logic, same scoring rules, same analytical queries, same provenance, from a standing start.</p>
+<p>That is the standard quickq is designed to clear. Every architectural decision is evaluated against it.</p>
+<hr />
+<p>The data model argument has a practical consequence: the model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes.</p>
+<p>quickq is an authoring, administration, and analytics layer, not a survey platform. The two-layer design follows directly from that position: SQLite as the operational source of truth (normalized, FK-constrained, FHIR-compatible, readable by any SQL tool without quickq installed) and DuckDB as the analytical layer, pre-scored and denormalized into a star schema that is identical for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable. Survey delivery is handled by exporting a FHIR <code>Questionnaire.json</code> and ingesting a <code>QuestionnaireResponse.json</code> back, keeping the data model independent of whichever tool a respondent actually sees.</p>
+<hr />
+<h2 id="the-core-architecture">The core architecture<a class="headerlink" href="#the-core-architecture" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>YAML / FHIR Questionnaire
+        ↓  quickq import / author
+   SQLite (study.db)          ← normalized, FHIR-compatible, portable
+        ↓  quickq refresh
+   DuckDB (analytics.duckdb)  ← star schema, scored, query-ready
+        ↓
+   SQL · Notebooks · Reports · Parquet export
+</code></pre></div>
+<p>The two-layer design is intentional. The SQLite layer is the source of truth: FHIR-compatible, FK-constrained, suitable for response collection and auditing. The DuckDB layer is purpose-built for analysis: columnar, pre-scored, denormalized into a star schema that is the same for every quickq study. That shared schema is what makes cross-study queries, federated analysis, and institutional warehousing tractable.</p>
+<hr />
+<h2 id="delivery-independence">Delivery independence<a class="headerlink" href="#delivery-independence" title="Permanent link">&para;</a></h2>
+<p>Most platforms lock data collection to their own interface. quickq is headless by design: it produces a FHIR Questionnaire JSON file and accepts a FHIR QuestionnaireResponse JSON file back. What happens in between (a React app, a clinical portal, LHC-Forms, a native mobile app) is not quickq's concern.</p>
+<p>This matters in three situations:</p>
+<ul>
+<li><strong>Multi-channel studies</strong> where the same instrument is administered via web, paper, and clinical system. quickq holds the single authoritative definition; each channel renders it independently.</li>
+<li><strong>Platform changes mid-study.</strong> If the delivery tool changes, the data model does not. Scoring rules, skip logic, and concept mappings are all in the <code>.db</code> file, not in the delivery platform's configuration.</li>
+<li><strong>Long-term reuse.</strong> A questionnaire authored in quickq can be re-used in a new study years later without re-authoring or re-mapping.</li>
+</ul>
+<hr />
+<h2 id="scales-with-your-study">Scales with your study<a class="headerlink" href="#scales-with-your-study" title="Permanent link">&para;</a></h2>
+<p>quickq is designed for a spectrum from a solo PhD project to a multi-site study with 200,000 participants. The data model does not change at any stage.</p>
+<h3 id="tier-1-solo-or-small-study-up-to-5000-participants">Tier 1: Solo or small study (up to ~5,000 participants)<a class="headerlink" href="#tier-1-solo-or-small-study-up-to-5000-participants" title="Permanent link">&para;</a></h3>
+<p>Zero infrastructure. One <code>.db</code> file on a laptop. <code>quickq refresh</code> takes seconds. Your entire study is one file you can commit to git, back up to a thumb drive, or hand to a collaborator.</p>
+<h3 id="tier-2-small-multi-site-up-to-20000-participants">Tier 2: Small multi-site (up to ~20,000 participants)<a class="headerlink" href="#tier-2-small-multi-site-up-to-20000-participants" title="Permanent link">&para;</a></h3>
+<p>A single ingestor process imports FHIR responses as they arrive. SQLite with WAL mode sustains thousands of sequential writes per second; the bottleneck is never the database. <code>quickq refresh</code> still runs in under a minute.</p>
+<h3 id="tier-3-medium-multi-site-up-to-100000-participants">Tier 3: Medium multi-site (up to ~100,000 participants)<a class="headerlink" href="#tier-3-medium-multi-site-up-to-100000-participants" title="Permanent link">&para;</a></h3>
+<p>Each site collects into its own <code>site_N.db</code>. A periodic <code>quickq federated merge</code> assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.</p>
+<h3 id="tier-4-large-or-institutional-200000-participants">Tier 4: Large or institutional (200,000+ participants)<a class="headerlink" href="#tier-4-large-or-institutional-200000-participants" title="Permanent link">&para;</a></h3>
+<p>Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, <code>quickq export</code> dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Local ["Tier 1–2: Local / Small Multi-site"]
+        direction TB
+        L_Input[YAML / FHIR] --&gt; L_SQLite[(study.db)]
+        L_SQLite --&gt; L_Refresh[quickq refresh]
+        L_Refresh --&gt; L_DuckDB[(analytics.duckdb)]
+        L_DuckDB --&gt; L_Analyze[SQL · Notebooks · Reports]
+    end
+
+    subgraph Cloud ["Tier 3–4: Multi-site / Cloud"]
+        direction TB
+        C_Apps[Web / Mobile / EMR] -- FHIR --&gt; C_Queue[Ingestor / Queue]
+        C_Queue --&gt; C_Sites[(site_A.db\nsite_B.db\nsite_C.db)]
+        C_Sites --&gt; C_Merge[quickq federated merge]
+        C_Merge --&gt; C_Combined[(combined.db)]
+        C_Combined --&gt; C_Refresh[quickq refresh]
+        C_Refresh --&gt; C_OLAP[(analytics.duckdb)]
+        C_OLAP --&gt; C_Parquet[quickq export]
+        C_Parquet --&gt; C_Warehouse{{BigQuery / Snowflake\nDatabricks}}
+    end
+
+    Local -. "Same data model" .-&gt; Cloud</code></pre>
+<hr />
+<h2 id="federated-analytics">Federated analytics<a class="headerlink" href="#federated-analytics" title="Permanent link">&para;</a></h2>
+<p>For studies where individual-level data cannot leave each institution's boundary, quickq supports a federated analytics pattern. A coordinating center defines analysis queries against the standard OLAP schema. Each site runs <code>quickq federated query</code> locally; only aggregate results (counts, means, distributions) leave the site. Individual rows never move.</p>
+<p>This sidesteps the data use agreement and IRB amendment process that direct data sharing requires, which is the primary adoption barrier for multi-institution studies. Because every quickq deployment shares the same <code>fact_response</code> / <code>dim_question</code> / <code>dim_respondent</code> schema, a query written once runs identically at every site.</p>
+<hr />
+<h2 id="data-sovereignty-and-the-10-year-rule">Data sovereignty and the 10-year rule<a class="headerlink" href="#data-sovereignty-and-the-10-year-rule" title="Permanent link">&para;</a></h2>
+<p>Research data needs to be readable not just today but in 10 or 20 years.</p>
+<p><strong>The 10-year rule:</strong> If your research platform shuts down or your institution loses the license, can you still read your data? With cloud platforms, the answer is often "only if you have the CSV export." With quickq, the answer is always yes: SQLite and DuckDB are open-source, widely supported formats readable by any SQL tool, in any language, without quickq installed.</p>
+<p><strong>Pseudonymization.</strong> Before sharing data across institutions, <code>quickq compliance pseudonymize</code> produces a PHI-free copy of the study: direct identifiers are stripped from the respondent table and replaced with stable random tokens. The full analytical model is preserved. For studies designed to be anonymous from the start, no pseudonymization step is needed.</p>
+<p><strong>Point-in-time recovery.</strong> Because a study is a single file, backups are a file copy. Versioned S3 buckets or any snapshotting filesystem give you full point-in-time recovery without database server configuration.</p>
+<hr />
+<h2 id="harmonization-across-versions-and-studies">Harmonization across versions and studies<a class="headerlink" href="#harmonization-across-versions-and-studies" title="Permanent link">&para;</a></h2>
+<p>Survey instruments change. IRBs request wording revisions. A useful question turns up in a second study. quickq tracks all of this without touching collected response data:</p>
+<ul>
+<li><strong>Question lineage:</strong> when a question is revised, the original row is immutable; a new row is created and linked via <code>record_question_lineage</code></li>
+<li><strong>Equivalence declarations:</strong> <code>declare_equivalence</code> marks two questions as analytically equivalent across versions or instruments; <code>quickq refresh</code> uses this to set <code>equivalence_group_id</code> on the OLAP dimension</li>
+<li><strong>Cross-version queries:</strong> filter by <code>equivalence_group_id</code> in <code>dim_question</code> to span all versions of an item in a single query, regardless of which wording a respondent saw</li>
+</ul>
+<p>See the <a href="../reference/versioning/">Instrument Versioning &amp; Data Governance</a> reference for full workflows.</p>
+<hr />
+<h2 id="the-cost-of-an-ad-hoc-data-model">The cost of an ad-hoc data model<a class="headerlink" href="#the-cost-of-an-ad-hoc-data-model" title="Permanent link">&para;</a></h2>
+<p>The most common alternative to a survey platform is a custom build: a web form or paper form, responses stored as flat CSV files or schemaless JSON, and a separate Excel data dictionary maintained by hand. This path feels cheaper at the start. It becomes expensive the moment analysis begins.</p>
+<p>The problems compound over time:</p>
+<p><strong>The wide-table problem.</strong> Every question gets its own column. A study with 10 instruments and 50 questions each produces a table with hundreds or thousands of columns. Analysis requires knowing which column is which, not from the data but from the external data dictionary. Joining two instruments means manually aligning hundreds of column names.</p>
+<p><strong>The disconnected data dictionary.</strong> The Excel sheet describes what the data means. The data file contains the data. They drift apart. Column names change, questions get added, a question is revised mid-study. The Excel sheet is updated inconsistently. By the time analysis begins, the dictionary is partially wrong and nobody is sure which version to trust.</p>
+<p><strong>Per-question data quality.</strong> Range checks, skip logic validation, and missingness analysis have to be written question by question. There is no shared abstraction. There is no way to ask "which Likert questions have unexpected null rates?" because the data model has no concept of question type; every column just has a name.</p>
+<p><strong>Skip logic is invisible.</strong> When a question was correctly skipped, the cell is empty. When a question was genuinely missed, the cell is also empty. Without a record of the skip logic conditions, missingness and correct skipping are indistinguishable. Analysts make assumptions; the assumptions vary.</p>
+<p>quickq's architecture is a direct response to these failure modes:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Ad-hoc approach</th>
+<th>quickq</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thousands of wide columns</td>
+<td>One column per question</td>
+<td><code>fact_response</code> — one row per answer atom, typed value columns</td>
+</tr>
+<tr>
+<td>External data dictionary</td>
+<td>Separate Excel sheet</td>
+<td><code>quickq data-dict</code> — generated from the schema itself, includes skip conditions and scoring membership</td>
+</tr>
+<tr>
+<td>Manual concept ID lookup</td>
+<td>Look up each column in a sidecar file</td>
+<td>Concept codes live on <code>dim_question</code> and <code>dim_response_option</code> — in the data</td>
+</tr>
+<tr>
+<td>Per-question QC</td>
+<td>Write a new check for every item</td>
+<td><code>question_type</code> on <code>dim_question</code> — one query covers all Likert questions, all numeric items, etc.</td>
+</tr>
+<tr>
+<td>Skip logic invisible in data</td>
+<td>Indistinguishable from missingness</td>
+<td><code>skip_rule</code> table — skip-logic non-response is a query, not a judgment call</td>
+</tr>
+<tr>
+<td>Scoring logic in analysis scripts</td>
+<td>Reimplemented per study, per analyst</td>
+<td>Scoring rules in the YAML — computed once on <code>quickq refresh</code>, live in <code>agg_respondent_scores</code></td>
+</tr>
+<tr>
+<td>Instrument definition in a GUI or Word doc</td>
+<td>Not version-controllable</td>
+<td>YAML — version-controlled alongside your analysis code</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="when-to-use-quickq">When to use quickq<a class="headerlink" href="#when-to-use-quickq" title="Permanent link">&para;</a></h2>
+<p>quickq and platforms like REDCap or Qualtrics solve overlapping problems differently. The right tool depends on what your study needs over its lifetime — and the two are interoperable: quickq's FHIR <code>Questionnaire</code> export hands off cleanly to REDCap for delivery, and a <code>QuestionnaireResponse</code> returned from REDCap imports directly back into quickq for analysis.</p>
+<p><strong>REDCap and Qualtrics are well-suited when</strong> you want a polished, integrated environment: built-in respondent management, role-based access, e-consent workflows, audit trails, and institutional support. For many studies — especially single-site studies that benefit from a managed platform — they are the right answer.</p>
+<p><strong>quickq is designed for the cases where the study artifact and analytical layer matter as much as the collection interface:</strong></p>
+<ul>
+<li>Long-term research programs where you want the instrument definition version-controlled alongside the analysis code</li>
+<li>Multi-site studies that need to harmonize data across instrument versions via concept codes (LOINC, SNOMED, OMOP)</li>
+<li>Federated analysis without individual-level data transfer</li>
+<li>Sharing data with institutions that have their own analytics infrastructure (BigQuery, Snowflake, dbt) and need a stable star-schema contract</li>
+<li>Programs where the study should remain readable and runnable years from now without depending on any specific platform's continuity</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

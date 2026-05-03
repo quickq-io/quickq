@@ -1,0 +1,1743 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Health and Epidemiology Survey Authoring & Analytics">
+      
+      
+        <meta name="author" content="quickq Contributors">
+      
+      
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/database/oltp/">
+      
+      
+        <link rel="prev" href="../../analytics/">
+      
+      
+        <link rel="next" href="../olap/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>OLTP (SQLite) - quickq</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oltp-schema-sqlite" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            quickq
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OLTP (SQLite)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    quickq
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design_decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Study Journey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Testing Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Author an Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/collect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Collect Responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Analyze
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Data Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/share/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Share & Publish
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Multi-Site Study Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/question-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Question Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/query-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query Patterns by Question Type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument Versioning & Data Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fhir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FHIR Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/omop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OMOP Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey Authoring (YAML)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-phq9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PHQ-9 Rendered Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-prapare-data-dict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: PRAPARE Data Dictionary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/example-gout-checkin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Gout Check-In (all question types)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Going Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Going Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics & Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Database Schema
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLTP (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLTP (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#connection-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supporting-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supporting Tables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supporting Tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrument-extras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrument extras
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concept-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept plane
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versioning-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning &amp; equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interoperability-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interoperability Hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../olap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLAP (DuckDB)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#connection-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supporting-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supporting Tables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supporting Tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrument-extras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrument extras
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concept-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept plane
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versioning-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning &amp; equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interoperability-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interoperability Hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="oltp-schema-sqlite">OLTP Schema (SQLite)<a class="headerlink" href="#oltp-schema-sqlite" title="Permanent link">&para;</a></h1>
+<p>The OLTP database is the <strong>source of truth</strong> for every quickq study. It stores the instrument definition, collected responses, data quality flags, and all administrative and versioning metadata. One <code>.db</code> file is the complete portable artifact for a study.</p>
+<hr />
+<h2 id="connection-setup">Connection Setup<a class="headerlink" href="#connection-setup" title="Permanent link">&para;</a></h2>
+<p>Every connection must set three pragmas before any reads or writes:</p>
+<div class="highlight"><pre><span></span><code><span class="n">PRAGMA</span><span class="w"> </span><span class="n">journal_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WAL</span><span class="p">;</span><span class="w">      </span><span class="c1">-- safe concurrent reads during writes</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">foreign_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">ON</span><span class="p">;</span><span class="w">       </span><span class="c1">-- enforce all FK constraints</span>
+<span class="n">PRAGMA</span><span class="w"> </span><span class="n">synchronous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NORMAL</span><span class="p">;</span><span class="w">    </span><span class="c1">-- durable without full fsync on every write</span>
+</code></pre></div>
+<p><code>foreign_keys = ON</code> is especially important — SQLite disables FK enforcement by default.</p>
+<hr />
+<h2 id="core-schema">Core Schema<a class="headerlink" href="#core-schema" title="Permanent link">&para;</a></h2>
+<p>Seven tables handle the essential work: defining an instrument, placing its questions, and recording answers.</p>
+<pre class="mermaid"><code>erDiagram
+    QUESTIONNAIRE ||--o{ QUESTIONNAIRE_QUESTION : places
+    QUESTION ||--o{ QUESTIONNAIRE_QUESTION : "placed in"
+    QUESTION ||--o{ RESPONSE_OPTION : has
+    QUESTIONNAIRE_QUESTION ||--o{ QUESTIONNAIRE_QUESTION : "parent_qq_id (nesting)"
+    RESPONDENT ||--o{ RESPONSE_SESSION : starts
+    RESPONSE_SESSION ||--o{ RESPONSE : contains
+    QUESTIONNAIRE_QUESTION ||--o{ RESPONSE : answers
+
+    QUESTIONNAIRE {
+        int questionnaire_id PK
+        text canonical_url
+        text version
+        text fhir_status
+    }
+    QUESTION {
+        int question_id PK
+        text link_id
+        text question_type
+        int concept_id
+    }
+    QUESTIONNAIRE_QUESTION {
+        int qq_id PK
+        int parent_qq_id FK
+        int display_order
+        text status
+    }
+    RESPONSE_OPTION {
+        int option_id PK
+        text option_text
+        text option_value
+        text concept_code
+    }
+    RESPONDENT {
+        int respondent_id PK
+        text external_id
+    }
+    RESPONSE_SESSION {
+        int session_id PK
+        text admin_mode
+        int is_complete
+        int is_proxy
+    }
+    RESPONSE {
+        int response_id PK
+        int repeat_index
+        text response_text
+        real response_numeric
+        text response_date
+    }</code></pre>
+<p><strong><code>questionnaire</code></strong> — A versioned instrument. <code>canonical_url</code> is the FHIR identity; <code>(canonical_url, version)</code> is unique. <code>fhir_status</code> is <code>draft | active | retired | unknown</code>.</p>
+<p><strong><code>question</code></strong> — The reusable question bank. A question is authored once and placed into any number of questionnaires. <code>link_id</code> is the stable human-readable identifier and maps directly to FHIR <code>item.linkId</code>. <code>concept_id</code> links to the standard vocabulary.</p>
+<p><strong><code>questionnaire_question</code></strong> — The placement record that puts a question into a questionnaire at a specific position. <code>parent_qq_id</code> (self-reference) enables sub-question nesting: children of a <code>repeating_group</code> question point their <code>parent_qq_id</code> at the group's row. <code>status</code> (<code>active</code> / <code>deprecated</code> / <code>suspended</code>) lets items be retired mid-study without invalidating historical responses.</p>
+<p><strong><code>response_option</code></strong> — Answer choices for closed-ended questions. <code>concept_code</code> + <code>concept_system</code> are denormalized here for fast FHIR export.</p>
+<p><strong><code>respondent</code></strong> — De-identified participant. <code>external_id</code> is the researcher-assigned key; PII is never stored here.</p>
+<p><strong><code>response_session</code></strong> — One attempt to complete one questionnaire. <code>admin_mode</code> (<code>web / paper / phone / kiosk / interviewer / api</code>) and <code>is_proxy</code> are first-class fields because mode effects are a real covariate in epi analysis.</p>
+<p><strong><code>response</code></strong> — One row per answer atom. <code>repeat_index</code> (0-based, <code>NULL</code> for non-repeating questions) distinguishes instances within a <code>repeating_group</code> — e.g., visit 0 vs. visit 1 in a pregnancy log.</p>
+<table>
+<thead>
+<tr>
+<th>Question type</th>
+<th>Columns populated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>single_choice</code></td>
+<td><code>option_id</code></td>
+</tr>
+<tr>
+<td><code>multiple_choice</code> / <code>sata_other</code></td>
+<td>one row per selected option; <code>response_text</code> for "other"</td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>response_text</code> = <code>'true'</code> or <code>'false'</code></td>
+</tr>
+<tr>
+<td><code>text</code></td>
+<td><code>response_text</code></td>
+</tr>
+<tr>
+<td><code>numeric</code> / <code>slider</code></td>
+<td><code>response_numeric</code></td>
+</tr>
+<tr>
+<td><code>date</code> / <code>datetime</code></td>
+<td><code>response_date</code></td>
+</tr>
+<tr>
+<td><code>grid</code></td>
+<td><code>grid_row_id</code> + <code>grid_column_id</code> + one value column</td>
+</tr>
+<tr>
+<td><code>repeating_group</code> child</td>
+<td>any value column + <code>repeat_index</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="supporting-tables">Supporting Tables<a class="headerlink" href="#supporting-tables" title="Permanent link">&para;</a></h2>
+<p>The tables below extend the core with branching logic, scoring, standard vocabularies, data quality, and versioning. They are organized by concern.</p>
+<h3 id="instrument-extras">Instrument extras<a class="headerlink" href="#instrument-extras" title="Permanent link">&para;</a></h3>
+<p><strong><code>study</code></strong> — Top-level container; holds IRB number and PI name. Optional: questionnaires can exist without a <code>study_id</code>.</p>
+<p><strong><code>section</code></strong> — Optional page/section groupings within a questionnaire. Supports <code>display_condition</code> (FHIRPath expression) for conditional sections.</p>
+<p><strong><code>skip_rule</code></strong> — Structured branching logic; maps to FHIR <code>item.enableWhen</code>. Multiple rules for the same <code>qq_id</code> combine via <code>enable_behavior</code> (<code>all</code> = AND, <code>any</code> = OR). Operators: <code>exists</code>, <code>not_exists</code>, <code>=</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>.</p>
+<p><strong><code>scoring_rule</code> / <code>scoring_rule_item</code> / <code>scoring_category</code></strong> — Subscale scoring (PHQ-9 total, GAD-7 severity, SF-12). Each rule names a formula (<code>sum</code>, <code>mean</code>, or an arithmetic expression referencing <code>link_id</code> values). Items carry optional weights and reverse-score flags. Categories define severity bands ("Minimal 0–4, Mild 5–9").</p>
+<p><strong><code>response_option_set</code></strong> — Named option lists shared across questions (e.g., a 5-point frequency scale reused in 9 PHQ items). Maps to FHIR <code>answerValueSet</code>.</p>
+<p><strong><code>grid_row</code> / <code>grid_column</code></strong> — Row and column definitions for matrix questions. Both carry optional <code>concept_id</code>.</p>
+<h3 id="concept-plane">Concept plane<a class="headerlink" href="#concept-plane" title="Permanent link">&para;</a></h3>
+<p>Every question, option, grid row, and grid column has an optional <code>concept_id</code>. The concept model is OMOP-inspired.</p>
+<p><strong><code>vocabulary</code></strong> — Metadata per vocabulary (LOINC, SNOMED CT, NCI, BRFSS, Local): canonical URL, version.</p>
+<p><strong><code>concept</code></strong> — Individual standard codes. <code>standard_concept = 'S'</code> is the authoritative code; <code>'C'</code> is a classification. <code>(vocabulary_id, concept_code)</code> is unique.</p>
+<p><strong><code>concept_relationship</code></strong> — Typed directed edges between concepts: <em>Maps to</em>, <em>Is a</em>, <em>Subsumes</em>, <em>Answer of</em>. Same pattern as OMOP CDM.</p>
+<h3 id="data-quality">Data quality<a class="headerlink" href="#data-quality" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Never crash on a valid survey</p>
+<p>Validation issues land in <code>data_quality_flag</code> rather than raising exceptions, so collection continues and nothing is lost.</p>
+</div>
+<p><strong><code>data_quality_flag</code></strong> — Automated soft validation failures with <code>severity</code> (<code>info / warning / error</code>). Linked to a session and optionally a specific response or question. <code>is_resolved</code> tracks remediation.</p>
+<p><strong><code>study_errata_log</code></strong> — Human-authored notes: delivery bugs, question errors, IRB actions, post-hoc corrections. Scoped to a session range or date window. Each entry carries <code>analyst_guidance</code> — what downstream analysts must know when working with affected data.</p>
+<table>
+<thead>
+<tr>
+<th><code>event_type</code></th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delivery_bug</code></td>
+<td>Platform or tool error affected a batch of responses</td>
+</tr>
+<tr>
+<td><code>question_error</code></td>
+<td>Wording, translation, or logic mistake</td>
+</tr>
+<tr>
+<td><code>deprecation</code></td>
+<td>Question or instrument retired mid-study</td>
+</tr>
+<tr>
+<td><code>correction</code></td>
+<td>Post-hoc data correction applied</td>
+</tr>
+<tr>
+<td><code>irb_action</code></td>
+<td>IRB-required modification</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>General informational entry</td>
+</tr>
+</tbody>
+</table>
+<h3 id="versioning-equivalence">Versioning &amp; equivalence<a class="headerlink" href="#versioning-equivalence" title="Permanent link">&para;</a></h3>
+<p>These are <strong>metadata overlays</strong> — responses are never moved or rewritten. They let analysts declare relationships between questions while keeping the collection layer immutable.</p>
+<p><strong><code>question_lineage</code></strong> — Revision ancestry. Questions are immutable once used; a rewording always produces a new <code>question</code> row linked here with a typed <code>change_type</code> (<code>reword</code>, <code>option_added</code>, <code>option_removed</code>, <code>split</code>, <code>merge</code>).</p>
+<p><strong><code>question_equivalence</code></strong> — Researcher-declared cross-instrument equivalences (<code>equivalent</code>, <code>near_equivalent</code>, <code>related</code>, <code>supersedes</code>). Both directions are stored so queries never need a UNION. <code>harmonization_notes</code> records what analysts must know before pooling data.</p>
+<p><strong><code>questionnaire_version_diff</code></strong> — Structured diff between instrument versions: items added, removed, reordered, or changed. Can be auto-generated by <code>diff_questionnaire_versions()</code>.</p>
+<p><strong><code>person_map</code></strong> — Bridges <code>respondent.external_id</code> to an OMOP <code>person_id</code> for studies in federated networks. Populated by study-specific ETL, not by quickq.</p>
+<hr />
+<h2 id="interoperability-hooks">Interoperability Hooks<a class="headerlink" href="#interoperability-hooks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>OLTP column</th>
+<th>FHIR field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>questionnaire.canonical_url</code></td>
+<td><code>Questionnaire.url</code></td>
+</tr>
+<tr>
+<td><code>questionnaire.version</code></td>
+<td><code>Questionnaire.version</code></td>
+</tr>
+<tr>
+<td><code>questionnaire.fhir_status</code></td>
+<td><code>Questionnaire.status</code></td>
+</tr>
+<tr>
+<td><code>question.link_id</code></td>
+<td><code>item.linkId</code></td>
+</tr>
+<tr>
+<td><code>question.question_type</code></td>
+<td><code>item.type</code></td>
+</tr>
+<tr>
+<td><code>response_option.concept_code</code> + <code>.concept_system</code></td>
+<td><code>valueCoding.code</code> + <code>system</code></td>
+</tr>
+<tr>
+<td><code>response_option_set.canonical_url</code></td>
+<td><code>item.answerValueSet</code></td>
+</tr>
+<tr>
+<td><code>skip_rule</code> rows</td>
+<td><code>item.enableWhen[]</code></td>
+</tr>
+<tr>
+<td><code>questionnaire_question.parent_qq_id</code></td>
+<td>nested <code>item</code> arrays</td>
+</tr>
+<tr>
+<td><code>response_session</code></td>
+<td><code>QuestionnaireResponse</code> header</td>
+</tr>
+<tr>
+<td><code>response.repeat_index</code></td>
+<td>repeated <code>item</code> entries with the same <code>linkId</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
