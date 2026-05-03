@@ -206,6 +206,8 @@ class _ImportContext:
         self._qq_cache: dict[str, int] = {}       # link_id → qq_id
         self._qtype_cache: dict[str, str] = {}    # link_id → question_type
         self._qid_cache: dict[str, int] = {}      # link_id → question_id
+        # link_id → (numeric_min, numeric_max); either side can be None
+        self._range_cache: dict[str, tuple[float | None, float | None]] = {}
         self._option_cache: dict[tuple, int | None] = {}  # (question_id, code) → option_id
         self._grid_row_cache: dict[str, int] = {}    # child_link_id → row_id
         self._grid_col_cache: dict[tuple, int] = {}  # (question_id, col_value) → column_id
@@ -214,7 +216,8 @@ class _ImportContext:
         # Pre-load qq / question info for this questionnaire
         rows = conn.execute(
             """
-            SELECT qq.qq_id, q.link_id, q.question_type, q.question_id
+            SELECT qq.qq_id, q.link_id, q.question_type, q.question_id,
+                   q.numeric_min, q.numeric_max
             FROM questionnaire_question qq
             JOIN question q ON qq.question_id = q.question_id
             WHERE qq.questionnaire_id = ?
@@ -225,6 +228,7 @@ class _ImportContext:
             self._qq_cache[r[1]]    = r[0]
             self._qtype_cache[r[1]] = r[2]
             self._qid_cache[r[1]]   = r[3]
+            self._range_cache[r[1]] = (r[4], r[5])
 
     # ------------------------------------------------------------------
 
@@ -336,10 +340,28 @@ class _ImportContext:
             return
 
         if "valueDecimal" in answer or "valueInteger" in answer:
-            num = answer.get("valueDecimal", answer.get("valueInteger"))
+            num = float(answer.get("valueDecimal", answer.get("valueInteger")))
+            # Range check: if the question declares numeric_min/max, flag
+            # out-of-range values as a warning. The response is still inserted
+            # so analysts can decide what to do; the flag is the audit trail.
+            lo, hi = self._range_cache.get(link_id, (None, None))
+            if lo is not None and num < lo:
+                self._flag(
+                    qq_id,
+                    f"Out of range: response {num} below declared minimum {lo}",
+                    rule_name="out_of_range",
+                    severity="warning",
+                )
+            elif hi is not None and num > hi:
+                self._flag(
+                    qq_id,
+                    f"Out of range: response {num} above declared maximum {hi}",
+                    rule_name="out_of_range",
+                    severity="warning",
+                )
             self.conn.execute(
                 "INSERT INTO response (session_id, qq_id, response_numeric, repeat_index) VALUES (?, ?, ?, ?)",
-                (self.session_id, qq_id, float(num), repeat_index),
+                (self.session_id, qq_id, num, repeat_index),
             )
             return
 

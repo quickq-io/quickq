@@ -533,3 +533,127 @@ def test_mixed_session_partial_failure_continues(tmp_path):
         (sid,),
     ).fetchone()[0]
     assert n_flags == 1
+
+
+# ------------------------------------------------------------------
+# Range checks at FHIR import (closes 61v)
+# ------------------------------------------------------------------
+
+# A small fixture with one numeric question that has a declared range
+_RANGED_Q = {
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "title": "Pain Scale",
+    "version": "1.0",
+    "url": "http://quickq.io/instruments/pain-scale",
+    "item": [
+        {
+            "linkId": "pain.now",
+            "text": "Current pain (0-10)",
+            "type": "decimal",
+            "extension": [
+                {"url": "http://hl7.org/fhir/StructureDefinition/minValue",
+                 "valueDecimal": 0},
+                {"url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+                 "valueDecimal": 10},
+            ],
+        },
+    ],
+}
+
+
+def _setup_ranged(tmp_path):
+    from quickq.parser_fhir import import_fhir
+    conn = _db(tmp_path)
+    import_fhir(conn, _RANGED_Q)
+    conn.commit()
+    return conn
+
+
+def _ranged_response(value: float) -> dict:
+    return {
+        "resourceType": "QuestionnaireResponse",
+        "status": "completed",
+        "questionnaire": "http://quickq.io/instruments/pain-scale",
+        "authored": "2026-01-01T10:00:00Z",
+        "subject": {"reference": "Patient/range-test"},
+        "item": [{"linkId": "pain.now", "answer": [{"valueDecimal": value}]}],
+    }
+
+
+def test_in_range_response_no_flag(tmp_path):
+    conn = _setup_ranged(tmp_path)
+    sid = import_fhir_response(conn, _ranged_response(7))
+    n_flags = conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'out_of_range'",
+        (sid,),
+    ).fetchone()[0]
+    assert n_flags == 0
+    n_rows = conn.execute(
+        "SELECT COUNT(*) FROM response WHERE session_id = ?", (sid,)
+    ).fetchone()[0]
+    assert n_rows == 1
+
+
+def test_above_max_flagged_but_inserted(tmp_path):
+    """Out-of-range value writes a warning AND inserts the row.
+    Clinical 'just barely out of range' is a real signal worth seeing."""
+    conn = _setup_ranged(tmp_path)
+    sid = import_fhir_response(conn, _ranged_response(50))
+
+    # Row was inserted with the original value
+    rows = conn.execute(
+        "SELECT response_numeric FROM response WHERE session_id = ?", (sid,)
+    ).fetchall()
+    assert len(rows) == 1
+    assert rows[0][0] == 50.0
+
+    # Warning flag created
+    flags = conn.execute(
+        "SELECT severity, message FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'out_of_range'",
+        (sid,),
+    ).fetchall()
+    assert len(flags) == 1
+    severity, message = flags[0]
+    assert severity == "warning"
+    assert "above" in message and "10" in message and "50" in message
+
+
+def test_below_min_flagged(tmp_path):
+    conn = _setup_ranged(tmp_path)
+    sid = import_fhir_response(conn, _ranged_response(-3))
+
+    flags = conn.execute(
+        "SELECT message FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'out_of_range'",
+        (sid,),
+    ).fetchall()
+    assert len(flags) == 1
+    assert "below" in flags[0][0] and "0" in flags[0][0]
+
+
+def test_at_bounds_inclusive(tmp_path):
+    """Exactly at min or max: no flag (bounds are inclusive)."""
+    conn = _setup_ranged(tmp_path)
+    for val in (0, 10):
+        sid = import_fhir_response(conn, _ranged_response(val))
+        n_flags = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag "
+            "WHERE session_id = ? AND rule_name = 'out_of_range'",
+            (sid,),
+        ).fetchone()[0]
+        assert n_flags == 0, f"value {val} at boundary should not flag"
+
+
+def test_no_bounds_no_validation(tmp_path):
+    """A numeric question without declared bounds skips range validation."""
+    conn = _setup_minimal(tmp_path)  # min.age has no range
+    sid = import_fhir_response(conn, _MINIMAL_RESPONSE)
+    n_flags = conn.execute(
+        "SELECT COUNT(*) FROM data_quality_flag "
+        "WHERE session_id = ? AND rule_name = 'out_of_range'",
+        (sid,),
+    ).fetchone()[0]
+    assert n_flags == 0
