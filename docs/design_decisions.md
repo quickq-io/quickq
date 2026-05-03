@@ -1,6 +1,6 @@
 # Design Decisions
 
-At an international workshop, someone asked: *"If we wanted to run the Connect for Cancer Prevention Cohort Study in our country, how would we do that?"*
+At an international workshop, someone asked: *"If we wanted to run a major prospective cohort study in our own country, how would we do that?"*
 
 That question is the standard quickq is designed to clear. Not data sharing. Not harmonization. Running the same study — same instruments, same skip logic, same scoring rules, same analytical queries, same provenance — at a new site in a different country, from a standing start. The answer should be: download this file, run this command, and you are running the same study.
 
@@ -151,11 +151,14 @@ quickq's architecture is a direct response to these failure modes:
 
 ## When to use quickq
 
-| Use a platform (REDCap, Qualtrics) if... | Use quickq if... |
-| :--- | :--- |
-| You need a built-in data entry website today | You want to deploy the same instrument across web, mobile, and clinical systems |
-| Your study is self-contained and will never need to join with other data | You are building a long-term research program or multi-site study |
-| You prefer a GUI over YAML and SQL | You want your study protocol version-controlled alongside your analysis code |
-| | You need to harmonize data across instrument versions or separate studies |
-| | You need to share data with institutions that have their own analytics infrastructure |
-| | You cannot get or afford REDCap institutional access |
+quickq and platforms like REDCap or Qualtrics solve overlapping problems differently. The right tool depends on what your study needs over its lifetime — and the two are interoperable: quickq's FHIR `Questionnaire` export hands off cleanly to REDCap for delivery, and a `QuestionnaireResponse` returned from REDCap imports directly back into quickq for analysis.
+
+**REDCap and Qualtrics are well-suited when** you want a polished, integrated environment: built-in respondent management, role-based access, e-consent workflows, audit trails, and institutional support. For many studies — especially single-site studies that benefit from a managed platform — they are the right answer.
+
+**quickq is designed for the cases where the study artifact and analytical layer matter as much as the collection interface:**
+
+- Long-term research programs where you want the instrument definition version-controlled alongside the analysis code
+- Multi-site studies that need to harmonize data across instrument versions via concept codes (LOINC, SNOMED, OMOP)
+- Federated analysis without individual-level data transfer
+- Sharing data with institutions that have their own analytics infrastructure (BigQuery, Snowflake, dbt) and need a stable star-schema contract
+- Programs where the study should remain readable and runnable years from now without depending on any specific platform's continuity

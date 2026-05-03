@@ -13,11 +13,11 @@ The tool has two distinct layers:
 
 ## The Design Standard: Copy/Paste Study Propagation
 
-At an international workshop, someone asked: *"If we wanted to run the Connect for Cancer Prevention Cohort Study in our country, how would we do that?"*
+At an international workshop, someone asked: *"If we wanted to run a major prospective cohort study in our own country, how would we do that?"*
 
 That question sets the bar. Not data sharing. Not harmonization of an existing dataset. Running the same study — same instruments, same skip logic, same scoring rules, same analytical queries, same provenance — at a new site in a different country, from a standing start.
 
-The Connect study was designed to be as FAIR as possible. The question still felt like a high bar. It should not be. If the study is properly encoded — instruments versioned and portable, analytical schema standardized, collection infrastructure deployable — the answer should be: *download this file, run this command, and you are running the same study.*
+The question still felt like a high bar. It should not be. If the study is properly encoded — instruments versioned and portable, analytical schema standardized, collection infrastructure deployable — the answer should be: *download this file, run this command, and you are running the same study.*
 
 **This is the portability standard quickq is designed to clear.** Every architectural decision should be evaluated against it:
 
@@ -387,7 +387,7 @@ The OLAP refresh layer (`quickq/olap_schema.py`, `quickq refresh`) is Python cod
 
 ### Why this matters
 
-The survey-data-challenges article makes a specific claim: the wide-table model made dbt impossible because every instrument had a different schema. The row-per-response model was designed to fix exactly that. `fact_response`, `dim_question`, and the aggregate tables are a stable, predictable schema — the precondition for dbt is satisfied.
+The wide-table model — one row per respondent, one column per question — makes dbt-style transformation pipelines impractical because every instrument has a different schema. The row-per-response model was designed to fix exactly that. `fact_response`, `dim_question`, and the aggregate tables are a stable, predictable schema — the precondition for dbt is satisfied.
 
 The current ETL does not take advantage of this. It is Python generating SQL strings, which is the same opacity problem the wide-table model created, just at a different layer.
 

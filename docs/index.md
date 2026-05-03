@@ -73,4 +73,3 @@ questions:
 - [Design Decisions](design_decisions.md) — delivery independence, scaling patterns, federated analytics, and data sovereignty
 - [The Study Journey](tutorial.md) — end-to-end walkthrough from instrument authoring to published results
 - [Survey Authoring](authoring.md) — YAML format, question types, skip logic, scoring rules, concept mapping
-- [What We Struggle With](articles/survey-data-challenges.md) — a field perspective on the structural problems this tool addresses

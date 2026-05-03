@@ -66,8 +66,6 @@ nav:
       - 'Example: PHQ-9 Rendered Instrument': reference/example-phq9.md
       - 'Example: PRAPARE Data Dictionary': reference/example-prapare-data-dict.md
       - 'Example: Gout Check-In (all question types)': reference/example-gout-checkin.md
-  - Articles:
-      - 'What We Struggle With: Survey Data in Health and Epi Research': articles/survey-data-challenges.md
   - Going Deeper:
       - Design Philosophy: philosophy.md
       - Analytics & Data Model: analytics.md
