@@ -119,8 +119,8 @@ Before authoring a new question, search for an existing validated instrument tha
 # Browse the local question bank (library questions + previously loaded instruments)
 quickq list library study.db
 
-# Filter to a specific instrument
-quickq list library study.db --instrument phq9
+# Filter to a specific instrument (exact match on display name; case-sensitive)
+quickq list library study.db --instrument PHQ-9
 
 # If you find a match, reference it by link_id instead of re-authoring.
 # In your YAML:

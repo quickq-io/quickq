@@ -324,7 +324,7 @@ The OLAP's `dim_respondent.external_id` will contain pseudonymized tokens, not o
 Open the DuckDB UI to explore the combined data:
 
 ```bash
-duckdb -ui analytics_anon.duckdb
+quickq analytics analytics_anon.duckdb
 ```
 
 **PHQ-9 score distribution by site:**

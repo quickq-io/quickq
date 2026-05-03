@@ -11,7 +11,8 @@ click.rich_click.COMMAND_GROUPS = {
         {
             "name": "Core",
             "commands": ["init", "load", "preview", "serve",
-                         "refresh", "seed", "data-dict", "render", "report", "export", "list"],
+                         "refresh", "seed", "data-dict", "render", "report",
+                         "analytics", "export", "list"],
         },
         {
             "name": "FHIR",

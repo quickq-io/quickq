@@ -4,7 +4,7 @@ This tutorial covers the data quality tools available after `quickq refresh`: ch
 
 ```bash
 uv run python scripts/generate_demo.py
-duckdb -ui demo/analytics.duckdb
+quickq analytics demo/analytics.duckdb
 ```
 
 ---

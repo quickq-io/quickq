@@ -4,7 +4,7 @@ This tutorial covers the analytical layer of a quickq study: running scoring que
 
 ```bash
 uv run python scripts/generate_demo.py
-duckdb -ui demo/analytics.duckdb
+quickq analytics demo/analytics.duckdb
 ```
 
 See [The Study Journey](../tutorial.md) for the full pipeline that produces this database.
@@ -58,9 +58,7 @@ SELECT
     ars.score_category
 FROM agg_respondent_scores ars
 JOIN dim_respondent dr USING (respondent_id)
-WHERE ars.scoring_rule_id = (
-    SELECT scoring_rule_id FROM agg_respondent_scores LIMIT 1
-)
+WHERE ars.scoring_rule_name = 'PHQ-9 Total Score'
 ORDER BY ars.score_raw DESC;
 ```
 

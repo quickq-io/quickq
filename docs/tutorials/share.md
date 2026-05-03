@@ -88,7 +88,7 @@ The OLAP's `dim_respondent.external_id` will contain pseudonymized tokens, not o
 Open the DuckDB UI to verify the analytical database looks correct before exporting:
 
 ```bash
-duckdb -ui analytics_anon.duckdb
+quickq analytics analytics_anon.duckdb
 ```
 
 Check participant counts, score distributions, and the errata log:
