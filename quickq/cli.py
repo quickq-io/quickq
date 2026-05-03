@@ -102,27 +102,31 @@ def list_studies_cmd(db_path: str) -> None:
 def list_surveys_cmd(db_path: str, study_id: int | None) -> None:
     """List questionnaires in DB_PATH."""
     conn = open_oltp(db_path)
+    base_sql = """
+        SELECT q.questionnaire_id, q.name, q.version, q.fhir_status, q.canonical_url,
+               (SELECT COUNT(*) FROM response_session rs
+                WHERE rs.questionnaire_id = q.questionnaire_id) AS response_count
+        FROM   questionnaire q
+    """
     if study_id is not None:
         rows = conn.execute(
-            """SELECT questionnaire_id, name, version, fhir_status, canonical_url
-               FROM questionnaire WHERE study_id = ? ORDER BY questionnaire_id""",
+            base_sql + " WHERE q.study_id = ? ORDER BY q.questionnaire_id",
             (study_id,),
         ).fetchall()
     else:
         rows = conn.execute(
-            """SELECT questionnaire_id, name, version, fhir_status, canonical_url
-               FROM questionnaire ORDER BY questionnaire_id"""
+            base_sql + " ORDER BY q.questionnaire_id"
         ).fetchall()
     if not rows:
         click.echo("No surveys found.")
         return
-    click.echo(f"{'ID':<4}  {'NAME':<30}  {'VER':<6}  {'STATUS':<10}  CANONICAL URL")
-    click.echo("-" * 90)
+    click.echo(f"{'ID':<4}  {'NAME':<30}  {'VER':<6}  {'STATUS':<10}  {'RESPONSES':<10}  CANONICAL URL")
+    click.echo("-" * 100)
     for r in rows:
         url = r["canonical_url"] or ""
         click.echo(
             f"{r['questionnaire_id']:<4}  {r['name']:<30}  {r['version']:<6}  "
-            f"{r['fhir_status']:<10}  {url}"
+            f"{r['fhir_status']:<10}  {r['response_count']:<10}  {url}"
         )
 
 

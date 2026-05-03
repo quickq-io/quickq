@@ -108,6 +108,38 @@ def test_list_surveys_filter_by_study(tmp_path):
     assert "GAD-7" not in result.output
 
 
+def test_list_surveys_shows_response_count(tmp_path):
+    """Each questionnaire row should include a RESPONSES column with the
+    number of response_session rows pointing at it. Closes 1cx (the
+    walkthrough's Step 8 promised this column)."""
+    db, _, _ = _seed(tmp_path)
+    # Initial state: zero responses for all surveys
+    r0 = CliRunner().invoke(main, ["list", "surveys", str(db)])
+    assert r0.exit_code == 0
+    assert "RESPONSES" in r0.output  # header label
+    assert "PHQ-9" in r0.output
+
+    # Insert response_session rows by hand against the PHQ-9 questionnaire
+    # (this is faster than full quickq seed for a count assertion).
+    import sqlite3
+    conn = sqlite3.connect(str(db))
+    conn.executescript("""
+        INSERT INTO respondent (study_id, external_id) VALUES (1, 'r1'), (1, 'r2'), (1, 'r3');
+        INSERT INTO response_session (questionnaire_id, respondent_id, completed_at)
+            SELECT 1, respondent_id, '2025-01-01T00:00:00Z' FROM respondent;
+    """)
+    conn.commit()
+    conn.close()
+
+    r1 = CliRunner().invoke(main, ["list", "surveys", str(db)])
+    assert r1.exit_code == 0
+    # PHQ-9 row should now show 3 responses; GAD-7 row should still show 0
+    phq_line = next(line for line in r1.output.splitlines() if "PHQ-9" in line)
+    gad_line = next(line for line in r1.output.splitlines() if "GAD-7" in line)
+    assert " 3 " in phq_line, f"expected count 3 in PHQ-9 row: {phq_line!r}"
+    assert " 0 " in gad_line, f"expected count 0 in GAD-7 row: {gad_line!r}"
+
+
 def test_list_surveys_empty(tmp_path):
     db = tmp_path / "empty.db"
     init_oltp(db)
