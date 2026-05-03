@@ -111,6 +111,7 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
     # Pass 1 — create questions, placements, and answer options
     link_id_to_qq: dict[str, int] = {}
     deferred_rules: list[tuple[int, list[dict], str]] = []  # (qq_id, enableWhen[], behavior)
+    deferred_counts: list[tuple[int, str]] = []              # (group_qq_id, count_link_id)
 
     for order, item in enumerate(flat):
         link_id = item.get("linkId")
@@ -125,6 +126,17 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
             behavior = item.get("enableBehavior", "all")
             deferred_rules.append((qq_id, enable_when, behavior))
 
+        # Count-driven repetition (custom quickq extension): a `group` item
+        # carrying our count-from extension names the link_id of the numeric
+        # question whose answer drives N. We resolve the linkage in pass 2
+        # because the count question may appear later in the document.
+        if item.get("type") == "group":
+            for ext in item.get("extension", []):
+                if ext.get("url") == f"{_EXT}/count-from":
+                    val = ext.get("valueString")
+                    if val:
+                        deferred_counts.append((qq_id, val))
+
     # Pass 2 — insert skip rules now that all link_ids are resolved
     for qq_id, enable_when_list, behavior in deferred_rules:
         for ew in enable_when_list:
@@ -133,6 +145,16 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
             if trigger_qq is None:
                 continue  # unresolvable reference — skip silently
             _insert_skip_rule(conn, qq_id, trigger_qq, ew, behavior)
+
+    # Pass 2b — resolve count_qq_id linkages now that all link_ids are mapped
+    for group_qq_id, count_link_id in deferred_counts:
+        count_qq_id = link_id_to_qq.get(count_link_id)
+        if count_qq_id is None:
+            continue  # unresolvable; skip silently to match enableWhen behaviour
+        conn.execute(
+            "UPDATE questionnaire_question SET count_qq_id = ? WHERE qq_id = ?",
+            (count_qq_id, group_qq_id),
+        )
 
     conn.commit()
     return qnaire_id

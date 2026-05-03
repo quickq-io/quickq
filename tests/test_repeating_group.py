@@ -374,3 +374,120 @@ questionnaire:
 """)
     with pytest.raises(ValueError, match="count_from"):
         load_yaml(conn, str(yaml_path))
+
+
+# ------------------------------------------------------------------
+# count_from FHIR roundtrip (closes o1b)
+# ------------------------------------------------------------------
+
+def test_count_from_emits_fhir_extension(tmp_path):
+    """FHIR export of a count-driven group emits the quickq count-from
+    extension and the SDC questionnaire-maxOccurs cap when the count
+    question has numeric_max."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Family History
+  canonical_url: http://example.com/fh
+  version: "1.0"
+  questions:
+    - { link_id: family.n_siblings, text: "How many siblings?", type: numeric, range: [0, 20] }
+    - link_id: family.siblings
+      text: "About each sibling:"
+      type: repeating_group
+      count_from: family.n_siblings
+      items:
+        - { link_id: sibling.age, text: "Age", type: numeric, range: [0, 120] }
+""")
+    qid = load_yaml(conn, str(yaml_path))
+
+    fhir = export_fhir(conn, qid)
+    # Find the family.siblings item.
+    group_item = next(it for it in fhir["item"] if it["linkId"] == "family.siblings")
+    exts = group_item.get("extension", [])
+    urls = {e["url"]: e for e in exts}
+
+    count_from_url = "https://quickq.io/fhir/StructureDefinition/count-from"
+    max_occurs_url = "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs"
+
+    assert count_from_url in urls, f"missing count-from extension; got: {list(urls)}"
+    assert urls[count_from_url]["valueString"] == "family.n_siblings"
+    assert max_occurs_url in urls, f"missing maxOccurs extension; got: {list(urls)}"
+    assert urls[max_occurs_url]["valueInteger"] == 20
+
+
+def test_count_from_omitted_when_count_qq_id_null(tmp_path):
+    """Free-add groups (no count_from) should not emit either extension."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Medications
+  canonical_url: http://example.com/meds
+  version: "1.0"
+  questions:
+    - link_id: meds
+      text: "Add medications:"
+      type: repeating_group
+      items:
+        - { link_id: meds.name, text: "Name", type: text }
+""")
+    qid = load_yaml(conn, str(yaml_path))
+
+    fhir = export_fhir(conn, qid)
+    group_item = next(it for it in fhir["item"] if it["linkId"] == "meds")
+    exts = group_item.get("extension", [])
+    urls = {e["url"] for e in exts}
+
+    count_from_url = "https://quickq.io/fhir/StructureDefinition/count-from"
+    max_occurs_url = "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs"
+    assert count_from_url not in urls
+    assert max_occurs_url not in urls
+
+
+def test_count_from_fhir_roundtrip_preserves_linkage(tmp_path):
+    """Export to FHIR, re-import into a fresh DB, count_qq_id is restored."""
+    src_db = tmp_path / "src.db"
+    src = init_oltp(src_db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Family History
+  canonical_url: http://example.com/fh-rt
+  version: "1.0"
+  questions:
+    - { link_id: family.n_siblings, text: "How many siblings?", type: numeric, range: [0, 20] }
+    - link_id: family.siblings
+      text: "About each sibling:"
+      type: repeating_group
+      count_from: family.n_siblings
+      items:
+        - { link_id: sibling.age, text: "Age", type: numeric, range: [0, 120] }
+""")
+    qid_src = load_yaml(src, str(yaml_path))
+
+    # Export
+    fhir_json = export_fhir_json(src, qid_src)
+
+    # Import into a fresh DB
+    dst_db = tmp_path / "dst.db"
+    dst = init_oltp(dst_db)
+    qid_dst = import_fhir(dst, fhir_json)
+
+    # In the imported DB, the family.siblings group should have count_qq_id
+    # pointing at the family.n_siblings qq_id.
+    n_qq_id = dst.execute(
+        "SELECT qq.qq_id FROM questionnaire_question qq "
+        "JOIN question q USING (question_id) "
+        "WHERE qq.questionnaire_id = ? AND q.link_id = 'family.n_siblings'",
+        (qid_dst,),
+    ).fetchone()[0]
+    siblings_qq_id, count_qq_id = dst.execute(
+        "SELECT qq.qq_id, qq.count_qq_id FROM questionnaire_question qq "
+        "JOIN question q USING (question_id) "
+        "WHERE qq.questionnaire_id = ? AND q.link_id = 'family.siblings'",
+        (qid_dst,),
+    ).fetchone()
+    assert count_qq_id == n_qq_id, (
+        f"round-trip lost count linkage; expected {n_qq_id}, got {count_qq_id}"
+    )

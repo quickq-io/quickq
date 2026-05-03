@@ -95,7 +95,7 @@ def export_fhir_json(conn: sqlite3.Connection, questionnaire_id: int, *, indent:
 def _build_items(conn: sqlite3.Connection, questionnaire_id: int) -> list[dict]:
     rows = conn.execute(
         """
-        SELECT qq.qq_id, qq.display_order, qq.is_required,
+        SELECT qq.qq_id, qq.display_order, qq.is_required, qq.count_qq_id,
                q.question_id, q.link_id, q.question_text, q.question_type,
                q.help_text, q.internal_note, q.option_set_id,
                q.source_instrument, q.source_item_id,
@@ -205,6 +205,30 @@ def _build_item(conn: sqlite3.Connection, row) -> dict:
     # Repeating group: nested child items, repeats=true
     if qtype == "repeating_group":
         item["repeats"] = True
+        # Count-driven repetition: if count_qq_id is set, emit a quickq custom
+        # extension naming the count question by link_id (so a quickq import
+        # can preserve the linkage on round-trip), plus a standard SDC
+        # questionnaire-maxOccurs cap when the count question has numeric_max.
+        count_qq_id_val = row["count_qq_id"] if "count_qq_id" in row.keys() else None
+        if count_qq_id_val:
+            count_row = conn.execute(
+                "SELECT q.link_id, q.numeric_max "
+                "FROM questionnaire_question qq "
+                "JOIN question q USING (question_id) "
+                "WHERE qq.qq_id = ?",
+                (count_qq_id_val,),
+            ).fetchone()
+            if count_row:
+                exts = item.setdefault("extension", [])
+                exts.append({
+                    "url": f"{_EXT}/count-from",
+                    "valueString": count_row["link_id"],
+                })
+                if count_row["numeric_max"] is not None:
+                    exts.append({
+                        "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+                        "valueInteger": int(count_row["numeric_max"]),
+                    })
         child_rows = conn.execute(
             """
             SELECT qq.qq_id, qq.display_order, qq.is_required,
