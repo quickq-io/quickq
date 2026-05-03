@@ -1944,7 +1944,14 @@ quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<spa
 </code></pre></div>
 <hr />
 <h3 id="repeating_group-partial"><code>repeating_group</code> <em>(partial)</em><a class="headerlink" href="#repeating_group-partial" title="Permanent link">&para;</a></h3>
-<p>A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; <code>fact_response.repeat_index</code> is the per-instance counter. Two gaps remain: <code>quickq seed</code> does not generate repeating instances, and the Markdown report does not yet render them as nested tables. The bundled demo views (<code>v_prenatal_visits</code>, <code>v_prenatal_summary</code>) show example pivots over <code>repeat_index</code>.</p>
+<p>A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; <code>fact_response.repeat_index</code> is the per-instance counter.</p>
+<p>Two repetition patterns are supported:</p>
+<ul>
+<li><strong>Count-driven:</strong> declare <code>count_from: &lt;link_id&gt;</code> on the group, pointing at a numeric question defined earlier in the questionnaire. The delivery layer reads that question's answer and renders that many instances. Stored as <code>questionnaire_question.count_qq_id</code>.</li>
+<li><strong>Free-add:</strong> omit <code>count_from</code>. The delivery tool offers an "add another" affordance and the respondent picks N.</li>
+</ul>
+<p>Both patterns produce identical storage. See <a href="../../authoring/#repeating-groups">Repeating Groups</a> for the YAML syntax.</p>
+<p>Two gaps remain: <code>quickq seed</code> does not generate repeating instances synthetically, and the Markdown report does not yet render them as nested tables. The bundled demo views (<code>v_prenatal_visits</code>, <code>v_prenatal_summary</code>) show example pivots over <code>repeat_index</code>.</p>
 
 
 

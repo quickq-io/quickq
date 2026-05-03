@@ -995,6 +995,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Repeating Groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-repetition-patterns-count-driven-and-free-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two repetition patterns: count-driven and free-add
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1532,6 +1549,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Repeating Groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-repetition-patterns-count-driven-and-free-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two repetition patterns: count-driven and free-add
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1732,7 +1766,7 @@
 <p>quickq supports 12 question types covering the full range of health and epidemiology survey instruments. The canonical list (with YAML syntax for each, current pipeline-coverage status, and per-type notes) is in the <a href="../reference/question-types/">Question Type Reference</a>. FHIR <code>item.type</code> mappings are in <a href="../fhir/#question-type-mapping">FHIR Interoperability</a>.</p>
 <hr />
 <h2 id="repeating-groups">Repeating Groups<a class="headerlink" href="#repeating-groups" title="Permanent link">&para;</a></h2>
-<p>A <code>repeating_group</code> question is a container whose sub-questions repeat once per instance — once per medication, family member, pregnancy, etc. Sub-questions are listed under <code>items</code>:</p>
+<p>A <code>repeating_group</code> question is a container whose sub-questions repeat once per instance: once per medication, family member, pregnancy, etc. Sub-questions are listed under <code>items</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visits</span>
 <span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Visit details</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">repeating_group</span>
@@ -1754,7 +1788,21 @@
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
 </code></pre></div>
 <p>In the OLTP, sub-questions are stored as <code>questionnaire_question</code> rows with <code>parent_qq_id</code> pointing to the group. Each response row for a sub-question carries a <code>repeat_index</code> (0-based) that identifies which instance it belongs to. In FHIR, the group exports as <code>type: group, repeats: true</code> with children nested in its <code>item</code> array.</p>
-<p>Repeating groups can be nested — a family member loop can itself contain a disease history loop. The same <code>parent_qq_id</code> mechanism handles any depth.</p>
+<p>Repeating groups can be nested: a family member loop can itself contain a disease history loop. The same <code>parent_qq_id</code> mechanism handles any depth.</p>
+<h3 id="two-repetition-patterns-count-driven-and-free-add">Two repetition patterns: count-driven and free-add<a class="headerlink" href="#two-repetition-patterns-count-driven-and-free-add" title="Permanent link">&para;</a></h3>
+<p>If the count of instances is itself something the respondent answers (a numeric question that comes earlier in the questionnaire), declare the linkage with <code>count_from</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> link_id</span><span class="p">:</span><span class="w"> </span><span class="nv">family.n_siblings</span><span class="p p-Indicator">,</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;How</span><span class="nv"> </span><span class="s">many</span><span class="nv"> </span><span class="s">siblings</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">have?&quot;</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">numeric</span><span class="p p-Indicator">,</span><span class="nt"> range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">family.siblings</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;About</span><span class="nv"> </span><span class="s">each</span><span class="nv"> </span><span class="s">sibling:&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">repeating_group</span>
+<span class="w">    </span><span class="nt">count_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">family.n_siblings</span><span class="w">        </span><span class="c1"># delivery layer renders this many instances</span>
+<span class="w">    </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> link_id</span><span class="p">:</span><span class="w"> </span><span class="nv">sibling.relationship</span><span class="p p-Indicator">,</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Brother</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">sister?&quot;</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">single_choice</span><span class="p p-Indicator">,</span><span class="nt"> options</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> link_id</span><span class="p">:</span><span class="w"> </span><span class="nv">sibling.age</span><span class="p p-Indicator">,</span><span class="nt">          text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Age</span><span class="nv"> </span><span class="s">(years)&quot;</span><span class="p p-Indicator">,</span><span class="nt">        type</span><span class="p">:</span><span class="w"> </span><span class="nv">numeric</span><span class="p p-Indicator">,</span><span class="nt"> range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">120</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>The count question must be defined <strong>before</strong> the repeating group in the YAML (the loader resolves <code>link_id</code> references in a single forward pass). The linkage is stored on <code>questionnaire_question.count_qq_id</code> and surfaces in the FHIR export as a SDC <code>questionnaire-maxOccurs</code> extension on the group item.</p>
+<p>If <code>count_from</code> is omitted, the group uses the <strong>free-add</strong> pattern: the delivery tool offers an "add another" affordance and the respondent picks N. Both patterns produce identical response storage (one row per sub-question per instance, with <code>repeat_index = 0, 1, …, N-1</code>); they differ only in the delivery-layer UI.</p>
 <hr />
 <h2 id="the-question-bank">The Question Bank<a class="headerlink" href="#the-question-bank" title="Permanent link">&para;</a></h2>
 <p>Questions are authored once and reused across instruments via <code>questionnaire_question</code>. If the same construct appears in two questionnaires, both placements point to the same <code>question</code> row. This means:</p>
