@@ -1,6 +1,7 @@
 site_name: quickq
 site_description: Health and Epidemiology Survey Authoring & Analytics
 site_author: quickq Contributors
+site_url: https://quickq-io.github.io/quickq/
 repo_url: https://github.com/quickq-io/quickq
 
 theme:

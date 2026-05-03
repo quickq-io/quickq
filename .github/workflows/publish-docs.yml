@@ -1,0 +1,46 @@
+name: publish-docs
+
+# Build the mkdocs site and push the static output to the gh-pages branch,
+# from which GitHub Pages serves https://quickq-io.github.io/quickq/.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/publish-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-docs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # mkdocs gh-deploy walks history; full clone needed
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install dependencies (incl. mkdocs + mkdocs-material from dev group)
+        run: uv sync
+
+      - name: Configure git for the bot commit on gh-pages
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Build and deploy to gh-pages
+        run: uv run mkdocs gh-deploy --force --remote-branch gh-pages
