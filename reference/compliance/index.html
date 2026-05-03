@@ -12,31 +12,31 @@
         <meta name="author" content="quickq Contributors">
       
       
-        <link rel="canonical" href="https://quickq-io.github.io/quickq/architecture/">
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/reference/compliance/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../versioning/">
       
       
-        <link rel="next" href="../design_decisions/">
+        <link rel="next" href="../federated/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Architecture - quickq</title>
+        <title>Compliance & Governance - quickq</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,7 +55,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#compliance-governance" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+    <a href="../.." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              Compliance & Governance
             
           </span>
         </div>
@@ -232,7 +232,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+    <a href="../.." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -262,7 +262,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -286,37 +286,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -332,81 +305,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#system-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System Diagram
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oltp-layer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OLTP Layer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-fhir-handoff" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The FHIR Handoff
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#olap-refresh" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OLAP Refresh
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#file-layout" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        File Layout
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -418,7 +316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design_decisions/" class="md-nav__link">
+      <a href="../../design_decisions/" class="md-nav__link">
         
   
   
@@ -445,7 +343,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
+      <a href="../../tutorial/" class="md-nav__link">
         
   
   
@@ -526,7 +424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/end-to-end/" class="md-nav__link">
+      <a href="../../tutorials/end-to-end/" class="md-nav__link">
         
   
   
@@ -554,7 +452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/authoring/" class="md-nav__link">
+      <a href="../../tutorials/authoring/" class="md-nav__link">
         
   
   
@@ -582,7 +480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/collect/" class="md-nav__link">
+      <a href="../../tutorials/collect/" class="md-nav__link">
         
   
   
@@ -610,7 +508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/analytics/" class="md-nav__link">
+      <a href="../../tutorials/analytics/" class="md-nav__link">
         
   
   
@@ -638,7 +536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/data-quality/" class="md-nav__link">
+      <a href="../../tutorials/data-quality/" class="md-nav__link">
         
   
   
@@ -666,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/share/" class="md-nav__link">
+      <a href="../../tutorials/share/" class="md-nav__link">
         
   
   
@@ -694,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/multi-site/" class="md-nav__link">
+      <a href="../../tutorials/multi-site/" class="md-nav__link">
         
   
   
@@ -726,8 +624,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -738,13 +638,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
@@ -765,7 +663,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -783,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/question-types/" class="md-nav__link">
+      <a href="../question-types/" class="md-nav__link">
         
   
   
@@ -811,7 +709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/query-patterns/" class="md-nav__link">
+      <a href="../query-patterns/" class="md-nav__link">
         
   
   
@@ -839,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/versioning/" class="md-nav__link">
+      <a href="../versioning/" class="md-nav__link">
         
   
   
@@ -864,10 +762,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../reference/compliance/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compliance & Governance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -883,6 +808,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-pseudonymize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance pseudonymize
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-set-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance set-metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-fair-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance fair-check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-export-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance export-metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance delete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-withdraw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance withdraw
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-which" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use which
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -895,7 +917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/federated/" class="md-nav__link">
+      <a href="../federated/" class="md-nav__link">
         
   
   
@@ -923,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fhir/" class="md-nav__link">
+      <a href="../../fhir/" class="md-nav__link">
         
   
   
@@ -951,7 +973,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/omop/" class="md-nav__link">
+      <a href="../omop/" class="md-nav__link">
         
   
   
@@ -979,7 +1001,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring/" class="md-nav__link">
+      <a href="../../authoring/" class="md-nav__link">
         
   
   
@@ -1007,7 +1029,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-phq9/" class="md-nav__link">
+      <a href="../example-phq9/" class="md-nav__link">
         
   
   
@@ -1035,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-prapare-data-dict/" class="md-nav__link">
+      <a href="../example-prapare-data-dict/" class="md-nav__link">
         
   
   
@@ -1063,7 +1085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-gout-checkin/" class="md-nav__link">
+      <a href="../example-gout-checkin/" class="md-nav__link">
         
   
   
@@ -1152,7 +1174,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../philosophy/" class="md-nav__link">
+      <a href="../../philosophy/" class="md-nav__link">
         
   
   
@@ -1180,7 +1202,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../analytics/" class="md-nav__link">
+      <a href="../../analytics/" class="md-nav__link">
         
   
   
@@ -1269,7 +1291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../database/oltp/" class="md-nav__link">
+      <a href="../../database/oltp/" class="md-nav__link">
         
   
   
@@ -1297,7 +1319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../database/olap/" class="md-nav__link">
+      <a href="../../database/olap/" class="md-nav__link">
         
   
   
@@ -1352,10 +1374,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#system-diagram" class="md-nav__link">
+  <a href="#quickq-compliance-pseudonymize" class="md-nav__link">
     <span class="md-ellipsis">
       
-        System Diagram
+        quickq compliance pseudonymize
       
     </span>
   </a>
@@ -1363,10 +1385,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#oltp-layer" class="md-nav__link">
+  <a href="#quickq-compliance-set-metadata" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OLTP Layer
+        quickq compliance set-metadata
       
     </span>
   </a>
@@ -1374,10 +1396,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-fhir-handoff" class="md-nav__link">
+  <a href="#quickq-compliance-fair-check" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The FHIR Handoff
+        quickq compliance fair-check
       
     </span>
   </a>
@@ -1385,10 +1407,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#olap-refresh" class="md-nav__link">
+  <a href="#quickq-compliance-export-metadata" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OLAP Refresh
+        quickq compliance export-metadata
       
     </span>
   </a>
@@ -1396,10 +1418,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#file-layout" class="md-nav__link">
+  <a href="#quickq-compliance-delete" class="md-nav__link">
     <span class="md-ellipsis">
       
-        File Layout
+        quickq compliance delete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickq-compliance-withdraw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq compliance withdraw
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-which" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use which
       
     </span>
   </a>
@@ -1426,102 +1470,106 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>quickq is organized around two local file stores connected by a one-way ETL. There is no application server, no message bus, and no cloud dependency.</p>
+<h1 id="compliance-governance">Compliance &amp; Governance<a class="headerlink" href="#compliance-governance" title="Permanent link">&para;</a></h1>
+<p>quickq's compliance commands cover the regulatory surface that real research studies actually need to navigate: HIPAA-aligned pseudonymization for sharing, FAIR/DataCite metadata for repository deposit, NIH DMS plan auditing, GDPR right to erasure, and IRB-style participant withdrawal. They are deliberately separate from the analytical commands so a study's compliance state is auditable on its own.</p>
+<p>All six commands operate on a <code>study.db</code>. None requires network access; outputs are local files (a pseudonymized DB, a metadata JSON/XML, an audit report).</p>
 <blockquote>
-<p><em>This page covers the schema mechanics: planes, refresh model, file layout. For the design choices these mechanics serve and the use cases they enable, see <a href="../design_decisions/">Design Decisions</a>. For the underlying invariants both follow from, see <a href="../philosophy/">Design Philosophy</a>.</em></p>
+<p><em>For the design rationale (why <code>compliance pseudonymize</code> exists alongside <code>compliance delete</code>, why FAIR metadata is in the database not in a sidecar) see <a href="../../design_decisions/#data-sovereignty-and-the-10-year-rule">Design Decisions</a>.</em></p>
 </blockquote>
 <hr />
-<h2 id="system-diagram">System Diagram<a class="headerlink" href="#system-diagram" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TD
-    subgraph Authoring
-        YAML["YAML definition"]
-        FHIR_IN["FHIR Questionnaire JSON\n(external instrument)"]
-    end
-
-    subgraph OLTP["OLTP — SQLite  (source of truth)"]
-        direction TB
-        INST["Instrument plane\nstudy · questionnaire · section\nquestion · response_option · skip_rule"]
-        CONCEPT["Concept plane\nvocabulary · concept · concept_relationship"]
-        RESP["Response plane\nrespondent · response_session · response"]
-        ADMIN["Administration\ndata_quality_flag · study_errata_log"]
-        VER["Versioning\nquestion_lineage · question_equivalence"]
-    end
-
-    subgraph Delivery["Delivery  (out of scope)"]
-        FHIR_OUT["FHIR Questionnaire JSON"]
-        TOOL["Any FHIR-compliant tool\nLHC-Forms · REDCap · mobile app"]
-        FHIR_RESP["FHIR QuestionnaireResponse JSON"]
-    end
-
-    subgraph OLAP["OLAP — DuckDB  (analytical model)"]
-        FACT["fact_response"]
-        DIMS["dim_question · dim_respondent\ndim_session · dim_concept · dim_date"]
-        AGG["agg_question_distribution\nagg_respondent_scores\nagg_session_completion\nagg_numeric_stats"]
-        OMOP["omop_survey_conduct\nomop_observation"]
-    end
-
-    YAML --&gt;|"quickq load"| OLTP
-    FHIR_IN --&gt;|"quickq fhir import"| OLTP
-    OLTP --&gt;|"export_fhir()"| FHIR_OUT
-    FHIR_OUT --&gt; TOOL
-    TOOL --&gt; FHIR_RESP
-    FHIR_RESP --&gt;|"import_fhir_response()"| OLTP
-    OLTP --&gt;|"quickq refresh\n(incremental, watermark)"| OLAP
-
-    style OLTP fill:#f5f0ff,stroke:#7c3aed
-    style OLAP fill:#eff6ff,stroke:#2563eb
-    style Delivery fill:#f0fdf4,stroke:#16a34a</code></pre>
-<hr />
-<h2 id="oltp-layer">OLTP Layer<a class="headerlink" href="#oltp-layer" title="Permanent link">&para;</a></h2>
-<p>The SQLite database is organized into five logical planes:</p>
-<p><strong>Instrument plane</strong> — the questionnaire definition hierarchy. <code>study → questionnaire → section → questionnaire_question → question</code>. Questions are reusable across instruments; <code>questionnaire_question</code> is the placement record. <code>parent_qq_id</code> on <code>questionnaire_question</code> enables sub-question nesting and the <code>repeating_group</code> type (looped question sets).</p>
-<p><strong>Concept plane</strong> — standard vocabulary mapping. Every question, option, grid row, and grid column can carry a <code>concept_id</code> linking it to LOINC, SNOMED CT, NCI, BRFSS, or a local vocabulary. The concept model is OMOP-inspired: <code>vocabulary → concept → concept_relationship</code>.</p>
-<p><strong>Response plane</strong> — collected answers. <code>respondent → response_session → response</code>. One <code>response</code> row per answer atom. <code>repeat_index</code> distinguishes instances in a repeating group (e.g., pregnancy 1 vs. pregnancy 2). <code>admin_mode</code> and <code>is_proxy</code> are first-class fields, not metadata, because mode effects are a real covariate in epi analysis.</p>
-<p><strong>Administration</strong> — <code>data_quality_flag</code> for automated soft validation during import; <code>study_errata_log</code> for human-authored notes about delivery bugs, IRB actions, and post-hoc corrections. Both carry severity levels and analyst guidance.</p>
-<p><strong>Versioning and equivalence</strong> — <code>question_lineage</code> tracks revision ancestry (rewords, option changes, splits). <code>question_equivalence</code> records researcher-declared cross-instrument equivalences. <code>questionnaire_version_diff</code> stores structured diffs between instrument versions.</p>
-<hr />
-<h2 id="the-fhir-handoff">The FHIR Handoff<a class="headerlink" href="#the-fhir-handoff" title="Permanent link">&para;</a></h2>
-<p>quickq owns authoring, administration, and analysis. Delivery is intentionally out of scope.</p>
-<div class="highlight"><pre><span></span><code>quickq export_fhir(questionnaire_id)
-  → valid FHIR Questionnaire R4 JSON
-    → delivered by any FHIR-compliant tool
-      → FHIR QuestionnaireResponse JSON returned
-        → quickq import_fhir_response(conn, resource)
-          → response rows written to OLTP
+<h2 id="quickq-compliance-pseudonymize"><code>quickq compliance pseudonymize</code><a class="headerlink" href="#quickq-compliance-pseudonymize" title="Permanent link">&para;</a></h2>
+<p>Produces a copy of <code>study.db</code> with direct identifiers replaced by stable HMAC tokens. Used as the first step toward a HIPAA limited dataset, or before sharing a study under a DUA.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>pseudonymize<span class="w"> </span>study.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>study_anon.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--key-file<span class="w"> </span>pseudonymization_key.bin
 </code></pre></div>
-<p>The reference delivery tool is <strong><a href="https://lhncbc.nlm.nih.gov/LHC-forms/">LHC-Forms</a></strong> (NLM) — purpose-built for FHIR Questionnaire rendering, open source, embeddable as a JavaScript widget with no server dependency. Any FHIR-compliant tool works; LHC-Forms is what the E2E test suite validates against.</p>
-<p><code>import_fhir_response</code> is robust by design: unrecognized <code>linkId</code> values, unknown answer formats, and missing concept codes are written to <code>data_quality_flag</code> rather than raising exceptions.</p>
+<p>What changes:</p>
+<ul>
+<li><code>respondent.external_id</code> becomes a 32-character HMAC token (deterministic given the same key, so the same source always pseudonymizes to the same token; useful for re-derivation across waves)</li>
+<li><code>person_map</code> is cleared</li>
+<li><code>response_session.interviewer_id</code> is set to NULL</li>
+<li>Free-text <code>response.response_text</code> values are left in place; the command warns about which <code>link_id</code>s carry free text so a reviewer can decide whether to redact</li>
+<li>Institutional metadata (<code>study.principal_investigator</code>, <code>study.irb_number</code>) is left in place; the command warns about it</li>
+</ul>
+<p>The HMAC key is the only thing that can re-identify participants. Save the key file securely if you may need to merge the pseudonymized data back with later collection waves; destroy it if the study should be permanently de-identifiable.</p>
+<p>For the full sharing workflow including warehouse export, see the <a href="../../tutorials/share/">Share &amp; Publish tutorial</a>.</p>
 <hr />
-<h2 id="olap-refresh">OLAP Refresh<a class="headerlink" href="#olap-refresh" title="Permanent link">&para;</a></h2>
-<p><code>quickq refresh</code> reads new OLTP rows since the last run (incremental by <code>response_id</code> watermark stored in <code>refresh_log</code>) and upserts into DuckDB. It runs the ETL, computes scores via <code>scoring_rule</code>, materializes aggregate tables, and (when <code>person_map</code> is populated) generates OMOP extraction tables.</p>
-<p>DuckDB attaches the SQLite file directly:</p>
-<div class="highlight"><pre><span></span><code><span class="n">ATTACH</span><span class="w"> </span><span class="s1">&#39;study.db&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">oltp</span><span class="w"> </span><span class="p">(</span><span class="k">TYPE</span><span class="w"> </span><span class="n">sqlite</span><span class="p">,</span><span class="w"> </span><span class="n">READ_ONLY</span><span class="p">);</span>
+<h2 id="quickq-compliance-set-metadata"><code>quickq compliance set-metadata</code><a class="headerlink" href="#quickq-compliance-set-metadata" title="Permanent link">&para;</a></h2>
+<p>Sets regulatory and FAIR metadata fields on a study. These fields satisfy NIH Data Management and Sharing Plan requirements and feed <code>quickq compliance fair-check</code> and <code>quickq compliance export-metadata</code> downstream.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>set-metadata<span class="w"> </span>study.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--license<span class="w"> </span>CC-BY-4.0<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--protocol-url<span class="w"> </span>https://clinicaltrials.gov/study/NCTXXXXXXXX<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--description<span class="w"> </span><span class="s2">&quot;Three-site cohort study of perinatal depression screening&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--population<span class="w"> </span><span class="s2">&quot;Pregnant adults aged 18-45 in the southeastern United States&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--geographic-scope<span class="w"> </span><span class="s2">&quot;United States&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pi<span class="w"> </span><span class="s2">&quot;Smith, Jane&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--irb-number<span class="w"> </span><span class="s2">&quot;IRB-2025-XYZ-001&quot;</span>
 </code></pre></div>
-<p>There is no intermediate export step, no staging database, and no message queue. The OLTP file is the ETL source.</p>
-<p>A failed refresh leaves <code>refresh_log.status = 'failed'</code> and does not advance the watermark. The next run retries the same window cleanly.</p>
+<p>Only fields explicitly provided are updated; omitted fields are unchanged. After the study is deposited in a repository and assigned a DOI, record it back:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>set-metadata<span class="w"> </span>study.db<span class="w"> </span>--doi<span class="w"> </span><span class="m">10</span>.5281/zenodo.XXXXXXX
+</code></pre></div>
+<p>Available fields: <code>--description</code>, <code>--population</code>, <code>--license</code> (SPDX ID or URL), <code>--protocol-url</code>, <code>--doi</code>, <code>--geographic-scope</code>, <code>--data-collection-end</code>, <code>--pi</code>, <code>--irb-number</code>. Use <code>--study-id N</code> to target a specific study when the database holds more than one.</p>
 <hr />
-<h2 id="file-layout">File Layout<a class="headerlink" href="#file-layout" title="Permanent link">&para;</a></h2>
-<p>A complete study consists of exactly two files:</p>
+<h2 id="quickq-compliance-fair-check"><code>quickq compliance fair-check</code><a class="headerlink" href="#quickq-compliance-fair-check" title="Permanent link">&para;</a></h2>
+<p>Audits a study against FAIR sub-principles (Findable, Accessible, Interoperable, Reusable) and NIH DMS plan requirements. Reports which metadata fields are populated (pass), incomplete (warn), or missing (fail). Run this before <code>quickq compliance export-metadata</code> to ensure the metadata record is complete.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>fair-check<span class="w"> </span>study.db
+</code></pre></div>
+<p>The command exits non-zero if any required field is missing, so it is suitable for use in a CI or pre-deposit check.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>fair-check<span class="w"> </span>study.db<span class="w"> </span>--json<span class="w">   </span><span class="c1"># machine-readable for scripts</span>
+</code></pre></div>
+<hr />
+<h2 id="quickq-compliance-export-metadata"><code>quickq compliance export-metadata</code><a class="headerlink" href="#quickq-compliance-export-metadata" title="Permanent link">&para;</a></h2>
+<p>Produces a DataCite JSON or Dublin Core XML record from the study's metadata fields, suitable for direct submission to Zenodo, OSF, ICPSR, or Dataverse.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>export-metadata<span class="w"> </span>study.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--format<span class="w"> </span>datacite<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>study_metadata.json
+</code></pre></div>
+<p>Run <code>quickq compliance fair-check</code> first to ensure all required fields are populated. The output file can be uploaded to a repository as the deposit's metadata record.</p>
+<hr />
+<h2 id="quickq-compliance-delete"><code>quickq compliance delete</code><a class="headerlink" href="#quickq-compliance-delete" title="Permanent link">&para;</a></h2>
+<p>GDPR right-to-erasure: permanently deletes all data for a participant (sessions, responses, quality flags, identity row). Irreversible.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>delete<span class="w"> </span>study.db<span class="w"> </span>&lt;external_id&gt;
+</code></pre></div>
+<p>Use <code>--study-id N</code> to disambiguate when the same <code>external_id</code> exists in multiple studies. The action is recorded in <code>tool_audit_log</code>.</p>
+<p>If the participant requested withdrawal rather than erasure, use <code>quickq compliance withdraw</code> instead. Most IRB withdrawal protocols require data retention for already-consented responses.</p>
+<hr />
+<h2 id="quickq-compliance-withdraw"><code>quickq compliance withdraw</code><a class="headerlink" href="#quickq-compliance-withdraw" title="Permanent link">&para;</a></h2>
+<p>Records a participant's withdrawal without deleting their data. Stops future data collection for this participant while retaining all previously collected responses. A <code>withdrawn</code> event is written to <code>admin_event</code>.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>withdraw<span class="w"> </span>study.db<span class="w"> </span>&lt;external_id&gt;<span class="w"> </span>--notes<span class="w"> </span><span class="s2">&quot;Participant withdrew via study portal&quot;</span>
+</code></pre></div>
+<p>This is the legally-distinct operation from <code>compliance delete</code>. Most IRB withdrawal protocols require data retention; full erasure is the GDPR right that may go further. Choose based on the request you received and the protocol you operate under.</p>
+<hr />
+<h2 id="when-to-use-which">When to use which<a class="headerlink" href="#when-to-use-which" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>File</th>
-<th>Contents</th>
+<th>Goal</th>
+<th>Command</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>study.db</code></td>
-<td>SQLite OLTP — instrument definitions, responses, data quality, versioning</td>
+<td>Share data outside the institution</td>
+<td><code>compliance pseudonymize</code></td>
 </tr>
 <tr>
-<td><code>study_analytics.duckdb</code></td>
-<td>DuckDB OLAP — star schema, aggregates, scores, OMOP tables</td>
+<td>Deposit study in a repository (Zenodo, OSF, ICPSR)</td>
+<td><code>compliance set-metadata</code>, then <code>compliance export-metadata</code></td>
+</tr>
+<tr>
+<td>Verify NIH DMS plan / FAIR readiness</td>
+<td><code>compliance fair-check</code></td>
+</tr>
+<tr>
+<td>Honor a GDPR erasure request</td>
+<td><code>compliance delete</code></td>
+</tr>
+<tr>
+<td>Honor an IRB withdrawal request</td>
+<td><code>compliance withdraw</code></td>
 </tr>
 </tbody>
 </table>
-<p>Both are standard database files openable in any SQL tool. <code>study.db</code> alone is sufficient to re-derive the entire OLAP from scratch.</p>
 
 
 
@@ -1577,10 +1625,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
