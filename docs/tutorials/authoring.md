@@ -1,8 +1,10 @@
 # Tutorial: Authoring an Instrument from Scratch
 
-This tutorial walks through building a complete questionnaire from nothing: defining question items, sharing an option set across questions, adding skip logic, writing a scoring rule, and verifying the result. The scenario is the **GAD-7** (Generalized Anxiety Disorder 7-item scale) — a standard clinical screening tool similar in structure to the PHQ-9 but independent of it, which makes it a good vehicle for learning the authoring workflow without leaning on the PHQ-9 fixtures already in the project.
+This tutorial walks through building a complete questionnaire from nothing: defining question items, sharing an option set across questions, adding skip logic, writing a scoring rule, and verifying the result. The scenario is the **GAD-7** (Generalized Anxiety Disorder 7-item scale), a standard clinical screening tool similar in structure to the PHQ-9 but independent of it, which makes it a good vehicle for learning the authoring workflow without leaning on the PHQ-9 fixtures already in the project.
 
 By the end you will have a working `gad7.yaml`, a loaded SQLite study database, and a FHIR export you can hand to any delivery tool.
+
+For the full YAML format reference (every option on every field, all skip-logic operators, all scoring formulas, the question-bank shop-first/assign-first/hybrid concept workflows, and immutability rules) see the [Survey Authoring](../authoring.md) reference page. This tutorial covers what you need to build the instrument; the reference covers everything else you might want.
 
 ---
 
@@ -151,7 +153,7 @@ Because we cannot compute a total score at the item level (scoring happens after
             - { question: gad7.1, operator: "!=", value: "0" }
 ```
 
-`show_when` maps to FHIR `enableWhen`. The `operator` can be `=`, `!=`, `>`, `<`, `>=`, `<=`, or `exists`. Multiple conditions in the list are AND-ed by default; set `enable_behavior: any` on the question to OR them.
+`show_when` maps to FHIR `enableWhen`. See [Skip Logic](../authoring.md#skip-logic) in the reference for the full operator list (`=`, `!=`, `>`, `<`, `>=`, `<=`, `exists`) and the multi-condition / `enable_behavior: any` syntax.
 
 The difficulty question deliberately has no `concept` field — it does not have a standard LOINC code in common clinical use. It will appear in `omop_unmapped_questions` after refresh, which is the expected and correct behavior for locally-defined items.
 
@@ -171,7 +173,7 @@ The difficulty question deliberately has no `concept` field — it does not have
         - { label: "Severe anxiety",   min: 15, max: 21 }
 ```
 
-`formula: sum` means the score is the sum of all item values. Each item uses `value` from the response option (`"0"` through `"3"`), coerced to numeric. The `categories` define the severity bands — `quickq refresh` populates `agg_respondent_scores.score_category` using these thresholds. If a respondent skips one or more items, `items_answered / items_total` in `agg_respondent_scores` captures the partial-completion rate.
+`formula: sum` aggregates item `value` fields (numeric coercion). `quickq refresh` writes the total to `agg_respondent_scores.score_raw` and assigns a `score_category` from the bands defined here; `items_answered / items_total` captures partial completion. See [Scoring Rules](../authoring.md#scoring-rules) for other formulas (`mean`, `count`, arithmetic expressions) and item weighting / reverse-scoring.
 
 ---
 

@@ -1,5 +1,7 @@
 # Survey Authoring
 
+Reference for the YAML authoring format: every field, all skip-logic operators, scoring formulas, the question-bank concept workflows, and immutability rules. For a hands-on walkthrough that builds a GAD-7 instrument step by step, see the [authoring tutorial](tutorials/authoring.md); this page is its companion reference.
+
 Questionnaires are defined in YAML and loaded into the OLTP database with `quickq load`. FHIR Questionnaire JSON from an external source can be imported directly with `quickq fhir import`. Both paths produce the same internal representation.
 
 ---
