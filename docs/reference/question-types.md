@@ -21,7 +21,7 @@ The table below reflects a formal audit of each type across the five pipeline la
 | `likert` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `grid` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `ranked` | ✅ | ✅ | ✅ | ✅ | ✅ | **Full** |
-| `repeating_group` | ✅ | ✅ | ❌ | ✅ | ❌ | **Partial** |
+| `repeating_group` | ✅ | ✅ | ✅ | ✅ | ❌ | **Partial** |
 
 **Partial — likert:** Collected and exported correctly. The report renders it as a categorical distribution rather than an ordinal scale; `agg_numeric_stats` excludes it. Scoring and analysis work correctly via `fact_response`.
 
@@ -228,4 +228,4 @@ Two repetition patterns are supported:
 
 Both patterns produce identical storage. See [Repeating Groups](../authoring.md#repeating-groups) for the YAML syntax.
 
-Two gaps remain: `quickq seed` does not generate repeating instances synthetically, and the Markdown report does not yet render them as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.
+One gap remains: the Markdown report does not yet render repeating groups as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`. `quickq seed` honors `count_from` (using the seeded count question's answer to drive N) and falls back to a small random N for free-add groups.

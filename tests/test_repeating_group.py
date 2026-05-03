@@ -491,3 +491,158 @@ questionnaire:
     assert count_qq_id == n_qq_id, (
         f"round-trip lost count linkage; expected {n_qq_id}, got {count_qq_id}"
     )
+
+
+# ------------------------------------------------------------------
+# seed support for repeating_group (closes fyj)
+# ------------------------------------------------------------------
+
+def test_seed_count_driven_repeating_group(tmp_path):
+    """When count_from is set, seed uses the seeded count question's answer
+    to drive the number of repeat instances written."""
+    from quickq.seed import seed_responses
+
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Family History
+  canonical_url: http://example.com/seed-fh
+  version: "1.0"
+  questions:
+    - { link_id: family.n_siblings, text: "How many siblings?", type: numeric, range: [2, 4] }
+    - link_id: family.siblings
+      text: "About each sibling:"
+      type: repeating_group
+      count_from: family.n_siblings
+      items:
+        - { link_id: sibling.age, text: "Age", type: numeric, range: [0, 120] }
+""")
+    qid = load_yaml(conn, str(yaml_path))
+
+    # Seed a deterministic batch
+    sids = seed_responses(conn, qid, n=5, rng_seed=42)
+    assert len(sids) == 5
+
+    # For each session, the number of sibling.age responses should equal the
+    # numeric answer to family.n_siblings (range [2, 4] so always >= 2).
+    for sid in sids:
+        n_siblings = conn.execute(
+            "SELECT response_numeric FROM response r "
+            "JOIN questionnaire_question qq USING (qq_id) "
+            "JOIN question q USING (question_id) "
+            "WHERE r.session_id = ? AND q.link_id = 'family.n_siblings'",
+            (sid,),
+        ).fetchone()[0]
+        n_age_rows = conn.execute(
+            "SELECT COUNT(*) FROM response r "
+            "JOIN questionnaire_question qq USING (qq_id) "
+            "JOIN question q USING (question_id) "
+            "WHERE r.session_id = ? AND q.link_id = 'sibling.age'",
+            (sid,),
+        ).fetchone()[0]
+        assert n_age_rows == int(round(n_siblings)), (
+            f"expected {int(round(n_siblings))} sibling.age rows; got {n_age_rows}"
+        )
+
+        # repeat_index values should be 0..N-1 distinct integers
+        indices = [r[0] for r in conn.execute(
+            "SELECT r.repeat_index FROM response r "
+            "JOIN questionnaire_question qq USING (qq_id) "
+            "JOIN question q USING (question_id) "
+            "WHERE r.session_id = ? AND q.link_id = 'sibling.age' "
+            "ORDER BY r.repeat_index",
+            (sid,),
+        ).fetchall()]
+        assert indices == list(range(n_age_rows))
+
+
+def test_seed_free_add_repeating_group(tmp_path):
+    """Free-add (no count_from): seed picks a small random N; rows still get
+    sequential repeat_index values and are confined to a sane range."""
+    from quickq.seed import seed_responses
+
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Medications
+  canonical_url: http://example.com/seed-meds
+  version: "1.0"
+  questions:
+    - link_id: meds
+      text: "Add medications:"
+      type: repeating_group
+      items:
+        - { link_id: meds.name, text: "Name", type: text }
+""")
+    qid = load_yaml(conn, str(yaml_path))
+
+    sids = seed_responses(conn, qid, n=8, rng_seed=7)
+    assert len(sids) == 8
+
+    # Confirm at least one session has >0 instances and indices are 0-based
+    # contiguous within each session.
+    saw_nonempty = False
+    for sid in sids:
+        rows = conn.execute(
+            "SELECT r.repeat_index FROM response r "
+            "JOIN questionnaire_question qq USING (qq_id) "
+            "JOIN question q USING (question_id) "
+            "WHERE r.session_id = ? AND q.link_id = 'meds.name' "
+            "ORDER BY r.repeat_index",
+            (sid,),
+        ).fetchall()
+        indices = [r[0] for r in rows]
+        if indices:
+            saw_nonempty = True
+            assert indices == list(range(len(indices)))
+            assert all(i is not None for i in indices)
+            assert max(indices) <= 5  # seed clips free-add to [0, 5]
+    assert saw_nonempty, "expected at least one session with >0 free-add instances"
+
+
+def test_seed_repeating_propagates_repeat_index_to_olap(tmp_path):
+    """Seeded repeating_group rows show up in fact_response with the same
+    repeat_index after refresh."""
+    from quickq.seed import seed_responses
+
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Pregnancies
+  canonical_url: http://example.com/seed-pg
+  version: "1.0"
+  questions:
+    - { link_id: n_preg, text: "How many pregnancies?", type: numeric, range: [1, 3] }
+    - link_id: preg
+      text: "About each pregnancy:"
+      type: repeating_group
+      count_from: n_preg
+      items:
+        - { link_id: preg.year, text: "Year", type: numeric, range: [1980, 2024] }
+""")
+    qid = load_yaml(conn, str(yaml_path))
+    seed_responses(conn, qid, n=4, rng_seed=1)
+    conn.commit()
+
+    olap = str(tmp_path / "analytics.duckdb")
+    refresh(olap, str(db))
+    oconn = init_olap(olap, str(db))
+
+    rows = oconn.execute("""
+        SELECT fr.session_id, fr.repeat_index
+        FROM fact_response fr
+        JOIN dim_question dq USING (question_id)
+        WHERE dq.link_id = 'preg.year'
+        ORDER BY fr.session_id, fr.repeat_index
+    """).fetchall()
+    assert rows, "no preg.year rows landed in fact_response"
+    # Each row must have a non-NULL repeat_index, and indices within a
+    # session must be a contiguous 0..k sequence.
+    from itertools import groupby
+    for sid, group in groupby(rows, key=lambda r: r[0]):
+        indices = [r[1] for r in group]
+        assert all(i is not None for i in indices)
+        assert indices == list(range(len(indices)))

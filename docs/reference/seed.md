@@ -26,7 +26,7 @@ After seeding, run `quickq refresh study.db analytics.duckdb` to materialize the
 
 | Layer | Behaviour |
 |---|---|
-| **Question types** | `single_choice`, `multiple_choice`, `sata_other`, `boolean`, `numeric`, `date`, `datetime`, `slider`, `likert`, `ranked`, `grid`, `text` all produce values shaped to their type and constraints. `repeating_group` is the one gap: synthetic data does not include repeating instances ([quickq-io-82y](https://github.com/quickq-io/quickq/issues), see [Question Types reference](question-types.md#repeating_group-partial)). |
+| **Question types** | All 12 supported types (`single_choice`, `multiple_choice`, `sata_other`, `boolean`, `numeric`, `date`, `datetime`, `slider`, `likert`, `ranked`, `grid`, `text`, `repeating_group`) produce values shaped to their type and constraints. For repeating groups, seed honors `count_from`: if the group is linked to a numeric count question, the seeded answer to that question drives the number of instances. For free-add groups (no `count_from`) seed picks a small random N (0–5). |
 | **Option sets** | Choice questions sample uniformly from the configured options. Exclusive options ("None of the above") are honoured: if selected, no other option is chosen alongside. |
 | **Numeric ranges** | `numeric` and `slider` items sample uniformly from the `[min, max]` range when set; otherwise from a sensible default (`0–100`). |
 | **Skip logic** | A question is answered only when its `show_when` condition evaluates true against the prior generated answers in the same session. Skipped questions produce no `response` row, exactly mirroring real data collection. |
@@ -57,7 +57,7 @@ If `--seed` is omitted, output varies run to run.
 | Demo the analytics tutorials with realistic instrument structure | `scripts/generate_demo.py` (uses the FHIR import path; richer than seed) |
 | Demonstrate the full FHIR round-trip | `quickq fhir export` followed by `quickq fhir import-response` against external responses |
 
-For repeating-group instruments, `quickq seed` will skip the loop sub-questions entirely. Use `quickq fhir import-response` against synthetic FHIR `QuestionnaireResponse` JSON instead; the demo script (`scripts/generate_demo.py`) does this for the prenatal-visit-log example and is a useful template.
+For repeating-group instruments, `quickq seed` writes child sub-question rows with sequential `repeat_index` values per session. Per-instance skip logic is not evaluated (each instance gets the same set of children); for fully realistic per-instance behaviour, `quickq fhir import-response` against synthetic FHIR `QuestionnaireResponse` JSON gives finer control. The demo script (`scripts/generate_demo.py`) takes that route for the prenatal-visit-log example.
 
 ---
 
