@@ -21,13 +21,13 @@ The table below reflects a formal audit of each type across the five pipeline la
 | `likert` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `grid` | ✅ | ✅ | ✅ | ✅ | ⚠️ | **Partial** |
 | `ranked` | ✅ | ✅ | ✅ | ✅ | ✅ | **Full** |
-| `repeating_group` | ✅ | ✅ | ❌ | ⚠️ | ❌ | **Stub** |
+| `repeating_group` | ✅ | ✅ | ❌ | ✅ | ❌ | **Partial** |
 
 **Partial — likert:** Collected and exported correctly. The report renders it as a categorical distribution rather than an ordinal scale; `agg_numeric_stats` excludes it. Scoring and analysis work correctly via `fact_response`.
 
 **Partial — grid:** Definition, FHIR export, seed, and OLAP storage all work. The report renders grid cells as a flat list rather than a row × column matrix. The underlying data is correct and queryable.
 
-**Stub — repeating_group:** YAML definition and FHIR export are implemented. Seed does not generate repeat instances; `fact_response` has the `repeat_index` column but it is not populated; the report does not render repeating groups. Scheduled for a dedicated implementation session.
+**Partial — repeating_group:** YAML definition, FHIR export, FHIR import, and OLAP storage all work end-to-end. Responses arriving via the FHIR-import path populate `fact_response.repeat_index` correctly; see the bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) for example pivots. Two real gaps: `quickq seed` does not generate repeating instances synthetically (the seed pathway is the only entry point that misses), and the Markdown report does not yet render repeating groups as nested tables. For studies whose responses arrive via FHIR import (the realistic production path), the data flow is complete and queryable.
 
 ---
 
@@ -217,6 +217,6 @@ Drag-to-rank ordering. Each option is stored as a `response` row with `option_id
 
 ---
 
-### `repeating_group` *(stub)*
+### `repeating_group` *(partial)*
 
-A loop of sub-questions that repeats N times — once per pregnancy, medication, family member, etc. Definition and FHIR export are implemented. Seed, OLAP storage, and report rendering are not yet complete.
+A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; `fact_response.repeat_index` is the per-instance counter. Two gaps remain: `quickq seed` does not generate repeating instances, and the Markdown report does not yet render them as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.
