@@ -42,20 +42,7 @@ quickq load phq9.yaml study.db
 
 ## Question Types
 
-| Type | FHIR equivalent | Notes |
-|---|---|---|
-| `single_choice` | `choice` | Radio / MCQ; one answer |
-| `multiple_choice` | `choice` (multiple) | Select all that apply |
-| `sata_other` | `choice` + open-choice | SATA with free-text "Other" |
-| `boolean` | `boolean` | Yes/No; stored as `'true'`/`'false'` |
-| `text` | `text` | Open-ended string |
-| `numeric` | `decimal` | Integer or float; optional `min`, `max`, `step` |
-| `date` / `datetime` | `date` / `dateTime` | ISO 8601 |
-| `likert` | `choice` | Ordered scale |
-| `grid` | `group` | Matrix; rows × columns |
-| `ranked` | `choice` (ordered) | Drag-to-rank |
-| `slider` | `decimal` + extensions | Visual analog scale |
-| `repeating_group` | `group` + `repeats: true` | Looped sub-question set |
+quickq supports 12 question types covering the full range of health and epidemiology survey instruments. The canonical list (with YAML syntax for each, current pipeline-coverage status, and per-type notes) is in the [Question Type Reference](reference/question-types.md). FHIR `item.type` mappings are in [FHIR Interoperability](fhir.md#question-type-mapping).
 
 ---
 

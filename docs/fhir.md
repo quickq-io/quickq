@@ -51,6 +51,8 @@ The OLTP schema maps directly to FHIR fields. Fields that have no FHIR equivalen
 
 ### Question type mapping
 
+This table maps each quickq question type to its FHIR `item.type`. For the canonical list (with YAML authoring syntax and current pipeline-coverage status per type), see the [Question Type Reference](reference/question-types.md).
+
 | quickq type | FHIR type | Notes |
 |---|---|---|
 | `single_choice` | `choice` | |

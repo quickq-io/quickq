@@ -50,13 +50,13 @@ nav:
   - Design Decisions: design_decisions.md
   - The Study Journey: tutorial.md
   - Tutorials:
-      - End-to-End Testing Walkthrough: tutorials/end-to-end.md
-      - 1. Author an Instrument: tutorials/authoring.md
-      - 2. Collect Responses: tutorials/collect.md
-      - 3. Analyze: tutorials/analytics.md
-      - 4. Data Quality: tutorials/data-quality.md
-      - 5. Share & Publish: tutorials/share.md
-      - 6. Multi-Site Study Operations: tutorials/multi-site.md
+      - 'Quickstart: End-to-End Walkthrough': tutorials/end-to-end.md
+      - Authoring an Instrument: tutorials/authoring.md
+      - 'Demo phase: Collect Responses': tutorials/collect.md
+      - 'Demo phase: Analyze': tutorials/analytics.md
+      - 'Demo phase: Data Quality': tutorials/data-quality.md
+      - 'Demo phase: Share & Publish': tutorials/share.md
+      - Multi-Site Study Operations: tutorials/multi-site.md
   - Reference:
       - Question Types: reference/question-types.md
       - Query Patterns by Question Type: reference/query-patterns.md

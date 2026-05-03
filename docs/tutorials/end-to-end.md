@@ -1,4 +1,4 @@
-# End-to-End Testing Walkthrough
+# Quickstart: End-to-End Walkthrough
 
 This guide walks through the complete quickq loop using a gout symptoms survey as the running example. You will author the instrument from scratch, build it up incrementally, collect a response through the web form, and view the results.
 
@@ -13,51 +13,18 @@ By the end you will have:
 
 ## Prerequisites
 
-### Python 3.11+
+!!! info "You will need"
+    - **Python 3.11+** ([python.org](https://www.python.org/downloads/) or your system package manager)
+    - **uv** ([installation guide](https://docs.astral.sh/uv/getting-started/installation/))
+    - **Node.js 18+** with npm ([nodejs.org](https://nodejs.org/), LTS includes npm)
 
-Check if you have it:
-
-```bash
-python --version
-```
-
-If not, download it from [python.org](https://www.python.org/downloads/) or use your system package manager (`brew install python@3.11`, `apt install python3.11`, etc.).
-
-### uv
-
-uv is the package manager used to install quickq. Check if you have it:
-
-```bash
-uv --version
-```
-
-If not, install it with a single command — no pip required:
-
-```bash
-# macOS / Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows (PowerShell)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-Then open a new terminal so `uv` is on your PATH.
-
-### Node.js 18+ and npm
-
-Check if you have them:
-
-```bash
-node --version && npm --version
-```
-
-If not, download from [nodejs.org](https://nodejs.org/) (the LTS release includes npm).
+    If a command below fails because one of these is missing, install it and re-run.
 
 ---
 
 ## Step 1 — Install quickq
 
-Pick a parent directory to hold both quickq repos (e.g. `~/code`) and clone there. Step 6 will clone `quickq-forms` next to `quickq` in the same parent — `quickq-forms`'s dev script expects the two repos to live as siblings.
+Pick a parent directory to hold the cloned repos (this tutorial uses `~/code`). In Step 6 you will clone `quickq-forms` next to `quickq` in the same parent and install both together.
 
 ```bash
 mkdir -p ~/code && cd ~/code
