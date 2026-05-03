@@ -1405,9 +1405,9 @@
 
 
 <h1 id="tutorial-data-quality">Tutorial: Data Quality<a class="headerlink" href="#tutorial-data-quality" title="Permanent link">&para;</a></h1>
-<p>This tutorial covers the data quality tools available after <code>quickq refresh</code>: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database produced by the setup script.</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/generate_demo.py
-quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
+<p>This tutorial covers the data quality tools available after <code>quickq refresh</code>: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see <a href="../../tutorial/#analytics-phase-tutorials">Analytics phase tutorials</a> for the one-line setup.</p>
+<p>Once the demo is generated, open the UI:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
 </code></pre></div>
 <hr />
 <h2 id="sparsity-overview-with-summarize">Sparsity overview with SUMMARIZE<a class="headerlink" href="#sparsity-overview-with-summarize" title="Permanent link">&para;</a></h2>

@@ -1415,11 +1415,10 @@
 
 
 <h1 id="tutorial-analyzing-study-data">Tutorial: Analyzing Study Data<a class="headerlink" href="#tutorial-analyzing-study-data" title="Permanent link">&para;</a></h1>
-<p>This tutorial covers the analytical layer of a quickq study: running scoring queries, exploring response distributions, and joining across instruments. The queries below assume you have run the demo setup script, which loads a perinatal mental health study with 250 PHQ-9 responses and 150 prenatal visit logs.</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/generate_demo.py
-quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
+<p>This tutorial covers the analytical layer of a quickq study: running scoring queries, exploring response distributions, and joining across instruments. The queries below assume the demo database (PHQ-9 + prenatal, 400 sessions). If you have not generated it yet, see <a href="../../tutorial/#analytics-phase-tutorials">Analytics phase tutorials</a> for the one-line setup.</p>
+<p>Once the demo is generated, open the UI:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
 </code></pre></div>
-<p>See <a href="../../tutorial/">The Study Journey</a> for the full pipeline that produces this database.</p>
 <hr />
 <h2 id="the-analytical-database">The analytical database<a class="headerlink" href="#the-analytical-database" title="Permanent link">&para;</a></h2>
 <p>After <code>quickq refresh</code>, the DuckDB OLAP contains:</p>
