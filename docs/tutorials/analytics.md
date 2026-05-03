@@ -1,13 +1,12 @@
 # Tutorial: Analyzing Study Data
 
-This tutorial covers the analytical layer of a quickq study: running scoring queries, exploring response distributions, and joining across instruments. The queries below assume you have run the demo setup script, which loads a perinatal mental health study with 250 PHQ-9 responses and 150 prenatal visit logs.
+This tutorial covers the analytical layer of a quickq study: running scoring queries, exploring response distributions, and joining across instruments. The queries below assume the demo database (PHQ-9 + prenatal, 400 sessions). If you have not generated it yet, see [Analytics phase tutorials](../tutorial.md#analytics-phase-tutorials) for the one-line setup.
+
+Once the demo is generated, open the UI:
 
 ```bash
-uv run python scripts/generate_demo.py
 quickq analytics demo/analytics.duckdb
 ```
-
-See [The Study Journey](../tutorial.md) for the full pipeline that produces this database.
 
 ---
 

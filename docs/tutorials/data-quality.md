@@ -1,9 +1,10 @@
 # Tutorial: Data Quality
 
-This tutorial covers the data quality tools available after `quickq refresh`: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database produced by the setup script.
+This tutorial covers the data quality tools available after `quickq refresh`: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see [Analytics phase tutorials](../tutorial.md#analytics-phase-tutorials) for the one-line setup.
+
+Once the demo is generated, open the UI:
 
 ```bash
-uv run python scripts/generate_demo.py
 quickq analytics demo/analytics.duckdb
 ```
 
