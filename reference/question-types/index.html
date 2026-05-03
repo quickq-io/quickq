@@ -896,10 +896,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#repeating_group-stub" class="md-nav__link">
+  <a href="#repeating_group-partial" class="md-nav__link">
     <span class="md-ellipsis">
       
-        repeating_group (stub)
+        repeating_group (partial)
       
     </span>
   </a>
@@ -1567,10 +1567,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#repeating_group-stub" class="md-nav__link">
+  <a href="#repeating_group-partial" class="md-nav__link">
     <span class="md-ellipsis">
       
-        repeating_group (stub)
+        repeating_group (partial)
       
     </span>
   </a>
@@ -1724,15 +1724,15 @@
 <td>✅</td>
 <td>✅</td>
 <td>❌</td>
-<td>⚠️</td>
+<td>✅</td>
 <td>❌</td>
-<td><strong>Stub</strong></td>
+<td><strong>Partial</strong></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Partial — likert:</strong> Collected and exported correctly. The report renders it as a categorical distribution rather than an ordinal scale; <code>agg_numeric_stats</code> excludes it. Scoring and analysis work correctly via <code>fact_response</code>.</p>
 <p><strong>Partial — grid:</strong> Definition, FHIR export, seed, and OLAP storage all work. The report renders grid cells as a flat list rather than a row × column matrix. The underlying data is correct and queryable.</p>
-<p><strong>Stub — repeating_group:</strong> YAML definition and FHIR export are implemented. Seed does not generate repeat instances; <code>fact_response</code> has the <code>repeat_index</code> column but it is not populated; the report does not render repeating groups. Scheduled for a dedicated implementation session.</p>
+<p><strong>Partial — repeating_group:</strong> YAML definition, FHIR export, FHIR import, and OLAP storage all work end-to-end. Responses arriving via the FHIR-import path populate <code>fact_response.repeat_index</code> correctly; see the bundled demo views (<code>v_prenatal_visits</code>, <code>v_prenatal_summary</code>) for example pivots. Two real gaps: <code>quickq seed</code> does not generate repeating instances synthetically (the seed pathway is the only entry point that misses), and the Markdown report does not yet render repeating groups as nested tables. For studies whose responses arrive via FHIR import (the realistic production path), the data flow is complete and queryable.</p>
 <hr />
 <h2 id="demo-instrument">Demo instrument<a class="headerlink" href="#demo-instrument" title="Permanent link">&para;</a></h2>
 <p><code>examples/health_intake_demo.yaml</code> in the repository covers all fully supported and partial types in a coherent clinical context. Load and seed it to exercise the full pipeline:</p>
@@ -1859,8 +1859,8 @@ quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<spa
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Maintaining</span><span class="nv"> </span><span class="s">mobility&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mobility&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
 </code></pre></div>
 <hr />
-<h3 id="repeating_group-stub"><code>repeating_group</code> <em>(stub)</em><a class="headerlink" href="#repeating_group-stub" title="Permanent link">&para;</a></h3>
-<p>A loop of sub-questions that repeats N times — once per pregnancy, medication, family member, etc. Definition and FHIR export are implemented. Seed, OLAP storage, and report rendering are not yet complete.</p>
+<h3 id="repeating_group-partial"><code>repeating_group</code> <em>(partial)</em><a class="headerlink" href="#repeating_group-partial" title="Permanent link">&para;</a></h3>
+<p>A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; <code>fact_response.repeat_index</code> is the per-instance counter. Two gaps remain: <code>quickq seed</code> does not generate repeating instances, and the Markdown report does not yet render them as nested tables. The bundled demo views (<code>v_prenatal_visits</code>, <code>v_prenatal_summary</code>) show example pivots over <code>repeat_index</code>.</p>
 
 
 
