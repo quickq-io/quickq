@@ -36,26 +36,26 @@ quickq report  analytics.duckdb study.db 1
 quickq analytics                                   # interactive DuckDB UI in your browser
 ```
 
-For a complete end-to-end walkthrough — authoring a gout symptoms questionnaire from scratch, collecting a response, running analytics — see [the tutorial](docs/tutorials/end-to-end.md).
+For a complete end-to-end walkthrough (authoring a gout symptoms questionnaire from scratch, collecting a response, running analytics), see the [tutorial](docs/tutorials/end-to-end.md). Full documentation site: **<https://quickq-io.github.io/quickq/>**.
 
 ## Why
 
-A well-designed data model is the best foundation for a survey study. quickq encodes the structural decisions — immutable question definitions, structured skip logic, OMOP-compatible concept codes — in a portable file format. The same SQL query pattern works for every question type and every instrument; PHQ-9 scoring, distribution charts, and cross-study harmonization are queries against a stable schema, not custom code per instrument.
+A well-designed data model is the best foundation for a survey study. quickq encodes the structural decisions (immutable question definitions, structured skip logic, OMOP-compatible concept codes) in a portable file format. The same SQL query pattern works for every question type and every instrument; PHQ-9 scoring, distribution charts, and cross-study harmonization are queries against a stable schema, not custom code per instrument.
 
-The portability standard is *copy/paste study propagation* — a researcher in another country should be able to receive a `.db` file and run the same study with one command. Every architectural decision is judged against that bar.
+The standard quickq is designed to clear is portability of the questionnaire layer of a study: a researcher in another country should be able to receive a `.db` file, deploy collection, and refresh analytics without rebuilding the data infrastructure. The non-technical work of running a study (recruitment, regulatory approval, translated consent) remains; the data plumbing does not. Every architectural decision is judged against that bar.
 
 ## What's in this repo
 
 - `quickq/` — the Python package (CLI + SDK)
 - `quickq/library/` — bundled YAML library of validated instruments (PHQ-9, GAD-7, PRAPARE, BRFSS, etc.)
 - `quickq/sql/` — the OLTP and OLAP DDL
-- `docs/` — mkdocs site (`uv run mkdocs serve` to preview locally)
+- `docs/` — mkdocs source for [quickq-io.github.io/quickq](https://quickq-io.github.io/quickq/) (preview locally with `uv run mkdocs serve`)
 - `tests/` — `uv run pytest` for the fast suite, `-m e2e` for end-to-end
 
 ## Related repos
 
 - **[quickq-forms](https://github.com/quickq-io/quickq-forms)** — FHIR delivery server (`quickq serve` lives here)
-- **[quickq-docs](https://github.com/quickq-io/quickq-docs)** — published documentation site (in progress)
+- **[quickq-docs](https://github.com/quickq-io/quickq-docs)** — placeholder repo for documentation hosting. The canonical mkdocs source is in `docs/` here, published at <https://quickq-io.github.io/quickq/>.
 
 ## License
 
