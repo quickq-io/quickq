@@ -219,4 +219,13 @@ Drag-to-rank ordering. Each option is stored as a `response` row with `option_id
 
 ### `repeating_group` *(partial)*
 
-A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; `fact_response.repeat_index` is the per-instance counter. Two gaps remain: `quickq seed` does not generate repeating instances, and the Markdown report does not yet render them as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.
+A loop of sub-questions that repeats N times: once per pregnancy, medication, family member, etc. Definition, FHIR export, FHIR import, and OLAP storage all work end-to-end; `fact_response.repeat_index` is the per-instance counter.
+
+Two repetition patterns are supported:
+
+- **Count-driven:** declare `count_from: <link_id>` on the group, pointing at a numeric question defined earlier in the questionnaire. The delivery layer reads that question's answer and renders that many instances. Stored as `questionnaire_question.count_qq_id`.
+- **Free-add:** omit `count_from`. The delivery tool offers an "add another" affordance and the respondent picks N.
+
+Both patterns produce identical storage. See [Repeating Groups](../authoring.md#repeating-groups) for the YAML syntax.
+
+Two gaps remain: `quickq seed` does not generate repeating instances synthetically, and the Markdown report does not yet render them as nested tables. The bundled demo views (`v_prenatal_visits`, `v_prenatal_summary`) show example pivots over `repeat_index`.

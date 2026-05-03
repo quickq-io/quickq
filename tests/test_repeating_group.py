@@ -258,3 +258,119 @@ def test_olap_repeat_index_propagated(prenatal_with_response, tmp_path):
     assert len(rows) == 2
     assert rows[0][0] == 0 and rows[0][1] == 12.0
     assert rows[1][0] == 1 and rows[1][1] == 20.0
+
+
+# ------------------------------------------------------------------
+# count_from: linkage between a repeating_group and a count question
+# (closes 7m6)
+# ------------------------------------------------------------------
+
+def _write_yaml(tmp_path: Path, body: str) -> Path:
+    p = tmp_path / "q.yaml"
+    p.write_text(body)
+    return p
+
+
+def test_count_from_populates_count_qq_id(tmp_path):
+    """When YAML declares count_from, the loader writes count_qq_id on the
+    parent group qq_id pointing at the named numeric question's qq_id."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Family History
+  canonical_url: http://example.com/fh
+  version: "1.0"
+  questions:
+    - { link_id: family.n_siblings, text: "How many siblings?", type: numeric, range: [0, 20] }
+    - link_id: family.siblings
+      text: "About each sibling:"
+      type: repeating_group
+      count_from: family.n_siblings
+      items:
+        - { link_id: sibling.age, text: "Age (years)", type: numeric, range: [0, 120] }
+""")
+    load_yaml(conn, str(yaml_path))
+
+    # Look up qq_ids by link_id and verify the linkage.
+    n_qq_id = conn.execute(
+        "SELECT qq.qq_id FROM questionnaire_question qq JOIN question q USING (question_id) "
+        "WHERE q.link_id = 'family.n_siblings'"
+    ).fetchone()[0]
+    siblings_qq_id, count_qq_id = conn.execute(
+        "SELECT qq.qq_id, qq.count_qq_id FROM questionnaire_question qq JOIN question q USING (question_id) "
+        "WHERE q.link_id = 'family.siblings'"
+    ).fetchone()
+    assert count_qq_id == n_qq_id, (
+        f"expected count_qq_id={n_qq_id} (family.n_siblings), got {count_qq_id}"
+    )
+
+
+def test_count_from_unknown_link_id_errors(tmp_path):
+    """Referencing an undefined link_id in count_from raises a clear error."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Bad
+  canonical_url: http://example.com/bad
+  version: "1.0"
+  questions:
+    - link_id: g
+      text: G
+      type: repeating_group
+      count_from: does_not_exist
+      items:
+        - { link_id: g.x, text: "X", type: text }
+""")
+    with pytest.raises(ValueError, match="count_from"):
+        load_yaml(conn, str(yaml_path))
+
+
+def test_repeating_group_without_count_from_keeps_null(tmp_path):
+    """Free-add pattern: no count_from set; count_qq_id stays NULL."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Medications
+  canonical_url: http://example.com/meds
+  version: "1.0"
+  questions:
+    - link_id: meds
+      text: "Add medications you currently take:"
+      type: repeating_group
+      items:
+        - { link_id: meds.name, text: "Name", type: text }
+        - { link_id: meds.dose, text: "Dose (mg)", type: numeric, range: [0, 5000] }
+""")
+    load_yaml(conn, str(yaml_path))
+
+    count_qq_id = conn.execute(
+        "SELECT qq.count_qq_id FROM questionnaire_question qq JOIN question q USING (question_id) "
+        "WHERE q.link_id = 'meds'"
+    ).fetchone()[0]
+    assert count_qq_id is None
+
+
+def test_count_from_must_appear_before_group(tmp_path):
+    """If count_from references a link_id defined LATER in the YAML, the
+    loader cannot resolve it (single forward pass) and raises."""
+    db = tmp_path / "study.db"
+    conn = init_oltp(db)
+    yaml_path = _write_yaml(tmp_path, """
+questionnaire:
+  name: Order
+  canonical_url: http://example.com/order
+  version: "1.0"
+  questions:
+    - link_id: g
+      text: G
+      type: repeating_group
+      count_from: n_things        # not yet defined at this point in the file
+      items:
+        - { link_id: g.x, text: "X", type: text }
+    - { link_id: n_things, text: "How many?", type: numeric, range: [0, 10] }
+""")
+    with pytest.raises(ValueError, match="count_from"):
+        load_yaml(conn, str(yaml_path))

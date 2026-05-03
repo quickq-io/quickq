@@ -48,7 +48,7 @@ quickq supports 12 question types covering the full range of health and epidemio
 
 ## Repeating Groups
 
-A `repeating_group` question is a container whose sub-questions repeat once per instance — once per medication, family member, pregnancy, etc. Sub-questions are listed under `items`:
+A `repeating_group` question is a container whose sub-questions repeat once per instance: once per medication, family member, pregnancy, etc. Sub-questions are listed under `items`:
 
 ```yaml
   - link_id: visits
@@ -74,7 +74,27 @@ A `repeating_group` question is a container whose sub-questions repeat once per 
 
 In the OLTP, sub-questions are stored as `questionnaire_question` rows with `parent_qq_id` pointing to the group. Each response row for a sub-question carries a `repeat_index` (0-based) that identifies which instance it belongs to. In FHIR, the group exports as `type: group, repeats: true` with children nested in its `item` array.
 
-Repeating groups can be nested — a family member loop can itself contain a disease history loop. The same `parent_qq_id` mechanism handles any depth.
+Repeating groups can be nested: a family member loop can itself contain a disease history loop. The same `parent_qq_id` mechanism handles any depth.
+
+### Two repetition patterns: count-driven and free-add
+
+If the count of instances is itself something the respondent answers (a numeric question that comes earlier in the questionnaire), declare the linkage with `count_from`:
+
+```yaml
+  - { link_id: family.n_siblings, text: "How many siblings do you have?", type: numeric, range: [0, 20] }
+
+  - link_id: family.siblings
+    text: "About each sibling:"
+    type: repeating_group
+    count_from: family.n_siblings        # delivery layer renders this many instances
+    items:
+      - { link_id: sibling.relationship, text: "Brother or sister?", type: single_choice, options: [...] }
+      - { link_id: sibling.age,          text: "Age (years)",        type: numeric, range: [0, 120] }
+```
+
+The count question must be defined **before** the repeating group in the YAML (the loader resolves `link_id` references in a single forward pass). The linkage is stored on `questionnaire_question.count_qq_id` and surfaces in the FHIR export as a SDC `questionnaire-maxOccurs` extension on the group item.
+
+If `count_from` is omitted, the group uses the **free-add** pattern: the delivery tool offers an "add another" affordance and the respondent picks N. Both patterns produce identical response storage (one row per sub-question per instance, with `repeat_index = 0, 1, …, N-1`); they differ only in the delivery-layer UI.
 
 ---
 

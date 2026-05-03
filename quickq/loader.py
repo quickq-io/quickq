@@ -145,6 +145,7 @@ def _parse_question(raw: dict) -> QuestionDef:
             for c in raw["columns"]
         ] if raw.get("columns") else None,
         items=[_parse_question(q) for q in raw["items"]] if raw.get("items") else None,
+        count_from=raw.get("count_from"),
     )
 
 
@@ -355,6 +356,22 @@ def load_def(
                         link_id_to_qq_id[child_def.link_id] = child_qq_id
                         if child_def.show_when:
                             pending_skip.append((child_qq_id, child_def.show_when))
+
+                    # Optional count linkage: a numeric question whose answer drives
+                    # the number of instances rendered at the delivery layer.
+                    if q_def.count_from:
+                        count_qq_id = link_id_to_qq_id.get(q_def.count_from)
+                        if count_qq_id is None:
+                            raise ValueError(
+                                f"repeating_group '{q_def.link_id}' references count_from "
+                                f"link_id '{q_def.count_from}' which is not defined earlier in "
+                                f"the questionnaire. The count question must appear before "
+                                f"the group that depends on it."
+                            )
+                        conn.execute(
+                            "UPDATE questionnaire_question SET count_qq_id = ? WHERE qq_id = ?",
+                            (count_qq_id, qq_id),
+                        )
 
         # Pass 2: resolve skip rules now that all link_ids are mapped
         for qq_id, show_when in pending_skip:

@@ -56,6 +56,10 @@ class QuestionDef:
     rows: list[GridRowDef] | None = None
     columns: list[GridColumnDef] | None = None
     items: list[QuestionDef] | None = None   # child questions for repeating_group
+    count_from: str | None = None   # link_id of the numeric question whose answer drives the
+                                    # repeat count (only meaningful when type=='repeating_group';
+                                    # NULL means free-add, where the respondent picks N at the
+                                    # delivery layer)
     option_set: str | None = None   # name of a shared option_set in the questionnaire
     show_when: ShowWhen | None = None
     required: bool = False
