@@ -345,3 +345,140 @@ def test_refresh_no_cast_failures_on_clean_data(tmp_path):
     olap_path = str(tmp_path / "analytics.duckdb")
     stats = refresh(olap_path, str(db_path))
     assert stats.get("cast_failures_flagged", 0) == 0
+
+
+# ------------------------------------------------------------------
+# Typed BOOLEAN column in fact_response (closes 104)
+# ------------------------------------------------------------------
+
+def test_fact_response_boolean_column_populated_for_boolean_questions(tmp_path):
+    """For a boolean-typed question, fact_response.response_boolean is
+    populated (BOOLEAN type) while response_text retains the original
+    'true'/'false' string for round-trip."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh, init_olap
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+    raw = sqlite3.connect(str(db_path))
+    raw.executescript("""
+        INSERT INTO study (study_id, name) VALUES (1, 'S');
+        INSERT INTO questionnaire (questionnaire_id, study_id, name, version,
+            canonical_url, fhir_status)
+            VALUES (1, 1, 'Q', '1.0', 'http://ex/q', 'active');
+        INSERT INTO question (question_id, link_id, question_text, question_type)
+            VALUES (1, 'b1', 'Yes/No', 'boolean');
+        INSERT INTO questionnaire_question (qq_id, questionnaire_id, question_id, display_order)
+            VALUES (1, 1, 1, 0);
+        INSERT INTO respondent (respondent_id, study_id, external_id) VALUES (1, 1, 'r1');
+        INSERT INTO respondent (respondent_id, study_id, external_id) VALUES (2, 1, 'r2');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, completed_at, is_complete, admin_mode)
+            VALUES (1, 1, 1, '2024-06-01T10:00:00', '2024-06-01T10:01:00', 1, 'api');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, completed_at, is_complete, admin_mode)
+            VALUES (2, 1, 2, '2024-06-02T10:00:00', '2024-06-02T10:01:00', 1, 'api');
+        INSERT INTO response (session_id, qq_id, response_text)
+            VALUES (1, 1, 'true');
+        INSERT INTO response (session_id, qq_id, response_text)
+            VALUES (2, 1, 'false');
+    """)
+    raw.commit()
+    raw.close()
+
+    olap_path = str(tmp_path / "analytics.duckdb")
+    refresh(olap_path, str(db_path))
+    oconn = init_olap(olap_path, str(db_path))
+
+    rows = oconn.execute(
+        "SELECT session_id, response_text, response_boolean "
+        "FROM fact_response ORDER BY session_id"
+    ).fetchall()
+    assert len(rows) == 2
+
+    # Column type is real BOOLEAN; values match the strings
+    sid1, txt1, bool1 = rows[0]
+    sid2, txt2, bool2 = rows[1]
+    assert (sid1, txt1, bool1) == (1, "true", True)
+    assert (sid2, txt2, bool2) == (2, "false", False)
+    # Specifically: bool1 is Python True (not the string 'true')
+    assert bool1 is True
+    assert bool2 is False
+
+
+def test_fact_response_boolean_null_for_non_boolean_questions(tmp_path):
+    """response_boolean is NULL for non-boolean question types, even when
+    response_text happens to be 'true' / 'false' (that case is only meaningful
+    for boolean questions)."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh, init_olap
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+    raw = sqlite3.connect(str(db_path))
+    raw.executescript("""
+        INSERT INTO study (study_id, name) VALUES (1, 'S');
+        INSERT INTO questionnaire (questionnaire_id, study_id, name, version,
+            canonical_url, fhir_status)
+            VALUES (1, 1, 'Q', '1.0', 'http://ex/q', 'active');
+        INSERT INTO question (question_id, link_id, question_text, question_type)
+            VALUES (1, 't1', 'Notes', 'text');
+        INSERT INTO questionnaire_question (qq_id, questionnaire_id, question_id, display_order)
+            VALUES (1, 1, 1, 0);
+        INSERT INTO respondent (respondent_id, study_id, external_id) VALUES (1, 1, 'r1');
+        INSERT INTO response_session (session_id, questionnaire_id, respondent_id,
+            started_at, completed_at, is_complete, admin_mode)
+            VALUES (1, 1, 1, '2024-06-01T10:00:00', '2024-06-01T10:01:00', 1, 'api');
+        INSERT INTO response (session_id, qq_id, response_text)
+            VALUES (1, 1, 'true');   -- string 'true' but the question is text-type
+    """)
+    raw.commit()
+    raw.close()
+
+    olap_path = str(tmp_path / "analytics.duckdb")
+    refresh(olap_path, str(db_path))
+    oconn = init_olap(olap_path, str(db_path))
+
+    bool_val = oconn.execute(
+        "SELECT response_boolean FROM fact_response"
+    ).fetchone()[0]
+    assert bool_val is None
+
+
+def test_existing_olap_gets_boolean_column_via_migration(tmp_path):
+    """An OLAP DB that pre-dates response_boolean should have the column
+    added on next refresh via the ALTER TABLE IF NOT EXISTS guard."""
+    import duckdb
+    from quickq.schema import init_oltp
+    from quickq.olap_schema import refresh, init_olap
+
+    db_path = tmp_path / "study.db"
+    init_oltp(db_path)
+
+    # Initialize OLAP at current schema, then drop response_boolean to
+    # simulate a database created before the column existed.
+    olap_path = str(tmp_path / "analytics.duckdb")
+    oconn = init_olap(olap_path, str(db_path))
+    oconn.execute("ALTER TABLE fact_response DROP COLUMN response_boolean")
+    oconn.close()
+
+    pre = duckdb.connect(olap_path, read_only=True)
+    pre_cols = {r[0] for r in pre.execute(
+        "SELECT column_name FROM information_schema.columns "
+        "WHERE table_name = 'fact_response'"
+    ).fetchall()}
+    pre.close()
+    assert "response_boolean" not in pre_cols, "test setup did not drop the column"
+
+    # Refresh should re-add it via ALTER TABLE ... ADD COLUMN IF NOT EXISTS.
+    refresh(olap_path, str(db_path))
+
+    post = duckdb.connect(olap_path, read_only=True)
+    post_cols = {r[0] for r in post.execute(
+        "SELECT column_name FROM information_schema.columns "
+        "WHERE table_name = 'fact_response'"
+    ).fetchall()}
+    post.close()
+    assert "response_boolean" in post_cols

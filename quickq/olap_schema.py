@@ -427,11 +427,16 @@ def _sync_dim_session(conn: duckdb.DuckDBPyConnection, max_session_id: int) -> i
 # ------------------------------------------------------------------
 
 def _load_fact_response(conn: duckdb.DuckDBPyConnection, max_response_id: int) -> int:
+    # Migration for OLAP databases created before response_boolean existed.
+    # ADD COLUMN IF NOT EXISTS is a no-op on fresh DBs.
+    conn.execute(
+        "ALTER TABLE fact_response ADD COLUMN IF NOT EXISTS response_boolean BOOLEAN"
+    )
     conn.execute(f"""
         INSERT INTO fact_response (
             response_id, session_id, respondent_id, questionnaire_id, study_id,
             question_id, qq_id, option_id, grid_row_id, grid_column_id, repeat_index,
-            response_text, response_numeric, response_date, option_value,
+            response_text, response_numeric, response_date, response_boolean, option_value,
             question_concept_id, option_concept_id,
             response_date_key, session_start_key,
             admin_mode, is_proxy, interviewer_id
@@ -458,6 +463,13 @@ def _load_fact_response(conn: duckdb.DuckDBPyConnection, max_response_id: int) -
               THEN TRY_CAST(ro.option_value AS DOUBLE)
             END,
             TRY_CAST(r.response_date AS DATE),
+            -- response_boolean: typed view of boolean-question responses.
+            -- OLTP stores boolean answers as response_text = 'true' | 'false';
+            -- the OLAP exposes a real BOOLEAN column for analyst-friendly SQL.
+            CASE
+              WHEN q.question_type = 'boolean' AND r.response_text IN ('true', 'false')
+              THEN r.response_text = 'true'
+            END,
             ro.option_value,
             q.concept_id,
             ro.concept_id,

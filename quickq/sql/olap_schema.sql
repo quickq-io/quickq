@@ -133,10 +133,13 @@ CREATE TABLE IF NOT EXISTS fact_response (
     grid_column_id       INTEGER,
     repeat_index         INTEGER,                 -- NULL for non-repeating; 0-based for repeating_group
 
-    -- typed answer columns (same semantics as OLTP response)
+    -- typed answer columns (same semantics as OLTP response, plus a typed
+    -- response_boolean for boolean-type questions whose OLTP response_text
+    -- is 'true' / 'false')
     response_text        VARCHAR,
     response_numeric     DOUBLE,
     response_date        DATE,
+    response_boolean     BOOLEAN,                -- populated only for boolean-type questions
     option_value         VARCHAR,                -- denormalized from response_option for speed
 
     -- concept keys (pre-joined; enable concept-based cross-study queries without joins)
