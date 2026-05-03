@@ -2,9 +2,9 @@
 
 At an international workshop, someone asked: *"If we wanted to run a major prospective cohort study in our own country, how would we do that?"*
 
-That question is the standard quickq is designed to clear. Not data sharing. Not harmonization. Running the same study — same instruments, same skip logic, same scoring rules, same analytical queries, same provenance — at a new site in a different country, from a standing start. The answer should be: download this file, run this command, and you are running the same study.
+For the questionnaire layer, the answer should be: receive a `study.db`, deploy collection, refresh analytics. Same instruments, same skip logic, same scoring rules, same analytical queries, same provenance, from a standing start.
 
-Every architectural decision in quickq is evaluated against that bar.
+That is the standard quickq is designed to clear. Every architectural decision is evaluated against it.
 
 ---
 
