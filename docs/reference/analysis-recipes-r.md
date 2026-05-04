@@ -1,26 +1,25 @@
-# Analysis Recipes (Python)
+# Analysis Recipes (R)
 
-Per-question-type recipes for going from `fact_response` to a chart. Each
-recipe pairs a SQL query against the OLAP star schema with an
-[Altair](https://altair-viz.github.io/) visualization. Drop them into a
-Jupyter notebook, marimo notebook, or any Python script, and adjust the
-`link_id` to fit your study.
+Per-question-type recipes for going from `fact_response` to a chart in R.
+The SQL is the same as in the [Python recipes](analysis-recipes.md) and is
+canonical in [Query Patterns by Question Type](query-patterns.md). This page
+swaps the chart layer for [`ggplot2`](https://ggplot2.tidyverse.org/) and
+the connection layer for the [`duckdb`](https://duckdb.org/docs/api/r) R
+package.
 
-The SQL is canonical and lives in
-[Query Patterns by Question Type](query-patterns.md). This page is the thin
-chart layer on top of those queries. For the same recipes in R, see
-[Analysis Recipes (R)](analysis-recipes-r.md).
+`quickq` itself is a Python CLI, but its OLAP output is a DuckDB file that R
+can query directly with no Python in the loop.
 
 ---
 
 ## Setup: get a database to query
 
-Every recipe below assumes you have a DuckDB OLAP file (`analytics.duckdb`)
-produced by `quickq refresh`. Two ways to get one:
+Every recipe below assumes a DuckDB OLAP file (`analytics.duckdb`) produced
+by `quickq refresh`. Two ways to get one:
 
 ### Option A: use the bundled demo
 
-Reproducible, takes ~5 seconds, covers all 11 implemented question types.
+Run these once at the shell to produce a 500-respondent seeded study:
 
 ```bash
 quickq init study.db
@@ -44,18 +43,19 @@ Adjust the `link_id` in each recipe to a question that exists in your
 instrument. If your study spans multiple questionnaires, add
 `AND dq.questionnaire_id = ?` to each query's `WHERE` clause.
 
-### Imports
+### R session setup
 
-```python
-import duckdb
-import pandas as pd
-import altair as alt
+```r
+library(duckdb)
+library(DBI)
+library(ggplot2)
 
-con = duckdb.connect("analytics.duckdb", read_only=True)
+con <- dbConnect(duckdb::duckdb(), "analytics.duckdb", read_only = TRUE)
 
-def q(sql: str) -> pd.DataFrame:
-    return con.execute(sql).df()
+q <- function(sql) dbGetQuery(con, sql)
 ```
+
+When you're done: `dbDisconnect(con, shutdown = TRUE)`.
 
 ---
 
@@ -63,22 +63,21 @@ def q(sql: str) -> pd.DataFrame:
 
 Bar chart of the option distribution.
 
-```python
-df = q("""
-    SELECT opt.option_text AS choice, COUNT(*) AS n
+```r
+df <- q("
+    SELECT opt.option_text AS choice, MIN(opt.option_value) AS sort_key, COUNT(*) AS n
     FROM fact_response fr
-    JOIN dim_question dq        USING (question_id)
+    JOIN dim_question dq         USING (question_id)
     JOIN dim_response_option opt USING (option_id)
     WHERE dq.link_id = 'demo.general_health'
     GROUP BY 1
-    ORDER BY MIN(opt.option_value)
-""")
+    ORDER BY sort_key
+")
+df$choice <- factor(df$choice, levels = df$choice)
 
-alt.Chart(df).mark_bar().encode(
-    x=alt.X("choice:N", sort=None, title="Response"),
-    y=alt.Y("n:Q",      title="Respondents"),
-    tooltip=["choice", "n"],
-)
+ggplot(df, aes(x = choice, y = n)) +
+    geom_col() +
+    labs(x = "Response", y = "Respondents")
 ```
 
 ---
@@ -88,15 +87,15 @@ alt.Chart(df).mark_bar().encode(
 Selection rate (% of respondents who picked each option). Distinct-session
 count is the right denominator because one respondent can pick many options.
 
-```python
-df = q("""
+```r
+df <- q("
     WITH n_resp AS (
         SELECT COUNT(DISTINCT session_id) AS total FROM fact_response
     )
     SELECT
-        opt.option_text                                            AS choice,
-        COUNT(DISTINCT fr.session_id)                              AS n_selected,
-        ROUND(100.0 * COUNT(DISTINCT fr.session_id) / n_resp.total, 1) AS pct
+        opt.option_text                                                 AS choice,
+        COUNT(DISTINCT fr.session_id)                                   AS n_selected,
+        ROUND(100.0 * COUNT(DISTINCT fr.session_id) / n_resp.total, 1)  AS pct
     FROM fact_response fr
     JOIN dim_question dq         USING (question_id)
     JOIN dim_response_option opt USING (option_id)
@@ -104,13 +103,11 @@ df = q("""
     WHERE dq.link_id = 'demo.management_strategies'
     GROUP BY 1, n_resp.total
     ORDER BY pct DESC
-""")
+")
 
-alt.Chart(df).mark_bar().encode(
-    y=alt.Y("choice:N", sort="-x", title=None),
-    x=alt.X("pct:Q",    title="% of respondents"),
-    tooltip=["choice", "n_selected", "pct"],
-)
+ggplot(df, aes(x = pct, y = reorder(choice, pct))) +
+    geom_col() +
+    labs(x = "% of respondents", y = NULL)
 ```
 
 ---
@@ -121,22 +118,22 @@ Same as multiple_choice for the structured options. The free-text "Other"
 content arrives as rows where `option_id IS NULL` and `response_text` holds
 the typed-in value.
 
-```python
+```r
 # Frequency, including the "Other" bucket
-df = q("""
+df <- q("
     SELECT
         COALESCE(opt.option_text, 'Other (free text)') AS choice,
         COUNT(*)                                       AS n
     FROM fact_response fr
-    JOIN dim_question dq            USING (question_id)
+    JOIN dim_question dq              USING (question_id)
     LEFT JOIN dim_response_option opt USING (option_id)
     WHERE dq.link_id = 'demo.current_symptoms'
     GROUP BY 1
     ORDER BY n DESC
-""")
+")
 
 # Inspect the Other free-text values for thematic coding
-others = q("""
+others <- q("
     SELECT response_text, COUNT(*) AS n
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
@@ -145,7 +142,7 @@ others = q("""
       AND fr.response_text IS NOT NULL
     GROUP BY 1
     ORDER BY n DESC
-""")
+")
 ```
 
 ---
@@ -154,44 +151,36 @@ others = q("""
 
 Proportion positive with a Wilson 95% confidence interval.
 
-```python
-import math
-
-df = q("""
+```r
+df <- q("
     SELECT
         dq.link_id,
-        COUNT(*)                                                 AS n,
-        SUM(CASE WHEN fr.response_boolean = TRUE THEN 1 END)     AS n_true
+        COUNT(*)                                              AS n,
+        SUM(CASE WHEN fr.response_boolean = TRUE THEN 1 END)  AS n_true
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
     WHERE dq.question_type = 'boolean'
     GROUP BY dq.link_id
-""")
+")
 
-def wilson_ci(k: int, n: int, z: float = 1.96):
-    if n == 0:
-        return (None, None)
-    p = k / n
-    denom = 1 + z**2 / n
-    centre = (p + z**2 / (2 * n)) / denom
-    half = z * math.sqrt(p * (1 - p) / n + z**2 / (4 * n**2)) / denom
-    return centre - half, centre + half
+wilson_ci <- function(k, n, z = 1.96) {
+    if (n == 0) return(c(NA_real_, NA_real_))
+    p     <- k / n
+    denom <- 1 + z^2 / n
+    centre <- (p + z^2 / (2 * n)) / denom
+    half   <- z * sqrt(p * (1 - p) / n + z^2 / (4 * n^2)) / denom
+    c(centre - half, centre + half)
+}
 
-df["pct_true"] = 100 * df["n_true"] / df["n"]
-df[["ci_low", "ci_high"]] = df.apply(
-    lambda r: pd.Series([100 * v for v in wilson_ci(r["n_true"], r["n"])]),
-    axis=1,
-)
+ci <- t(mapply(wilson_ci, df$n_true, df$n))
+df$pct_true <- 100 * df$n_true / df$n
+df$ci_low   <- 100 * ci[, 1]
+df$ci_high  <- 100 * ci[, 2]
 
-alt.Chart(df).mark_errorbar().encode(
-    x=alt.X("ci_low:Q", title="% true (95% CI)"),
-    x2="ci_high:Q",
-    y=alt.Y("link_id:N", title=None),
-) + alt.Chart(df).mark_circle(size=80).encode(
-    x="pct_true:Q",
-    y="link_id:N",
-    tooltip=["link_id", "n", "pct_true", "ci_low", "ci_high"],
-)
+ggplot(df, aes(x = pct_true, y = link_id)) +
+    geom_errorbarh(aes(xmin = ci_low, xmax = ci_high), height = 0.2) +
+    geom_point(size = 3) +
+    labs(x = "% true (95% CI)", y = NULL)
 ```
 
 `response_boolean` is a typed BOOLEAN column on `fact_response`. The OLTP
@@ -206,43 +195,40 @@ Free text is rarely chart-friendly. Two useful summaries are response rate
 and length distribution; the actual content typically goes to qualitative
 review or downstream NLP.
 
-```python
-df = q("""
-    SELECT
-        LENGTH(fr.response_text) AS chars
+```r
+df <- q("
+    SELECT LENGTH(fr.response_text) AS chars
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
     WHERE dq.link_id = 'demo.additional_notes'
       AND fr.response_text IS NOT NULL
       AND LENGTH(fr.response_text) > 0
-""")
+")
 
-alt.Chart(df).mark_bar().encode(
-    x=alt.X("chars:Q", bin=alt.Bin(maxbins=30), title="Response length (characters)"),
-    y=alt.Y("count():Q",                          title="Responses"),
-)
+ggplot(df, aes(x = chars)) +
+    geom_histogram(bins = 30) +
+    labs(x = "Response length (characters)", y = "Responses")
 ```
 
 ---
 
 ## `numeric`
 
-Histogram + summary stats. The OLAP refresh pre-computes percentile and
-spread metrics in `agg_numeric_stats` if you want them without rolling your own.
+Histogram. The OLAP refresh pre-computes percentile and spread metrics in
+`agg_numeric_stats` if you want them without rolling your own.
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT response_numeric AS value
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
     WHERE dq.link_id = 'demo.symptom_days'
       AND fr.response_numeric IS NOT NULL
-""")
+")
 
-alt.Chart(df).mark_bar().encode(
-    x=alt.X("value:Q", bin=alt.Bin(maxbins=30), title="Symptom days in past 30"),
-    y=alt.Y("count():Q",                         title="Respondents"),
-)
+ggplot(df, aes(x = value)) +
+    geom_histogram(bins = 30) +
+    labs(x = "Symptom days in past 30", y = "Respondents")
 ```
 
 ---
@@ -252,8 +238,8 @@ alt.Chart(df).mark_bar().encode(
 Time series of when answers fell. For `dateTime` questions, swap
 `response_date` for `response_text` (ISO 8601) and parse upstream.
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT
         DATE_TRUNC('month', fr.response_date) AS month,
         COUNT(*)                              AS n
@@ -263,12 +249,13 @@ df = q("""
       AND fr.response_date IS NOT NULL
     GROUP BY 1
     ORDER BY 1
-""")
+")
+df$month <- as.Date(df$month)
 
-alt.Chart(df).mark_line(point=True).encode(
-    x=alt.X("month:T", title="Diagnosis month"),
-    y=alt.Y("n:Q",     title="Respondents"),
-)
+ggplot(df, aes(x = month, y = n)) +
+    geom_line() +
+    geom_point() +
+    labs(x = "Diagnosis month", y = "Respondents")
 ```
 
 ---
@@ -279,21 +266,19 @@ Identical to `numeric` for analysis purposes. The slider's range and labels
 matter for rendering, not aggregation. A density chart often reads better
 than a histogram for slider distributions:
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT response_numeric AS value
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
     WHERE dq.link_id = 'demo.pain_vas'
       AND fr.response_numeric IS NOT NULL
-""")
+")
 
-alt.Chart(df).transform_density(
-    "value", as_=["value", "density"], extent=[0, 100],
-).mark_area(opacity=0.6).encode(
-    x=alt.X("value:Q", title="Pain VAS (0-100)"),
-    y=alt.Y("density:Q", title="Density"),
-)
+ggplot(df, aes(x = value)) +
+    geom_density(fill = "steelblue", alpha = 0.4) +
+    xlim(0, 100) +
+    labs(x = "Pain VAS (0-100)", y = "Density")
 ```
 
 ---
@@ -304,27 +289,26 @@ A Likert is an ordered single-choice. The canonical visualization is a
 diverging stacked bar centered on the neutral midpoint. The simpler form is
 a colored ordinal bar:
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT
-        opt.option_value::INTEGER AS score,
-        opt.option_text           AS label,
-        COUNT(*)                  AS n
+        CAST(opt.option_value AS INTEGER) AS score,
+        opt.option_text                   AS label,
+        COUNT(*)                          AS n
     FROM fact_response fr
     JOIN dim_question dq         USING (question_id)
     JOIN dim_response_option opt USING (option_id)
     WHERE dq.link_id = 'demo.self_management'
     GROUP BY 1, 2
     ORDER BY 1
-""")
-df["pct"] = 100 * df["n"] / df["n"].sum()
+")
+df$pct   <- 100 * df$n / sum(df$n)
+df$label <- factor(df$label, levels = df$label)
 
-alt.Chart(df).mark_bar().encode(
-    x=alt.X("label:N", sort=df["label"].tolist(), title=None),
-    y=alt.Y("pct:Q",   title="% of respondents"),
-    color=alt.Color("score:O", scale=alt.Scale(scheme="redyellowgreen"), legend=None),
-    tooltip=["label", "n", alt.Tooltip("pct:Q", format=".1f")],
-)
+ggplot(df, aes(x = label, y = pct, fill = score)) +
+    geom_col() +
+    scale_fill_distiller(palette = "RdYlGn", direction = 1, guide = "none") +
+    labs(x = NULL, y = "% of respondents")
 ```
 
 ---
@@ -333,34 +317,31 @@ alt.Chart(df).mark_bar().encode(
 
 Heatmap with rows = grid rows and columns = grid columns. The OLAP fact
 table carries `grid_row_id` / `grid_column_id`; the row/column text labels
-live in the OLTP (`grid_row.row_text`, `grid_column.column_text`). Attach
-the OLTP read-only and join in one query:
+live in the OLTP. Attach the OLTP read-only and join in one query:
 
-```python
-con.execute("ATTACH 'study.db' AS oltp (TYPE sqlite, READ_ONLY)")
+```r
+dbExecute(con, "ATTACH 'study.db' AS oltp (TYPE sqlite, READ_ONLY)")
 
-df = q("""
+df <- q("
     SELECT
-        gr.row_text     AS area,
-        gc.column_text  AS severity,
-        gc.column_value::INTEGER AS severity_value,
-        COUNT(*)        AS n
+        gr.row_text                    AS area,
+        gc.column_text                 AS severity,
+        CAST(gc.column_value AS INTEGER) AS severity_value,
+        COUNT(*)                       AS n
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
     JOIN oltp.grid_row    gr ON fr.grid_row_id    = gr.row_id
     JOIN oltp.grid_column gc ON fr.grid_column_id = gc.column_id
     WHERE dq.link_id = 'demo.daily_impact'
     GROUP BY 1, 2, 3
-""")
+")
+severity_order <- c("Not at all", "A little", "Moderately", "Quite a bit", "Extremely")
+df$severity <- factor(df$severity, levels = severity_order)
 
-severity_order = ["Not at all", "A little", "Moderately", "Quite a bit", "Extremely"]
-
-alt.Chart(df).mark_rect().encode(
-    x=alt.X("severity:N", sort=severity_order, title=None),
-    y=alt.Y("area:N",      title=None),
-    color=alt.Color("n:Q", scale=alt.Scale(scheme="blues"), title="Respondents"),
-    tooltip=["area", "severity", "n"],
-)
+ggplot(df, aes(x = severity, y = area, fill = n)) +
+    geom_tile() +
+    scale_fill_distiller(palette = "Blues", direction = 1) +
+    labs(x = NULL, y = NULL, fill = "Respondents")
 ```
 
 ---
@@ -370,8 +351,8 @@ alt.Chart(df).mark_rect().encode(
 `response_numeric` holds rank position (1 = first choice). Mean rank is the
 natural summary; lower values indicate more frequent prioritization.
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT
         opt.option_text                       AS priority,
         ROUND(AVG(fr.response_numeric), 2)    AS mean_rank,
@@ -382,14 +363,12 @@ df = q("""
     WHERE dq.link_id = 'demo.care_priorities'
     GROUP BY 1
     ORDER BY mean_rank
-""")
+")
 
-alt.Chart(df).mark_bar().encode(
-    y=alt.Y("priority:N", sort="x", title=None),
-    x=alt.X("mean_rank:Q", scale=alt.Scale(domain=[1, df["mean_rank"].max() + 0.5]),
-            title="Mean rank (1 = most important)"),
-    tooltip=["priority", "mean_rank", "n"],
-)
+ggplot(df, aes(x = mean_rank, y = reorder(priority, -mean_rank))) +
+    geom_col() +
+    xlim(1, max(df$mean_rank) + 0.5) +
+    labs(x = "Mean rank (1 = most important)", y = NULL)
 ```
 
 ---
@@ -404,9 +383,8 @@ or within instances as needed.
 The bundled demo doesn't include a repeating group, so the snippet below
 uses placeholder `visits.*` link_ids. Substitute your own.
 
-```python
-# One row per (respondent, visit) with the per-visit numeric metric
-df = q("""
+```r
+df <- q("
     SELECT
         fr.respondent_id,
         fr.repeat_index   AS visit,
@@ -416,16 +394,15 @@ df = q("""
     JOIN dim_question dq USING (question_id)
     WHERE dq.link_id LIKE 'visits.%'
     GROUP BY 1, 2
-""")
+")
 
 # Distribution of visit count per respondent
-visit_count = df.groupby("respondent_id")["visit"].max().reset_index(name="last_visit_idx")
-visit_count["n_visits"] = visit_count["last_visit_idx"] + 1
+visit_count <- aggregate(visit ~ respondent_id, df, max)
+visit_count$n_visits <- visit_count$visit + 1
 
-alt.Chart(visit_count).mark_bar().encode(
-    x=alt.X("n_visits:O", title="Visits recorded"),
-    y=alt.Y("count():Q",  title="Respondents"),
-)
+ggplot(visit_count, aes(x = factor(n_visits))) +
+    geom_bar() +
+    labs(x = "Visits recorded", y = "Respondents")
 ```
 
 ---
@@ -439,9 +416,9 @@ Two questions about a conditional question:
 2. **What does the answer look like for the people who saw it?** Standard
    per-type recipe, restricted to the conditional sub-cohort.
 
-```python
+```r
 # Integrity check: every "yes" to the trigger should produce one date answer
-df = q("""
+df <- q("
     SELECT
         SUM(CASE WHEN dq.link_id = 'demo.has_chronic_condition'
                   AND fr.response_boolean = TRUE  THEN 1 END) AS triggered,
@@ -451,11 +428,11 @@ df = q("""
                                                   THEN 1 END) AS conditional_answers
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
-""")
-assert df["triggered"][0] == df["conditional_answers"][0], "Skip-logic leak"
+")
+stopifnot(df$triggered == df$conditional_answers)
 
 # Conditional analysis: only the triggered sub-cohort
-df = q("""
+df <- q("
     SELECT fr.response_date AS diagnosis_date
     FROM fact_response fr
     JOIN dim_question dq USING (question_id)
@@ -466,7 +443,7 @@ df = q("""
           WHERE dq2.link_id = 'demo.has_chronic_condition'
             AND fr2.response_boolean = TRUE
       )
-""")
+")
 ```
 
 The `EXISTS` / `IN (subquery)` pattern is the workhorse for skip-aware
@@ -479,8 +456,8 @@ flag table once and join against it.
 
 Two questions, one cohort. Pivot one row per session with both answers.
 
-```python
-df = q("""
+```r
+df <- q("
     SELECT
         fr.session_id,
         MAX(CASE WHEN dq.link_id = 'demo.self_management'
@@ -491,13 +468,11 @@ df = q("""
     JOIN dim_question dq USING (question_id)
     WHERE dq.link_id IN ('demo.self_management', 'demo.symptom_days')
     GROUP BY fr.session_id
-""")
+")
 
-alt.Chart(df).mark_circle(opacity=0.5).encode(
-    x="symptom_days:Q",
-    y="confidence:Q",
-    tooltip=list(df.columns),
-)
+ggplot(df, aes(x = symptom_days, y = confidence)) +
+    geom_point(alpha = 0.5) +
+    labs(x = "Symptom days (past 30)", y = "Self-management confidence (1-5)")
 ```
 
 For instrument-level scores (e.g. PHQ-9), don't recompute — use
