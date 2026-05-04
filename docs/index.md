@@ -51,21 +51,24 @@ Together these are the building blocks of a complete, portable, questionnaire-dr
 `quickq --help` shows the full command surface, grouped by purpose:
 
 ```text
-Core         init · load · preview · serve · refresh · seed · data-dict
-             render · report · analytics · export · list
+Core              init · load · preview · serve · refresh · seed · data-dict
+                  render · report · analytics · export · list
 
-FHIR         fhir export · fhir import · fhir import-response
+Study management  fork · merge
 
-Compliance   compliance pseudonymize · compliance set-metadata
-             compliance fair-check · compliance export-metadata
-             compliance delete · compliance withdraw
+FHIR              fhir export · fhir import · fhir import-response
 
-Federated    federated query · federated merge
+Compliance        compliance pseudonymize · compliance set-metadata
+                  compliance fair-check · compliance export-metadata
+                  compliance delete · compliance withdraw
+
+Federated         federated query
 ```
 
 A complete study lifecycle uses commands from each group:
 
 - **Core** authors the instrument, collects responses, and produces analytical outputs (reports, exports, scoring, the DuckDB UI via `quickq analytics`).
+- **Study management** combines and divides study databases. `quickq fork` scaffolds a new study database from an existing one's structure (questions, options, scoring rules) without copying responses; useful for multi-site distribution, dev/staging environments, or generational handoff. `quickq merge` is the inverse: combine multiple site databases into a single combined study.
 - **FHIR** is the cross-language handoff. Export a `Questionnaire` JSON for any FHIR-compatible delivery tool (LHC-Forms, REDCap, a custom mobile app), then import the `QuestionnaireResponse` back.
 - **Compliance** prepares data for sharing under HIPAA, GDPR, and IRB constraints: pseudonymization, FAIR metadata, machine-readable repository deposits, participant withdrawal and erasure.
 - **Federated** runs aggregate queries across multiple site databases without ever moving individual-level records, with cell-size suppression for disclosure control.

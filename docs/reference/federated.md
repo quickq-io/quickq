@@ -90,19 +90,33 @@ A typical multi-site federated analysis:
 4. **Each site sends its `result.json`** back to the coordinating center.
 5. **Coordinating center assembles** the per-site JSONs into a combined view. No individual-level data has moved.
 
-This pattern is distinct from `quickq federated merge`, which combines site databases into a single combined OLTP for studies where individual-level pooling is permitted under a DUA. Use `merge` when records can move; use `query` when they cannot.
+This pattern is distinct from `quickq merge`, which combines site databases into a single combined OLTP for studies where individual-level pooling is permitted under a DUA. Use `merge` when records can move; use `query` when they cannot.
 
 ---
 
-## `quickq federated merge`
+## Companion commands: `quickq fork` and `quickq merge`
 
-For studies where individual-level pooling is permitted, `quickq federated merge` combines multiple site databases into a single combined OLTP study database.
+These are top-level study-management commands (not under the `federated` namespace) that complete the multi-site lifecycle. `fork` distributes a study's structure to collection sites; `merge` reassembles their populated databases.
+
+### `quickq fork`
+
+Scaffolds a new study database from an existing one's structure (questions, options, scoring rules, skip rules, lineage records). Responses, sessions, respondents, audit history, and compliance records are not copied. The new database carries a provenance entry in its `tool_audit_log` linking back to the source.
 
 ```bash
-quickq federated merge site_a.db site_b.db site_c.db --output combined.db
+quickq fork prod.db --questionnaire-id 1 --output site_a.db --site-id site_a
 ```
 
-Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR `QuestionnaireResponse.id`, respondents by `(study_id, external_id)`). Schema divergence is detected at merge time, not at analysis time. See the [Multi-Site Study Operations tutorial](../tutorials/multi-site.md) for the full lifecycle.
+Useful for distributing a canonical instrument to sites at the start of a multi-site study, scaffolding dev or staging copies of prod, or handing a study to another investigator without exposing respondent data.
+
+### `quickq merge`
+
+Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR `QuestionnaireResponse.id`, respondents by `(study_id, external_id)`). Schema divergence is detected at merge time, not at analysis time.
+
+```bash
+quickq merge site_a.db site_b.db site_c.db --output combined.db
+```
+
+See the [Multi-Site Study Operations tutorial](../tutorials/multi-site.md) for the full lifecycle.
 
 ---
 

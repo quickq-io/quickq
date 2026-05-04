@@ -54,7 +54,7 @@ A single ingestor process imports FHIR responses as they arrive. SQLite with WAL
 
 ### Tier 3: Medium multi-site (up to ~100,000 participants)
 
-Each site collects into its own `site_N.db`. A periodic `quickq federated merge` assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.
+Each site collects into its own `site_N.db`. A periodic `quickq merge` assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.
 
 ### Tier 4: Large or institutional (200,000+ participants)
 
@@ -74,7 +74,7 @@ flowchart LR
         direction TB
         C_Apps[Web / Mobile / EMR] -- FHIR --> C_Queue[Ingestor / Queue]
         C_Queue --> C_Sites[(site_A.db\nsite_B.db\nsite_C.db)]
-        C_Sites --> C_Merge[quickq federated merge]
+        C_Sites --> C_Merge[quickq merge]
         C_Merge --> C_Combined[(combined.db)]
         C_Combined --> C_Refresh[quickq refresh]
         C_Refresh --> C_OLAP[(analytics.duckdb)]

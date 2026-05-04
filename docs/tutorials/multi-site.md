@@ -186,7 +186,7 @@ All three hashes must match. If they differ, investigate which YAML was loaded a
 The coordinating center receives the three `.db` files (via secure transfer — they contain PHI at this stage) and runs:
 
 ```bash
-quickq federated merge site_a.db site_b.db site_c.db --output combined.db
+quickq merge site_a.db site_b.db site_c.db --output combined.db
 ```
 
 Expected output:
@@ -399,7 +399,7 @@ Each site:
   [record errata if data quality issues arise]
 
 Coordinating center:
-  quickq federated merge site_a.db site_b.db site_c.db --output combined.db
+  quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
   quickq export analytics_anon.duckdb ./parquet_export/   # optional

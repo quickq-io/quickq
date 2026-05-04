@@ -15,6 +15,10 @@ click.rich_click.COMMAND_GROUPS = {
                          "analytics", "export", "list"],
         },
         {
+            "name": "Study management",
+            "commands": ["fork", "merge"],
+        },
+        {
             "name": "FHIR",
             "commands": ["fhir"],
         },
@@ -41,6 +45,7 @@ from .parser_fhir_response import import_fhir_response
 # inside the commands that need them so `quickq serve` works in envs without duckdb.
 from .preview import preview as preview_questionnaire, build_preview_html
 from .merge import merge_databases, MergeError
+from .fork import fork_database, ForkError
 from .pseudonymize import pseudonymize
 
 from .renderer_questionnaire import render_questionnaire_md
@@ -63,7 +68,7 @@ def compliance() -> None:
 
 @main.group()
 def federated() -> None:
-    """Query sites without sharing records, or merge site databases into one."""
+    """Query across site databases without sharing individual records."""
 
 
 @main.group("list")
@@ -393,7 +398,7 @@ def import_fhir_response_cmd(fhir_path: str, db_path: str, study_id: int | None)
     click.echo(f"Imported {len(session_ids)} response session(s): ids={session_ids}.")
 
 
-@federated.command("merge")
+@main.command("merge")
 @click.argument("sources", nargs=-1, required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", required=True, type=click.Path(), help="Path for the merged output database.")
 @click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
@@ -412,6 +417,66 @@ def merge_cmd(sources: tuple[str, ...], output: str, overwrite: bool) -> None:
     )
     for w in result.warnings:
         click.echo(f"  warning: {w}", err=True)
+
+
+@main.command("fork")
+@click.argument("source_db", type=click.Path(exists=True))
+@click.option("--questionnaire-id", "-q", required=True, type=int,
+              help="Questionnaire to fork from the source database.")
+@click.option("--output", "-o", required=True, type=click.Path(),
+              help="Path for the new (forked) study database.")
+@click.option("--version", "new_version", default=None,
+              help="Bump the version on the new questionnaire (default: copy as-is).")
+@click.option("--site-id", default=None,
+              help="Site identifier recorded in the fork's audit trail.")
+@click.option("--reset-study-metadata", is_flag=True,
+              help="Blank description, PI, IRB, start/end dates so the recipient fills them in.")
+@click.option("--note", default=None,
+              help="Free-text note recorded with the fork's audit entry.")
+@click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
+def fork_cmd(
+    source_db: str,
+    questionnaire_id: int,
+    output: str,
+    new_version: str | None,
+    site_id: str | None,
+    reset_study_metadata: bool,
+    note: str | None,
+    overwrite: bool,
+) -> None:
+    """Fork a study's structure into a new database without copying responses.
+
+    Copies the questionnaire definition, questions, options, scoring rules,
+    skip rules, and lineage records. Leaves responses, sessions, respondents,
+    audit history, and compliance records behind. Records the fork in the new
+    database's audit log so the new study carries provenance back to its source.
+
+    Useful for distributing an instrument to collection sites, scaffolding a
+    dev or staging copy of prod, or handing a study off to another investigator
+    without exposing respondent data.
+    """
+    try:
+        result = fork_database(
+            source_path=source_db,
+            questionnaire_id=questionnaire_id,
+            output_path=output,
+            new_version=new_version,
+            site_id=site_id,
+            reset_study_metadata=reset_study_metadata,
+            note=note,
+            overwrite=overwrite,
+        )
+    except ForkError as exc:
+        raise click.ClickException(str(exc))
+
+    click.echo(
+        f"Forked {result.source} → {result.output}\n"
+        f"  source questionnaire: id={result.source_questionnaire_id} v{result.source_version}\n"
+        f"  new questionnaire:    id={result.new_questionnaire_id} v{result.new_version}\n"
+        f"  copied: {result.questions_copied} questions, {result.options_copied} options, "
+        f"{result.grid_rows_copied + result.grid_columns_copied} grid cells, "
+        f"{result.skip_rules_copied} skip rules, {result.scoring_rules_copied} scoring rules"
+    )
 
 
 @compliance.command("pseudonymize")

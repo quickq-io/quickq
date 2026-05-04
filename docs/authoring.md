@@ -271,7 +271,7 @@ The question is attached to your internal concept. The LOINC mapping is discover
 
 ### Merge-time collision handling
 
-If two sites independently use `auto_concept` and assign Local:2000000001 to different constructs, `quickq federated merge` detects the collision (same code, different concept_name/domain) and surfaces it as a conflict to resolve before the merge completes. The resolution options are: remap one site's code to a new range, or declare them equivalent via `concept_relationship`. This is the same deduplication challenge that arises for external vocabulary codes shared between sites — the merge step handles it uniformly.
+If two sites independently use `auto_concept` and assign Local:2000000001 to different constructs, `quickq merge` detects the collision (same code, different concept_name/domain) and surfaces it as a conflict to resolve before the merge completes. The resolution options are: remap one site's code to a new range, or declare them equivalent via `concept_relationship`. This is the same deduplication challenge that arises for external vocabulary codes shared between sites — the merge step handles it uniformly.
 
 ---
 
