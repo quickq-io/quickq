@@ -18,7 +18,7 @@
         <link rel="prev" href="../architecture/">
       
       
-        <link rel="next" href="../tutorial/">
+        <link rel="next" href="../philosophy/">
       
       
         
@@ -288,272 +288,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Design Decisions
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Design Decisions
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#the-core-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The core architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delivery-independence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Delivery independence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scales-with-your-study" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scales with your study
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Scales with your study">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tier-1-solo-or-small-study-up-to-5000-participants" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tier 1: Solo or small study (up to ~5,000 participants)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tier-2-small-multi-site-up-to-20000-participants" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tier 2: Small multi-site (up to ~20,000 participants)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tier-3-medium-multi-site-up-to-100000-participants" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tier 3: Medium multi-site (up to ~100,000 participants)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tier-4-large-or-institutional-200000-participants" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tier 4: Large or institutional (200,000+ participants)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#federated-analytics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Federated analytics
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-sovereignty-and-the-10-year-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data sovereignty and the 10-year rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#harmonization-across-versions-and-studies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Harmonization across versions and studies
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-cost-of-an-ad-hoc-data-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The cost of an ad-hoc data model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#when-to-use-quickq" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to use quickq
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    The Study Journey
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -568,12 +302,10 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -591,8 +323,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -616,7 +348,35 @@
   <span class="md-ellipsis">
     
   
-    Quickstart: End-to-End Walkthrough
+    Start here: End-to-End Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Study Journey (overview)
   
 
     
@@ -644,7 +404,7 @@
   <span class="md-ellipsis">
     
   
-    Authoring an Instrument
+    Authoring deep-dive
   
 
     
@@ -672,7 +432,7 @@
   <span class="md-ellipsis">
     
   
-    Demo phase: Collect Responses
+    1. Collect responses
   
 
     
@@ -700,7 +460,7 @@
   <span class="md-ellipsis">
     
   
-    Demo phase: Analyze
+    2. Analyze
   
 
     
@@ -728,7 +488,7 @@
   <span class="md-ellipsis">
     
   
-    Demo phase: Data Quality
+    3. Data quality
   
 
     
@@ -756,7 +516,7 @@
   <span class="md-ellipsis">
     
   
-    Demo phase: Share & Publish
+    4. Share & publish
   
 
     
@@ -784,7 +544,7 @@
   <span class="md-ellipsis">
     
   
-    Multi-Site Study Operations
+    Advanced: Multi-site studies
   
 
     
@@ -825,12 +585,10 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -848,8 +606,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -874,6 +632,34 @@
     
   
     Question Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey Authoring (YAML)
   
 
     
@@ -1145,15 +931,28 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../authoring/" class="md-nav__link">
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
     
   
-    Survey Authoring (YAML)
+    Worked examples
   
 
     
@@ -1161,11 +960,19 @@
   
   
 
-      </a>
-    </li>
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Worked examples
   
 
-              
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -1181,7 +988,7 @@
   <span class="md-ellipsis">
     
   
-    Example: PHQ-9 Rendered Instrument
+    PHQ-9 Rendered Instrument
   
 
     
@@ -1209,7 +1016,7 @@
   <span class="md-ellipsis">
     
   
-    Example: PRAPARE Data Dictionary
+    PRAPARE Data Dictionary
   
 
     
@@ -1237,7 +1044,7 @@
   <span class="md-ellipsis">
     
   
-    Example: Gout Check-In (all question types)
+    Gout Check-In (all question types)
   
 
     
@@ -1257,10 +1064,20 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
   
+  
+    
   
   
   
@@ -1274,23 +1091,21 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
-        
-          
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Going Deeper
+    Going deeper
   
 
     
@@ -1301,16 +1116,257 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Going Deeper
+    Going deeper
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delivery-independence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery independence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scales-with-your-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scales with your study
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scales with your study">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-solo-or-small-study-up-to-5000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Solo or small study (up to ~5,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-small-multi-site-up-to-20000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Small multi-site (up to ~20,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-medium-multi-site-up-to-100000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Medium multi-site (up to ~100,000 participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-4-large-or-institutional-200000-participants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 4: Large or institutional (200,000+ participants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#federated-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Federated analytics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sovereignty-and-the-10-year-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data sovereignty and the 10-year rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#harmonization-across-versions-and-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Harmonization across versions and studies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-of-an-ad-hoc-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost of an ad-hoc data model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-quickq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use quickq
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
             
               
                 
@@ -1368,67 +1424,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Database Schema
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Database Schema
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -1443,7 +1438,7 @@
   <span class="md-ellipsis">
     
   
-    OLTP (SQLite)
+    Database Schema (SQLite OLTP)
   
 
     
@@ -1471,7 +1466,7 @@
   <span class="md-ellipsis">
     
   
-    OLAP (DuckDB)
+    Database Schema (DuckDB OLAP)
   
 
     
@@ -1878,7 +1873,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
