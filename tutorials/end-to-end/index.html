@@ -2061,14 +2061,18 @@ quickq<span class="w"> </span>serve<span class="w"> </span>study.db
 </code></pre></div>
 <p><code>quickq analytics</code> defaults to <code>./analytics.duckdb</code> and opens a SQL editor in your browser. It requires the <a href="https://duckdb.org/docs/installation/">DuckDB CLI</a> on your PATH (<code>brew install duckdb</code> on macOS); the interactive UI needs DuckDB ≥ 1.2.</p>
 <p>For a non-interactive run — handy for notebooks or scripts — pass <code>--queries-file</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SELECT COUNT(*) FROM dim_session;&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>count.sql
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;-- How many response sessions did we collect?</span>
+<span class="s2">SELECT COUNT(*) FROM dim_session;&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>count.sql
 quickq<span class="w"> </span>analytics<span class="w"> </span>--queries-file<span class="w"> </span>count.sql
 </code></pre></div>
 <p>Try the following queries in the UI.</p>
 <hr />
 <p><strong>Which joints were most commonly affected?</strong></p>
 <p>Each selected option in a multiple-choice question is its own row in <code>fact_response</code>. The same GROUP BY pattern works for every question type — no schema knowledge required.</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">ro</span><span class="p">.</span><span class="n">option_text</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">joint</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Frequency of each selected joint in the multi-choice</span>
+<span class="c1">-- &quot;Which joints were affected?&quot; question. Each selection is its</span>
+<span class="c1">-- own row in fact_response, so COUNT(*) is the natural aggregate.</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">ro</span><span class="p">.</span><span class="n">option_text</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">joint</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
 <span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span><span class="w"> </span><span class="n">f</span>
 <span class="k">JOIN</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">question_id</span><span class="p">)</span>
 <span class="k">JOIN</span><span class="w"> </span><span class="n">dim_response_option</span><span class="w"> </span><span class="n">ro</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">option_id</span><span class="p">)</span>
@@ -2079,7 +2083,10 @@ quickq<span class="w"> </span>analytics<span class="w"> </span>--queries-file<sp
 <hr />
 <p><strong>Does alcohol frequency correlate with pain score?</strong></p>
 <p>Two questions with completely different types — a choice and a numeric — joined only by <code>session_id</code>. This query is structurally identical for any pair of questions in any instrument, without any schema changes.</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Mean current-pain score (numeric) bucketed by self-reported</span>
+<span class="c1">-- alcohol frequency (single_choice). Two questions of different</span>
+<span class="c1">-- types joined on session_id — the same shape works for any pair.</span>
+<span class="k">SELECT</span>
 <span class="w">    </span><span class="n">alcohol</span><span class="p">.</span><span class="n">option_text</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alcohol_frequency</span><span class="p">,</span>
 <span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">            </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
 <span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">pain</span><span class="p">.</span><span class="n">response_numeric</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_pain_score</span>
@@ -2102,7 +2109,10 @@ quickq<span class="w"> </span>analytics<span class="w"> </span>--queries-file<sp
 <hr />
 <p><strong>Did skip logic fire correctly?</strong></p>
 <p>The questionnaire structure is queryable. <code>skip_violated</code> should be 0 — no session should have answered the joints question without first answering the date question.</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Skip-logic integrity check. &quot;joints_today&quot; only renders when</span>
+<span class="c1">-- &quot;last_attack&quot; has a date. skip_violated should be 0 — no session</span>
+<span class="c1">-- should have answered the conditional question without its trigger.</span>
+<span class="k">SELECT</span>
 <span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">date_answered</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">joints_answered</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">       </span><span class="k">AS</span><span class="w"> </span><span class="n">skip_respected</span><span class="p">,</span>
 <span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="n">date_answered</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">joints_answered</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">    </span><span class="k">AS</span><span class="w"> </span><span class="n">skip_violated</span>
 <span class="k">FROM</span><span class="w"> </span><span class="p">(</span>
