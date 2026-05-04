@@ -9,6 +9,8 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'hooks/**'
+      - 'examples/notebooks/**'
       - '.github/workflows/publish-docs.yml'
   workflow_dispatch:
 
@@ -26,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # mkdocs gh-deploy walks history; full clone needed
+          # ghp-import needs full history to commit onto gh-pages
           fetch-depth: 0
 
       - name: Set up uv
@@ -34,13 +36,33 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install dependencies (incl. mkdocs + mkdocs-material from dev group)
+      - name: Install dependencies (incl. mkdocs + mkdocs-material + marimo from dev group)
         run: uv sync
+
+      - name: Install Chromium for the notebook smoke test
+        run: uv run playwright install --with-deps chromium
+
+      - name: Build site (mkdocs hook regenerates notebook data + exports WASM bundles)
+        run: uv run mkdocs build
+
+      - name: Smoke-test WASM notebook bundles
+        # Asserts each notebook's expected text actually rendered. Catches
+        # parquet 404s, missing pyodide deps, and silent cell exceptions.
+        run: uv run python scripts/smoke_test_notebooks.py site/
 
       - name: Configure git for the bot commit on gh-pages
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-      - name: Build and deploy to gh-pages
-        run: uv run mkdocs gh-deploy --force --remote-branch gh-pages
+      - name: Deploy site/ to gh-pages
+        # Push the already-built site/ directly. Avoids `mkdocs gh-deploy`
+        # which would re-run mkdocs build (and the hook) a second time.
+        run: |
+          uv run ghp-import \
+            --no-jekyll \
+            --force \
+            --push \
+            --branch gh-pages \
+            --message "deploy ${GITHUB_SHA::7}" \
+            site
