@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="./assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="./assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="./assets/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>health intake demo</title>
+    <script type="module" crossorigin src="./assets/index-D48a2kB0.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-D2MJg03u.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="./assets/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/jsx-runtime-BqBOg78p.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEventListener-BR0C1MaI.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-JieDVWC_.js">
+    <link rel="modulepreload" crossorigin href="./assets/precisionRound-CU2C3Vxx.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-BLne0bXb.js">
+    <link rel="modulepreload" crossorigin href="./assets/vega-loader.browser-DXARUlxo.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-Bq5kLQ87.js">
+    <link rel="modulepreload" crossorigin href="./assets/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="./assets/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="./assets/badge-ChrPsdTW.js">
+    <link rel="modulepreload" crossorigin href="./assets/button-D9nb17Rw.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="./assets/fullscreen-BDxedMYP.js">
+    <link rel="modulepreload" crossorigin href="./assets/menu-items-CwUpDHG7.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BoOh2kN5.js">
+    <link rel="modulepreload" crossorigin href="./assets/createLucideIcon-D5guW7EU.js">
+    <link rel="modulepreload" crossorigin href="./assets/check-BH35Ndha.js">
+    <link rel="modulepreload" crossorigin href="./assets/x-C-6liIBr.js">
+    <link rel="modulepreload" crossorigin href="./assets/select-5i7URBEn.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-Gcwqb_SK.js">
+    <link rel="modulepreload" crossorigin href="./assets/use-toast-BDYuj3zG.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="./assets/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="./assets/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="./assets/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="./assets/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-DIGrmLDO.js">
+    <link rel="modulepreload" crossorigin href="./assets/Deferred-DxQeE5uh.js">
+    <link rel="modulepreload" crossorigin href="./assets/uuid-DXdzqzcr.js">
+    <link rel="modulepreload" crossorigin href="./assets/DeferredRequestRegistry-DjHgMr3S.js">
+    <link rel="modulepreload" crossorigin href="./assets/constants-DMpttj8Q.js">
+    <link rel="modulepreload" crossorigin href="./assets/session-nmTRerwF.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-ChCHm539.js">
+    <link rel="modulepreload" crossorigin href="./assets/requests-DIwGYs0l.js">
+    <link rel="modulepreload" crossorigin href="./assets/useLifecycle-DieWOfXE.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNonce-DfoVjkkH.js">
+    <link rel="modulepreload" crossorigin href="./assets/useTheme-DEcgJENn.js">
+    <link rel="modulepreload" crossorigin href="./assets/arrays-DYDL-3-i.js">
+    <link rel="modulepreload" crossorigin href="./assets/strings-md4mFbOQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/once-DRroIaBz.js">
+    <link rel="modulepreload" crossorigin href="./assets/capabilities-C_FLIcjP.js">
+    <link rel="modulepreload" crossorigin href="./assets/createReducer-1ePoj7v6.js">
+    <link rel="modulepreload" crossorigin href="./assets/paths-CXng2XQv.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BrR4M-k3.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-HlsDto3K.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CHcznzB-.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DGxytjtv.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DZ2qbK2N.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CEysMnMQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-Ds4ite_2.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CRPTyqAT.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-C9ZB41s2.js">
+    <link rel="modulepreload" crossorigin href="./assets/stex-jWatZkll.js">
+    <link rel="modulepreload" crossorigin href="./assets/toDate-B5A0DFEz.js">
+    <link rel="modulepreload" crossorigin href="./assets/purify.es-DC4RGS9t.js">
+    <link rel="modulepreload" crossorigin href="./assets/cjs-BRGiG41H.js">
+    <link rel="modulepreload" crossorigin href="./assets/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="./assets/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="./assets/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="./assets/database-zap-BUVn5HoR.js">
+    <link rel="modulepreload" crossorigin href="./assets/main-B0OX4z33.js">
+    <link rel="modulepreload" crossorigin href="./assets/cells-A-ljPpuj.js">
+    <link rel="modulepreload" crossorigin href="./assets/ErrorBoundary-DzYV_VeY.js">
+    <link rel="modulepreload" crossorigin href="./assets/kbd-CGShmG7L.js">
+    <link rel="modulepreload" crossorigin href="./assets/useInstallPackage-afgh7PwB.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-dialog-BGBdrcqJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/dialog-EekxpBBM.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDebounce-BDIglWmG.js">
+    <link rel="modulepreload" crossorigin href="./assets/numbers-OHL_xBiC.js">
+    <link rel="modulepreload" crossorigin href="./assets/SSRProvider-D3zWcDme.js">
+    <link rel="modulepreload" crossorigin href="./assets/context-DGqo1TbK.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNumberFormatter-wQU1z0W_.js">
+    <link rel="modulepreload" crossorigin href="./assets/usePress-CtfZXGno.js">
+    <link rel="modulepreload" crossorigin href="./assets/input-DyPS_GiK.js">
+    <link rel="modulepreload" crossorigin href="./assets/ImperativeModal-BBqcKmmk.js">
+    <link rel="modulepreload" crossorigin href="./assets/cell-link-d38hFEon.js">
+    <link rel="modulepreload" crossorigin href="./assets/multi-map-rafH3cg3.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-cDholnQq.js">
+    <link rel="modulepreload" crossorigin href="./assets/chevron-right-CG5QYXYk.js">
+    <link rel="modulepreload" crossorigin href="./assets/dropdown-menu-D1A3cFC8.js">
+    <link rel="modulepreload" crossorigin href="./assets/links-C-rLiK3d.js">
+    <link rel="modulepreload" crossorigin href="./assets/useRunCells-DU1tawR-.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-B5qyZn5s.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-Dk_3y0H-.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-icon-C67c9EwB.js">
+    <link rel="modulepreload" crossorigin href="./assets/RenderHTML-DR6lqJGS.js">
+    <link rel="modulepreload" crossorigin href="./assets/datasource-BCnGIjqn.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-Bsz477is.js">
+    <link rel="modulepreload" crossorigin href="./assets/sparkles-CZ5WmLPA.js">
+    <link rel="modulepreload" crossorigin href="./assets/MarimoErrorOutput-B9_RO5eX.js">
+    <link rel="modulepreload" crossorigin href="./assets/spinner-Bhir8k53.js">
+    <link rel="modulepreload" crossorigin href="./assets/html-to-image-tbPEMBJg.js">
+    <link rel="modulepreload" crossorigin href="./assets/focus-Baz7rlo0.js">
+    <link rel="modulepreload" crossorigin href="./assets/useAsyncData-dS4Ne6pU.js">
+    <link rel="modulepreload" crossorigin href="./assets/LazyAnyLanguageCodeMirror-0gZO1asr.js">
+    <link rel="modulepreload" crossorigin href="./assets/micromark-factory-space-WzovnJik.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-5FQGJX7Z-B4RvNAGm.js">
+    <link rel="modulepreload" crossorigin href="./assets/markdown-renderer-CFrgiLqu.js">
+    <link rel="modulepreload" crossorigin href="./assets/command-CXDOCJwp.js">
+    <link rel="modulepreload" crossorigin href="./assets/popover-UExmgBsf.js">
+    <link rel="modulepreload" crossorigin href="./assets/errors-CZb6hI2x.js">
+    <link rel="modulepreload" crossorigin href="./assets/download-Iyng0xCz.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-23NNA1s9.js">
+    <link rel="modulepreload" crossorigin href="./assets/useIframeCapabilities-CryCjoyY.js">
+    <link rel="modulepreload" crossorigin href="./assets/error-banner-CTBwdcdk.js">
+    <link rel="modulepreload" crossorigin href="./assets/formats-BvyJSIqk.js">
+    <link rel="modulepreload" crossorigin href="./assets/en-US-BqRooSzc.js">
+    <link rel="modulepreload" crossorigin href="./assets/isValid-bmSEa3HX.js">
+    <link rel="modulepreload" crossorigin href="./assets/dates-DhByPWH5.js">
+    <link rel="modulepreload" crossorigin href="./assets/maps-C48Oksn0.js">
+    <link rel="modulepreload" crossorigin href="./assets/extends-Co37_JfG.js">
+    <link rel="modulepreload" crossorigin href="./assets/emotion-is-prop-valid.esm-DYxi7n2b.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDateFormatter-BEz9SEXo.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-icons.esm-BUYTQ32a.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-6NxtGaCm.js">
+    <link rel="modulepreload" crossorigin href="./assets/ellipsis-pk06Lq82.js">
+    <link rel="modulepreload" crossorigin href="./assets/message-circle-CWm2KnSx.js">
+    <link rel="modulepreload" crossorigin href="./assets/trash-2-D280Xiwg.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-resizable-panels.browser.esm-Bcm5njwd.js">
+    <link rel="modulepreload" crossorigin href="./assets/JsonOutput-CsshJCMI.js">
+    <link rel="modulepreload" crossorigin href="./assets/chart-no-axes-column-nqk474t8.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-function-D1dlJvD8.js">
+    <link rel="modulepreload" crossorigin href="./assets/spec-Cq8FVoTf.js">
+    <link rel="modulepreload" crossorigin href="./assets/ellipsis-vertical-gxgNyR5G.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-cw-DHwG4Mac.js">
+    <link rel="modulepreload" crossorigin href="./assets/tree-actions-oMCx6WNc.js">
+    <link rel="modulepreload" crossorigin href="./assets/components-FepcpFGL.js">
+    <link rel="modulepreload" crossorigin href="./assets/column-preview-DUPpv2dz.js">
+    <link rel="modulepreload" crossorigin href="./assets/icons-BRopQwI3.js">
+    <link rel="modulepreload" crossorigin href="./assets/floating-outline-CSNGDMAm.js">
+    <link rel="modulepreload" crossorigin href="./assets/useAddCell-De9xD63_.js">
+    <link rel="modulepreload" crossorigin href="./assets/objectWithoutPropertiesLoose-smPWkHxB.js">
+    <link rel="modulepreload" crossorigin href="./assets/esm-G1JMtvxe.js">
+    <link rel="modulepreload" crossorigin href="./assets/eye-off-BT-KOYV5.js">
+    <link rel="modulepreload" crossorigin href="./assets/plus-BgB18UzY.js">
+    <link rel="modulepreload" crossorigin href="./assets/readonly-python-code-B0nrQE3U.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-headphone-B3fuktN0.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-HTLbeC2b.js">
+    <link rel="modulepreload" crossorigin href="./assets/image-DQHXdEQn.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-icons-DTNZv05h.js">
+    <link rel="modulepreload" crossorigin href="./assets/switch-DlgpDZMk.js">
+    <link rel="modulepreload" crossorigin href="./assets/events-Qeh-bHlj.js">
+    <link rel="modulepreload" crossorigin href="./assets/globals-xVhZei_S.js">
+    <link rel="modulepreload" crossorigin href="./assets/share-BXN2Sd1t.js">
+    <link rel="modulepreload" crossorigin href="./assets/blob-CTort_or.js">
+    <link rel="modulepreload" crossorigin href="./assets/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="./assets/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseSet-CxV9N1bc.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-CikXvgx3.js">
+    <link rel="modulepreload" crossorigin href="./assets/label-DTR8T0AE.js">
+    <link rel="modulepreload" crossorigin href="./assets/textarea-Dd0InTQJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/radio-group-BtBoRbGH.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-ccw-C-n2VFP5.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-0wZOuqB-.js">
+    <link rel="modulepreload" crossorigin href="./assets/renderShortcut-CkNNAheg.js">
+    <link rel="modulepreload" crossorigin href="./assets/field-B8kJgr2A.js">
+    <link rel="modulepreload" crossorigin href="./assets/RSPContexts-BeHIgT4C.js">
+    <link rel="modulepreload" crossorigin href="./assets/useBoolean-CLFdHewv.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDeepCompareMemoize-D0WTlCXt.js">
+    <link rel="modulepreload" crossorigin href="./assets/types-W8WWuumF.js">
+    <link rel="modulepreload" crossorigin href="./assets/fileToBase64-Bzn96tYq.js">
+    <link rel="modulepreload" crossorigin href="./assets/pathUtils-CSrNy17a.js">
+    <link rel="modulepreload" crossorigin href="./assets/prop-types-BFRDxSKF.js">
+    <link rel="modulepreload" crossorigin href="./assets/es-YQvzKo5h.js">
+    <link rel="modulepreload" crossorigin href="./assets/hasIn-DiS_ryrS.js">
+    <link rel="modulepreload" crossorigin href="./assets/flatten-Dl4V1ub3.js">
+    <link rel="modulepreload" crossorigin href="./assets/pick-DqWUNly1.js">
+    <link rel="modulepreload" crossorigin href="./assets/code-xml-CZN6vNxu.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-Dj2Cf4ne.js">
+    <link rel="modulepreload" crossorigin href="./assets/triangle-alert-DBoAWWKA.js">
+    <link rel="modulepreload" crossorigin href="./assets/bundle.esm-DU-4isVC.js">
+    <link rel="stylesheet" crossorigin href="./assets/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin href="./assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="./assets/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-DH5UUBE4.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "\"\"\"Anatomy of a Health Survey: 500 Respondents, 3 Questions Worth Asking.\n\nA self-contained marimo notebook that demonstrates three things you can do\nwith a `quickq` study without writing any custom analysis code:\n\n  1. Verify a skip-logic pattern actually held\n  2. Render a Likert distribution\n  3. Summarize a ranked-choice question by mean rank\n\nSibling layout:\n  examples/health_intake_demo.yaml         questionnaire definition\n  examples/notebooks/public/*.parquet      seeded OLAP exports (auto-generated)\n\nThe data is regenerated automatically when the docs site is built. To\nregenerate locally:\n\n    uv run python scripts/build_notebook_data.py \\\\\n        --yaml examples/health_intake_demo.yaml \\\\\n        --output-dir examples/notebooks/public \\\\\n        --n 500 --seed 20260503\n\nRun locally:\n    uv run marimo edit examples/notebooks/health_intake_demo.py\n\nExport to a self-contained interactive HTML page:\n    uv run marimo export html-wasm examples/notebooks/health_intake_demo.py \\\\\n        -o site/notebooks/health-intake-demo\n\"\"\"\n\nimport marimo\n\n__generated_with = \"0.23.4\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell(hide_code=True)\ndef _intro(mo):\n    mo.md(r\"\"\"\n    # Anatomy of a Health Survey\n\n    ### 500 respondents \u00b7 3 questions worth asking \u00b7 zero custom ETL\n\n    Below: a skip pattern, a Likert distribution, and a ranked-choice\n    summary, all from one OLAP fact table. SQL plus a thin Altair layer.\n\n    Recipes for every other question type live in the\n    [analysis cookbook](https://quickq-io.github.io/quickq/reference/analysis-recipes/).\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _setup():\n    import io\n    import urllib.request\n    import marimo as mo\n    import duckdb\n    import pandas as pd\n    import pyarrow.parquet as pq\n    import altair as alt\n\n    base = mo.notebook_location() / \"public\"\n\n    def _read_parquet(loc):\n        s = str(loc)\n        if \"://\" in s:\n            with urllib.request.urlopen(s) as resp:\n                return pq.read_table(io.BytesIO(resp.read()))\n        return pq.read_table(s)\n\n    con = duckdb.connect(\":memory:\")\n    for table in (\n        \"fact_response\",\n        \"dim_question\",\n        \"dim_response_option\",\n    ):\n        arrow_table = _read_parquet(base / f\"{table}.parquet\")\n        con.register(table, arrow_table)\n\n    def q(sql: str) -\u003E pd.DataFrame:\n        return con.execute(sql).df()\n\n    return alt, mo, q\n\n\n@app.cell(hide_code=True)\ndef _section_skip(mo):\n    mo.md(r\"\"\"\n    ---\n    ## 1. Did the skip logic actually hold?\n\n    `demo.diagnosis_date` only renders when `demo.has_chronic_condition`\n    is `true`. The OLAP should contain exactly one date answer per \"yes\"\n    response and zero from the \"no\" branch.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _skip_check(mo, q):\n    skip = q(\n        \"\"\"\n        SELECT\n            SUM(CASE WHEN dq.link_id = 'demo.has_chronic_condition'\n                      AND fr.response_boolean = TRUE  THEN 1 END) AS chronic_yes,\n            SUM(CASE WHEN dq.link_id = 'demo.has_chronic_condition'\n                      AND fr.response_boolean = FALSE THEN 1 END) AS chronic_no,\n            SUM(CASE WHEN dq.link_id = 'demo.diagnosis_date'\n                                                     THEN 1 END) AS diagnosis_dates\n        FROM fact_response fr\n        JOIN dim_question dq USING (question_id)\n        \"\"\"\n    )\n    yes = int(skip[\"chronic_yes\"][0])\n    no = int(skip[\"chronic_no\"][0])\n    dates = int(skip[\"diagnosis_dates\"][0])\n    integrity = \"OK\" if dates == yes else f\"MISMATCH ({dates} vs {yes})\"\n\n    skip_summary = mo.md(\n        f\"\"\"\n        | Branch | n |\n        |---|---|\n        | `chronic_condition = true`  (date question shown)  | **{yes}** |\n        | `chronic_condition = false` (date question hidden) | **{no}** |\n        | `diagnosis_date` answers in fact_response          | **{dates}** |\n\n        Skip-logic integrity: **{integrity}**\n        \"\"\"\n    )\n    skip_summary\n    return\n\n\n@app.cell(hide_code=True)\ndef _section_likert(mo):\n    mo.md(r\"\"\"\n    ---\n    ## 2. How confident are respondents managing their condition?\n\n    A 5-point Likert is stored as an ordered single-choice question.\n    Numeric coercion happens during refresh, so `option_value` is ready\n    to sort and color.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _likert_chart(alt, q):\n    likert = q(\n        \"\"\"\n        SELECT\n            opt.option_value::INTEGER AS score,\n            opt.option_text           AS label,\n            COUNT(*)                  AS n\n        FROM fact_response fr\n        JOIN dim_question dq         USING (question_id)\n        JOIN dim_response_option opt USING (option_id)\n        WHERE dq.link_id = 'demo.self_management'\n        GROUP BY 1, 2\n        ORDER BY 1\n        \"\"\"\n    )\n    likert[\"pct\"] = likert[\"n\"] / likert[\"n\"].sum() * 100\n\n    likert_chart = (\n        alt.Chart(likert)\n        .mark_bar()\n        .encode(\n            x=alt.X(\"label:N\", sort=likert[\"label\"].tolist(), title=None),\n            y=alt.Y(\"pct:Q\", title=\"% of respondents\"),\n            color=alt.Color(\n                \"score:O\",\n                scale=alt.Scale(scheme=\"redyellowgreen\"),\n                legend=None,\n            ),\n            tooltip=[\n                alt.Tooltip(\"label:N\", title=\"Response\"),\n                alt.Tooltip(\"n:Q\", title=\"Count\"),\n                alt.Tooltip(\"pct:Q\", title=\"%\", format=\".1f\"),\n            ],\n        )\n        .properties(\n            width=520,\n            height=260,\n            title=\"\u201cI feel confident managing my condition day-to-day.\u201d\",\n        )\n    )\n    likert_chart\n    return\n\n\n@app.cell(hide_code=True)\ndef _section_ranked(mo):\n    mo.md(r\"\"\"\n    ---\n    ## 3. What do patients prioritize?\n\n    Ranked questions store one row per option with `response_numeric`\n    holding the rank position (1 = first choice). Mean rank is the\n    natural summary; lower means more frequently prioritized.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _ranked_chart(alt, q):\n    ranked = q(\n        \"\"\"\n        SELECT\n            opt.option_text                    AS priority,\n            ROUND(AVG(fr.response_numeric), 2) AS mean_rank,\n            COUNT(*)                           AS n\n        FROM fact_response fr\n        JOIN dim_question dq         USING (question_id)\n        JOIN dim_response_option opt USING (option_id)\n        WHERE dq.link_id = 'demo.care_priorities'\n        GROUP BY 1\n        ORDER BY mean_rank\n        \"\"\"\n    )\n\n    ranked_chart = (\n        alt.Chart(ranked)\n        .mark_bar()\n        .encode(\n            y=alt.Y(\"priority:N\", sort=\"x\", title=None),\n            x=alt.X(\n                \"mean_rank:Q\",\n                title=\"Mean rank (1 = most important)\",\n                scale=alt.Scale(domain=[1, 5]),\n            ),\n            tooltip=[\"priority\", \"mean_rank\", \"n\"],\n        )\n        .properties(width=520, height=220, title=\"Care priorities, mean rank\")\n    )\n    ranked_chart\n    return\n\n\n@app.cell(hide_code=True)\ndef _outro(mo):\n    mo.md(r\"\"\"\n    ---\n    ### What this is showing\n\n    Three analyses, three SQL queries, one fact table. No custom ETL,\n    no per-instrument pipeline, no JSON parsing. The skip-pattern\n    integrity check, the ordered-categorical visualization, and the\n    ranked-choice summary all pull from `fact_response` joined to a\n    couple of dimensions.\n\n    Recipes for every other question type (boolean with confidence\n    intervals, grid heatmaps, repeating groups, free-text response\n    rates, cross-question pivots) are in the\n    [analysis cookbook](https://quickq-io.github.io/quickq/reference/analysis-recipes/).\n\n    Notebook source:\n    [`examples/notebooks/health_intake_demo.py`](https://github.com/quickq-io/quickq/blob/main/examples/notebooks/health_intake_demo.py).\n    Questionnaire that generated this data:\n    [`examples/health_intake_demo.yaml`](https://github.com/quickq-io/quickq/blob/main/examples/health_intake_demo.yaml).\n    \"\"\")\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">%22%22%22Anatomy%20of%20a%20Health%20Survey%3A%20500%20Respondents%2C%203%20Questions%20Worth%20Asking.%0A%0AA%20self-contained%20marimo%20notebook%20that%20demonstrates%20three%20things%20you%20can%20do%0Awith%20a%20%60quickq%60%20study%20without%20writing%20any%20custom%20analysis%20code%3A%0A%0A%20%201.%20Verify%20a%20skip-logic%20pattern%20actually%20held%0A%20%202.%20Render%20a%20Likert%20distribution%0A%20%203.%20Summarize%20a%20ranked-choice%20question%20by%20mean%20rank%0A%0ASibling%20layout%3A%0A%20%20examples%2Fhealth_intake_demo.yaml%20%20%20%20%20%20%20%20%20questionnaire%20definition%0A%20%20examples%2Fnotebooks%2Fpublic%2F*.parquet%20%20%20%20%20%20seeded%20OLAP%20exports%20(auto-generated)%0A%0AThe%20data%20is%20regenerated%20automatically%20when%20the%20docs%20site%20is%20built.%20To%0Aregenerate%20locally%3A%0A%0A%20%20%20%20uv%20run%20python%20scripts%2Fbuild_notebook_data.py%20%5C%5C%0A%20%20%20%20%20%20%20%20--yaml%20examples%2Fhealth_intake_demo.yaml%20%5C%5C%0A%20%20%20%20%20%20%20%20--output-dir%20examples%2Fnotebooks%2Fpublic%20%5C%5C%0A%20%20%20%20%20%20%20%20--n%20500%20--seed%2020260503%0A%0ARun%20locally%3A%0A%20%20%20%20uv%20run%20marimo%20edit%20examples%2Fnotebooks%2Fhealth_intake_demo.py%0A%0AExport%20to%20a%20self-contained%20interactive%20HTML%20page%3A%0A%20%20%20%20uv%20run%20marimo%20export%20html-wasm%20examples%2Fnotebooks%2Fhealth_intake_demo.py%20%5C%5C%0A%20%20%20%20%20%20%20%20-o%20site%2Fnotebooks%2Fhealth-intake-demo%0A%22%22%22%0A%0Aimport%20marimo%0A%0A__generated_with%20%3D%20%220.23.4%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_intro(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Anatomy%20of%20a%20Health%20Survey%0A%0A%20%20%20%20%23%23%23%20500%20respondents%20%C2%B7%203%20questions%20worth%20asking%20%C2%B7%20zero%20custom%20ETL%0A%0A%20%20%20%20Below%3A%20a%20skip%20pattern%2C%20a%20Likert%20distribution%2C%20and%20a%20ranked-choice%0A%20%20%20%20summary%2C%20all%20from%20one%20OLAP%20fact%20table.%20SQL%20plus%20a%20thin%20Altair%20layer.%0A%0A%20%20%20%20Recipes%20for%20every%20other%20question%20type%20live%20in%20the%0A%20%20%20%20%5Banalysis%20cookbook%5D(https%3A%2F%2Fquickq-io.github.io%2Fquickq%2Freference%2Fanalysis-recipes%2F).%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_setup()%3A%0A%20%20%20%20import%20io%0A%20%20%20%20import%20urllib.request%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20duckdb%0A%20%20%20%20import%20pandas%20as%20pd%0A%20%20%20%20import%20pyarrow.parquet%20as%20pq%0A%20%20%20%20import%20altair%20as%20alt%0A%0A%20%20%20%20base%20%3D%20mo.notebook_location()%20%2F%20%22public%22%0A%0A%20%20%20%20def%20_read_parquet(loc)%3A%0A%20%20%20%20%20%20%20%20s%20%3D%20str(loc)%0A%20%20%20%20%20%20%20%20if%20%22%3A%2F%2F%22%20in%20s%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20with%20urllib.request.urlopen(s)%20as%20resp%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%20pq.read_table(io.BytesIO(resp.read()))%0A%20%20%20%20%20%20%20%20return%20pq.read_table(s)%0A%0A%20%20%20%20con%20%3D%20duckdb.connect(%22%3Amemory%3A%22)%0A%20%20%20%20for%20table%20in%20(%0A%20%20%20%20%20%20%20%20%22fact_response%22%2C%0A%20%20%20%20%20%20%20%20%22dim_question%22%2C%0A%20%20%20%20%20%20%20%20%22dim_response_option%22%2C%0A%20%20%20%20)%3A%0A%20%20%20%20%20%20%20%20arrow_table%20%3D%20_read_parquet(base%20%2F%20f%22%7Btable%7D.parquet%22)%0A%20%20%20%20%20%20%20%20con.register(table%2C%20arrow_table)%0A%0A%20%20%20%20def%20q(sql%3A%20str)%20-%3E%20pd.DataFrame%3A%0A%20%20%20%20%20%20%20%20return%20con.execute(sql).df()%0A%0A%20%20%20%20return%20alt%2C%20mo%2C%20q%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_section_skip(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20---%0A%20%20%20%20%23%23%201.%20Did%20the%20skip%20logic%20actually%20hold%3F%0A%0A%20%20%20%20%60demo.diagnosis_date%60%20only%20renders%20when%20%60demo.has_chronic_condition%60%0A%20%20%20%20is%20%60true%60.%20The%20OLAP%20should%20contain%20exactly%20one%20date%20answer%20per%20%22yes%22%0A%20%20%20%20response%20and%20zero%20from%20the%20%22no%22%20branch.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_skip_check(mo%2C%20q)%3A%0A%20%20%20%20skip%20%3D%20q(%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20SELECT%0A%20%20%20%20%20%20%20%20%20%20%20%20SUM(CASE%20WHEN%20dq.link_id%20%3D%20'demo.has_chronic_condition'%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20fr.response_boolean%20%3D%20TRUE%20%20THEN%201%20END)%20AS%20chronic_yes%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20SUM(CASE%20WHEN%20dq.link_id%20%3D%20'demo.has_chronic_condition'%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20fr.response_boolean%20%3D%20FALSE%20THEN%201%20END)%20AS%20chronic_no%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20SUM(CASE%20WHEN%20dq.link_id%20%3D%20'demo.diagnosis_date'%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20THEN%201%20END)%20AS%20diagnosis_dates%0A%20%20%20%20%20%20%20%20FROM%20fact_response%20fr%0A%20%20%20%20%20%20%20%20JOIN%20dim_question%20dq%20USING%20(question_id)%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%20%20%20%20yes%20%3D%20int(skip%5B%22chronic_yes%22%5D%5B0%5D)%0A%20%20%20%20no%20%3D%20int(skip%5B%22chronic_no%22%5D%5B0%5D)%0A%20%20%20%20dates%20%3D%20int(skip%5B%22diagnosis_dates%22%5D%5B0%5D)%0A%20%20%20%20integrity%20%3D%20%22OK%22%20if%20dates%20%3D%3D%20yes%20else%20f%22MISMATCH%20(%7Bdates%7D%20vs%20%7Byes%7D)%22%0A%0A%20%20%20%20skip_summary%20%3D%20mo.md(%0A%20%20%20%20%20%20%20%20f%22%22%22%0A%20%20%20%20%20%20%20%20%7C%20Branch%20%7C%20n%20%7C%0A%20%20%20%20%20%20%20%20%7C---%7C---%7C%0A%20%20%20%20%20%20%20%20%7C%20%60chronic_condition%20%3D%20true%60%20%20(date%20question%20shown)%20%20%7C%20**%7Byes%7D**%20%7C%0A%20%20%20%20%20%20%20%20%7C%20%60chronic_condition%20%3D%20false%60%20(date%20question%20hidden)%20%7C%20**%7Bno%7D**%20%7C%0A%20%20%20%20%20%20%20%20%7C%20%60diagnosis_date%60%20answers%20in%20fact_response%20%20%20%20%20%20%20%20%20%20%7C%20**%7Bdates%7D**%20%7C%0A%0A%20%20%20%20%20%20%20%20Skip-logic%20integrity%3A%20**%7Bintegrity%7D**%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%20%20%20%20skip_summary%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_section_likert(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20---%0A%20%20%20%20%23%23%202.%20How%20confident%20are%20respondents%20managing%20their%20condition%3F%0A%0A%20%20%20%20A%205-point%20Likert%20is%20stored%20as%20an%20ordered%20single-choice%20question.%0A%20%20%20%20Numeric%20coercion%20happens%20during%20refresh%2C%20so%20%60option_value%60%20is%20ready%0A%20%20%20%20to%20sort%20and%20color.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_likert_chart(alt%2C%20q)%3A%0A%20%20%20%20likert%20%3D%20q(%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20SELECT%0A%20%20%20%20%20%20%20%20%20%20%20%20opt.option_value%3A%3AINTEGER%20AS%20score%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20opt.option_text%20%20%20%20%20%20%20%20%20%20%20AS%20label%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20COUNT(*)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AS%20n%0A%20%20%20%20%20%20%20%20FROM%20fact_response%20fr%0A%20%20%20%20%20%20%20%20JOIN%20dim_question%20dq%20%20%20%20%20%20%20%20%20USING%20(question_id)%0A%20%20%20%20%20%20%20%20JOIN%20dim_response_option%20opt%20USING%20(option_id)%0A%20%20%20%20%20%20%20%20WHERE%20dq.link_id%20%3D%20'demo.self_management'%0A%20%20%20%20%20%20%20%20GROUP%20BY%201%2C%202%0A%20%20%20%20%20%20%20%20ORDER%20BY%201%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%20%20%20%20likert%5B%22pct%22%5D%20%3D%20likert%5B%22n%22%5D%20%2F%20likert%5B%22n%22%5D.sum()%20*%20100%0A%0A%20%20%20%20likert_chart%20%3D%20(%0A%20%20%20%20%20%20%20%20alt.Chart(likert)%0A%20%20%20%20%20%20%20%20.mark_bar()%0A%20%20%20%20%20%20%20%20.encode(%0A%20%20%20%20%20%20%20%20%20%20%20%20x%3Dalt.X(%22label%3AN%22%2C%20sort%3Dlikert%5B%22label%22%5D.tolist()%2C%20title%3DNone)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20y%3Dalt.Y(%22pct%3AQ%22%2C%20title%3D%22%25%20of%20respondents%22)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20color%3Dalt.Color(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22score%3AO%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20scale%3Dalt.Scale(scheme%3D%22redyellowgreen%22)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20legend%3DNone%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20tooltip%3D%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20alt.Tooltip(%22label%3AN%22%2C%20title%3D%22Response%22)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20alt.Tooltip(%22n%3AQ%22%2C%20title%3D%22Count%22)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20alt.Tooltip(%22pct%3AQ%22%2C%20title%3D%22%25%22%2C%20format%3D%22.1f%22)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20%20)%0A%20%20%20%20%20%20%20%20.properties(%0A%20%20%20%20%20%20%20%20%20%20%20%20width%3D520%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20height%3D260%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22%E2%80%9CI%20feel%20confident%20managing%20my%20condition%20day-to-day.%E2%80%9D%22%2C%0A%20%20%20%20%20%20%20%20)%0A%20%20%20%20)%0A%20%20%20%20likert_chart%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_section_ranked(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20---%0A%20%20%20%20%23%23%203.%20What%20do%20patients%20prioritize%3F%0A%0A%20%20%20%20Ranked%20questions%20store%20one%20row%20per%20option%20with%20%60response_numeric%60%0A%20%20%20%20holding%20the%20rank%20position%20(1%20%3D%20first%20choice).%20Mean%20rank%20is%20the%0A%20%20%20%20natural%20summary%3B%20lower%20means%20more%20frequently%20prioritized.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_ranked_chart(alt%2C%20q)%3A%0A%20%20%20%20ranked%20%3D%20q(%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20SELECT%0A%20%20%20%20%20%20%20%20%20%20%20%20opt.option_text%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AS%20priority%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20ROUND(AVG(fr.response_numeric)%2C%202)%20AS%20mean_rank%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20COUNT(*)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AS%20n%0A%20%20%20%20%20%20%20%20FROM%20fact_response%20fr%0A%20%20%20%20%20%20%20%20JOIN%20dim_question%20dq%20%20%20%20%20%20%20%20%20USING%20(question_id)%0A%20%20%20%20%20%20%20%20JOIN%20dim_response_option%20opt%20USING%20(option_id)%0A%20%20%20%20%20%20%20%20WHERE%20dq.link_id%20%3D%20'demo.care_priorities'%0A%20%20%20%20%20%20%20%20GROUP%20BY%201%0A%20%20%20%20%20%20%20%20ORDER%20BY%20mean_rank%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%0A%20%20%20%20ranked_chart%20%3D%20(%0A%20%20%20%20%20%20%20%20alt.Chart(ranked)%0A%20%20%20%20%20%20%20%20.mark_bar()%0A%20%20%20%20%20%20%20%20.encode(%0A%20%20%20%20%20%20%20%20%20%20%20%20y%3Dalt.Y(%22priority%3AN%22%2C%20sort%3D%22x%22%2C%20title%3DNone)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20x%3Dalt.X(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22mean_rank%3AQ%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Mean%20rank%20(1%20%3D%20most%20important)%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20scale%3Dalt.Scale(domain%3D%5B1%2C%205%5D)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20tooltip%3D%5B%22priority%22%2C%20%22mean_rank%22%2C%20%22n%22%5D%2C%0A%20%20%20%20%20%20%20%20)%0A%20%20%20%20%20%20%20%20.properties(width%3D520%2C%20height%3D220%2C%20title%3D%22Care%20priorities%2C%20mean%20rank%22)%0A%20%20%20%20)%0A%20%20%20%20ranked_chart%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_outro(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20---%0A%20%20%20%20%23%23%23%20What%20this%20is%20showing%0A%0A%20%20%20%20Three%20analyses%2C%20three%20SQL%20queries%2C%20one%20fact%20table.%20No%20custom%20ETL%2C%0A%20%20%20%20no%20per-instrument%20pipeline%2C%20no%20JSON%20parsing.%20The%20skip-pattern%0A%20%20%20%20integrity%20check%2C%20the%20ordered-categorical%20visualization%2C%20and%20the%0A%20%20%20%20ranked-choice%20summary%20all%20pull%20from%20%60fact_response%60%20joined%20to%20a%0A%20%20%20%20couple%20of%20dimensions.%0A%0A%20%20%20%20Recipes%20for%20every%20other%20question%20type%20(boolean%20with%20confidence%0A%20%20%20%20intervals%2C%20grid%20heatmaps%2C%20repeating%20groups%2C%20free-text%20response%0A%20%20%20%20rates%2C%20cross-question%20pivots)%20are%20in%20the%0A%20%20%20%20%5Banalysis%20cookbook%5D(https%3A%2F%2Fquickq-io.github.io%2Fquickq%2Freference%2Fanalysis-recipes%2F).%0A%0A%20%20%20%20Notebook%20source%3A%0A%20%20%20%20%5B%60examples%2Fnotebooks%2Fhealth_intake_demo.py%60%5D(https%3A%2F%2Fgithub.com%2Fquickq-io%2Fquickq%2Fblob%2Fmain%2Fexamples%2Fnotebooks%2Fhealth_intake_demo.py).%0A%20%20%20%20Questionnaire%20that%20generated%20this%20data%3A%0A%20%20%20%20%5B%60examples%2Fhealth_intake_demo.yaml%60%5D(https%3A%2F%2Fgithub.com%2Fquickq-io%2Fquickq%2Fblob%2Fmain%2Fexamples%2Fhealth_intake_demo.yaml).%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "read",
+            "version": "0.23.4",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "uv"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>
