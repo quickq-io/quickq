@@ -982,13 +982,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quickq-federated-merge" class="md-nav__link">
+  <a href="#companion-commands-quickq-fork-and-quickq-merge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        quickq federated merge
+        Companion commands: quickq fork and quickq merge
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Companion commands: quickq fork and quickq merge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quickq-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quickq-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1542,13 +1570,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quickq-federated-merge" class="md-nav__link">
+  <a href="#companion-commands-quickq-fork-and-quickq-merge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        quickq federated merge
+        Companion commands: quickq fork and quickq merge
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Companion commands: quickq fork and quickq merge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quickq-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quickq-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quickq merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1651,13 +1707,20 @@
 <li><strong>Each site sends its <code>result.json</code></strong> back to the coordinating center.</li>
 <li><strong>Coordinating center assembles</strong> the per-site JSONs into a combined view. No individual-level data has moved.</li>
 </ol>
-<p>This pattern is distinct from <code>quickq federated merge</code>, which combines site databases into a single combined OLTP for studies where individual-level pooling is permitted under a DUA. Use <code>merge</code> when records can move; use <code>query</code> when they cannot.</p>
+<p>This pattern is distinct from <code>quickq merge</code>, which combines site databases into a single combined OLTP for studies where individual-level pooling is permitted under a DUA. Use <code>merge</code> when records can move; use <code>query</code> when they cannot.</p>
 <hr />
-<h2 id="quickq-federated-merge"><code>quickq federated merge</code><a class="headerlink" href="#quickq-federated-merge" title="Permanent link">&para;</a></h2>
-<p>For studies where individual-level pooling is permitted, <code>quickq federated merge</code> combines multiple site databases into a single combined OLTP study database.</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>federated<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
+<h2 id="companion-commands-quickq-fork-and-quickq-merge">Companion commands: <code>quickq fork</code> and <code>quickq merge</code><a class="headerlink" href="#companion-commands-quickq-fork-and-quickq-merge" title="Permanent link">&para;</a></h2>
+<p>These are top-level study-management commands (not under the <code>federated</code> namespace) that complete the multi-site lifecycle. <code>fork</code> distributes a study's structure to collection sites; <code>merge</code> reassembles their populated databases.</p>
+<h3 id="quickq-fork"><code>quickq fork</code><a class="headerlink" href="#quickq-fork" title="Permanent link">&para;</a></h3>
+<p>Scaffolds a new study database from an existing one's structure (questions, options, scoring rules, skip rules, lineage records). Responses, sessions, respondents, audit history, and compliance records are not copied. The new database carries a provenance entry in its <code>tool_audit_log</code> linking back to the source.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fork<span class="w"> </span>prod.db<span class="w"> </span>--questionnaire-id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>site_a.db<span class="w"> </span>--site-id<span class="w"> </span>site_a
 </code></pre></div>
-<p>Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR <code>QuestionnaireResponse.id</code>, respondents by <code>(study_id, external_id)</code>). Schema divergence is detected at merge time, not at analysis time. See the <a href="../../tutorials/multi-site/">Multi-Site Study Operations tutorial</a> for the full lifecycle.</p>
+<p>Useful for distributing a canonical instrument to sites at the start of a multi-site study, scaffolding dev or staging copies of prod, or handing a study to another investigator without exposing respondent data.</p>
+<h3 id="quickq-merge"><code>quickq merge</code><a class="headerlink" href="#quickq-merge" title="Permanent link">&para;</a></h3>
+<p>Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR <code>QuestionnaireResponse.id</code>, respondents by <code>(study_id, external_id)</code>). Schema divergence is detected at merge time, not at analysis time.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
+</code></pre></div>
+<p>See the <a href="../../tutorials/multi-site/">Multi-Site Study Operations tutorial</a> for the full lifecycle.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

@@ -1933,7 +1933,7 @@ quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">expor
 <hr />
 <h2 id="step-6-merge-at-the-coordinating-center">Step 6 — Merge at the coordinating center<a class="headerlink" href="#step-6-merge-at-the-coordinating-center" title="Permanent link">&para;</a></h2>
 <p>The coordinating center receives the three <code>.db</code> files (via secure transfer — they contain PHI at this stage) and runs:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>federated<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
 </code></pre></div>
 <p>Expected output:</p>
 <div class="highlight"><pre><span></span><code>Merged 3 source(s) into combined.db:
@@ -2089,7 +2089,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
   [record errata if data quality issues arise]
 
 Coordinating center:
-  quickq federated merge site_a.db site_b.db site_c.db --output combined.db
+  quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
   quickq export analytics_anon.duckdb ./parquet_export/   # optional

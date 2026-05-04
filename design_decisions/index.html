@@ -1707,7 +1707,7 @@
 <h3 id="tier-2-small-multi-site-up-to-20000-participants">Tier 2: Small multi-site (up to ~20,000 participants)<a class="headerlink" href="#tier-2-small-multi-site-up-to-20000-participants" title="Permanent link">&para;</a></h3>
 <p>A single ingestor process imports FHIR responses as they arrive. SQLite with WAL mode sustains thousands of sequential writes per second; the bottleneck is never the database. <code>quickq refresh</code> still runs in under a minute.</p>
 <h3 id="tier-3-medium-multi-site-up-to-100000-participants">Tier 3: Medium multi-site (up to ~100,000 participants)<a class="headerlink" href="#tier-3-medium-multi-site-up-to-100000-participants" title="Permanent link">&para;</a></h3>
-<p>Each site collects into its own <code>site_N.db</code>. A periodic <code>quickq federated merge</code> assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.</p>
+<p>Each site collects into its own <code>site_N.db</code>. A periodic <code>quickq merge</code> assembles a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.</p>
 <h3 id="tier-4-large-or-institutional-200000-participants">Tier 4: Large or institutional (200,000+ participants)<a class="headerlink" href="#tier-4-large-or-institutional-200000-participants" title="Permanent link">&para;</a></h3>
 <p>Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, <code>quickq export</code> dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.</p>
 <pre class="mermaid"><code>flowchart LR
@@ -1723,7 +1723,7 @@
         direction TB
         C_Apps[Web / Mobile / EMR] -- FHIR --&gt; C_Queue[Ingestor / Queue]
         C_Queue --&gt; C_Sites[(site_A.db\nsite_B.db\nsite_C.db)]
-        C_Sites --&gt; C_Merge[quickq federated merge]
+        C_Sites --&gt; C_Merge[quickq merge]
         C_Merge --&gt; C_Combined[(combined.db)]
         C_Combined --&gt; C_Refresh[quickq refresh]
         C_Refresh --&gt; C_OLAP[(analytics.duckdb)]
