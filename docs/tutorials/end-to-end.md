@@ -449,9 +449,11 @@ FROM (
 
 ---
 
-## What to look for
+## We'd love your feedback
 
-Note anything that caused friction, confusion, or required guessing. Specifically:
+Thank you for working through this walkthrough. quickq is in active beta, and feedback from people who actually try the workflow is the single most useful thing for shaping what comes next. Anything that caused friction, confusion, or required guessing is worth telling us about, even if it feels minor.
+
+A few prompts to consider as you reflect:
 
 - Did the YAML format feel natural? Were any field names or structures surprising?
 - Did the option set feature feel useful and clear?
@@ -460,4 +462,11 @@ Note anything that caused friction, confusion, or required guessing. Specificall
 - Was submission clearly confirmed?
 - Did the report reflect the answers you submitted?
 
-All feedback is useful — the goal is to find rough edges before real studies depend on this.
+The most helpful place to share what you found is a GitHub issue:
+[**github.com/quickq-io/quickq/issues**](https://github.com/quickq-io/quickq/issues).
+Bug reports, missing features, paper cuts, "this section of the docs lost
+me," and "I expected X but got Y" are all welcome. If you saw something
+that worked well, that's also worth knowing — it tells us what not to
+break.
+
+Thanks again for trying it.
