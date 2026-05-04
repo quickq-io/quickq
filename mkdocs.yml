@@ -26,8 +26,9 @@ theme:
         name: Switch to light mode
   features:
     - navigation.sections
-    - navigation.expand
     - navigation.top
+    - navigation.tracking
+    - toc.follow
     - content.code.copy
     - content.code.annotate
 
@@ -49,19 +50,18 @@ markdown_extensions:
 
 nav:
   - Welcome: index.md
-  - Architecture: architecture.md
-  - Design Decisions: design_decisions.md
-  - The Study Journey: tutorial.md
   - Tutorials:
-      - 'Quickstart: End-to-End Walkthrough': tutorials/end-to-end.md
-      - Authoring an Instrument: tutorials/authoring.md
-      - 'Demo phase: Collect Responses': tutorials/collect.md
-      - 'Demo phase: Analyze': tutorials/analytics.md
-      - 'Demo phase: Data Quality': tutorials/data-quality.md
-      - 'Demo phase: Share & Publish': tutorials/share.md
-      - Multi-Site Study Operations: tutorials/multi-site.md
+      - 'Start here: End-to-End Walkthrough': tutorials/end-to-end.md
+      - 'The Study Journey (overview)': tutorial.md
+      - 'Authoring deep-dive': tutorials/authoring.md
+      - '1. Collect responses': tutorials/collect.md
+      - '2. Analyze': tutorials/analytics.md
+      - '3. Data quality': tutorials/data-quality.md
+      - '4. Share & publish': tutorials/share.md
+      - 'Advanced: Multi-site studies': tutorials/multi-site.md
   - Reference:
       - Question Types: reference/question-types.md
+      - Survey Authoring (YAML): authoring.md
       - Query Patterns by Question Type: reference/query-patterns.md
       - Analysis Recipes (Python): reference/analysis-recipes.md
       - Analysis Recipes (R): reference/analysis-recipes-r.md
@@ -71,13 +71,14 @@ nav:
       - Federated Analytics: reference/federated.md
       - FHIR Interoperability: fhir.md
       - OMOP Interoperability: reference/omop.md
-      - Survey Authoring (YAML): authoring.md
-      - 'Example: PHQ-9 Rendered Instrument': reference/example-phq9.md
-      - 'Example: PRAPARE Data Dictionary': reference/example-prapare-data-dict.md
-      - 'Example: Gout Check-In (all question types)': reference/example-gout-checkin.md
-  - Going Deeper:
+      - Worked examples:
+          - 'PHQ-9 Rendered Instrument': reference/example-phq9.md
+          - 'PRAPARE Data Dictionary': reference/example-prapare-data-dict.md
+          - 'Gout Check-In (all question types)': reference/example-gout-checkin.md
+  - Going deeper:
+      - Architecture: architecture.md
+      - Design Decisions: design_decisions.md
       - Design Philosophy: philosophy.md
       - Analytics & Data Model: analytics.md
-  - Database Schema:
-      - OLTP (SQLite): database/oltp.md
-      - OLAP (DuckDB): database/olap.md
+      - 'Database Schema (SQLite OLTP)': database/oltp.md
+      - 'Database Schema (DuckDB OLAP)': database/olap.md
