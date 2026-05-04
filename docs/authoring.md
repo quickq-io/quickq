@@ -4,6 +4,23 @@ Reference for the YAML authoring format: every field, all skip-logic operators, 
 
 Questionnaires are defined in YAML and loaded into the OLTP database with `quickq load`. FHIR Questionnaire JSON from an external source can be imported directly with `quickq fhir import`. Both paths produce the same internal representation.
 
+!!! note "Already using Quest? It's excellent at what it does."
+    The [Quest markup language](https://github.com/episphere/quest) by Russ et
+    al. at NCI / DCEG ([BMC Med Inform Decis Mak 2023](https://doi.org/10.1186/s12911-023-02338-6))
+    is a clean text DSL for authoring and rendering epidemiology questionnaires
+    directly in the browser. If your need is sharp authoring with interactive
+    skip-pattern preview and GitHub-Pages-publishable modules, Quest is the
+    right tool.
+
+    quickq does offer full-featured authoring via YAML and rendering through
+    LHC-Forms, the bundled quickq-forms server, or any FHIR-compliant delivery
+    tool. Its core focus, though, is the broader study lifecycle: a queryable
+    SQLite / DuckDB data model, FHIR R4 delivery, LOINC / SNOMED / OMOP concept
+    coding, versioned scoring rules, and compliance instrumentation. The two
+    are complementary. A small adapter mapping Quest's response JSON to FHIR
+    `QuestionnaireResponse` would let a single study use Quest as the renderer
+    and quickq as the data backbone.
+
 ---
 
 ## YAML Format
