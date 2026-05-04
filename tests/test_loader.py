@@ -153,6 +153,29 @@ def test_load_creates_options_with_set_provenance(tmp_path):
     assert set_ids[0][0] == set_id
 
 
+def test_reload_does_not_duplicate_options(tmp_path):
+    """Re-loading the same YAML must not duplicate response_option rows.
+
+    Regression: questions are matched by link_id and reused on reload, but
+    insert_options used to unconditionally append. After two loads of a
+    multi-choice question with three options, response_option had six rows.
+    """
+    conn = init_oltp(tmp_path / "test.db")
+    load_yaml(conn, FIXTURES / "simple.yaml")
+    load_yaml(conn, FIXTURES / "simple.yaml")
+    load_yaml(conn, FIXTURES / "simple.yaml")
+
+    opts = conn.execute(
+        """SELECT ro.option_value FROM response_option ro
+           JOIN question q ON ro.question_id = q.question_id
+           WHERE q.link_id = 'tobacco.current'
+           ORDER BY ro.display_order""",
+    ).fetchall()
+    assert [r[0] for r in opts] == ["yes", "no"], (
+        "options should still be exactly the original two after three reloads"
+    )
+
+
 def test_load_creates_skip_rules(tmp_path):
     conn = init_oltp(tmp_path / "test.db")
     load_yaml(conn, FIXTURES / "simple.yaml")

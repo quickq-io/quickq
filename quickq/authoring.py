@@ -430,7 +430,22 @@ def insert_options(
     option_set_id: int | None = None,
     auto_concept: bool = False,
 ) -> dict[str, int]:
-    """Insert response options. Returns {option_value: option_id}."""
+    """Insert response options. Returns {option_value: option_id}.
+
+    Idempotent: if any options already exist for `question_id`, returns the
+    existing {value: id} mapping without inserting. Mirrors
+    insert_grid_rows_columns. This protects against duplicate options when
+    a questionnaire is re-loaded against an existing study.db (questions
+    are matched by link_id and reused, but their options were previously
+    being unconditionally appended on every reload).
+    """
+    existing_rows = conn.execute(
+        "SELECT option_value, option_id FROM response_option WHERE question_id = ? ORDER BY option_id",
+        (question_id,),
+    ).fetchall()
+    if existing_rows:
+        return {row["option_value"]: row["option_id"] for row in existing_rows}
+
     result: dict[str, int] = {}
     for i, opt in enumerate(options):
         concept_code: str | None = None
