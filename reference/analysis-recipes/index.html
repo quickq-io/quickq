@@ -18,7 +18,7 @@
         <link rel="prev" href="../query-patterns/">
       
       
-        <link rel="next" href="../seed/">
+        <link rel="next" href="../analysis-recipes-r/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Analysis Recipes (Python + Charts) - quickq</title>
+        <title>Analysis Recipes (Python) - quickq</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#analysis-recipes-by-question-type" class="md-skip">
+        <a href="#analysis-recipes-python" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Analysis Recipes (Python + Charts)
+              Analysis Recipes (Python)
             
           </span>
         </div>
@@ -753,7 +753,7 @@
   <span class="md-ellipsis">
     
   
-    Analysis Recipes (Python + Charts)
+    Analysis Recipes (Python)
   
 
     
@@ -771,7 +771,7 @@
   <span class="md-ellipsis">
     
   
-    Analysis Recipes (Python + Charts)
+    Analysis Recipes (Python)
   
 
     
@@ -797,13 +797,52 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
+  <a href="#setup-get-a-database-to-query" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setup
+        Setup: get a database to query
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Setup: get a database to query">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-use-the-bundled-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: use the bundled demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-use-your-own-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: use your own study
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -965,6 +1004,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-recipes-r/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Recipes (R)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1518,13 +1585,52 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
+  <a href="#setup-get-a-database-to-query" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setup
+        Setup: get a database to query
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Setup: get a database to query">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-use-the-bundled-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: use the bundled demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-use-your-own-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: use your own study
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1702,20 +1808,37 @@
   
 
 
-<h1 id="analysis-recipes-by-question-type">Analysis Recipes by Question Type<a class="headerlink" href="#analysis-recipes-by-question-type" title="Permanent link">&para;</a></h1>
+<h1 id="analysis-recipes-python">Analysis Recipes (Python)<a class="headerlink" href="#analysis-recipes-python" title="Permanent link">&para;</a></h1>
 <p>Per-question-type recipes for going from <code>fact_response</code> to a chart. Each
 recipe pairs a SQL query against the OLAP star schema with an
 <a href="https://altair-viz.github.io/">Altair</a> visualization. Drop them into a
-notebook (Jupyter, marimo, or any Python script) and adjust the <code>link_id</code> to
-fit your study.</p>
-<p>For the underlying SQL patterns without the visualization layer, see
-<a href="../query-patterns/">Query Patterns by Question Type</a>. For a worked, interactive
-example over a seeded survey, see the
-<a href="../notebooks/health-intake-demo/">Anatomy of a Health Survey notebook</a>.</p>
+Jupyter notebook, marimo notebook, or any Python script, and adjust the
+<code>link_id</code> to fit your study.</p>
+<p>The SQL is canonical and lives in
+<a href="../query-patterns/">Query Patterns by Question Type</a>. This page is the thin
+chart layer on top of those queries. For the same recipes in R, see
+<a href="../analysis-recipes-r/">Analysis Recipes (R)</a>.</p>
 <hr />
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<p>Every recipe below assumes you have an OLAP database produced by
-<code>quickq refresh</code>, plus the analytical libraries imported once:</p>
+<h2 id="setup-get-a-database-to-query">Setup: get a database to query<a class="headerlink" href="#setup-get-a-database-to-query" title="Permanent link">&para;</a></h2>
+<p>Every recipe below assumes you have a DuckDB OLAP file (<code>analytics.duckdb</code>)
+produced by <code>quickq refresh</code>. Two ways to get one:</p>
+<h3 id="option-a-use-the-bundled-demo">Option A: use the bundled demo<a class="headerlink" href="#option-a-use-the-bundled-demo" title="Permanent link">&para;</a></h3>
+<p>Reproducible, takes ~5 seconds, covers all 11 implemented question types.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>init<span class="w"> </span>study.db
+quickq<span class="w"> </span>load<span class="w"> </span>examples/health_intake_demo.yaml<span class="w"> </span>study.db
+quickq<span class="w"> </span>seed<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--n<span class="w"> </span><span class="m">500</span><span class="w"> </span>--seed<span class="w"> </span><span class="m">20260503</span>
+quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb
+</code></pre></div>
+<p>The <code>link_id</code> values in the recipes below match the demo (e.g.
+<code>demo.general_health</code>, <code>demo.self_management</code>).</p>
+<h3 id="option-b-use-your-own-study">Option B: use your own study<a class="headerlink" href="#option-b-use-your-own-study" title="Permanent link">&para;</a></h3>
+<p>If you have a populated <code>study.db</code>, just refresh it:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb
+</code></pre></div>
+<p>Adjust the <code>link_id</code> in each recipe to a question that exists in your
+instrument. If your study spans multiple questionnaires, add
+<code>AND dq.questionnaire_id = ?</code> to each query's <code>WHERE</code> clause.</p>
+<h3 id="imports">Imports<a class="headerlink" href="#imports" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">duckdb</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">altair</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">alt</span>
@@ -1725,8 +1848,6 @@ example over a seeded survey, see the
 <span class="k">def</span><span class="w"> </span><span class="nf">q</span><span class="p">(</span><span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
 </code></pre></div>
-<p>If your study spans multiple questionnaires, add <code>AND dq.questionnaire_id = ?</code>
-to each query's <code>WHERE</code> clause.</p>
 <hr />
 <h2 id="single_choice"><code>single_choice</code><a class="headerlink" href="#single_choice" title="Permanent link">&para;</a></h2>
 <p>Bar chart of the option distribution.</p>
@@ -1735,7 +1856,7 @@ to each query's <code>WHERE</code> clause.</p>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq        USING (question_id)</span>
 <span class="s2">    JOIN dim_response_option opt USING (option_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.general_health&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.general_health&#39;</span>
 <span class="s2">    GROUP BY 1</span>
 <span class="s2">    ORDER BY MIN(opt.option_value)</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -1762,7 +1883,7 @@ count is the right denominator because one respondent can pick many options.</p>
 <span class="s2">    JOIN dim_question dq         USING (question_id)</span>
 <span class="s2">    JOIN dim_response_option opt USING (option_id)</span>
 <span class="s2">    CROSS JOIN n_resp</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.management_strategies&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.management_strategies&#39;</span>
 <span class="s2">    GROUP BY 1, n_resp.total</span>
 <span class="s2">    ORDER BY pct DESC</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -1786,7 +1907,7 @@ the typed-in value.</p>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq            USING (question_id)</span>
 <span class="s2">    LEFT JOIN dim_response_option opt USING (option_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.symptoms&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.current_symptoms&#39;</span>
 <span class="s2">    GROUP BY 1</span>
 <span class="s2">    ORDER BY n DESC</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -1796,7 +1917,7 @@ the typed-in value.</p>
 <span class="s2">    SELECT response_text, COUNT(*) AS n</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.symptoms&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.current_symptoms&#39;</span>
 <span class="s2">      AND fr.option_id IS NULL</span>
 <span class="s2">      AND fr.response_text IS NOT NULL</span>
 <span class="s2">    GROUP BY 1</span>
@@ -1857,7 +1978,7 @@ review or downstream NLP.</p>
 <span class="s2">        LENGTH(fr.response_text) AS chars</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.notes&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.additional_notes&#39;</span>
 <span class="s2">      AND fr.response_text IS NOT NULL</span>
 <span class="s2">      AND LENGTH(fr.response_text) &gt; 0</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -1875,7 +1996,7 @@ spread metrics in <code>agg_numeric_stats</code> if you want them without rollin
 <span class="s2">    SELECT response_numeric AS value</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.symptom_days&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.symptom_days&#39;</span>
 <span class="s2">      AND fr.response_numeric IS NOT NULL</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -1894,7 +2015,7 @@ spread metrics in <code>agg_numeric_stats</code> if you want them without rollin
 <span class="s2">        COUNT(*)                              AS n</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.diagnosis_date&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.diagnosis_date&#39;</span>
 <span class="s2">      AND fr.response_date IS NOT NULL</span>
 <span class="s2">    GROUP BY 1</span>
 <span class="s2">    ORDER BY 1</span>
@@ -1914,7 +2035,7 @@ than a histogram for slider distributions:</p>
 <span class="s2">    SELECT response_numeric AS value</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.pain_vas&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.pain_vas&#39;</span>
 <span class="s2">      AND fr.response_numeric IS NOT NULL</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -1938,7 +2059,7 @@ a colored ordinal bar:</p>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq         USING (question_id)</span>
 <span class="s2">    JOIN dim_response_option opt USING (option_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.confidence&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.self_management&#39;</span>
 <span class="s2">    GROUP BY 1, 2</span>
 <span class="s2">    ORDER BY 1</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -1954,19 +2075,22 @@ a colored ordinal bar:</p>
 <hr />
 <h2 id="grid"><code>grid</code><a class="headerlink" href="#grid" title="Permanent link">&para;</a></h2>
 <p>Heatmap with rows = grid rows and columns = grid columns. The OLAP fact
-table carries <code>grid_row_id</code> / <code>grid_column_id</code>; resolve their text labels
-either by joining the OLTP (see <a href="../query-patterns/#grid">Query Patterns</a>)
-or by pre-denormalizing them at notebook export time (the bundled demo
-notebook does the latter).</p>
-<div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+table carries <code>grid_row_id</code> / <code>grid_column_id</code>; the row/column text labels
+live in the OLTP (<code>grid_row.row_text</code>, <code>grid_column.column_text</code>). Attach
+the OLTP read-only and join in one query:</p>
+<div class="highlight"><pre><span></span><code><span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ATTACH &#39;study.db&#39; AS oltp (TYPE sqlite, READ_ONLY)&quot;</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    SELECT</span>
-<span class="s2">        grid_row_text                AS area,</span>
-<span class="s2">        grid_column_text             AS severity,</span>
-<span class="s2">        grid_column_value::INTEGER   AS severity_value,</span>
-<span class="s2">        COUNT(*)                     AS n</span>
+<span class="s2">        gr.row_text     AS area,</span>
+<span class="s2">        gc.column_text  AS severity,</span>
+<span class="s2">        gc.column_value::INTEGER AS severity_value,</span>
+<span class="s2">        COUNT(*)        AS n</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.daily_impact&#39;</span>
+<span class="s2">    JOIN oltp.grid_row    gr ON fr.grid_row_id    = gr.row_id</span>
+<span class="s2">    JOIN oltp.grid_column gc ON fr.grid_column_id = gc.column_id</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.daily_impact&#39;</span>
 <span class="s2">    GROUP BY 1, 2, 3</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -1991,7 +2115,7 @@ natural summary; lower values indicate more frequent prioritization.</p>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq         USING (question_id)</span>
 <span class="s2">    JOIN dim_response_option opt USING (option_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.priorities&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.care_priorities&#39;</span>
 <span class="s2">    GROUP BY 1</span>
 <span class="s2">    ORDER BY mean_rank</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -2009,6 +2133,8 @@ natural summary; lower values indicate more frequent prioritization.</p>
 number). The natural unit of analysis is <code>(session_id, repeat_index)</code> — one
 loop instance per row. Pivot to one row per instance, then summarize across
 or within instances as needed.</p>
+<p>The bundled demo doesn't include a repeating group, so the snippet below
+uses placeholder <code>visits.*</code> link_ids. Substitute your own.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># One row per (respondent, visit) with the per-visit numeric metric</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    SELECT</span>
@@ -2043,11 +2169,11 @@ or within instances as needed.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Integrity check: every &quot;yes&quot; to the trigger should produce one date answer</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    SELECT</span>
-<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;q.has_chronic&#39;</span>
+<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;demo.has_chronic_condition&#39;</span>
 <span class="s2">                  AND fr.response_boolean = TRUE  THEN 1 END) AS triggered,</span>
-<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;q.has_chronic&#39;</span>
+<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;demo.has_chronic_condition&#39;</span>
 <span class="s2">                  AND fr.response_boolean = FALSE THEN 1 END) AS suppressed,</span>
-<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;q.diagnosis_date&#39;</span>
+<span class="s2">        SUM(CASE WHEN dq.link_id = &#39;demo.diagnosis_date&#39;</span>
 <span class="s2">                                                  THEN 1 END) AS conditional_answers</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
@@ -2059,11 +2185,11 @@ or within instances as needed.</p>
 <span class="s2">    SELECT fr.response_date AS diagnosis_date</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id = &#39;q.diagnosis_date&#39;</span>
+<span class="s2">    WHERE dq.link_id = &#39;demo.diagnosis_date&#39;</span>
 <span class="s2">      AND fr.session_id IN (</span>
 <span class="s2">          SELECT fr2.session_id FROM fact_response fr2</span>
 <span class="s2">          JOIN dim_question dq2 USING (question_id)</span>
-<span class="s2">          WHERE dq2.link_id = &#39;q.has_chronic&#39;</span>
+<span class="s2">          WHERE dq2.link_id = &#39;demo.has_chronic_condition&#39;</span>
 <span class="s2">            AND fr2.response_boolean = TRUE</span>
 <span class="s2">      )</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
@@ -2077,13 +2203,13 @@ flag table once and join against it.</p>
 <div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    SELECT</span>
 <span class="s2">        fr.session_id,</span>
-<span class="s2">        MAX(CASE WHEN dq.link_id = &#39;q.confidence&#39;</span>
+<span class="s2">        MAX(CASE WHEN dq.link_id = &#39;demo.self_management&#39;</span>
 <span class="s2">                 THEN fr.response_numeric END) AS confidence,</span>
-<span class="s2">        MAX(CASE WHEN dq.link_id = &#39;q.symptom_days&#39;</span>
+<span class="s2">        MAX(CASE WHEN dq.link_id = &#39;demo.symptom_days&#39;</span>
 <span class="s2">                 THEN fr.response_numeric END) AS symptom_days</span>
 <span class="s2">    FROM fact_response fr</span>
 <span class="s2">    JOIN dim_question dq USING (question_id)</span>
-<span class="s2">    WHERE dq.link_id IN (&#39;q.confidence&#39;, &#39;q.symptom_days&#39;)</span>
+<span class="s2">    WHERE dq.link_id IN (&#39;demo.self_management&#39;, &#39;demo.symptom_days&#39;)</span>
 <span class="s2">    GROUP BY fr.session_id</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
