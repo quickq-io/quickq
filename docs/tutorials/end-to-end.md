@@ -367,7 +367,8 @@ quickq analytics
 For a non-interactive run — handy for notebooks or scripts — pass `--queries-file`:
 
 ```bash
-echo "SELECT COUNT(*) FROM dim_session;" > count.sql
+echo "-- How many response sessions did we collect?
+SELECT COUNT(*) FROM dim_session;" > count.sql
 quickq analytics --queries-file count.sql
 ```
 
@@ -380,6 +381,9 @@ Try the following queries in the UI.
 Each selected option in a multiple-choice question is its own row in `fact_response`. The same GROUP BY pattern works for every question type — no schema knowledge required.
 
 ```sql
+-- Frequency of each selected joint in the multi-choice
+-- "Which joints were affected?" question. Each selection is its
+-- own row in fact_response, so COUNT(*) is the natural aggregate.
 SELECT ro.option_text AS joint, COUNT(*) AS n
 FROM fact_response f
 JOIN dim_question q USING (question_id)
@@ -396,6 +400,9 @@ ORDER BY n DESC;
 Two questions with completely different types — a choice and a numeric — joined only by `session_id`. This query is structurally identical for any pair of questions in any instrument, without any schema changes.
 
 ```sql
+-- Mean current-pain score (numeric) bucketed by self-reported
+-- alcohol frequency (single_choice). Two questions of different
+-- types joined on session_id — the same shape works for any pair.
 SELECT
     alcohol.option_text AS alcohol_frequency,
     COUNT(*)            AS n,
@@ -424,6 +431,9 @@ ORDER BY avg_pain_score DESC;
 The questionnaire structure is queryable. `skip_violated` should be 0 — no session should have answered the joints question without first answering the date question.
 
 ```sql
+-- Skip-logic integrity check. "joints_today" only renders when
+-- "last_attack" has a date. skip_violated should be 0 — no session
+-- should have answered the conditional question without its trigger.
 SELECT
     SUM(CASE WHEN date_answered AND joints_answered THEN 1 ELSE 0 END)       AS skip_respected,
     SUM(CASE WHEN NOT date_answered AND joints_answered THEN 1 ELSE 0 END)    AS skip_violated
