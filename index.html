@@ -1559,7 +1559,7 @@ quickq<span class="w"> </span>report<span class="w">  </span>analytics.duckdb<sp
 quickq<span class="w"> </span>analytics<span class="w">                                </span><span class="c1"># interactive DuckDB UI in your browser</span>
 </code></pre></div>
 <p>For a copy-paste-runnable walkthrough that authors a complete questionnaire from scratch, see the <a href="tutorials/end-to-end/">End-to-End Walkthrough</a>.</p>
-<p>Authoring from YAML. Define an answer scale once as an <code>option_set</code>, reuse it across every item that shares it. Concept codes (LOINC, SNOMED, OMOP) attach at the question and option level so harmonization across studies is a join, not a re-coding exercise.</p>
+<p>Authoring from YAML:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PHQ-9</span>
 <span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span>
@@ -1587,7 +1587,6 @@ quickq<span class="w"> </span>analytics<span class="w">                         
 <span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$phq_frequency</span>
 </code></pre></div>
-<p>The two items share one answer scale. Twenty options become four. Every answer ends up in <code>fact_response</code> keyed by the same option codes, so the same SQL aggregates work across both questions and across any other instrument that reuses <code>phq_frequency</code> or harmonizes to the same LOINC answer codes.</p>
 <hr />
 <h2 id="what-quickq-is-not">What quickq is not<a class="headerlink" href="#what-quickq-is-not" title="Permanent link">&para;</a></h2>
 <ul>
