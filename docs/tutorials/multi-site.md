@@ -30,58 +30,60 @@ This is the cleanest approach with the current schema. An alternative is to name
 
 ---
 
-## Step 1 — Initialize each site database
+## Step 1 — Build the canonical study and fork it to each site
 
-At each site, a coordinator runs:
+The cleanest setup uses `quickq fork` to distribute the canonical instrument from a single source database to each site. The fork copies the questionnaire, questions, options, scoring rules, and skip rules; it does not copy responses, sessions, or respondents. Each site receives a structurally identical database to collect into, and the fork records explicit provenance back to the canonical source.
 
-```bash
-# Site A
-quickq init site_a.db
-
-# Site B
-quickq init site_b.db
-
-# Site C
-quickq init site_c.db
-```
-
-Each site then loads the shared PHQ-9 YAML. Using the same `canonical_url` and `version` in the YAML is critical — the merge deduplicates questionnaires by `(canonical_url, version)`, so all three sites must have an identical definition.
+Build the canonical database once at the coordinating center:
 
 ```bash
-quickq load phq9.yaml site_a.db
-quickq load phq9.yaml site_b.db
-quickq load phq9.yaml site_c.db
+quickq init canonical.db
+quickq load phq9.yaml canonical.db
 ```
 
-Verify the load:
+Then fork the canonical study to each site, blanking the PI / IRB / dates so each site fills in its own:
 
 ```bash
-quickq list library site_a.db
+quickq fork canonical.db --questionnaire-id 1 --output site_a.db \
+    --site-id A --reset-study-metadata --note "Boston Medical Center"
+
+quickq fork canonical.db --questionnaire-id 1 --output site_b.db \
+    --site-id B --reset-study-metadata --note "Cambridge Health Alliance"
+
+quickq fork canonical.db --questionnaire-id 1 --output site_c.db \
+    --site-id C --reset-study-metadata --note "Lowell General Hospital"
 ```
+
+Each site now has a `site_X.db` containing the PHQ-9 instrument definition (with shared `canonical_url` and `version`) and an empty respondent / session / response space. The fork operation is recorded in each site DB's `tool_audit_log` so the provenance back to `canonical.db` is queryable later if needed.
+
+Why fork is preferable to independent loads: the merge step in Step 6 deduplicates the instrument by `(canonical_url, version)`, which means every site must have a structurally identical definition. With fork, identity is guaranteed by construction. With independent `quickq load` runs at each site, drift becomes possible (a typo fix at one site, a missed library update at another), and the merge will surface those as conflicts.
+
+!!! note "Alternative: independent setup at each site"
+
+    If a canonical source database is not feasible (each site authors locally from a shared YAML file, the YAML is generated dynamically per site, etc.), each site can run `quickq init site_X.db` followed by `quickq load phq9.yaml site_X.db` independently. This works as long as every site uses the same YAML — the merge deduplicates by `(canonical_url, version)` either way. The risk is structural drift between the YAML copies; the fork-based path eliminates that risk by construction.
 
 ---
 
-## Step 2 — Create the study at each site
+## Step 2 — Set site-specific study metadata
 
-The study must be created with a unique name before collection begins. Use the Python SDK or a short setup script at each site:
+Each forked database carries the study row from the canonical source, but with PI / IRB / dates blanked by `--reset-study-metadata`. Each site fills in its own values before collection begins:
 
 ```python
 # run_once_site_a.py
 from quickq.schema import open_oltp
-from quickq.authoring import insert_study
 
 conn = open_oltp("site_a.db")
-insert_study(
-    conn,
-    name="PHQ-9 Screening — Boston Medical Center",
-    principal_investigator="Dr. Jane Smith",
-    irb_number="IRB-2025-BMC-042",
-    start_date="2025-03-01",
+conn.execute(
+    """UPDATE study SET
+           name = 'PHQ-9 Screening — Boston Medical Center',
+           principal_investigator = 'Dr. Jane Smith',
+           irb_number = 'IRB-2025-BMC-042',
+           start_date = '2025-03-01'"""
 )
 conn.commit()
 ```
 
-Run the equivalent script at each site with its own name, PI, and IRB number.
+Run the equivalent script at each site with its own name, PI, and IRB number. The `study_id` becomes the site identifier after merge — every respondent and session carries the `study_id` of the database it came from, so a unique site name per database is sufficient for site-level analysis later.
 
 ---
 
@@ -391,14 +393,20 @@ quickq export analytics_anon.duckdb ./parquet_export/ \
 ## Full workflow summary
 
 ```
+Coordinating center (one-time):
+  quickq init canonical.db
+  quickq load phq9.yaml canonical.db
+  quickq fork canonical.db -q 1 -o site_a.db --site-id A --reset-study-metadata
+  quickq fork canonical.db -q 1 -o site_b.db --site-id B --reset-study-metadata
+  quickq fork canonical.db -q 1 -o site_c.db --site-id C --reset-study-metadata
+  [distribute site_X.db files to each site]
+
 Each site:
-  quickq init site_N.db
-  quickq load phq9.yaml site_N.db
-  [create study with unique name]
+  [set site-specific study metadata: name, PI, IRB number]
   [collect responses via FHIR import]
   [record errata if data quality issues arise]
 
-Coordinating center:
+Coordinating center (per collection cycle):
   quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
