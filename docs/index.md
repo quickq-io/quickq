@@ -94,7 +94,7 @@ quickq analytics                                # interactive DuckDB UI in your 
 
 For a copy-paste-runnable walkthrough that authors a complete questionnaire from scratch, see the [End-to-End Walkthrough](tutorials/end-to-end.md).
 
-Authoring from YAML. Define an answer scale once as an `option_set`, reuse it across every item that shares it. Concept codes (LOINC, SNOMED, OMOP) attach at the question and option level so harmonization across studies is a join, not a re-coding exercise.
+Authoring from YAML:
 
 ```yaml
 questionnaire:
@@ -124,8 +124,6 @@ questionnaire:
       required: true
       options: $phq_frequency
 ```
-
-The two items share one answer scale. Twenty options become four. Every answer ends up in `fact_response` keyed by the same option codes, so the same SQL aggregates work across both questions and across any other instrument that reuses `phq_frequency` or harmonizes to the same LOINC answer codes.
 
 ---
 
