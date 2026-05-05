@@ -94,7 +94,7 @@ quickq analytics                                # interactive DuckDB UI in your 
 
 For a copy-paste-runnable walkthrough that authors a complete questionnaire from scratch, see the [End-to-End Walkthrough](tutorials/end-to-end.md).
 
-Authoring from YAML:
+Authoring from YAML. Define an answer scale once as an `option_set`, reuse it across every item that shares it. Concept codes (LOINC, SNOMED, OMOP) attach at the question and option level so harmonization across studies is a join, not a re-coding exercise.
 
 ```yaml
 questionnaire:
@@ -102,18 +102,30 @@ questionnaire:
   version: "1.0"
   canonical_url: http://quickq.io/instruments/phq-9
 
+  option_sets:
+    phq_frequency:
+      - { text: "Not at all",              value: "0", concept: LOINC:LA6568-5 }
+      - { text: "Several days",            value: "1", concept: LOINC:LA6569-3 }
+      - { text: "More than half the days", value: "2", concept: LOINC:LA6570-1 }
+      - { text: "Nearly every day",        value: "3", concept: LOINC:LA6571-9 }
+
   questions:
     - link_id: phq-1
       text: Little interest or pleasure in doing things?
       type: single_choice
       concept: LOINC:44250-9
       required: true
-      options:
-        - { text: "Not at all",              value: "0", concept: LOINC:LA6568-5 }
-        - { text: "Several days",            value: "1", concept: LOINC:LA6569-3 }
-        - { text: "More than half the days", value: "2", concept: LOINC:LA6570-1 }
-        - { text: "Nearly every day",        value: "3", concept: LOINC:LA6571-9 }
+      options: $phq_frequency
+
+    - link_id: phq-2
+      text: Feeling down, depressed, or hopeless?
+      type: single_choice
+      concept: LOINC:44255-8
+      required: true
+      options: $phq_frequency
 ```
+
+The two items share one answer scale. Twenty options become four. Every answer ends up in `fact_response` keyed by the same option codes, so the same SQL aggregates work across both questions and across any other instrument that reuses `phq_frequency` or harmonizes to the same LOINC answer codes.
 
 ---
 
