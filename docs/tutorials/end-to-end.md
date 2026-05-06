@@ -105,6 +105,13 @@ Preview it in your browser:
 quickq preview study.db 1
 ```
 
+!!! note "Two renderers in this tutorial: what's the difference?"
+    `quickq preview` opens the questionnaire in **LHC-Forms** (NIH/NLM's reference FHIR Questionnaire renderer, loaded from a CDN). It is read-only: a quick visual check of the structure, no install needed beyond `quickq` itself.
+
+    Step 5 below uses `quickq serve`, which boots **quickq-forms** (our own bundled delivery package) to actually collect responses. quickq-forms is what your real respondents will see; LHC-Forms is here just for fast iterate-on-YAML preview.
+
+    The two renderers share nothing in common visually. We expect to unify the tutorial on quickq-forms once it gains a read-only preview mode; for now, the split is intentional but worth knowing about.
+
 ### Stage 2 — Add an option set
 
 Option sets define a reusable list of choices that multiple questions can share. Add a frequency scale and two questions that use it:
