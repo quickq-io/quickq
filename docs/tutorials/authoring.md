@@ -2,25 +2,28 @@
 
 This tutorial walks through building a complete questionnaire from nothing: defining question items, sharing an option set across questions, adding skip logic, writing a scoring rule, and verifying the result. The scenario is the **GAD-7** (Generalized Anxiety Disorder 7-item scale), a standard clinical screening tool similar in structure to the PHQ-9 but independent of it, which makes it a good vehicle for learning the authoring workflow without leaning on the PHQ-9 fixtures already in the project.
 
-By the end you will have a working `gad7.yaml`, a loaded SQLite study database, and a FHIR export you can hand to any delivery tool.
+By the end you will have a working `anxiety-study/` repository (its `instrument.yaml` containing the GAD-7), a loaded SQLite study database, and a FHIR export you can hand to any delivery tool.
 
 For the full YAML format reference (every option on every field, all skip-logic operators, all scoring formulas, the question-bank shop-first/assign-first/hybrid concept workflows, and immutability rules) see the [Survey Authoring](../authoring.md) reference page. This tutorial covers what you need to build the instrument; the reference covers everything else you might want.
 
 ---
 
-## 1. Initialize a study database
+## 1. Scaffold a study repository
 
 ```bash
-quickq init anxiety_study.db
+quickq new anxiety-study
+cd anxiety-study
 ```
 
-This creates the SQLite file and applies all schema migrations. The database is empty — no instruments, no responses.
+`quickq new` creates a study repo with the recommended layout (an `instrument.yaml`, `scripts/` to rebuild artifacts from sources, a `.gitignore` keeping runtime databases out of version control, README, and `docs/` + `library/` directories) and runs `git init`. See [Quickstart Step 2](end-to-end.md) for the full layout if you want a refresher.
+
+The scaffold drops a starter `instrument.yaml` with one example question; we'll replace its contents in the next step.
 
 ---
 
 ## 2. Start the YAML
 
-Create `gad7.yaml`. Every quickq instrument YAML starts with a questionnaire header:
+Open `instrument.yaml` (the scaffolded starter) and replace its contents. Every quickq instrument YAML starts with a questionnaire header:
 
 ```yaml
 questionnaire:
@@ -150,7 +153,9 @@ Because we cannot compute a total score at the item level (scoring happens after
             - { text: "Very difficult",        value: "2" }
             - { text: "Extremely difficult",   value: "3" }
           show_when:
-            - { question: gad7.1, operator: "!=", value: "0" }
+            question: gad7.1
+            operator: "!="
+            value: "0"
 ```
 
 `show_when` maps to FHIR `enableWhen`. See [Skip Logic](../authoring.md#skip-logic) in the reference for the full operator list (`=`, `!=`, `>`, `<`, `>=`, `<=`, `exists`) and the multi-condition / `enable_behavior: any` syntax.
@@ -249,7 +254,9 @@ questionnaire:
             - { text: "Very difficult",        value: "2" }
             - { text: "Extremely difficult",   value: "3" }
           show_when:
-            - { question: gad7.1, operator: "!=", value: "0" }
+            question: gad7.1
+            operator: "!="
+            value: "0"
 
   scoring:
     - name: "GAD-7 Total Score"
@@ -267,28 +274,27 @@ questionnaire:
 ## 9. Load and verify
 
 ```bash
-quickq init anxiety_study.db
-quickq load gad7.yaml anxiety_study.db
+bash scripts/load.sh
 ```
 
-If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
+The scaffolded script runs `quickq init study.db && quickq load instrument.yaml study.db`. If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
 
 ### For you: the data dictionary
 
 The data dictionary is the analyst's reference. It shows every question in order with its type, concept code, valid response values, skip conditions, and scoring rule membership — all derived directly from the database, not from a separate document.
 
 ```bash
-quickq data-dict anxiety_study.db 1
+quickq data-dict study.db 1
 ```
 
 To save it:
 
 ```bash
 # Markdown table — for methods appendices, pull requests, code review
-quickq data-dict anxiety_study.db 1 --output gad7_data_dict.md
+quickq data-dict study.db 1 --output gad7_data_dict.md
 
 # CSV — for import into analysis pipelines, sharing with data managers
-quickq data-dict anxiety_study.db 1 --format csv --output gad7_data_dict.csv
+quickq data-dict study.db 1 --format csv --output gad7_data_dict.csv
 ```
 
 The skip condition column confirms that your branching logic was recorded correctly — `show when gad7.1 ≠ 0` is more readable than tracing through a SQL join. The scoring rules column confirms which items contribute to the GAD-7 total.
@@ -298,7 +304,7 @@ The skip condition column confirms that your branching logic was recorded correc
 The rendered document presents the questionnaire the way a person would read it — sections and questions in order, response options as a list, skip conditions in plain English, and a scoring appendix. It is appropriate for audiences who should not need to open a database or read a data dictionary table.
 
 ```bash
-quickq render anxiety_study.db 1 --output gad7_instrument.md
+quickq render study.db 1 --output gad7_instrument.md
 ```
 
 Typical uses:
@@ -315,7 +321,7 @@ Both outputs come from the source of truth — the database. There is no separat
 ## 10. Export to FHIR
 
 ```bash
-quickq fhir export anxiety_study.db 1 > gad7_questionnaire.json
+quickq fhir export study.db 1 > gad7_questionnaire.json
 ```
 
 This produces a standard FHIR R4 Questionnaire JSON file. Inspect it to confirm:
@@ -334,4 +340,4 @@ The JSON file can be handed directly to [LHC-Forms](https://lhncbc.nlm.nih.gov/L
 - **Add to an existing study** — pass `study_id` to `load_yaml` to associate the instrument with a specific study in a multi-instrument database.
 - **Co-administer with another instrument** — the end-to-end tutorial uses a PHQ-9 and Prenatal Visit Log in the same study database; the same `respondent_id` links sessions across instruments automatically.
 - **Collect responses** — `import_fhir_response(conn, response_json, admin_mode="web")` writes a FHIR QuestionnaireResponse to the OLTP. See [FHIR Interoperability](../fhir.md) for the import contract.
-- **Refresh and score** — `quickq refresh anxiety_study.db` loads the OLAP, computes GAD-7 scores, and materializes aggregate tables. The scoring result will be in `agg_respondent_scores` under the rule name `"GAD-7 Total Score"`.
+- **Refresh and score** — `quickq refresh study.db` loads the OLAP, computes GAD-7 scores, and materializes aggregate tables. The scoring result will be in `agg_respondent_scores` under the rule name `"GAD-7 Total Score"`.
