@@ -357,7 +357,7 @@ ORDER BY dq.link_id, fr.option_value;
 If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:
 
 ```bash
-quickq export analytics_anon.duckdb ./parquet_export/
+quickq export parquet analytics_anon.duckdb -o ./parquet_export/
 ```
 
 ```
@@ -378,7 +378,7 @@ Upload `parquet_export/` to your cloud storage bucket and point your warehouse a
 To export only the tables needed for a specific analysis:
 
 ```bash
-quickq export analytics_anon.duckdb ./parquet_export/ \
+quickq export parquet analytics_anon.duckdb -o ./parquet_export/ \
     --table fact_response \
     --table dim_question \
     --table dim_respondent \
@@ -410,7 +410,7 @@ Coordinating center (per collection cycle):
   quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
-  quickq export analytics_anon.duckdb ./parquet_export/   # optional
+  quickq export parquet analytics_anon.duckdb -o ./parquet_export/   # optional
 ```
 
 The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.

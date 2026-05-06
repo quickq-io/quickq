@@ -348,18 +348,29 @@ def report_cmd(olap_path: str, oltp_path: str, questionnaire_id: int, output: st
         click.echo(text)
 
 
-@main.command("export")
+@main.group()
+def export() -> None:
+    """Export quickq data to interoperable formats. Pick a format subcommand.
+
+    Formats currently supported:
+      parquet   Star-schema OLAP tables as Parquet files.
+
+    Future format subcommands (yaml, cdisc-qs, omop) will land under this same
+    group rather than as separate top-level commands.
+    """
+
+
+@export.command("parquet")
 @click.argument("olap_path", type=click.Path(exists=True))
-@click.argument("output_dir", type=click.Path())
-@click.option("--format", "fmt", type=click.Choice(["parquet"]), default="parquet",
-              show_default=True, help="Output format.")
+@click.option("--output", "-o", "output_dir", required=True, type=click.Path(),
+              help="Directory to write Parquet files into.")
 @click.option("--table", "tables", multiple=True,
               help="Table to export (repeatable). Defaults to all star schema tables.")
 @click.option("--overwrite", is_flag=True, help="Overwrite existing files.")
-def export_cmd(
-    olap_path: str, output_dir: str, fmt: str, tables: tuple[str, ...], overwrite: bool
+def export_parquet_cmd(
+    olap_path: str, output_dir: str, tables: tuple[str, ...], overwrite: bool
 ) -> None:
-    """Export OLAP tables from OLAP_PATH to OUTPUT_DIR."""
+    """Export OLAP tables from OLAP_PATH to a directory as Parquet files."""
     from .export_parquet import export_parquet
     try:
         result = export_parquet(

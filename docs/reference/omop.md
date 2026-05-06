@@ -127,10 +127,10 @@ High `response_count` on an unmapped question means real data will be silently e
 
 quickq's OMOP tables are a projection layer, not a full CDM. They provide the `SurveyConducts` and `Observations` domains — sufficient for federated survey queries. For full CDM export (Demographics, Visits, Drug Exposures, etc.), integrate quickq's OMOP tables with your institution's CDM pipeline.
 
-The Parquet export (`quickq export`) includes the OMOP tables:
+The Parquet export (`quickq export parquet`) includes the OMOP tables:
 
 ```bash
-quickq export analytics.duckdb ./parquet_export/ \
+quickq export parquet analytics.duckdb -o ./parquet_export/ \
     --table omop_survey_conduct \
     --table omop_observation \
     --table omop_unmapped_questions
