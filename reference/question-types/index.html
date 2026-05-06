@@ -1870,8 +1870,9 @@
 <p><strong>Full — repeating_group:</strong> YAML definition (with optional <code>count_from</code> linkage to a numeric count question), FHIR export (with the <code>count-from</code> and SDC <code>questionnaire-maxOccurs</code> extensions when linked), FHIR import (preserves the linkage on round-trip), OLAP storage (<code>fact_response.repeat_index</code>), Markdown report (nested section with per-respondent instance summary), and <code>quickq seed</code> (honors <code>count_from</code> to drive N from a prior numeric answer, falls back to a small random N for free-add groups). The bundled demo views (<code>v_prenatal_visits</code>, <code>v_prenatal_summary</code>) show example pivots over <code>repeat_index</code>.</p>
 <hr />
 <h2 id="demo-instrument">Demo instrument<a class="headerlink" href="#demo-instrument" title="Permanent link">&para;</a></h2>
-<p><code>examples/health_intake_demo.yaml</code> in the repository covers all fully supported and partial types in a coherent clinical context. Load and seed it to exercise the full pipeline:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>load<span class="w"> </span>examples/health_intake_demo.yaml<span class="w"> </span>study.db
+<p><a href="https://github.com/quickq-io/quickq/blob/main/examples/health_intake_demo.yaml"><code>examples/health_intake_demo.yaml</code></a> in the quickq source repo covers all fully supported and partial types in a coherent clinical context. Fetch it and exercise the full pipeline:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/quickq-io/quickq/main/examples/health_intake_demo.yaml
+quickq<span class="w"> </span>load<span class="w"> </span>health_intake_demo.yaml<span class="w"> </span>study.db
 quickq<span class="w"> </span>seed<span class="w"> </span>study.db<span class="w"> </span>&lt;questionnaire_id&gt;<span class="w"> </span>--n<span class="w"> </span><span class="m">50</span>
 quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb
 quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span>&lt;questionnaire_id&gt;

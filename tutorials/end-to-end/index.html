@@ -1803,18 +1803,17 @@
 </div>
 <hr />
 <h2 id="step-1-install-quickq">Step 1 — Install quickq<a class="headerlink" href="#step-1-install-quickq" title="Permanent link">&para;</a></h2>
-<p>Pick a parent directory to hold the cloned repos (this tutorial uses <code>~/code</code>). In Step 5 you will clone <code>quickq-forms</code> next to <code>quickq</code> in the same parent and install both together.</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/code<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/code
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/quickq-io/quickq.git
-uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>./quickq
+<p>Install the <code>quickq</code> command from GitHub:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/quickq-io/quickq.git
 </code></pre></div>
-<p>This installs <code>quickq</code> as a standalone command on your PATH. Verify it and get a quick overview of what the tool does:</p>
+<p>This installs <code>quickq</code> as a standalone command on your PATH, with the bundled question library included. Updates later via <code>uv tool upgrade quickq</code>. If you prefer plain pip: <code>pip install git+https://github.com/quickq-io/quickq.git</code>.</p>
+<p>Verify the install and get a quick overview of what the tool does:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>--help
 </code></pre></div>
-<p>You should see the full command list grouped by function — Core, FHIR, Compliance, and Federated. Spend a moment reading through it before continuing.</p>
+<p>You should see the full command list grouped by function — Core, Study management, FHIR, Compliance, and Federated. Spend a moment reading through it before continuing.</p>
 <hr />
 <h2 id="step-2-scaffold-a-study-repository">Step 2 — Scaffold a study repository<a class="headerlink" href="#step-2-scaffold-a-study-repository" title="Permanent link">&para;</a></h2>
-<p>quickq is a tool you install once and use across many studies. Each study lives in its own directory with the recommended layout: an authoring YAML, scripts to rebuild artifacts from sources, a <code>.gitignore</code> configured so runtime databases don't end up in version control, and a README documenting the structure. The <code>quickq new</code> command sets all of this up:</p>
+<p>quickq is a tool you install once and use across many studies. Each study lives in its own directory with the recommended layout: an authoring YAML, a <code>.gitignore</code> configured so runtime databases don't end up in version control, and a README documenting the structure. The <code>quickq new</code> command sets all of this up:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>new<span class="w"> </span>gout-study
 <span class="nb">cd</span><span class="w"> </span>gout-study
 </code></pre></div>
@@ -1823,17 +1822,13 @@ uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </
 ├── README.md              # explains the layout + how to rebuild from sources
 ├── instrument.yaml        # authoring source (currently a starter; we&#39;ll replace it)
 ├── library/               # space for custom question-bank extensions
-├── scripts/
-│   ├── load.sh            # rebuild study.db from instrument.yaml
-│   ├── seed.sh            # generate synthetic responses for dev
-│   └── refresh.sh         # rebuild analytics.duckdb from study.db
 ├── docs/                  # space for protocol notes, IRB packet, etc.
 └── .gitignore             # excludes runtime *.db / *.duckdb files
 </code></pre></div>
-<p><code>quickq new</code> also runs <code>git init</code> so the repo is ready for version control immediately. Pass <code>--no-git</code> to skip that step. The principle: <strong>YAML and library are sources of truth, in git. The runtime databases are derived artifacts, regenerable from sources, not in git.</strong></p>
+<p><code>quickq new</code> also runs <code>git init</code> so the repo is ready for version control immediately. Pass <code>--no-git</code> to skip that step. The principle: <strong>YAML and library are sources of truth, in git. The runtime databases (<code>study.db</code>, <code>analytics.duckdb</code>) are derived artifacts, regenerable from sources via <code>quickq</code> commands, not in git.</strong></p>
 <hr />
 <h2 id="step-3-author-the-questionnaire">Step 3 — Author the questionnaire<a class="headerlink" href="#step-3-author-the-questionnaire" title="Permanent link">&para;</a></h2>
-<p>Open <code>instrument.yaml</code> (the scaffolded starter has one example question — replace its contents). We will build the gout instrument up in four stages, running <code>bash scripts/load.sh</code> after each stage to rebuild <code>study.db</code> from the YAML.</p>
+<p>Open <code>instrument.yaml</code> (the scaffolded starter has one example question — replace its contents). We will build the gout instrument up in four stages, running <code>quickq load instrument.yaml study.db</code> after each stage to rebuild <code>study.db</code> from the YAML. The first time, also run <code>quickq init study.db</code> to create the database.</p>
 <h3 id="stage-1-minimal-instrument">Stage 1 — Minimal instrument<a class="headerlink" href="#stage-1-minimal-instrument" title="Permanent link">&para;</a></h3>
 <p>Start with two plain questions:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
@@ -1852,7 +1847,8 @@ uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </
 <span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">10</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>Load and verify:</p>
-<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>scripts/load.sh
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>init<span class="w"> </span>study.db
+quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db
 quickq<span class="w"> </span>list<span class="w"> </span>surveys<span class="w"> </span>study.db
 </code></pre></div>
 <p>Preview it in your browser:</p>
@@ -1894,7 +1890,7 @@ quickq<span class="w"> </span>list<span class="w"> </span>surveys<span class="w"
 <span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$frequency</span>
 </code></pre></div>
 <p>Reload — quickq will overwrite the previous version since the <code>canonical_url</code> matches:</p>
-<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>scripts/load.sh
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db
 quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
 <p>The <code>$frequency</code> reference means the option list is defined once and shared across both questions. If you add a sixth option later, both questions pick it up automatically.</p>
@@ -1949,7 +1945,7 @@ quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class
 <span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single_choice</span>
 <span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$frequency</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>scripts/load.sh
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db
 quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
 <p>The joint question now only appears if the date question has been answered.</p>
@@ -1960,7 +1956,7 @@ quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> library</span><span class="p">:</span><span class="w"> </span><span class="nv">phq9.2</span><span class="w"> </span><span class="p p-Indicator">}</span>
 </code></pre></div>
 <p>The first inserts a free-text "anything else?" notes question shipped in the gout library. The other two pull in the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.</p>
-<p>To make the library available, the database needs to be initialized with <code>--with-library</code>. The default <code>scripts/load.sh</code> skipped this for simplicity; rebuild explicitly now to pull the library in:</p>
+<p>To make the library available, the database needs to be initialized with <code>--with-library</code>. The earlier <code>quickq init study.db</code> skipped this for simplicity; rebuild explicitly now to pull the library in:</p>
 <div class="highlight"><pre><span></span><code>rm<span class="w"> </span>-f<span class="w"> </span>study.db
 quickq<span class="w"> </span>init<span class="w"> </span>study.db<span class="w"> </span>--with-library
 quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db
@@ -1977,19 +1973,13 @@ quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class
 <hr />
 <h2 id="step-5-start-the-form-server">Step 5 — Start the form server<a class="headerlink" href="#step-5-start-the-form-server" title="Permanent link">&para;</a></h2>
 <p><code>quickq serve</code> launches a web form for your study and opens it in your browser. Submitted responses write straight back to <code>study.db</code>.</p>
-<p>The serve command lives in a separate package, <code>quickq-forms</code>. Reinstall <code>quickq</code> with the <code>serve</code> extra so both end up on your PATH together:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/code<span class="w">            </span><span class="c1"># the parent directory from Step 1</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/quickq-io/quickq-forms.git
-uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span>./quickq<span class="w"> </span>--with<span class="w"> </span>./quickq-forms
+<p>The serve command lives in a separate package, <code>quickq-forms</code>. Reinstall <code>quickq</code> with <code>quickq-forms</code> alongside so both end up on your PATH together:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>git+https://github.com/quickq-io/quickq.git<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--with<span class="w"> </span>git+https://github.com/quickq-io/quickq-forms.git
 </code></pre></div>
-<p>Your layout should now look like:</p>
-<div class="highlight"><pre><span></span><code>~/code/
-├── quickq/          # cloned in Step 1
-├── quickq-forms/    # cloned just now
-└── gout-study/      # created in Step 2; contains study.db
-</code></pre></div>
-<p>Start the server from inside <code>gout-study/</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/code/gout-study
+<p>Start the server from inside your study repo:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>gout-study<span class="w">     </span><span class="c1"># if you aren&#39;t there already</span>
 quickq<span class="w"> </span>serve<span class="w"> </span>study.db
 </code></pre></div>
 <p>You should see:</p>

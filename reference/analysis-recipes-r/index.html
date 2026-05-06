@@ -1818,8 +1818,9 @@ can query directly with no Python in the loop.</p>
 by <code>quickq refresh</code>. Two ways to get one:</p>
 <h3 id="option-a-use-the-bundled-demo">Option A: use the bundled demo<a class="headerlink" href="#option-a-use-the-bundled-demo" title="Permanent link">&para;</a></h3>
 <p>Run these once at the shell to produce a 500-respondent seeded study:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>init<span class="w"> </span>study.db
-quickq<span class="w"> </span>load<span class="w"> </span>examples/health_intake_demo.yaml<span class="w"> </span>study.db
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/quickq-io/quickq/main/examples/health_intake_demo.yaml
+quickq<span class="w"> </span>init<span class="w"> </span>study.db
+quickq<span class="w"> </span>load<span class="w"> </span>health_intake_demo.yaml<span class="w"> </span>study.db
 quickq<span class="w"> </span>seed<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--n<span class="w"> </span><span class="m">500</span><span class="w"> </span>--seed<span class="w"> </span><span class="m">20260503</span>
 quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb
 </code></pre></div>

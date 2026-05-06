@@ -1702,7 +1702,7 @@
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>new<span class="w"> </span>anxiety-study
 <span class="nb">cd</span><span class="w"> </span>anxiety-study
 </code></pre></div>
-<p><code>quickq new</code> creates a study repo with the recommended layout (an <code>instrument.yaml</code>, <code>scripts/</code> to rebuild artifacts from sources, a <code>.gitignore</code> keeping runtime databases out of version control, README, and <code>docs/</code> + <code>library/</code> directories) and runs <code>git init</code>. See <a href="../end-to-end/">Quickstart Step 2</a> for the full layout if you want a refresher.</p>
+<p><code>quickq new</code> creates a study repo with the recommended layout (an <code>instrument.yaml</code>, a <code>.gitignore</code> keeping runtime databases out of version control, README, and <code>docs/</code> + <code>library/</code> directories) and runs <code>git init</code>. See <a href="../end-to-end/">Quickstart Step 2</a> for the full layout if you want a refresher.</p>
 <p>The scaffold drops a starter <code>instrument.yaml</code> with one example question; we'll replace its contents in the next step.</p>
 <hr />
 <h2 id="2-start-the-yaml">2. Start the YAML<a class="headerlink" href="#2-start-the-yaml" title="Permanent link">&para;</a></h2>
@@ -1913,9 +1913,10 @@ The demo script in <code>scripts/generate_demo.py</code> shows a complete exampl
 </code></pre></div>
 <hr />
 <h2 id="9-load-and-verify">9. Load and verify<a class="headerlink" href="#9-load-and-verify" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>scripts/load.sh
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>init<span class="w"> </span>study.db
+quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db
 </code></pre></div>
-<p>The scaffolded script runs <code>quickq init study.db &amp;&amp; quickq load instrument.yaml study.db</code>. If there is a validation error — an unknown question type, a <code>show_when</code> reference to a <code>link_id</code> that does not exist in the same questionnaire, a duplicate <code>link_id</code> — quickq raises it here before any rows are written.</p>
+<p>If there is a validation error — an unknown question type, a <code>show_when</code> reference to a <code>link_id</code> that does not exist in the same questionnaire, a duplicate <code>link_id</code> — quickq raises it here before any rows are written.</p>
 <h3 id="for-you-the-data-dictionary">For you: the data dictionary<a class="headerlink" href="#for-you-the-data-dictionary" title="Permanent link">&para;</a></h3>
 <p>The data dictionary is the analyst's reference. It shows every question in order with its type, concept code, valid response values, skip conditions, and scoring rule membership — all derived directly from the database, not from a separate document.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>data-dict<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>

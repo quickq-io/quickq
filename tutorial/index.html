@@ -1574,10 +1574,17 @@
 </table>
 <hr />
 <h2 id="analytics-phase-tutorials">Analytics phase tutorials<a class="headerlink" href="#analytics-phase-tutorials" title="Permanent link">&para;</a></h2>
-<p>These tutorials all query against the same demo database. Generate it once before working through them:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/generate_demo.py
+<p>These tutorials all query against the same demo database. Generate it once before working through them. The demo-builder is a script in the quickq source repo (it loads PHQ-9 and Prenatal Visit Log instruments, imports 250 PHQ-9 responses + 150 prenatal visit logs with realistic distributions, runs <code>quickq refresh</code>, and creates six analytical views):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># One-time: clone the source so you can run the demo builder</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/quickq-io/quickq.git<span class="w"> </span>/tmp/quickq-src
+<span class="nb">cd</span><span class="w"> </span>/tmp/quickq-src
+uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/generate_demo.py
 </code></pre></div>
-<p>The script loads the PHQ-9 and Prenatal Visit Log instruments, imports 250 PHQ-9 responses and 150 prenatal visit logs with realistic distributions, runs <code>quickq refresh</code>, and creates six analytical views. Output: <code>demo/study.db</code> (OLTP) and <code>demo/analytics.duckdb</code> (OLAP).</p>
+<p>Output: <code>demo/study.db</code> (OLTP) and <code>demo/analytics.duckdb</code> (OLAP). Both can be copied wherever you want to run the tutorials from. The source clone is only needed for this one-time demo build; you don't need to keep it around.</p>
+<div class="admonition note">
+<p class="admonition-title">Future: built-in demo command</p>
+<p>A future <code>quickq demo</code> command will produce the same output without needing to clone the source. Until then, the script-based path above is the cleanest way to get the demo data set up.</p>
+</div>
 <p>The tutorials work in order, but each is also independently readable.</p>
 <h3 id="1-collect-responses"><a href="../tutorials/collect/">1. Collect responses</a><a class="headerlink" href="#1-collect-responses" title="Permanent link">&para;</a></h3>
 <p>The FHIR handoff: export <code>Questionnaire.json</code>, hand it to any delivery tool, ingest the resulting <code>QuestionnaireResponse.json</code>. Generic; works against any quickq study, not just the demo.</p>
