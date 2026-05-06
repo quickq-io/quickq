@@ -24,7 +24,7 @@ By the end you will have:
 
 ## Step 1 — Install quickq
 
-Pick a parent directory to hold the cloned repos (this tutorial uses `~/code`). In Step 6 you will clone `quickq-forms` next to `quickq` in the same parent and install both together.
+Pick a parent directory to hold the cloned repos (this tutorial uses `~/code`). In Step 5 you will clone `quickq-forms` next to `quickq` in the same parent and install both together.
 
 ```bash
 mkdir -p ~/code && cd ~/code
@@ -70,17 +70,9 @@ gout-study/
 
 ---
 
-## Step 3 — Replace the starter YAML
+## Step 3 — Author the questionnaire
 
-The scaffolded `instrument.yaml` has one example question to demonstrate the format. Replace it with the gout instrument we'll build in the next steps. For now, leave it as-is; we'll overwrite it in Step 4.
-
-If you want the bundled standard library (PHQ-9, GAD-7, PRAPARE, and others) available so you can reference its questions in your own instrument, add `--with-library` when you run `scripts/load.sh`. We'll cover that in Stage 4 below; for now the default `scripts/load.sh` is sufficient.
-
----
-
-## Step 4 — Author the questionnaire
-
-Open `instrument.yaml` and replace its contents. We will build the gout instrument up in four stages, running `bash scripts/load.sh` after each stage to rebuild `study.db`.
+Open `instrument.yaml` (the scaffolded starter has one example question — replace its contents). We will build the gout instrument up in four stages, running `bash scripts/load.sh` after each stage to rebuild `study.db` from the YAML.
 
 ### Stage 1 — Minimal instrument
 
@@ -217,8 +209,6 @@ questionnaire:
       text: "How often do you eat red meat or shellfish?"
       type: single_choice
       options: $frequency
-
-    - { library: gout.notes }
 ```
 
 ```bash
@@ -228,9 +218,9 @@ quickq preview study.db 1
 
 The joint question now only appears if the date question has been answered.
 
-### Stage 4 — Pull a validated question from the library
+### Stage 4 — Pull validated questions from the library
 
-quickq ships a bank of validated questions (PHQ-9, GAD-7, PRAPARE, and others) that you can pull into your own instrument with a single line instead of redefining them:
+quickq ships a bank of validated questions (PHQ-9, GAD-7, PRAPARE, and others) that you can pull into your own instrument with a single line instead of redefining them. Add three library references at the end of the `questions:` list:
 
 ```yaml
     - { library: gout.notes }
@@ -238,9 +228,9 @@ quickq ships a bank of validated questions (PHQ-9, GAD-7, PRAPARE, and others) t
     - { library: phq9.2 }
 ```
 
-This inserts the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
+The first inserts a free-text "anything else?" notes question shipped in the gout library. The other two pull in the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
 
-To make the library available, the database needs to be initialized with `--with-library`. The default `scripts/load.sh` skipped this for simplicity; rebuild explicitly to pull the library in:
+To make the library available, the database needs to be initialized with `--with-library`. The default `scripts/load.sh` skipped this for simplicity; rebuild explicitly now to pull the library in:
 
 ```bash
 rm -f study.db
@@ -257,7 +247,7 @@ quickq list library study.db
 
 ---
 
-## Step 5 — Export as FHIR
+## Step 4 — Export as FHIR
 
 ```bash
 quickq fhir export study.db 1 --output gout.json
@@ -267,7 +257,7 @@ This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant deli
 
 ---
 
-## Step 6 — Start the form server
+## Step 5 — Start the form server
 
 `quickq serve` launches a web form for your study and opens it in your browser. Submitted responses write straight back to `study.db`.
 
@@ -308,7 +298,7 @@ A browser tab opens at **http://localhost:8000** showing the form.
 
 ---
 
-## Step 7 — Take the survey
+## Step 6 — Take the survey
 
 You should see the Gout Symptoms Check-In form rendered in your browser. Work through it:
 
@@ -322,7 +312,7 @@ Submit the form. You should see a confirmation that your response was recorded.
 
 ---
 
-## Step 8 — Confirm the response arrived
+## Step 7 — Confirm the response arrived
 
 Back in your `gout-study/` terminal:
 
@@ -334,7 +324,7 @@ The response count next to your questionnaire should now show 1.
 
 ---
 
-## Step 9 — Seed synthetic responses
+## Step 8 — Seed synthetic responses
 
 One response produces a sparse report. To see realistic distributions across all questions, generate a batch of synthetic responses:
 
@@ -342,11 +332,11 @@ One response produces a sparse report. To see realistic distributions across all
 quickq seed study.db 1 --n 50 --seed 42
 ```
 
-This generates 50 plausible responses that respect the questionnaire's question types, option sets, numeric ranges, and skip logic — the joint question only gets answers in sessions where the date question was answered. Your real response from Step 7 is still in the database alongside the synthetic ones.
+This generates 50 plausible responses that respect the questionnaire's question types, option sets, numeric ranges, and skip logic — the joint question only gets answers in sessions where the date question was answered. Your real response from Step 6 is still in the database alongside the synthetic ones.
 
 ---
 
-## Step 10 — Build the analytics layer
+## Step 9 — Build the analytics layer
 
 ```bash
 quickq refresh study.db analytics.duckdb
@@ -356,7 +346,7 @@ This reads all responses from `study.db` and builds the analytical layer in `ana
 
 ---
 
-## Step 11 — View the report
+## Step 10 — View the report
 
 ```bash
 quickq report analytics.duckdb study.db 1
@@ -372,7 +362,7 @@ quickq report analytics.duckdb study.db 1 --output report.md
 
 ---
 
-## Step 12 — Explore the analytics layer
+## Step 11 — Explore the analytics layer
 
 Open the analytics database in the local DuckDB UI:
 
