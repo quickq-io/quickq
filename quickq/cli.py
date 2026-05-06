@@ -10,7 +10,7 @@ click.rich_click.COMMAND_GROUPS = {
     "quickq": [
         {
             "name": "Core",
-            "commands": ["init", "load", "preview", "serve",
+            "commands": ["new", "init", "load", "preview", "serve",
                          "refresh", "seed", "data-dict", "render", "report",
                          "analytics", "export", "list"],
         },
@@ -46,6 +46,7 @@ from .parser_fhir_response import import_fhir_response
 from .preview import preview as preview_questionnaire, build_preview_html
 from .merge import merge_databases, MergeError
 from .fork import fork_database, ForkError
+from .scaffold import scaffold, ScaffoldError
 from .pseudonymize import pseudonymize
 
 from .renderer_questionnaire import render_questionnaire_md
@@ -133,6 +134,51 @@ def list_surveys_cmd(db_path: str, study_id: int | None) -> None:
             f"{r['questionnaire_id']:<4}  {r['name']:<30}  {r['version']:<6}  "
             f"{r['fhir_status']:<10}  {r['response_count']:<10}  {url}"
         )
+
+
+@main.command("new")
+@click.argument("target", type=click.Path())
+@click.option("--name", default=None,
+              help="Human-readable study name (default: derived from target directory name).")
+@click.option("--from", "from_yaml", default=None, type=click.Path(exists=True),
+              help="Seed instrument.yaml from an existing YAML file instead of the blank starter.")
+@click.option("--no-git", is_flag=True, help="Skip 'git init' in the new repo.")
+def new_cmd(target: str, name: str | None, from_yaml: str | None, no_git: bool) -> None:
+    """Scaffold a new study repository at TARGET.
+
+    Produces a directory with the recommended layout: instrument.yaml,
+    library/, scripts/ for rebuild + seed + refresh, .gitignore, README,
+    docs/. By default also runs `git init` so the repo is immediately
+    version-controllable.
+
+    Example:
+        quickq new my-study
+        cd my-study && bash scripts/load.sh
+    """
+    try:
+        result = scaffold(
+            target,
+            name=name,
+            from_yaml=from_yaml,
+            init_git=not no_git,
+        )
+    except ScaffoldError as exc:
+        raise click.ClickException(str(exc))
+
+    click.echo(f"Scaffolded {result.target}/")
+    for f in result.files_created:
+        click.echo(f"  {f}")
+    if result.git_initialized:
+        click.echo("Initialized git repository.")
+    elif not no_git:
+        click.echo("(git not found; skipped 'git init')", err=True)
+
+    click.echo()
+    click.echo("Next steps:")
+    click.echo(f"  cd {result.target}")
+    click.echo("  # edit instrument.yaml to define your questionnaire")
+    click.echo("  bash scripts/load.sh    # build study.db")
+    click.echo("  bash scripts/seed.sh    # (optional) generate synthetic responses for dev")
 
 
 @main.command()

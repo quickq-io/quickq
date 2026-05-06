@@ -42,31 +42,45 @@ You should see the full command list grouped by function — Core, FHIR, Complia
 
 ---
 
-## Step 2 — Create a study directory
+## Step 2 — Scaffold a study repository
 
-quickq is a tool you install once and use across many studies. Your study files — the YAML instrument definitions, the SQLite database, and any exported files — live in their own directory, separate from the quickq source code.
+quickq is a tool you install once and use across many studies. Each study lives in its own directory with the recommended layout: an authoring YAML, scripts to rebuild artifacts from sources, a `.gitignore` configured so runtime databases don't end up in version control, and a README documenting the structure. The `quickq new` command sets all of this up:
 
 ```bash
-mkdir gout-study && cd gout-study
+quickq new gout-study
+cd gout-study
 ```
 
-Everything from here on happens inside `gout-study/`. The YAML files you author and the `study.db` database will both live here. If you add a `quickq.yml` config file later (for things like default output format), it goes here too.
+This creates `gout-study/` with:
+
+```
+gout-study/
+├── README.md              # explains the layout + how to rebuild from sources
+├── instrument.yaml        # authoring source (currently a starter; we'll replace it)
+├── library/               # space for custom question-bank extensions
+├── scripts/
+│   ├── load.sh            # rebuild study.db from instrument.yaml
+│   ├── seed.sh            # generate synthetic responses for dev
+│   └── refresh.sh         # rebuild analytics.duckdb from study.db
+├── docs/                  # space for protocol notes, IRB packet, etc.
+└── .gitignore             # excludes runtime *.db / *.duckdb files
+```
+
+`quickq new` also runs `git init` so the repo is ready for version control immediately. Pass `--no-git` to skip that step. The principle: **YAML and library are sources of truth, in git. The runtime databases are derived artifacts, regenerable from sources, not in git.**
 
 ---
 
-## Step 3 — Create a study database
+## Step 3 — Replace the starter YAML
 
-```bash
-quickq init study.db --with-library
-```
+The scaffolded `instrument.yaml` has one example question to demonstrate the format. Replace it with the gout instrument we'll build in the next steps. For now, leave it as-is; we'll overwrite it in Step 4.
 
-`--with-library` loads the bundled question bank (PHQ-9, GAD-7, PRAPARE, and others) so you can reference their questions in your own instruments.
+If you want the bundled standard library (PHQ-9, GAD-7, PRAPARE, and others) available so you can reference its questions in your own instrument, add `--with-library` when you run `scripts/load.sh`. We'll cover that in Stage 4 below; for now the default `scripts/load.sh` is sufficient.
 
 ---
 
 ## Step 4 — Author the questionnaire
 
-Create a file called `gout.yaml`. We will build it up in three stages.
+Open `instrument.yaml` and replace its contents. We will build the gout instrument up in four stages, running `bash scripts/load.sh` after each stage to rebuild `study.db`.
 
 ### Stage 1 — Minimal instrument
 
@@ -92,7 +106,7 @@ questionnaire:
 Load and verify:
 
 ```bash
-quickq load gout.yaml study.db
+bash scripts/load.sh
 quickq list surveys study.db
 ```
 
@@ -144,7 +158,7 @@ questionnaire:
 Reload — quickq will overwrite the previous version since the `canonical_url` matches:
 
 ```bash
-quickq load gout.yaml study.db
+bash scripts/load.sh
 quickq preview study.db 1
 ```
 
@@ -208,7 +222,7 @@ questionnaire:
 ```
 
 ```bash
-quickq load gout.yaml study.db
+bash scripts/load.sh
 quickq preview study.db 1
 ```
 
@@ -216,7 +230,7 @@ The joint question now only appears if the date question has been answered.
 
 ### Stage 4 — Pull a validated question from the library
 
-The `--with-library` flag in Step 2 loaded a bank of validated questions, including both PHQ-9 items. You can pull any of them into your questionnaire with a single line instead of redefining them:
+quickq ships a bank of validated questions (PHQ-9, GAD-7, PRAPARE, and others) that you can pull into your own instrument with a single line instead of redefining them:
 
 ```yaml
     - { library: gout.notes }
@@ -226,8 +240,12 @@ The `--with-library` flag in Step 2 loaded a bank of validated questions, includ
 
 This inserts the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
 
+To make the library available, the database needs to be initialized with `--with-library`. The default `scripts/load.sh` skipped this for simplicity; rebuild explicitly to pull the library in:
+
 ```bash
-quickq load gout.yaml study.db
+rm -f study.db
+quickq init study.db --with-library
+quickq load instrument.yaml study.db
 quickq preview study.db 1
 ```
 
