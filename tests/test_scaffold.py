@@ -26,9 +26,6 @@ def test_scaffold_creates_expected_layout(tmp_path):
         "README.md",
         ".gitignore",
         "instrument.yaml",
-        "scripts/load.sh",
-        "scripts/seed.sh",
-        "scripts/refresh.sh",
         "library/README.md",
         "docs/README.md",
     }
@@ -37,13 +34,12 @@ def test_scaffold_creates_expected_layout(tmp_path):
         assert (target / rel).is_file()
 
 
-def test_scaffolded_scripts_are_executable(tmp_path):
-    target = tmp_path / "my-study"
+def test_scaffold_does_not_create_scripts_directory(tmp_path):
+    """scripts/ wrappers were vestigial; the scaffold no longer ships them.
+    quickq commands are invoked directly (see README quick-start)."""
+    target = tmp_path / "no-scripts"
     scaffold(target, init_git=False)
-    for s in ["load.sh", "seed.sh", "refresh.sh"]:
-        # Owner-executable bit should be set
-        path = target / "scripts" / s
-        assert path.stat().st_mode & 0o100, f"{s} should be executable"
+    assert not (target / "scripts").exists()
 
 
 def test_readme_contains_study_name(tmp_path):
@@ -150,22 +146,27 @@ def test_scaffolded_yaml_loads_into_study_db(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# End-to-end via the generated scripts (smoke; requires quickq on PATH)
+# End-to-end via direct quickq commands (smoke; requires quickq on PATH)
 # ---------------------------------------------------------------------------
 
-def test_load_script_actually_works(tmp_path):
-    """Run the generated scripts/load.sh and confirm it produces a study.db."""
+def test_scaffolded_yaml_loads_via_cli(tmp_path):
+    """Verify the canonical quick-start in the README works: `quickq init` +
+    `quickq load instrument.yaml` against a freshly-scaffolded repo produces
+    a working study.db."""
     if shutil.which("quickq") is None:
-        pytest.skip("quickq CLI not on PATH; skipping end-to-end script test")
+        pytest.skip("quickq CLI not on PATH; skipping end-to-end CLI test")
 
     target = tmp_path / "e2e-study"
     scaffold(target, init_git=False)
 
-    result = subprocess.run(
-        ["bash", "scripts/load.sh"],
-        cwd=target,
-        capture_output=True,
-        text=True,
+    init_result = subprocess.run(
+        ["quickq", "init", "study.db"], cwd=target, capture_output=True, text=True
     )
-    assert result.returncode == 0, f"load.sh failed: {result.stderr}"
+    assert init_result.returncode == 0, f"quickq init failed: {init_result.stderr}"
+
+    load_result = subprocess.run(
+        ["quickq", "load", "instrument.yaml", "study.db"],
+        cwd=target, capture_output=True, text=True,
+    )
+    assert load_result.returncode == 0, f"quickq load failed: {load_result.stderr}"
     assert (target / "study.db").is_file()

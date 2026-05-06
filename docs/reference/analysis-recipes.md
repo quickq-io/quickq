@@ -20,11 +20,12 @@ produced by `quickq refresh`. Two ways to get one:
 
 ### Option A: use the bundled demo
 
-Reproducible, takes ~5 seconds, covers all 11 implemented question types.
+Reproducible, takes ~5 seconds, covers all 11 implemented question types. Fetch the demo YAML from GitHub:
 
 ```bash
+curl -O https://raw.githubusercontent.com/quickq-io/quickq/main/examples/health_intake_demo.yaml
 quickq init study.db
-quickq load examples/health_intake_demo.yaml study.db
+quickq load health_intake_demo.yaml study.db
 quickq seed study.db 1 --n 500 --seed 20260503
 quickq refresh study.db analytics.duckdb
 ```

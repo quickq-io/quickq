@@ -33,10 +33,11 @@ The table below reflects a formal audit of each type across the five pipeline la
 
 ## Demo instrument
 
-`examples/health_intake_demo.yaml` in the repository covers all fully supported and partial types in a coherent clinical context. Load and seed it to exercise the full pipeline:
+[`examples/health_intake_demo.yaml`](https://github.com/quickq-io/quickq/blob/main/examples/health_intake_demo.yaml) in the quickq source repo covers all fully supported and partial types in a coherent clinical context. Fetch it and exercise the full pipeline:
 
 ```bash
-quickq load examples/health_intake_demo.yaml study.db
+curl -O https://raw.githubusercontent.com/quickq-io/quickq/main/examples/health_intake_demo.yaml
+quickq load health_intake_demo.yaml study.db
 quickq seed study.db <questionnaire_id> --n 50
 quickq refresh study.db analytics.duckdb
 quickq report analytics.duckdb study.db <questionnaire_id>

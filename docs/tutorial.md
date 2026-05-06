@@ -13,13 +13,19 @@ quickq tutorials follow several paths. Pick the one that matches what you want t
 
 ## Analytics phase tutorials
 
-These tutorials all query against the same demo database. Generate it once before working through them:
+These tutorials all query against the same demo database. Generate it once before working through them. The demo-builder is a script in the quickq source repo (it loads PHQ-9 and Prenatal Visit Log instruments, imports 250 PHQ-9 responses + 150 prenatal visit logs with realistic distributions, runs `quickq refresh`, and creates six analytical views):
 
 ```bash
+# One-time: clone the source so you can run the demo builder
+git clone https://github.com/quickq-io/quickq.git /tmp/quickq-src
+cd /tmp/quickq-src
 uv run python scripts/generate_demo.py
 ```
 
-The script loads the PHQ-9 and Prenatal Visit Log instruments, imports 250 PHQ-9 responses and 150 prenatal visit logs with realistic distributions, runs `quickq refresh`, and creates six analytical views. Output: `demo/study.db` (OLTP) and `demo/analytics.duckdb` (OLAP).
+Output: `demo/study.db` (OLTP) and `demo/analytics.duckdb` (OLAP). Both can be copied wherever you want to run the tutorials from. The source clone is only needed for this one-time demo build; you don't need to keep it around.
+
+!!! note "Future: built-in demo command"
+    A future `quickq demo` command will produce the same output without needing to clone the source. Until then, the script-based path above is the cleanest way to get the demo data set up.
 
 The tutorials work in order, but each is also independently readable.
 

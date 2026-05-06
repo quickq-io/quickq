@@ -30,7 +30,7 @@ class ScaffoldResult:
 
 
 _GITIGNORE = """\
-# Runtime databases (regenerable from instrument.yaml + scripts/load.sh)
+# Runtime databases (regenerable from instrument.yaml via `quickq load`)
 *.db
 *.db-shm
 *.db-wal
@@ -61,7 +61,8 @@ _INSTRUMENT_YAML = """\
 # Authoring source for this study's questionnaire(s).
 #
 # Edit this file to define your instrument, then run:
-#     bash scripts/load.sh
+#     quickq init study.db
+#     quickq load instrument.yaml study.db
 # to (re)build study.db from this definition.
 #
 # The full YAML format reference, including every field, all skip-logic
@@ -93,22 +94,23 @@ A quickq study repository.
 
 ## Quick start
 
-Rebuild the study database from the instrument definition:
+Build the study database from the instrument definition:
 
 ```bash
-bash scripts/load.sh
+quickq init study.db
+quickq load instrument.yaml study.db
 ```
 
 Generate synthetic responses for development / testing:
 
 ```bash
-bash scripts/seed.sh
+quickq seed study.db 1 --n 50 --seed 1
 ```
 
 Refresh the analytical layer:
 
 ```bash
-bash scripts/refresh.sh
+quickq refresh study.db analytics.duckdb
 ```
 
 ## Repository layout
@@ -117,10 +119,9 @@ bash scripts/refresh.sh
 |---|---|---|
 | `instrument.yaml`     | Authoring source for the questionnaire(s) | Yes |
 | `library/`            | Custom library extensions (shared question banks) | Yes |
-| `scripts/`            | Convenience scripts to rebuild artifacts from sources | Yes |
 | `docs/`               | Study-specific protocol notes, IRB packet, SOPs | Yes |
-| `study.db`            | OLTP study database (built by `scripts/load.sh`) | No (gitignored) |
-| `analytics.duckdb`    | OLAP analytical database (built by `scripts/refresh.sh`) | No (gitignored) |
+| `study.db`            | OLTP study database (built by `quickq load`) | No (gitignored) |
+| `analytics.duckdb`    | OLAP analytical database (built by `quickq refresh`) | No (gitignored) |
 | `exports/`            | Output directory for parquet / FHIR / report exports | No (gitignored) |
 
 The principle: **YAML and library are sources of truth, in git. The
@@ -131,12 +132,13 @@ but do not commit it to version control.
 
 ## Editing the instrument
 
-Edit `instrument.yaml` directly. After changes, rebuild with `bash
-scripts/load.sh`. quickq's loader detects whether the questionnaire's
-`canonical_url` + `version` already exists in the database and updates
-in place when no responses have been collected yet. Once responses
-exist, bump the `version:` field in the YAML to author a new revision
-rather than overwriting the instrument respondents already saw.
+Edit `instrument.yaml` directly. After changes, rerun `quickq load
+instrument.yaml study.db`. quickq's loader detects whether the
+questionnaire's `canonical_url` + `version` already exists in the
+database and updates in place when no responses have been collected
+yet. Once responses exist, bump the `version:` field in the YAML to
+author a new revision rather than overwriting the instrument
+respondents already saw.
 
 For the full YAML format reference (every field, all skip-logic
 operators, scoring formulas, immutability rules), see
@@ -152,51 +154,6 @@ operators, scoring formulas, immutability rules), see
 ---
 
 *This repository was scaffolded with `quickq new`.*
-"""
-
-
-_LOAD_SH = """\
-#!/usr/bin/env bash
-# Rebuild study.db from instrument.yaml. Idempotent: safe to re-run.
-set -euo pipefail
-
-DB_PATH="${1:-study.db}"
-
-if [ -f "$DB_PATH" ]; then
-    echo "Removing existing $DB_PATH ..."
-    rm -f "$DB_PATH" "$DB_PATH-shm" "$DB_PATH-wal"
-fi
-
-quickq init "$DB_PATH"
-quickq load instrument.yaml "$DB_PATH"
-
-echo "Rebuilt $DB_PATH from instrument.yaml."
-"""
-
-
-_SEED_SH = """\
-#!/usr/bin/env bash
-# Generate synthetic responses for development / testing. Reproducible via --seed.
-set -euo pipefail
-
-DB_PATH="${1:-study.db}"
-N="${2:-50}"
-
-quickq seed "$DB_PATH" 1 --n "$N" --seed 1
-echo "Seeded $N synthetic respondents into $DB_PATH."
-"""
-
-
-_REFRESH_SH = """\
-#!/usr/bin/env bash
-# Refresh the OLAP analytical database from study.db.
-set -euo pipefail
-
-DB_PATH="${1:-study.db}"
-OLAP_PATH="${2:-analytics.duckdb}"
-
-quickq refresh "$DB_PATH" "$OLAP_PATH"
-echo "Refreshed $OLAP_PATH from $DB_PATH."
 """
 
 
@@ -297,11 +254,6 @@ def scaffold(
             "instrument.yaml",
             _INSTRUMENT_YAML.format(name=display_name, slug=slug),
         )
-
-    # scripts/
-    _write("scripts/load.sh", _LOAD_SH, executable=True)
-    _write("scripts/seed.sh", _SEED_SH, executable=True)
-    _write("scripts/refresh.sh", _REFRESH_SH, executable=True)
 
     # library/ and docs/ as populated-with-README directories
     _write("library/README.md", _LIBRARY_README)

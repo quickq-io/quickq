@@ -15,7 +15,7 @@ quickq new anxiety-study
 cd anxiety-study
 ```
 
-`quickq new` creates a study repo with the recommended layout (an `instrument.yaml`, `scripts/` to rebuild artifacts from sources, a `.gitignore` keeping runtime databases out of version control, README, and `docs/` + `library/` directories) and runs `git init`. See [Quickstart Step 2](end-to-end.md) for the full layout if you want a refresher.
+`quickq new` creates a study repo with the recommended layout (an `instrument.yaml`, a `.gitignore` keeping runtime databases out of version control, README, and `docs/` + `library/` directories) and runs `git init`. See [Quickstart Step 2](end-to-end.md) for the full layout if you want a refresher.
 
 The scaffold drops a starter `instrument.yaml` with one example question; we'll replace its contents in the next step.
 
@@ -274,10 +274,11 @@ questionnaire:
 ## 9. Load and verify
 
 ```bash
-bash scripts/load.sh
+quickq init study.db
+quickq load instrument.yaml study.db
 ```
 
-The scaffolded script runs `quickq init study.db && quickq load instrument.yaml study.db`. If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
+If there is a validation error — an unknown question type, a `show_when` reference to a `link_id` that does not exist in the same questionnaire, a duplicate `link_id` — quickq raises it here before any rows are written.
 
 ### For you: the data dictionary
 

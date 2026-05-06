@@ -24,27 +24,27 @@ By the end you will have:
 
 ## Step 1 — Install quickq
 
-Pick a parent directory to hold the cloned repos (this tutorial uses `~/code`). In Step 5 you will clone `quickq-forms` next to `quickq` in the same parent and install both together.
+Install the `quickq` command from GitHub:
 
 ```bash
-mkdir -p ~/code && cd ~/code
-git clone https://github.com/quickq-io/quickq.git
-uv tool install ./quickq
+uv tool install git+https://github.com/quickq-io/quickq.git
 ```
 
-This installs `quickq` as a standalone command on your PATH. Verify it and get a quick overview of what the tool does:
+This installs `quickq` as a standalone command on your PATH, with the bundled question library included. Updates later via `uv tool upgrade quickq`. If you prefer plain pip: `pip install git+https://github.com/quickq-io/quickq.git`.
+
+Verify the install and get a quick overview of what the tool does:
 
 ```bash
 quickq --help
 ```
 
-You should see the full command list grouped by function — Core, FHIR, Compliance, and Federated. Spend a moment reading through it before continuing.
+You should see the full command list grouped by function — Core, Study management, FHIR, Compliance, and Federated. Spend a moment reading through it before continuing.
 
 ---
 
 ## Step 2 — Scaffold a study repository
 
-quickq is a tool you install once and use across many studies. Each study lives in its own directory with the recommended layout: an authoring YAML, scripts to rebuild artifacts from sources, a `.gitignore` configured so runtime databases don't end up in version control, and a README documenting the structure. The `quickq new` command sets all of this up:
+quickq is a tool you install once and use across many studies. Each study lives in its own directory with the recommended layout: an authoring YAML, a `.gitignore` configured so runtime databases don't end up in version control, and a README documenting the structure. The `quickq new` command sets all of this up:
 
 ```bash
 quickq new gout-study
@@ -58,21 +58,17 @@ gout-study/
 ├── README.md              # explains the layout + how to rebuild from sources
 ├── instrument.yaml        # authoring source (currently a starter; we'll replace it)
 ├── library/               # space for custom question-bank extensions
-├── scripts/
-│   ├── load.sh            # rebuild study.db from instrument.yaml
-│   ├── seed.sh            # generate synthetic responses for dev
-│   └── refresh.sh         # rebuild analytics.duckdb from study.db
 ├── docs/                  # space for protocol notes, IRB packet, etc.
 └── .gitignore             # excludes runtime *.db / *.duckdb files
 ```
 
-`quickq new` also runs `git init` so the repo is ready for version control immediately. Pass `--no-git` to skip that step. The principle: **YAML and library are sources of truth, in git. The runtime databases are derived artifacts, regenerable from sources, not in git.**
+`quickq new` also runs `git init` so the repo is ready for version control immediately. Pass `--no-git` to skip that step. The principle: **YAML and library are sources of truth, in git. The runtime databases (`study.db`, `analytics.duckdb`) are derived artifacts, regenerable from sources via `quickq` commands, not in git.**
 
 ---
 
 ## Step 3 — Author the questionnaire
 
-Open `instrument.yaml` (the scaffolded starter has one example question — replace its contents). We will build the gout instrument up in four stages, running `bash scripts/load.sh` after each stage to rebuild `study.db` from the YAML.
+Open `instrument.yaml` (the scaffolded starter has one example question — replace its contents). We will build the gout instrument up in four stages, running `quickq load instrument.yaml study.db` after each stage to rebuild `study.db` from the YAML. The first time, also run `quickq init study.db` to create the database.
 
 ### Stage 1 — Minimal instrument
 
@@ -98,7 +94,8 @@ questionnaire:
 Load and verify:
 
 ```bash
-bash scripts/load.sh
+quickq init study.db
+quickq load instrument.yaml study.db
 quickq list surveys study.db
 ```
 
@@ -150,7 +147,7 @@ questionnaire:
 Reload — quickq will overwrite the previous version since the `canonical_url` matches:
 
 ```bash
-bash scripts/load.sh
+quickq load instrument.yaml study.db
 quickq preview study.db 1
 ```
 
@@ -212,7 +209,7 @@ questionnaire:
 ```
 
 ```bash
-bash scripts/load.sh
+quickq load instrument.yaml study.db
 quickq preview study.db 1
 ```
 
@@ -230,7 +227,7 @@ quickq ships a bank of validated questions (PHQ-9, GAD-7, PRAPARE, and others) t
 
 The first inserts a free-text "anything else?" notes question shipped in the gout library. The other two pull in the first two PHQ-9 items — "Little interest or pleasure in doing things" and "Feeling down, depressed, or hopeless" — with their original wording, LOINC concept codes, and answer options intact. No copy-pasting or manual coding required.
 
-To make the library available, the database needs to be initialized with `--with-library`. The default `scripts/load.sh` skipped this for simplicity; rebuild explicitly now to pull the library in:
+To make the library available, the database needs to be initialized with `--with-library`. The earlier `quickq init study.db` skipped this for simplicity; rebuild explicitly now to pull the library in:
 
 ```bash
 rm -f study.db
@@ -261,27 +258,18 @@ This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant deli
 
 `quickq serve` launches a web form for your study and opens it in your browser. Submitted responses write straight back to `study.db`.
 
-The serve command lives in a separate package, `quickq-forms`. Reinstall `quickq` with the `serve` extra so both end up on your PATH together:
+The serve command lives in a separate package, `quickq-forms`. Reinstall `quickq` with `quickq-forms` alongside so both end up on your PATH together:
 
 ```bash
-cd ~/code            # the parent directory from Step 1
-git clone https://github.com/quickq-io/quickq-forms.git
-uv tool install --reinstall ./quickq --with ./quickq-forms
+uv tool install --reinstall \
+    git+https://github.com/quickq-io/quickq.git \
+    --with git+https://github.com/quickq-io/quickq-forms.git
 ```
 
-Your layout should now look like:
-
-```
-~/code/
-├── quickq/          # cloned in Step 1
-├── quickq-forms/    # cloned just now
-└── gout-study/      # created in Step 2; contains study.db
-```
-
-Start the server from inside `gout-study/`:
+Start the server from inside your study repo:
 
 ```bash
-cd ~/code/gout-study
+cd gout-study     # if you aren't there already
 quickq serve study.db
 ```
 

@@ -22,8 +22,9 @@ by `quickq refresh`. Two ways to get one:
 Run these once at the shell to produce a 500-respondent seeded study:
 
 ```bash
+curl -O https://raw.githubusercontent.com/quickq-io/quickq/main/examples/health_intake_demo.yaml
 quickq init study.db
-quickq load examples/health_intake_demo.yaml study.db
+quickq load health_intake_demo.yaml study.db
 quickq seed study.db 1 --n 500 --seed 20260503
 quickq refresh study.db analytics.duckdb
 ```
