@@ -2057,7 +2057,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
 <hr />
 <h2 id="step-10-export-to-a-warehouse">Step 10 — Export to a warehouse<a class="headerlink" href="#step-10-export-to-a-warehouse" title="Permanent link">&para;</a></h2>
 <p>If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Exported 19 table(s) to parquet_export/ (1215 total rows)
   dim_date: 0 rows → dim_date.parquet
@@ -2072,7 +2072,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
 </code></pre></div>
 <p>Upload <code>parquet_export/</code> to your cloud storage bucket and point your warehouse at it. The star schema is self-contained — no quickq dependency on the warehouse side.</p>
 <p>To export only the tables needed for a specific analysis:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>fact_response<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_question<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_respondent<span class="w"> </span><span class="se">\</span>
@@ -2100,7 +2100,7 @@ Coordinating center (per collection cycle):
   quickq merge site_a.db site_b.db site_c.db --output combined.db
   quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
   quickq refresh combined_anon.db analytics_anon.duckdb
-  quickq export analytics_anon.duckdb ./parquet_export/   # optional
+  quickq export parquet analytics_anon.duckdb -o ./parquet_export/   # optional
 </code></pre></div>
 <p>The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.</p>
 

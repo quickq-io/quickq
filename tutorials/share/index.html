@@ -1670,7 +1670,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
 <hr />
 <h2 id="step-4-export-to-parquet">Step 4 — Export to Parquet<a class="headerlink" href="#step-4-export-to-parquet" title="Permanent link">&para;</a></h2>
 <p>For sharing with analysts using BigQuery, Snowflake, Databricks, or any columnar warehouse, export the OLAP to Parquet files:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Exported 19 table(s) to parquet_export/ (1215 total rows)
   dim_date: 0 rows → dim_date.parquet
@@ -1684,7 +1684,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
   ...
 </code></pre></div>
 <p>To export only the tables needed for a specific analysis:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>fact_response<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_question<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_respondent<span class="w"> </span><span class="se">\</span>

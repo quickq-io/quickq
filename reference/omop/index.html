@@ -1680,8 +1680,8 @@
 <hr />
 <h2 id="exporting-to-an-omop-cdm-target">Exporting to an OMOP CDM target<a class="headerlink" href="#exporting-to-an-omop-cdm-target" title="Permanent link">&para;</a></h2>
 <p>quickq's OMOP tables are a projection layer, not a full CDM. They provide the <code>SurveyConducts</code> and <code>Observations</code> domains — sufficient for federated survey queries. For full CDM export (Demographics, Visits, Drug Exposures, etc.), integrate quickq's OMOP tables with your institution's CDM pipeline.</p>
-<p>The Parquet export (<code>quickq export</code>) includes the OMOP tables:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>analytics.duckdb<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
+<p>The Parquet export (<code>quickq export parquet</code>) includes the OMOP tables:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>omop_survey_conduct<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>omop_observation<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>omop_unmapped_questions

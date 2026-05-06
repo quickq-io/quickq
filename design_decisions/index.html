@@ -1709,7 +1709,7 @@
 <h3 id="tier-3-medium-multi-site-up-to-100000-participants">Tier 3: Medium multi-site (up to ~100,000 participants)<a class="headerlink" href="#tier-3-medium-multi-site-up-to-100000-participants" title="Permanent link">&para;</a></h3>
 <p>Each site collects into its own <code>site_N.db</code>. A coordinating center distributes the canonical instrument with <code>quickq fork</code> (one fork per site, structurally identical, no responses), and a periodic <code>quickq merge</code> assembles the populated site databases into a combined study for cross-site analysis. This is the most IRB-friendly pattern: each site retains custody of its own data; only the merged file crosses the institutional boundary. Where central collection is preferred, a queue-backed ingestor serializes concurrent submissions into a single writer.</p>
 <h3 id="tier-4-large-or-institutional-200000-participants">Tier 4: Large or institutional (200,000+ participants)<a class="headerlink" href="#tier-4-large-or-institutional-200000-participants" title="Permanent link">&para;</a></h3>
-<p>Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, <code>quickq export</code> dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.</p>
+<p>Site sharding remains viable at this scale. For institutions running data through BigQuery, Snowflake, or Databricks, <code>quickq export parquet</code> dumps the star schema to Parquet files those warehouses can ingest directly, with no knowledge of quickq required.</p>
 <pre class="mermaid"><code>flowchart LR
     subgraph Local ["Tier 1–2: Local / Small Multi-site"]
         direction TB
@@ -1729,7 +1729,7 @@
         C_Merge --&gt; C_Combined[(combined.db)]
         C_Combined --&gt; C_Refresh[quickq refresh]
         C_Refresh --&gt; C_OLAP[(analytics.duckdb)]
-        C_OLAP --&gt; C_Parquet[quickq export]
+        C_OLAP --&gt; C_Parquet[quickq export parquet]
         C_Parquet --&gt; C_Warehouse{{BigQuery / Snowflake\nDatabricks}}
     end
 
