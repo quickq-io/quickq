@@ -1854,6 +1854,12 @@ quickq<span class="w"> </span>list<span class="w"> </span>surveys<span class="w"
 <p>Preview it in your browser:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Two renderers in this tutorial: what's the difference?</p>
+<p><code>quickq preview</code> opens the questionnaire in <strong>LHC-Forms</strong> (NIH/NLM's reference FHIR Questionnaire renderer, loaded from a CDN). It is read-only: a quick visual check of the structure, no install needed beyond <code>quickq</code> itself.</p>
+<p>Step 5 below uses <code>quickq serve</code>, which boots <strong>quickq-forms</strong> (our own bundled delivery package) to actually collect responses. quickq-forms is what your real respondents will see; LHC-Forms is here just for fast iterate-on-YAML preview.</p>
+<p>The two renderers share nothing in common visually. We expect to unify the tutorial on quickq-forms once it gains a read-only preview mode; for now, the split is intentional but worth knowing about.</p>
+</div>
 <h3 id="stage-2-add-an-option-set">Stage 2 — Add an option set<a class="headerlink" href="#stage-2-add-an-option-set" title="Permanent link">&para;</a></h3>
 <p>Option sets define a reusable list of choices that multiple questions can share. Add a frequency scale and two questions that use it:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
