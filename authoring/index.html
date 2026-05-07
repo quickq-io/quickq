@@ -1767,7 +1767,7 @@ directly in the browser. If your need is sharp authoring with interactive
 skip-pattern preview and GitHub-Pages-publishable modules, Quest is the
 right tool.</p>
 <p>quickq does offer full-featured authoring via YAML and rendering through
-LHC-Forms, the bundled quickq-forms server, or any FHIR-compliant delivery
+LHC-Forms, the optional quickq-forms server, or any FHIR-compliant delivery
 tool. Its core focus, though, is the broader study lifecycle: a queryable
 SQLite / DuckDB data model, FHIR R4 delivery, LOINC / SNOMED / OMOP concept
 coding, versioned scoring rules, and compliance instrumentation. The two
@@ -1977,7 +1977,7 @@ Consider using { library: phq9.1 } instead of authoring a new question.
 <p>Operators: <code>exists</code>, <code>=</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>. Skip rules map directly to FHIR <code>item.enableWhen</code>. For complex multi-condition logic that exceeds what structured rules can express, <code>display_condition</code> accepts a FHIRPath expression as a fallback.</p>
 <hr />
 <h2 id="scoring-rules">Scoring Rules<a class="headerlink" href="#scoring-rules" title="Permanent link">&para;</a></h2>
-<p>Subscale scores (PHQ-9 total, GAD-7 severity, SF-12 PCS/MCS) are defined alongside the instrument and computed automatically during <code>quickq refresh</code>. A scoring rule names a formula (<code>sum</code>, <code>mean</code>, <code>count</code>, or an arithmetic expression referencing <code>link_id</code> values), lists which questions contribute (with optional weights and reverse-score flags), and defines severity bands.</p>
+<p>Subscale scores (PHQ-9 total, GAD-7 severity, AUDIT total) are defined alongside the instrument and computed automatically during <code>quickq refresh</code>. A scoring rule names a formula (<code>sum</code> or <code>mean</code>), lists which questions contribute (with optional weights and reverse-score flags), and defines severity bands.</p>
 <p>Results land in <code>agg_respondent_scores</code> in the OLAP — one row per respondent per scoring rule per session.</p>
 <hr />
 <h2 id="instrument-documentation">Instrument documentation<a class="headerlink" href="#instrument-documentation" title="Permanent link">&para;</a></h2>

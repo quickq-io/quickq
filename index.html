@@ -1488,7 +1488,7 @@
 <ul>
 <li>Every answered question is one row in <code>fact_response</code>. The same query pattern works for every question type and every instrument, with no instrument-specific code</li>
 <li>Skip logic violations, out-of-range values, and unexpected missing data are standard SQL queries against the star schema, not custom scripts per instrument</li>
-<li>Subscale scores (PHQ-9, GAD-7, SF-12) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time</li>
+<li>Subscale scores (PHQ-9, GAD-7, AUDIT) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time</li>
 <li>Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization of shared LOINC or SNOMED codes is a join</li>
 </ul>
 <hr />
@@ -1517,7 +1517,7 @@ Federated         federated query
 </ul>
 <hr />
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq and the bundled form server</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq with the optional form server alongside</span>
 uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span>./quickq<span class="w"> </span>--with<span class="w"> </span>./quickq-forms
 
 <span class="c1"># Author a study</span>
