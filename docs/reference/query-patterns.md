@@ -40,7 +40,7 @@ SELECT
     dq.question_text,
     fr.option_value,
     COUNT(*)                                                                    AS n,
-    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY dq.question_id), 1) AS pct
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY dq.link_id), 1) AS pct
 FROM fact_response fr
 JOIN dim_question dq USING (question_id)
 WHERE dq.question_type IN ('single_choice', 'likert')
@@ -212,9 +212,11 @@ The demo pre-builds this pivot as `v_prenatal_visits`. See `quickq/sql/demo_view
 
 ## `grid`
 
-Grid responses have `grid_row_id` and `grid_column_id` populated. Join `grid_row` and `grid_column` from the OLTP to get display labels, or use the option values directly.
+Grid responses have `grid_row_id` and `grid_column_id` populated. Join `grid_row` and `grid_column` from the OLTP to get display labels, or use the option values directly. The OLTP must be attached to the DuckDB session as `oltp`.
 
 ```sql
+ATTACH 'study.db' AS oltp (TYPE sqlite, READ_ONLY);
+
 SELECT
     dr.external_id          AS respondent,
     gr.row_text             AS symptom,

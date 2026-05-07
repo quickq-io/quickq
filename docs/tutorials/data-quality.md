@@ -45,8 +45,8 @@ SELECT
     END                          AS explanation,
     COUNT(*)                     AS n
 FROM v_phq9_scores
-WHERE respondent_id NOT IN (
-    SELECT DISTINCT dr.respondent_id
+WHERE respondent NOT IN (
+    SELECT DISTINCT dr.external_id
     FROM fact_response fr
     JOIN dim_question   dq USING (question_id)
     JOIN dim_respondent dr USING (respondent_id)

@@ -87,12 +87,12 @@ In a real study you would investigate whether the score difference across modes 
 Each row in `fact_response` for a repeating group child carries a `repeat_index` — the 0-based visit number within that respondent's session. This is what makes loop data queryable with standard SQL instead of JSON parsing or custom ETL.
 
 ```sql
-SELECT respondent_id, visit_number, gestational_week, provider, concern_noted
+SELECT respondent, visit_number, gestational_week, provider, concern_noted
 FROM v_prenatal_visits
-WHERE respondent_id = 'respondent-001';
+WHERE respondent = 'respondent-001';
 ```
 
-| respondent_id | visit_number | gestational_week | provider | concern_noted |
+| respondent | visit_number | gestational_week | provider | concern_noted |
 |---|---|---|---|---|
 | respondent-001 | 0 | 8.0 | midwife | false |
 | respondent-001 | 1 | 20.0 | midwife | false |
