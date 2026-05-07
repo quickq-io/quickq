@@ -612,34 +612,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/multi-site/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Advanced: Multi-site studies
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1515,11 +1487,6 @@
 <td>varies</td>
 <td>You want to explore the analytical layer with realistic data. Uses the bundled demo database (PHQ-9 + prenatal, 400 synthetic sessions, 4 300+ responses).</td>
 </tr>
-<tr>
-<td><a href="../tutorials/multi-site/">Multi-site lifecycle</a></td>
-<td>~45 min</td>
-<td>You want to run a study across multiple sites. Independent collection, merging, federated analysis. Three-site PHQ-9 scenario.</td>
-</tr>
 </tbody>
 </table>
 <hr />
@@ -1544,7 +1511,7 @@ uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </sp
 <p>Check for unexpected sparsity, distinguish skip-logic non-responses from genuine missingness, audit concept mapping coverage before federated export, review import flags.</p>
 <hr />
 <h2 id="multi-site-studies">Multi-site studies<a class="headerlink" href="#multi-site-studies" title="Permanent link">&para;</a></h2>
-<p>For studies that collect independently at multiple sites and merge at a coordinating center, see <a href="../tutorials/multi-site/">Multi-Site Study Operations</a>. It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, and running cross-site analyses.</p>
+<p>Multi-site studies are a primary use case for quickq's <code>fork</code>, <code>merge</code>, and <code>federated query</code> commands: distribute a canonical instrument from a coordinating center, collect independently at each site, and either merge the resulting databases at the coordinating center or run aggregate-only queries against them in place. A polished end-to-end recipe with realistic synthetic data and worked examples is still in development. If you are running a multi-site study and want to discuss how to wire up these primitives for your specific design, please <a href="https://github.com/quickq-io/quickq/issues">open a GitHub issue</a> — that conversation will inform the recipe we publish next.</p>
 
 
 

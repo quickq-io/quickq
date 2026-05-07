@@ -502,34 +502,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/multi-site/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Advanced: Multi-site studies
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1692,11 +1664,9 @@
 <p>Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR <code>QuestionnaireResponse.id</code>, respondents by <code>(study_id, external_id)</code>). Schema divergence is detected at merge time, not at analysis time.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
 </code></pre></div>
-<p>See the <a href="../../tutorials/multi-site/">Multi-Site Study Operations tutorial</a> for the full lifecycle.</p>
 <hr />
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../tutorials/multi-site/">Multi-Site Study Operations</a>: full lifecycle including merge, errata, and analysis.</li>
 <li><a href="../compliance/">Compliance &amp; Governance</a>: FAIR metadata, GDPR-style erasure, IRB-style withdrawal.</li>
 <li><a href="../../design_decisions/#federated-analytics">Design Decisions: Federated analytics</a>: the rationale.</li>
 </ul>
