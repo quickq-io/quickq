@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://quickq-io.github.io/quickq/tutorials/multi-site/">
       
       
-        <link rel="prev" href="../share/">
+        <link rel="prev" href="../data-quality/">
       
       
         <link rel="next" href="../../reference/question-types/">
@@ -508,34 +508,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../share/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    4. Share & publish
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -738,10 +710,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-7-pseudonymize-for-sharing" class="md-nav__link">
+  <a href="#step-7-refresh-the-olap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 — Pseudonymize for sharing
+        Step 7 — Refresh the OLAP
       
     </span>
   </a>
@@ -749,10 +721,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-8-refresh-the-olap" class="md-nav__link">
+  <a href="#step-8-cross-site-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 8 — Refresh the OLAP
+        Step 8 — Cross-site analysis
       
     </span>
   </a>
@@ -760,21 +732,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-9-cross-site-analysis" class="md-nav__link">
+  <a href="#step-9-export-to-a-warehouse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 9 — Cross-site analysis
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-10-export-to-a-warehouse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 10 — Export to a warehouse
+        Step 9 — Export to a warehouse
       
     </span>
   </a>
@@ -1709,10 +1670,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-7-pseudonymize-for-sharing" class="md-nav__link">
+  <a href="#step-7-refresh-the-olap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 — Pseudonymize for sharing
+        Step 7 — Refresh the OLAP
       
     </span>
   </a>
@@ -1720,10 +1681,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-8-refresh-the-olap" class="md-nav__link">
+  <a href="#step-8-cross-site-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 8 — Refresh the OLAP
+        Step 8 — Cross-site analysis
       
     </span>
   </a>
@@ -1731,21 +1692,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-9-cross-site-analysis" class="md-nav__link">
+  <a href="#step-9-export-to-a-warehouse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 9 — Cross-site analysis
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-10-export-to-a-warehouse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 10 — Export to a warehouse
+        Step 9 — Export to a warehouse
       
     </span>
   </a>
@@ -1784,7 +1734,7 @@
 
 
 <h1 id="tutorial-multi-site-study-operations">Tutorial: Multi-Site Study Operations<a class="headerlink" href="#tutorial-multi-site-study-operations" title="Permanent link">&para;</a></h1>
-<p>This tutorial covers the full lifecycle of a multi-site study: initializing independent collection databases at each site, handling a data quality issue discovered mid-collection, merging the sites into a combined database, pseudonymizing for sharing, refreshing the analytical layer, and exporting to a warehouse.</p>
+<p>This tutorial covers the full lifecycle of a multi-site study: initializing independent collection databases at each site, handling a data quality issue discovered mid-collection, merging the sites into a combined database, refreshing the analytical layer, and exporting to a warehouse.</p>
 <p>The scenario is a three-site community mental health study screening for depression with the PHQ-9. Collection happens independently at each site; a coordinating center assembles the combined dataset at the end of each collection period.</p>
 <hr />
 <h2 id="scenario">Scenario<a class="headerlink" href="#scenario" title="Permanent link">&para;</a></h2>
@@ -1814,14 +1764,14 @@
 </tr>
 </tbody>
 </table>
-<p>Each site runs its own quickq database. The same PHQ-9 YAML definition is loaded at every site. The coordinating center runs the merge, pseudonymization, and analysis.</p>
+<p>Each site runs its own quickq database. The same PHQ-9 YAML definition is loaded at every site. The coordinating center runs the merge and analysis.</p>
 <h3 id="study-design-note-identifying-sites-after-merge">Study design note: identifying sites after merge<a class="headerlink" href="#study-design-note-identifying-sites-after-merge" title="Permanent link">&para;</a></h3>
 <p>Each site creates its study with a <strong>unique name</strong>. After merge the <code>study_id</code> column becomes a site identifier — every respondent and session carries the <code>study_id</code> of the database it came from.</p>
 <div class="highlight"><pre><span></span><code>study_name = &quot;PHQ-9 Screening — Boston Medical Center&quot;   → study_id 1
 study_name = &quot;PHQ-9 Screening — Cambridge Health Alliance&quot; → study_id 2
 study_name = &quot;PHQ-9 Screening — Lowell General Hospital&quot;  → study_id 3
 </code></pre></div>
-<p>This is the cleanest approach with the current schema. An alternative is to namespace <code>external_id</code> values with a site prefix (e.g. <code>BMC::P001</code>) — this gives you a human-readable site label before pseudonymization, at the cost of slightly more complex participant ID management.</p>
+<p>This is the cleanest approach with the current schema. An alternative is to namespace <code>external_id</code> values with a site prefix (e.g. <code>BMC::P001</code>) — this gives you a human-readable site label embedded in the participant ID, at the cost of slightly more complex participant ID management.</p>
 <hr />
 <h2 id="step-1-build-the-canonical-study-and-fork-it-to-each-site">Step 1 — Build the canonical study and fork it to each site<a class="headerlink" href="#step-1-build-the-canonical-study-and-fork-it-to-each-site" title="Permanent link">&para;</a></h2>
 <p>The cleanest setup uses <code>quickq fork</code> to distribute the canonical instrument from a single source database to each site. The fork copies the questionnaire, questions, options, scoring rules, and skip rules; it does not copy responses, sessions, or respondents. Each site receives a structurally identical database to collect into, and the fork records explicit provenance back to the canonical source.</p>
@@ -1976,34 +1926,16 @@ quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">expor
     <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
 </code></pre></div>
 <hr />
-<h2 id="step-7-pseudonymize-for-sharing">Step 7 — Pseudonymize for sharing<a class="headerlink" href="#step-7-pseudonymize-for-sharing" title="Permanent link">&para;</a></h2>
-<p><code>combined.db</code> contains PHI (<code>external_id</code> values, potentially free-text responses). Before sharing with analysts outside the coordinating center — or depositing in a data repository — pseudonymize it:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>pseudonymize<span class="w"> </span>combined.db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--output<span class="w"> </span>combined_anon.db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--key-file<span class="w"> </span>pseudonymization_key.bin
-</code></pre></div>
-<p>Expected output:</p>
-<div class="highlight"><pre><span></span><code>Pseudonymized combined.db → combined_anon.db
-  135 respondents pseudonymized
-</code></pre></div>
-<p>Warnings printed to stderr (review each one):</p>
-<div class="highlight"><pre><span></span><code>warning: Free-text responses not redacted: link_id=&#39;phq9.comments&#39; (text, 42 non-empty responses). Review for PHI before sharing.
-warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains institutional fields (principal_investigator=&#39;Dr. Jane Smith&#39;, irb_number=&#39;IRB-2025-BMC-042&#39;) that were not redacted. Remove manually if not appropriate to share.
-</code></pre></div>
-<p>For the per-field changes the pseudonymizer makes, the key-management options, and what the warnings mean, see the canonical <a href="../share/#step-1-pseudonymize">Pseudonymize</a> section in the single-site share tutorial. The behaviour is identical against <code>combined.db</code>; only the database path differs. In multi-site practice, the coordinating center holds the HMAC key and sharing partners do not.</p>
-<p>The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g. annual data releases).</p>
-<hr />
-<h2 id="step-8-refresh-the-olap">Step 8 — Refresh the OLAP<a class="headerlink" href="#step-8-refresh-the-olap" title="Permanent link">&para;</a></h2>
-<p>Generate the analytical layer from the pseudonymized database:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>refresh<span class="w"> </span>combined_anon.db<span class="w"> </span>analytics_anon.duckdb
+<h2 id="step-7-refresh-the-olap">Step 7 — Refresh the OLAP<a class="headerlink" href="#step-7-refresh-the-olap" title="Permanent link">&para;</a></h2>
+<p>Generate the analytical layer from the combined database:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>refresh<span class="w"> </span>combined.db<span class="w"> </span>analytics.duckdb
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Refresh complete: 1215 fact rows, 135 sessions, 135 scores computed.
 </code></pre></div>
-<p>The OLAP's <code>dim_respondent.external_id</code> will contain pseudonymized tokens, not original identifiers.</p>
 <hr />
-<h2 id="step-9-cross-site-analysis">Step 9 — Cross-site analysis<a class="headerlink" href="#step-9-cross-site-analysis" title="Permanent link">&para;</a></h2>
+<h2 id="step-8-cross-site-analysis">Step 8 — Cross-site analysis<a class="headerlink" href="#step-8-cross-site-analysis" title="Permanent link">&para;</a></h2>
 <p>Open the DuckDB UI to explore the combined data:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>analytics_anon.duckdb
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>analytics.duckdb
 </code></pre></div>
 <p><strong>PHQ-9 score distribution by site:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
@@ -2055,9 +1987,9 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
 <span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">option_value</span><span class="p">;</span>
 </code></pre></div>
 <hr />
-<h2 id="step-10-export-to-a-warehouse">Step 10 — Export to a warehouse<a class="headerlink" href="#step-10-export-to-a-warehouse" title="Permanent link">&para;</a></h2>
+<h2 id="step-9-export-to-a-warehouse">Step 9 — Export to a warehouse<a class="headerlink" href="#step-9-export-to-a-warehouse" title="Permanent link">&para;</a></h2>
 <p>If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Exported 19 table(s) to parquet_export/ (1215 total rows)
   dim_date: 0 rows → dim_date.parquet
@@ -2072,7 +2004,7 @@ warning: Study &#39;PHQ-9 Screening — Boston Medical Center&#39; contains inst
 </code></pre></div>
 <p>Upload <code>parquet_export/</code> to your cloud storage bucket and point your warehouse at it. The star schema is self-contained — no quickq dependency on the warehouse side.</p>
 <p>To export only the tables needed for a specific analysis:</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics_anon.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics.duckdb<span class="w"> </span>-o<span class="w"> </span>./parquet_export/<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>fact_response<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_question<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--table<span class="w"> </span>dim_respondent<span class="w"> </span><span class="se">\</span>
@@ -2098,11 +2030,10 @@ Each site:
 
 Coordinating center (per collection cycle):
   quickq merge site_a.db site_b.db site_c.db --output combined.db
-  quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
-  quickq refresh combined_anon.db analytics_anon.duckdb
-  quickq export parquet analytics_anon.duckdb -o ./parquet_export/   # optional
+  quickq refresh combined.db analytics.duckdb
+  quickq export parquet analytics.duckdb -o ./parquet_export/   # optional
 </code></pre></div>
-<p>The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.</p>
+<p>The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged combined study.</p>
 
 
 

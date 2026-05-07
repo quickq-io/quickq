@@ -509,34 +509,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/share/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    4. Share & publish
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../tutorials/multi-site/" class="md-nav__link">
         
   
@@ -880,17 +852,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quickq-compliance-pseudonymize" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        quickq compliance pseudonymize
-      
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#quickq-compliance-set-metadata" class="md-nav__link">
@@ -1453,17 +1414,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quickq-compliance-pseudonymize" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        quickq compliance pseudonymize
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#quickq-compliance-set-metadata" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1550,31 +1500,23 @@
 
 
 <h1 id="compliance-governance">Compliance &amp; Governance<a class="headerlink" href="#compliance-governance" title="Permanent link">&para;</a></h1>
-<p>quickq's compliance commands cover the regulatory surface that real research studies actually need to navigate: HIPAA-aligned pseudonymization for sharing, FAIR/DataCite metadata for repository deposit, NIH DMS plan auditing, GDPR right to erasure, and IRB-style participant withdrawal. They are deliberately separate from the analytical commands so a study's compliance state is auditable on its own.</p>
-<p>All six commands operate on a <code>study.db</code>. None requires network access; outputs are local files (a pseudonymized DB, a metadata JSON/XML, an audit report).</p>
+<p>quickq's compliance commands support several common workflows that research studies need: FAIR / DataCite metadata for repository deposit, a FAIR self-audit, GDPR-style right-to-erasure deletion, and IRB-style participant withdrawal. They are deliberately separate from the analytical commands so a study's compliance state is auditable on its own.</p>
+<p>All commands operate on a <code>study.db</code>. None requires network access; outputs are local files (a metadata JSON / XML, an audit report).</p>
+<div class="admonition warning">
+<p class="admonition-title">What these commands are and aren't</p>
+<p>quickq is a tool. Regulatory compliance is a property of your <em>deployment</em> (your data flows, access controls, BAAs, IRB protocol, infrastructure), not of the tool. These commands implement specific mechanical operations that <em>support</em> compliance workflows; they do not certify HIPAA, GDPR, or any other framework on your behalf.</p>
+<p>In particular:</p>
+<ul>
+<li><strong>The FAIR self-audit is informational.</strong> It reports which FAIR-aligned metadata fields are populated and which are missing. NIH Data Management and Sharing plans, repository deposit policies, and journal data-availability requirements each have their own criteria; check them directly.</li>
+<li><strong>GDPR / IRB references describe the workflow shape, not certification.</strong> <code>compliance delete</code> implements a hard delete that aligns with GDPR Article 17's right to erasure as researchers typically execute it. Whether your specific deployment satisfies GDPR for a given participant request depends on consent records, retention policy, and backups outside this tool.</li>
+</ul>
+</div>
 <blockquote>
-<p><em>For the design rationale (why <code>compliance pseudonymize</code> exists alongside <code>compliance delete</code>, why FAIR metadata is in the database not in a sidecar) see <a href="../../design_decisions/#data-sovereignty-and-the-10-year-rule">Design Decisions</a>.</em></p>
+<p><em>For the design rationale (why FAIR metadata is in the database not in a sidecar) see <a href="../../design_decisions/#data-sovereignty-and-the-10-year-rule">Design Decisions</a>.</em></p>
 </blockquote>
 <hr />
-<h2 id="quickq-compliance-pseudonymize"><code>quickq compliance pseudonymize</code><a class="headerlink" href="#quickq-compliance-pseudonymize" title="Permanent link">&para;</a></h2>
-<p>Produces a copy of <code>study.db</code> with direct identifiers replaced by stable HMAC tokens. Used as the first step toward a HIPAA limited dataset, or before sharing a study under a DUA.</p>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>pseudonymize<span class="w"> </span>study.db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--output<span class="w"> </span>study_anon.db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--key-file<span class="w"> </span>pseudonymization_key.bin
-</code></pre></div>
-<p>What changes:</p>
-<ul>
-<li><code>respondent.external_id</code> becomes a 32-character HMAC token (deterministic given the same key, so the same source always pseudonymizes to the same token; useful for re-derivation across waves)</li>
-<li><code>person_map</code> is cleared</li>
-<li><code>response_session.interviewer_id</code> is set to NULL</li>
-<li>Free-text <code>response.response_text</code> values are left in place; the command warns about which <code>link_id</code>s carry free text so a reviewer can decide whether to redact</li>
-<li>Institutional metadata (<code>study.principal_investigator</code>, <code>study.irb_number</code>) is left in place; the command warns about it</li>
-</ul>
-<p>The HMAC key is the only thing that can re-identify participants. Save the key file securely if you may need to merge the pseudonymized data back with later collection waves; destroy it if the study should be permanently de-identifiable.</p>
-<p>For the full sharing workflow including warehouse export, see the <a href="../../tutorials/share/">Share &amp; Publish tutorial</a>.</p>
-<hr />
 <h2 id="quickq-compliance-set-metadata"><code>quickq compliance set-metadata</code><a class="headerlink" href="#quickq-compliance-set-metadata" title="Permanent link">&para;</a></h2>
-<p>Sets regulatory and FAIR metadata fields on a study. These fields satisfy NIH Data Management and Sharing Plan requirements and feed <code>quickq compliance fair-check</code> and <code>quickq compliance export-metadata</code> downstream.</p>
+<p>Sets FAIR-aligned and regulatory metadata fields on a study. These fields are useful for NIH Data Management and Sharing Plan documentation and feed <code>quickq compliance fair-check</code> and <code>quickq compliance export-metadata</code> downstream.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>set-metadata<span class="w"> </span>study.db<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--license<span class="w"> </span>CC-BY-4.0<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--protocol-url<span class="w"> </span>https://clinicaltrials.gov/study/NCTXXXXXXXX<span class="w"> </span><span class="se">\</span>
@@ -1590,7 +1532,7 @@
 <p>Available fields: <code>--description</code>, <code>--population</code>, <code>--license</code> (SPDX ID or URL), <code>--protocol-url</code>, <code>--doi</code>, <code>--geographic-scope</code>, <code>--data-collection-end</code>, <code>--pi</code>, <code>--irb-number</code>. Use <code>--study-id N</code> to target a specific study when the database holds more than one.</p>
 <hr />
 <h2 id="quickq-compliance-fair-check"><code>quickq compliance fair-check</code><a class="headerlink" href="#quickq-compliance-fair-check" title="Permanent link">&para;</a></h2>
-<p>Audits a study against FAIR sub-principles (Findable, Accessible, Interoperable, Reusable) and NIH DMS plan requirements. Reports which metadata fields are populated (pass), incomplete (warn), or missing (fail). Run this before <code>quickq compliance export-metadata</code> to ensure the metadata record is complete.</p>
+<p>Self-audit of a study against the FAIR sub-principles (Findable, Accessible, Interoperable, Reusable). Reports which metadata fields are populated (pass), incomplete (warn), or missing (fail). Useful preparation for NIH Data Management and Sharing Plan documentation and for repository-deposit checklists, though those each have their own specific requirements you should verify separately.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>fair-check<span class="w"> </span>study.db
 </code></pre></div>
 <p>The command exits non-zero if any required field is missing, so it is suitable for use in a CI or pre-deposit check.</p>
@@ -1606,7 +1548,7 @@
 <p>Run <code>quickq compliance fair-check</code> first to ensure all required fields are populated. The output file can be uploaded to a repository as the deposit's metadata record.</p>
 <hr />
 <h2 id="quickq-compliance-delete"><code>quickq compliance delete</code><a class="headerlink" href="#quickq-compliance-delete" title="Permanent link">&para;</a></h2>
-<p>GDPR right-to-erasure: permanently deletes all data for a participant (sessions, responses, quality flags, identity row). Irreversible.</p>
+<p>Permanently deletes all data for a participant (sessions, responses, quality flags, identity row, person_map row). Aligns with the workflow shape of GDPR Article 17 (right to erasure). Irreversible within this database; whether deletion is complete in your deployment depends on backups and any downstream copies, which are outside this tool's scope.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>delete<span class="w"> </span>study.db<span class="w"> </span>&lt;external_id&gt;
 </code></pre></div>
 <p>Use <code>--study-id N</code> to disambiguate when the same <code>external_id</code> exists in multiple studies. The action is recorded in <code>tool_audit_log</code>.</p>
@@ -1628,23 +1570,19 @@
 </thead>
 <tbody>
 <tr>
-<td>Share data outside the institution</td>
-<td><code>compliance pseudonymize</code></td>
-</tr>
-<tr>
 <td>Deposit study in a repository (Zenodo, OSF, ICPSR)</td>
 <td><code>compliance set-metadata</code>, then <code>compliance export-metadata</code></td>
 </tr>
 <tr>
-<td>Verify NIH DMS plan / FAIR readiness</td>
+<td>Self-audit FAIR-aligned metadata coverage</td>
 <td><code>compliance fair-check</code></td>
 </tr>
 <tr>
-<td>Honor a GDPR erasure request</td>
+<td>Hard-delete a participant's data (GDPR-style erasure)</td>
 <td><code>compliance delete</code></td>
 </tr>
 <tr>
-<td>Honor an IRB withdrawal request</td>
+<td>Record an IRB-style withdrawal without deletion</td>
 <td><code>compliance withdraw</code></td>
 </tr>
 </tbody>

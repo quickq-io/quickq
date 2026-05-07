@@ -598,34 +598,6 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/share/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    4. Share & publish
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="tutorials/multi-site/" class="md-nav__link">
         
   
@@ -1529,9 +1501,9 @@ Study management  fork · merge
 
 FHIR              fhir export · fhir import · fhir import-response
 
-Compliance        compliance pseudonymize · compliance set-metadata
-                  compliance fair-check · compliance export-metadata
-                  compliance delete · compliance withdraw
+Compliance        compliance set-metadata · compliance fair-check
+                  compliance export-metadata · compliance delete
+                  compliance withdraw
 
 Federated         federated query
 </code></pre></div>
@@ -1540,7 +1512,7 @@ Federated         federated query
 <li><strong>Core</strong> authors the instrument, collects responses, and produces analytical outputs (reports, exports, scoring, the DuckDB UI via <code>quickq analytics</code>).</li>
 <li><strong>Study management</strong> combines and divides study databases. <code>quickq fork</code> scaffolds a new study database from an existing one's structure (questions, options, scoring rules) without copying responses; useful for multi-site distribution, dev/staging environments, or generational handoff. <code>quickq merge</code> is the inverse: combine multiple site databases into a single combined study.</li>
 <li><strong>FHIR</strong> is the cross-language handoff. Export a <code>Questionnaire</code> JSON for any FHIR-compatible delivery tool (LHC-Forms, REDCap, a custom mobile app), then import the <code>QuestionnaireResponse</code> back.</li>
-<li><strong>Compliance</strong> prepares data for sharing under HIPAA, GDPR, and IRB constraints: pseudonymization, FAIR metadata, machine-readable repository deposits, participant withdrawal and erasure.</li>
+<li><strong>Compliance</strong> supports common research-data workflows aligned with HIPAA, GDPR, and IRB conventions: FAIR-aligned metadata for repository deposit, a FAIR self-audit, GDPR-style erasure, and IRB-style withdrawal. These commands implement specific mechanical operations and assist compliance work; they do not certify that your deployment meets any framework on its own.</li>
 <li><strong>Federated</strong> runs aggregate queries across multiple site databases without ever moving individual-level records, with cell-size suppression for disclosure control.</li>
 </ul>
 <hr />

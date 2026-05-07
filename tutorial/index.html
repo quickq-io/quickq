@@ -475,17 +475,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#4-share-publish" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Share &amp; publish
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -610,34 +599,6 @@
     
   
     3. Data quality
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/share/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    4. Share & publish
   
 
     
@@ -1492,17 +1453,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#4-share-publish" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Share &amp; publish
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1568,7 +1518,7 @@
 <tr>
 <td><a href="../tutorials/multi-site/">Multi-site lifecycle</a></td>
 <td>~45 min</td>
-<td>You want to run a study across multiple sites. Independent collection, merging, pseudonymization, federated analysis. Three-site PHQ-9 scenario.</td>
+<td>You want to run a study across multiple sites. Independent collection, merging, federated analysis. Three-site PHQ-9 scenario.</td>
 </tr>
 </tbody>
 </table>
@@ -1592,11 +1542,9 @@ uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </sp
 <p>Run scoring queries, response distributions, and cross-instrument joins. The analytical model pre-computes PHQ-9 severity categories from the scoring rule, makes each loop instance a distinct row via <code>repeat_index</code>, and puts <code>admin_mode</code> on every session. Cross-instrument joins are a single SQL join on the shared <code>respondent_id</code>.</p>
 <h3 id="3-data-quality"><a href="../tutorials/data-quality/">3. Data quality</a><a class="headerlink" href="#3-data-quality" title="Permanent link">&para;</a></h3>
 <p>Check for unexpected sparsity, distinguish skip-logic non-responses from genuine missingness, audit concept mapping coverage before federated export, review import flags.</p>
-<h3 id="4-share-publish"><a href="../tutorials/share/">4. Share &amp; publish</a><a class="headerlink" href="#4-share-publish" title="Permanent link">&para;</a></h3>
-<p>Pseudonymize participant identifiers, refresh the OLAP, export to Parquet for warehouse ingestion or data repository deposit. <code>quickq compliance pseudonymize</code> replaces <code>external_id</code> values with stable HMAC tokens; the result is analytically complete and safe to share.</p>
 <hr />
 <h2 id="multi-site-studies">Multi-site studies<a class="headerlink" href="#multi-site-studies" title="Permanent link">&para;</a></h2>
-<p>For studies that collect independently at multiple sites and merge at a coordinating center, see <a href="../tutorials/multi-site/">Multi-Site Study Operations</a>. It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, pseudonymizing, and running cross-site analyses.</p>
+<p>For studies that collect independently at multiple sites and merge at a coordinating center, see <a href="../tutorials/multi-site/">Multi-Site Study Operations</a>. It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, and running cross-site analyses.</p>
 
 
 

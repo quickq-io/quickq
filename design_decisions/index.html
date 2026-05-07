@@ -509,34 +509,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/share/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    4. Share & publish
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../tutorials/multi-site/" class="md-nav__link">
         
   
@@ -1742,7 +1714,6 @@
 <h2 id="data-sovereignty-and-the-10-year-rule">Data sovereignty and the 10-year rule<a class="headerlink" href="#data-sovereignty-and-the-10-year-rule" title="Permanent link">&para;</a></h2>
 <p>Research data needs to be readable not just today but in 10 or 20 years.</p>
 <p><strong>The 10-year rule:</strong> If your research platform shuts down or your institution loses the license, can you still read your data? With cloud platforms, the answer is often "only if you have the CSV export." With quickq, the answer is always yes: SQLite and DuckDB are open-source, widely supported formats readable by any SQL tool, in any language, without quickq installed.</p>
-<p><strong>Pseudonymization.</strong> Before sharing data across institutions, <code>quickq compliance pseudonymize</code> produces a PHI-free copy of the study: direct identifiers are stripped from the respondent table and replaced with stable random tokens. The full analytical model is preserved. For studies designed to be anonymous from the start, no pseudonymization step is needed.</p>
 <p><strong>Point-in-time recovery.</strong> Because a study is a single file, backups are a file copy. Versioned S3 buckets or any snapshotting filesystem give you full point-in-time recovery without database server configuration.</p>
 <hr />
 <h2 id="harmonization-across-versions-and-studies">Harmonization across versions and studies<a class="headerlink" href="#harmonization-across-versions-and-studies" title="Permanent link">&para;</a></h2>
