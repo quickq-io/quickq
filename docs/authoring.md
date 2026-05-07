@@ -13,7 +13,7 @@ Questionnaires are defined in YAML and loaded into the OLTP database with `quick
     right tool.
 
     quickq does offer full-featured authoring via YAML and rendering through
-    LHC-Forms, the bundled quickq-forms server, or any FHIR-compliant delivery
+    LHC-Forms, the optional quickq-forms server, or any FHIR-compliant delivery
     tool. Its core focus, though, is the broader study lifecycle: a queryable
     SQLite / DuckDB data model, FHIR R4 delivery, LOINC / SNOMED / OMOP concept
     coding, versioned scoring rules, and compliance instrumentation. The two
@@ -316,7 +316,7 @@ Operators: `exists`, `=`, `!=`, `>`, `<`, `>=`, `<=`. Skip rules map directly to
 
 ## Scoring Rules
 
-Subscale scores (PHQ-9 total, GAD-7 severity, SF-12 PCS/MCS) are defined alongside the instrument and computed automatically during `quickq refresh`. A scoring rule names a formula (`sum`, `mean`, `count`, or an arithmetic expression referencing `link_id` values), lists which questions contribute (with optional weights and reverse-score flags), and defines severity bands.
+Subscale scores (PHQ-9 total, GAD-7 severity, AUDIT total) are defined alongside the instrument and computed automatically during `quickq refresh`. A scoring rule names a formula (`sum` or `mean`), lists which questions contribute (with optional weights and reverse-score flags), and defines severity bands.
 
 Results land in `agg_respondent_scores` in the OLAP — one row per respondent per scoring rule per session.
 

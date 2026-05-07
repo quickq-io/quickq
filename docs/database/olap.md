@@ -88,7 +88,7 @@ Aggregates are materialized on every `quickq refresh`. Prefer them over scanning
 
 **`agg_session_completion`** — Daily enrollment and completion rates broken down by `admin_mode`. Includes `completion_rate` (0–1) and `median_duration_sec`.
 
-**`agg_respondent_scores`** — Computed scale scores (PHQ-9 total, GAD-7 severity, SF-12, etc.) per respondent per session per scoring rule. `items_answered / items_total` makes partial-completion analysis straightforward.
+**`agg_respondent_scores`** — Computed scale scores (PHQ-9 total, GAD-7 severity, AUDIT total, etc.) per respondent per session per scoring rule. `items_answered / items_total` makes partial-completion analysis straightforward.
 
 ### Versioning mirrors
 

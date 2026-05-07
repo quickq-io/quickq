@@ -178,7 +178,7 @@ The difficulty question deliberately has no `concept` field — it does not have
         - { label: "Severe anxiety",   min: 15, max: 21 }
 ```
 
-`formula: sum` aggregates item `value` fields (numeric coercion). `quickq refresh` writes the total to `agg_respondent_scores.score_raw` and assigns a `score_category` from the bands defined here; `items_answered / items_total` captures partial completion. See [Scoring Rules](../authoring.md#scoring-rules) for other formulas (`mean`, `count`, arithmetic expressions) and item weighting / reverse-scoring.
+`formula: sum` aggregates item `value` fields (numeric coercion). `quickq refresh` writes the total to `agg_respondent_scores.score_raw` and assigns a `score_category` from the bands defined here; `items_answered / items_total` captures partial completion. See [Scoring Rules](../authoring.md#scoring-rules) for the `mean` alternative and item weighting / reverse-scoring.
 
 ---
 

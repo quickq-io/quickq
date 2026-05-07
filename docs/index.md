@@ -41,7 +41,7 @@ Together these are the building blocks of a complete, portable, questionnaire-dr
 
 - Every answered question is one row in `fact_response`. The same query pattern works for every question type and every instrument, with no instrument-specific code
 - Skip logic violations, out-of-range values, and unexpected missing data are standard SQL queries against the star schema, not custom scripts per instrument
-- Subscale scores (PHQ-9, GAD-7, SF-12) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time
+- Subscale scores (PHQ-9, GAD-7, AUDIT) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time
 - Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization of shared LOINC or SNOMED codes is a join
 
 ---
@@ -78,7 +78,7 @@ A complete study lifecycle uses commands from each group:
 ## Quick Start
 
 ```bash
-# Install quickq and the bundled form server
+# Install quickq with the optional form server alongside
 uv tool install --reinstall ./quickq --with ./quickq-forms
 
 # Author a study

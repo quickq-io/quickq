@@ -114,7 +114,7 @@ The tables below extend the core with branching logic, scoring, standard vocabul
 
 **`skip_rule`** — Structured branching logic; maps to FHIR `item.enableWhen`. Multiple rules for the same `qq_id` combine via `enable_behavior` (`all` = AND, `any` = OR). Operators: `exists`, `not_exists`, `=`, `!=`, `>`, `<`, `>=`, `<=`.
 
-**`scoring_rule` / `scoring_rule_item` / `scoring_category`** — Subscale scoring (PHQ-9 total, GAD-7 severity, SF-12). Each rule names a formula (`sum`, `mean`, or an arithmetic expression referencing `link_id` values). Items carry optional weights and reverse-score flags. Categories define severity bands ("Minimal 0–4, Mild 5–9").
+**`scoring_rule` / `scoring_rule_item` / `scoring_category`** — Subscale scoring (PHQ-9 total, GAD-7 severity, AUDIT total). Each rule names a formula (`sum` or `mean`). Items carry optional weights and reverse-score flags. Categories define severity bands ("Minimal 0–4, Mild 5–9").
 
 **`response_option_set`** — Named option lists shared across questions (e.g., a 5-point frequency scale reused in 9 PHQ items). Maps to FHIR `answerValueSet`.
 
