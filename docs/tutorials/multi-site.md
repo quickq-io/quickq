@@ -1,6 +1,6 @@
 # Tutorial: Multi-Site Study Operations
 
-This tutorial covers the full lifecycle of a multi-site study: initializing independent collection databases at each site, handling a data quality issue discovered mid-collection, merging the sites into a combined database, pseudonymizing for sharing, refreshing the analytical layer, and exporting to a warehouse.
+This tutorial covers the full lifecycle of a multi-site study: initializing independent collection databases at each site, handling a data quality issue discovered mid-collection, merging the sites into a combined database, refreshing the analytical layer, and exporting to a warehouse.
 
 The scenario is a three-site community mental health study screening for depression with the PHQ-9. Collection happens independently at each site; a coordinating center assembles the combined dataset at the end of each collection period.
 
@@ -14,7 +14,7 @@ The scenario is a three-site community mental health study screening for depress
 | B | Cambridge Health Alliance | 45 |
 | C | Lowell General Hospital | 30 |
 
-Each site runs its own quickq database. The same PHQ-9 YAML definition is loaded at every site. The coordinating center runs the merge, pseudonymization, and analysis.
+Each site runs its own quickq database. The same PHQ-9 YAML definition is loaded at every site. The coordinating center runs the merge and analysis.
 
 ### Study design note: identifying sites after merge
 
@@ -26,7 +26,7 @@ study_name = "PHQ-9 Screening — Cambridge Health Alliance" → study_id 2
 study_name = "PHQ-9 Screening — Lowell General Hospital"  → study_id 3
 ```
 
-This is the cleanest approach with the current schema. An alternative is to namespace `external_id` values with a site prefix (e.g. `BMC::P001`) — this gives you a human-readable site label before pseudonymization, at the cost of slightly more complex participant ID management.
+This is the cleanest approach with the current schema. An alternative is to namespace `external_id` values with a site prefix (e.g. `BMC::P001`) — this gives you a human-readable site label embedded in the participant ID, at the cost of slightly more complex participant ID management.
 
 ---
 
@@ -237,58 +237,26 @@ for row in conn.execute("""
 
 ---
 
-## Step 7 — Pseudonymize for sharing
+## Step 7 — Refresh the OLAP
 
-`combined.db` contains PHI (`external_id` values, potentially free-text responses). Before sharing with analysts outside the coordinating center — or depositing in a data repository — pseudonymize it:
-
-```bash
-quickq compliance pseudonymize combined.db \
-    --output combined_anon.db \
-    --key-file pseudonymization_key.bin
-```
-
-Expected output:
-
-```
-Pseudonymized combined.db → combined_anon.db
-  135 respondents pseudonymized
-```
-
-Warnings printed to stderr (review each one):
-
-```
-warning: Free-text responses not redacted: link_id='phq9.comments' (text, 42 non-empty responses). Review for PHI before sharing.
-warning: Study 'PHQ-9 Screening — Boston Medical Center' contains institutional fields (principal_investigator='Dr. Jane Smith', irb_number='IRB-2025-BMC-042') that were not redacted. Remove manually if not appropriate to share.
-```
-
-For the per-field changes the pseudonymizer makes, the key-management options, and what the warnings mean, see the canonical [Pseudonymize](share.md#step-1-pseudonymize) section in the single-site share tutorial. The behaviour is identical against `combined.db`; only the database path differs. In multi-site practice, the coordinating center holds the HMAC key and sharing partners do not.
-
-The same key applied to the same source database always produces the same tokens, so pseudonymized IDs are stable across multiple exports (e.g. annual data releases).
-
----
-
-## Step 8 — Refresh the OLAP
-
-Generate the analytical layer from the pseudonymized database:
+Generate the analytical layer from the combined database:
 
 ```bash
-quickq refresh combined_anon.db analytics_anon.duckdb
+quickq refresh combined.db analytics.duckdb
 ```
 
 ```
 Refresh complete: 1215 fact rows, 135 sessions, 135 scores computed.
 ```
 
-The OLAP's `dim_respondent.external_id` will contain pseudonymized tokens, not original identifiers.
-
 ---
 
-## Step 9 — Cross-site analysis
+## Step 8 — Cross-site analysis
 
 Open the DuckDB UI to explore the combined data:
 
 ```bash
-quickq analytics analytics_anon.duckdb
+quickq analytics analytics.duckdb
 ```
 
 **PHQ-9 score distribution by site:**
@@ -352,12 +320,12 @@ ORDER BY dq.link_id, fr.option_value;
 
 ---
 
-## Step 10 — Export to a warehouse
+## Step 9 — Export to a warehouse
 
 If your institution's analytics infrastructure runs on BigQuery, Snowflake, or Databricks, export the OLAP to Parquet:
 
 ```bash
-quickq export parquet analytics_anon.duckdb -o ./parquet_export/
+quickq export parquet analytics.duckdb -o ./parquet_export/
 ```
 
 ```
@@ -378,7 +346,7 @@ Upload `parquet_export/` to your cloud storage bucket and point your warehouse a
 To export only the tables needed for a specific analysis:
 
 ```bash
-quickq export parquet analytics_anon.duckdb -o ./parquet_export/ \
+quickq export parquet analytics.duckdb -o ./parquet_export/ \
     --table fact_response \
     --table dim_question \
     --table dim_respondent \
@@ -408,9 +376,8 @@ Each site:
 
 Coordinating center (per collection cycle):
   quickq merge site_a.db site_b.db site_c.db --output combined.db
-  quickq compliance pseudonymize combined.db --output combined_anon.db --key-file key.bin
-  quickq refresh combined_anon.db analytics_anon.duckdb
-  quickq export parquet analytics_anon.duckdb -o ./parquet_export/   # optional
+  quickq refresh combined.db analytics.duckdb
+  quickq export parquet analytics.duckdb -o ./parquet_export/   # optional
 ```
 
-The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged, pseudonymized combined study.
+The data model does not change at any point in this pipeline. A query written against the OLAP of a single-site study runs unchanged against the merged combined study.

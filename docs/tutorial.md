@@ -7,7 +7,7 @@ quickq tutorials follow several paths. Pick the one that matches what you want t
 | [Quickstart, end-to-end](tutorials/end-to-end.md) | ~15 min | You want to see the full loop work. Author from scratch, serve, collect, refresh, report. Gout symptoms running example. |
 | [Authoring deep-dive](tutorials/authoring.md) | ~30 min | You want to learn the YAML format properly. Builds GAD-7 step by step (option sets, skip logic, scoring rules, FHIR export). |
 | [Analytics phase tutorials](#analytics-phase-tutorials) | varies | You want to explore the analytical layer with realistic data. Uses the bundled demo database (PHQ-9 + prenatal, 400 synthetic sessions, 4 300+ responses). |
-| [Multi-site lifecycle](tutorials/multi-site.md) | ~45 min | You want to run a study across multiple sites. Independent collection, merging, pseudonymization, federated analysis. Three-site PHQ-9 scenario. |
+| [Multi-site lifecycle](tutorials/multi-site.md) | ~45 min | You want to run a study across multiple sites. Independent collection, merging, federated analysis. Three-site PHQ-9 scenario. |
 
 ---
 
@@ -41,12 +41,8 @@ Run scoring queries, response distributions, and cross-instrument joins. The ana
 
 Check for unexpected sparsity, distinguish skip-logic non-responses from genuine missingness, audit concept mapping coverage before federated export, review import flags.
 
-### [4. Share & publish](tutorials/share.md)
-
-Pseudonymize participant identifiers, refresh the OLAP, export to Parquet for warehouse ingestion or data repository deposit. `quickq compliance pseudonymize` replaces `external_id` values with stable HMAC tokens; the result is analytically complete and safe to share.
-
 ---
 
 ## Multi-site studies
 
-For studies that collect independently at multiple sites and merge at a coordinating center, see [Multi-Site Study Operations](tutorials/multi-site.md). It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, pseudonymizing, and running cross-site analyses.
+For studies that collect independently at multiple sites and merge at a coordinating center, see [Multi-Site Study Operations](tutorials/multi-site.md). It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, and running cross-site analyses.

@@ -2,12 +2,13 @@
 FAIR self-audit for quickq study databases.
 
 Checks a study row against the FAIR sub-principles and reports which fields
-are satisfied, which are partial, and which are missing — with specific
+are satisfied, which are partial, and which are missing, with specific
 guidance for each gap.
 
-Maps to the NIH Data Management and Sharing Plan requirement for a documented
-self-assessment of data findability, accessibility, interoperability, and
-reusability.
+Useful preparation for repository-deposit checklists and NIH Data Management
+and Sharing Plan documentation. Those frameworks each have their own specific
+requirements and acceptance criteria; this command is one input among
+several, not a substitute for checking the framework's own checklist.
 """
 from __future__ import annotations
 

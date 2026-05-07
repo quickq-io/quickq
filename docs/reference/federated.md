@@ -122,6 +122,6 @@ See the [Multi-Site Study Operations tutorial](../tutorials/multi-site.md) for t
 
 ## See also
 
-- [Multi-Site Study Operations](../tutorials/multi-site.md): full lifecycle including merge, errata, and pseudonymization.
-- [Compliance & Governance](compliance.md): pseudonymization, FAIR metadata, IRB-style withdrawal.
+- [Multi-Site Study Operations](../tutorials/multi-site.md): full lifecycle including merge, errata, and analysis.
+- [Compliance & Governance](compliance.md): FAIR metadata, GDPR-style erasure, IRB-style withdrawal.
 - [Design Decisions: Federated analytics](../design_decisions.md#federated-analytics): the rationale.

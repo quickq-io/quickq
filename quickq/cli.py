@@ -47,7 +47,6 @@ from .preview import preview as preview_questionnaire, build_preview_html
 from .merge import merge_databases, MergeError
 from .fork import fork_database, ForkError
 from .scaffold import scaffold, ScaffoldError
-from .pseudonymize import pseudonymize
 
 from .renderer_questionnaire import render_questionnaire_md
 
@@ -536,40 +535,6 @@ def fork_cmd(
     )
 
 
-@compliance.command("pseudonymize")
-@click.argument("db_path", type=click.Path(exists=True))
-@click.option("--output", "-o", required=True, type=click.Path(), help="Path for the pseudonymized output database.")
-@click.option("--overwrite", is_flag=True, help="Overwrite the output file if it exists.")
-@click.option("--key-file", type=click.Path(), default=None,
-              help="File to write the HMAC key to (hex). Store securely for reversibility.")
-def pseudonymize_cmd(db_path: str, output: str, overwrite: bool, key_file: str | None) -> None:
-    """Produce a pseudonymized copy of DB_PATH with participant IDs replaced by tokens."""
-    try:
-        result = pseudonymize(db_path, output, overwrite=overwrite)
-    except FileExistsError as exc:
-        raise click.ClickException(str(exc))
-
-    click.echo(
-        f"Pseudonymized {result.source} → {result.output}\n"
-        f"  {result.respondents_pseudonymized} respondents pseudonymized"
-    )
-
-    if key_file:
-        Path(key_file).write_bytes(result.key)
-        click.echo(f"  HMAC key written to {key_file} — keep this file secure.")
-    else:
-        click.echo(
-            f"  HMAC key (hex): {result.key.hex()}\n"
-            "  Store this key securely if you need to reverse the pseudonymization.",
-            err=True,
-        )
-
-    for w in result.warnings:
-        click.echo(f"  warning: {w}", err=True)
-
-    click.echo("\nNext step: quickq refresh <output.db> <analytics.duckdb>")
-
-
 @main.command("render")
 @click.argument("db_path", type=click.Path(exists=True))
 @click.argument("questionnaire_id", type=int)
@@ -649,11 +614,12 @@ def serve_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool) 
 @click.option("--yes", "-y", is_flag=True, default=False,
               help="Skip confirmation prompt.")
 def delete_respondent_cmd(db_path: str, external_id: str, study_id: int | None, yes: bool) -> None:
-    """Permanently delete all data for a participant (GDPR right to erasure).
+    """Permanently delete all data for a participant (GDPR-style right to erasure).
 
     Removes the respondent's sessions, responses, quality flags, and identity
-    row. This operation is irreversible — use pseudonymize if you need to
-    retain anonymized data.
+    row. This operation is irreversible within the database. Use
+    'compliance withdraw' instead if you want to record a participant
+    withdrawal but retain previously collected responses.
     """
     from .compliance import delete_respondent
 

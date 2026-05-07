@@ -250,8 +250,11 @@ CREATE TABLE IF NOT EXISTS scoring_category (
 CREATE TABLE IF NOT EXISTS respondent (
     respondent_id        INTEGER PRIMARY KEY,
     study_id             INTEGER REFERENCES study (study_id),
-    -- external_id is the de-identified or anonymized participant identifier.
-    -- Never store PII here; link to a separate identity store if needed.
+    -- external_id is whatever participant identifier the study chose:
+    -- a study-internal subject code, a hashed token, an HMAC after pseudonymize.
+    -- The schema does not enforce de-identification; that's the study's responsibility.
+    -- Never store direct PHI / PII here (no names, emails, MRNs, SSNs);
+    -- link to a separate identity store if you need to map back to PII.
     external_id          TEXT,
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     UNIQUE (study_id, external_id)
@@ -438,8 +441,8 @@ CREATE TABLE IF NOT EXISTS questionnaire_version_diff (
     created_at            TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
--- OMOP person identity bridge. respondent.external_id is de-identified;
--- this table links it to an omop_person_id for OMOP extraction.
+-- OMOP person identity bridge. Links respondent.external_id (whatever the
+-- study chose for it) to an omop_person_id for OMOP extraction.
 -- Populated by a study-specific ETL, not by quickq itself.
 CREATE TABLE IF NOT EXISTS person_map (
     respondent_id         INTEGER PRIMARY KEY REFERENCES respondent (respondent_id),
@@ -450,8 +453,9 @@ CREATE TABLE IF NOT EXISTS person_map (
 -- ============================================================
 -- TOOL AUDIT LOG
 -- Records key operations performed against the study database so that
--- provenance travels with the file. Useful for HIPAA audit trail
--- requirements and IRB data management documentation.
+-- provenance travels with the file. Useful as one input to a HIPAA-aligned
+-- audit trail or IRB data-management documentation; does not by itself
+-- constitute either.
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS tool_audit_log (

@@ -148,6 +148,6 @@ ORDER BY CASE severity
 END;
 ```
 
-Errata are preserved across merges and pseudonymization — an analyst querying a combined multi-site database sees all site-level errata entries. See the [Multi-Site Study Operations](multi-site.md) tutorial for an example of recording a critical errata entry mid-collection and filtering affected sessions from analysis.
+Errata are preserved across merges — an analyst querying a combined multi-site database sees all site-level errata entries. See the [Multi-Site Study Operations](multi-site.md) tutorial for an example of recording a critical errata entry mid-collection and filtering affected sessions from analysis.
 
 For the full errata API and versioning model, see [Instrument Versioning & Data Governance](../reference/versioning.md).

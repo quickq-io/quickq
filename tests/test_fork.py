@@ -152,7 +152,7 @@ def test_fork_excludes_source_audit_log(tmp_path):
     # Pre-populate the source's audit log with an unrelated entry
     conn = sqlite3.connect(src_path)
     conn.execute(
-        "INSERT INTO tool_audit_log (study_id, operation, performed_by, details) VALUES (NULL, 'pseudonymize', 'tester', NULL)"
+        "INSERT INTO tool_audit_log (study_id, operation, performed_by, details) VALUES (NULL, 'federated_query', 'tester', NULL)"
     )
     conn.commit()
     conn.close()
@@ -162,7 +162,7 @@ def test_fork_excludes_source_audit_log(tmp_path):
 
     out = open_oltp(out_path)
     ops = [r[0] for r in out.execute("SELECT operation FROM tool_audit_log").fetchall()]
-    # Only the fork audit entry should be present; the source's pseudonymize entry must not bleed in.
+    # Only the fork audit entry should be present; the source's audit entry must not bleed in.
     assert ops == ["fork"]
 
 

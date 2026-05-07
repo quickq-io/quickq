@@ -88,7 +88,9 @@ CREATE TABLE IF NOT EXISTS dim_response_option (
     concept_system       VARCHAR
 );
 
--- Respondents. external_id is the de-identified participant key.
+-- Respondents. external_id is the participant key as set by the study
+-- (a subject code, a token, or any other identifier the researcher chose).
+-- Not guaranteed to be de-identified; that depends on what the study put in.
 CREATE TABLE IF NOT EXISTS dim_respondent (
     respondent_id        INTEGER     PRIMARY KEY,
     study_id             INTEGER     NOT NULL,

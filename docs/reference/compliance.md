@@ -1,40 +1,24 @@
 # Compliance & Governance
 
-quickq's compliance commands cover the regulatory surface that real research studies actually need to navigate: HIPAA-aligned pseudonymization for sharing, FAIR/DataCite metadata for repository deposit, NIH DMS plan auditing, GDPR right to erasure, and IRB-style participant withdrawal. They are deliberately separate from the analytical commands so a study's compliance state is auditable on its own.
+quickq's compliance commands support several common workflows that research studies need: FAIR / DataCite metadata for repository deposit, a FAIR self-audit, GDPR-style right-to-erasure deletion, and IRB-style participant withdrawal. They are deliberately separate from the analytical commands so a study's compliance state is auditable on its own.
 
-All six commands operate on a `study.db`. None requires network access; outputs are local files (a pseudonymized DB, a metadata JSON/XML, an audit report).
+All commands operate on a `study.db`. None requires network access; outputs are local files (a metadata JSON / XML, an audit report).
 
-> *For the design rationale (why `compliance pseudonymize` exists alongside `compliance delete`, why FAIR metadata is in the database not in a sidecar) see [Design Decisions](../design_decisions.md#data-sovereignty-and-the-10-year-rule).*
+!!! warning "What these commands are and aren't"
+    quickq is a tool. Regulatory compliance is a property of your *deployment* (your data flows, access controls, BAAs, IRB protocol, infrastructure), not of the tool. These commands implement specific mechanical operations that *support* compliance workflows; they do not certify HIPAA, GDPR, or any other framework on your behalf.
 
----
+    In particular:
 
-## `quickq compliance pseudonymize`
+    - **The FAIR self-audit is informational.** It reports which FAIR-aligned metadata fields are populated and which are missing. NIH Data Management and Sharing plans, repository deposit policies, and journal data-availability requirements each have their own criteria; check them directly.
+    - **GDPR / IRB references describe the workflow shape, not certification.** `compliance delete` implements a hard delete that aligns with GDPR Article 17's right to erasure as researchers typically execute it. Whether your specific deployment satisfies GDPR for a given participant request depends on consent records, retention policy, and backups outside this tool.
 
-Produces a copy of `study.db` with direct identifiers replaced by stable HMAC tokens. Used as the first step toward a HIPAA limited dataset, or before sharing a study under a DUA.
-
-```bash
-quickq compliance pseudonymize study.db \
-    --output study_anon.db \
-    --key-file pseudonymization_key.bin
-```
-
-What changes:
-
-- `respondent.external_id` becomes a 32-character HMAC token (deterministic given the same key, so the same source always pseudonymizes to the same token; useful for re-derivation across waves)
-- `person_map` is cleared
-- `response_session.interviewer_id` is set to NULL
-- Free-text `response.response_text` values are left in place; the command warns about which `link_id`s carry free text so a reviewer can decide whether to redact
-- Institutional metadata (`study.principal_investigator`, `study.irb_number`) is left in place; the command warns about it
-
-The HMAC key is the only thing that can re-identify participants. Save the key file securely if you may need to merge the pseudonymized data back with later collection waves; destroy it if the study should be permanently de-identifiable.
-
-For the full sharing workflow including warehouse export, see the [Share & Publish tutorial](../tutorials/share.md).
+> *For the design rationale (why FAIR metadata is in the database not in a sidecar) see [Design Decisions](../design_decisions.md#data-sovereignty-and-the-10-year-rule).*
 
 ---
 
 ## `quickq compliance set-metadata`
 
-Sets regulatory and FAIR metadata fields on a study. These fields satisfy NIH Data Management and Sharing Plan requirements and feed `quickq compliance fair-check` and `quickq compliance export-metadata` downstream.
+Sets FAIR-aligned and regulatory metadata fields on a study. These fields are useful for NIH Data Management and Sharing Plan documentation and feed `quickq compliance fair-check` and `quickq compliance export-metadata` downstream.
 
 ```bash
 quickq compliance set-metadata study.db \
@@ -59,7 +43,7 @@ Available fields: `--description`, `--population`, `--license` (SPDX ID or URL),
 
 ## `quickq compliance fair-check`
 
-Audits a study against FAIR sub-principles (Findable, Accessible, Interoperable, Reusable) and NIH DMS plan requirements. Reports which metadata fields are populated (pass), incomplete (warn), or missing (fail). Run this before `quickq compliance export-metadata` to ensure the metadata record is complete.
+Self-audit of a study against the FAIR sub-principles (Findable, Accessible, Interoperable, Reusable). Reports which metadata fields are populated (pass), incomplete (warn), or missing (fail). Useful preparation for NIH Data Management and Sharing Plan documentation and for repository-deposit checklists, though those each have their own specific requirements you should verify separately.
 
 ```bash
 quickq compliance fair-check study.db
@@ -89,7 +73,7 @@ Run `quickq compliance fair-check` first to ensure all required fields are popul
 
 ## `quickq compliance delete`
 
-GDPR right-to-erasure: permanently deletes all data for a participant (sessions, responses, quality flags, identity row). Irreversible.
+Permanently deletes all data for a participant (sessions, responses, quality flags, identity row, person_map row). Aligns with the workflow shape of GDPR Article 17 (right to erasure). Irreversible within this database; whether deletion is complete in your deployment depends on backups and any downstream copies, which are outside this tool's scope.
 
 ```bash
 quickq compliance delete study.db <external_id>
@@ -117,8 +101,7 @@ This is the legally-distinct operation from `compliance delete`. Most IRB withdr
 
 | Goal | Command |
 |---|---|
-| Share data outside the institution | `compliance pseudonymize` |
 | Deposit study in a repository (Zenodo, OSF, ICPSR) | `compliance set-metadata`, then `compliance export-metadata` |
-| Verify NIH DMS plan / FAIR readiness | `compliance fair-check` |
-| Honor a GDPR erasure request | `compliance delete` |
-| Honor an IRB withdrawal request | `compliance withdraw` |
+| Self-audit FAIR-aligned metadata coverage | `compliance fair-check` |
+| Hard-delete a participant's data (GDPR-style erasure) | `compliance delete` |
+| Record an IRB-style withdrawal without deletion | `compliance withdraw` |

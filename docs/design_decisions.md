@@ -103,8 +103,6 @@ Research data needs to be readable not just today but in 10 or 20 years.
 
 **The 10-year rule:** If your research platform shuts down or your institution loses the license, can you still read your data? With cloud platforms, the answer is often "only if you have the CSV export." With quickq, the answer is always yes: SQLite and DuckDB are open-source, widely supported formats readable by any SQL tool, in any language, without quickq installed.
 
-**Pseudonymization.** Before sharing data across institutions, `quickq compliance pseudonymize` produces a PHI-free copy of the study: direct identifiers are stripped from the respondent table and replaced with stable random tokens. The full analytical model is preserved. For studies designed to be anonymous from the start, no pseudonymization step is needed.
-
 **Point-in-time recovery.** Because a study is a single file, backups are a file copy. Versioned S3 buckets or any snapshotting filesystem give you full point-in-time recovery without database server configuration.
 
 ---
