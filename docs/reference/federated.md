@@ -116,12 +116,9 @@ Combines multiple site databases into a single combined OLTP study database. Ded
 quickq merge site_a.db site_b.db site_c.db --output combined.db
 ```
 
-See the [Multi-Site Study Operations tutorial](../tutorials/multi-site.md) for the full lifecycle.
-
 ---
 
 ## See also
 
-- [Multi-Site Study Operations](../tutorials/multi-site.md): full lifecycle including merge, errata, and analysis.
 - [Compliance & Governance](compliance.md): FAIR metadata, GDPR-style erasure, IRB-style withdrawal.
 - [Design Decisions: Federated analytics](../design_decisions.md#federated-analytics): the rationale.

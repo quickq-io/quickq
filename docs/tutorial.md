@@ -7,7 +7,6 @@ quickq tutorials follow several paths. Pick the one that matches what you want t
 | [Quickstart, end-to-end](tutorials/end-to-end.md) | ~15 min | You want to see the full loop work. Author from scratch, serve, collect, refresh, report. Gout symptoms running example. |
 | [Authoring deep-dive](tutorials/authoring.md) | ~30 min | You want to learn the YAML format properly. Builds GAD-7 step by step (option sets, skip logic, scoring rules, FHIR export). |
 | [Analytics phase tutorials](#analytics-phase-tutorials) | varies | You want to explore the analytical layer with realistic data. Uses the bundled demo database (PHQ-9 + prenatal, 400 synthetic sessions, 4 300+ responses). |
-| [Multi-site lifecycle](tutorials/multi-site.md) | ~45 min | You want to run a study across multiple sites. Independent collection, merging, federated analysis. Three-site PHQ-9 scenario. |
 
 ---
 
@@ -45,4 +44,4 @@ Check for unexpected sparsity, distinguish skip-logic non-responses from genuine
 
 ## Multi-site studies
 
-For studies that collect independently at multiple sites and merge at a coordinating center, see [Multi-Site Study Operations](tutorials/multi-site.md). It builds its own three-site scenario from scratch (no shared demo database), and covers the full lifecycle: initializing site databases, recording mid-collection errata, merging, and running cross-site analyses.
+Multi-site studies are a primary use case for quickq's `fork`, `merge`, and `federated query` commands: distribute a canonical instrument from a coordinating center, collect independently at each site, and either merge the resulting databases at the coordinating center or run aggregate-only queries against them in place. A polished end-to-end recipe with realistic synthetic data and worked examples is still in development. If you are running a multi-site study and want to discuss how to wire up these primitives for your specific design, please [open a GitHub issue](https://github.com/quickq-io/quickq/issues) — that conversation will inform the recipe we publish next.

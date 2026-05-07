@@ -4,6 +4,9 @@ site_author: quickq Contributors
 site_url: https://quickq-io.github.io/quickq/
 repo_url: https://github.com/quickq-io/quickq
 
+exclude_docs: |
+  _drafts/
+
 hooks:
   - hooks/marimo_export.py
 
@@ -57,7 +60,6 @@ nav:
       - '1. Collect responses': tutorials/collect.md
       - '2. Analyze': tutorials/analytics.md
       - '3. Data quality': tutorials/data-quality.md
-      - 'Advanced: Multi-site studies': tutorials/multi-site.md
   - Reference:
       - Question Types: reference/question-types.md
       - Survey Authoring (YAML): authoring.md
