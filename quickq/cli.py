@@ -146,13 +146,14 @@ def new_cmd(target: str, name: str | None, from_yaml: str | None, no_git: bool) 
     """Scaffold a new study repository at TARGET.
 
     Produces a directory with the recommended layout: instrument.yaml,
-    library/, scripts/ for rebuild + seed + refresh, .gitignore, README,
-    docs/. By default also runs `git init` so the repo is immediately
-    version-controllable.
+    library/, docs/, .gitignore, README. By default also runs `git init`
+    so the repo is immediately version-controllable.
 
     Example:
         quickq new my-study
-        cd my-study && bash scripts/load.sh
+        cd my-study
+        quickq init study.db --with-library
+        quickq load instrument.yaml study.db
     """
     try:
         result = scaffold(
@@ -176,8 +177,9 @@ def new_cmd(target: str, name: str | None, from_yaml: str | None, no_git: bool) 
     click.echo("Next steps:")
     click.echo(f"  cd {result.target}")
     click.echo("  # edit instrument.yaml to define your questionnaire")
-    click.echo("  bash scripts/load.sh    # build study.db")
-    click.echo("  bash scripts/seed.sh    # (optional) generate synthetic responses for dev")
+    click.echo("  quickq init study.db --with-library    # create the OLTP database")
+    click.echo("  quickq load instrument.yaml study.db   # compile the YAML into it")
+    click.echo("  quickq seed study.db 1 --n 50          # (optional) synthetic responses for dev")
 
 
 @main.command()
