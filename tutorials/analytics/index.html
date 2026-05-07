@@ -1619,14 +1619,14 @@
 <hr />
 <h2 id="repeating-group-data-prenatal-visits">Repeating group data: prenatal visits<a class="headerlink" href="#repeating-group-data-prenatal-visits" title="Permanent link">&para;</a></h2>
 <p>Each row in <code>fact_response</code> for a repeating group child carries a <code>repeat_index</code> — the 0-based visit number within that respondent's session. This is what makes loop data queryable with standard SQL instead of JSON parsing or custom ETL.</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">respondent_id</span><span class="p">,</span><span class="w"> </span><span class="n">visit_number</span><span class="p">,</span><span class="w"> </span><span class="n">gestational_week</span><span class="p">,</span><span class="w"> </span><span class="n">provider</span><span class="p">,</span><span class="w"> </span><span class="n">concern_noted</span>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">respondent</span><span class="p">,</span><span class="w"> </span><span class="n">visit_number</span><span class="p">,</span><span class="w"> </span><span class="n">gestational_week</span><span class="p">,</span><span class="w"> </span><span class="n">provider</span><span class="p">,</span><span class="w"> </span><span class="n">concern_noted</span>
 <span class="k">FROM</span><span class="w"> </span><span class="n">v_prenatal_visits</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">respondent_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;respondent-001&#39;</span><span class="p">;</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">respondent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;respondent-001&#39;</span><span class="p">;</span>
 </code></pre></div>
 <table>
 <thead>
 <tr>
-<th>respondent_id</th>
+<th>respondent</th>
 <th>visit_number</th>
 <th>gestational_week</th>
 <th>provider</th>
