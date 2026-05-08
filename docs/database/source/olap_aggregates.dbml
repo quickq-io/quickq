@@ -1,0 +1,139 @@
+// quickq OLAP — aggregate tables
+// Source of truth: quickq/sql/olap_schema.sql
+// Materialized roll-ups computed by `quickq refresh`. Each agg_* table
+// is a precomputed answer to a common analytical question, joinable to
+// the same dim_* tables shown in the star-schema diagram.
+
+Project quickq_olap_aggregates {
+  database_type: 'DuckDB'
+  Note: '''
+    Aggregates are derived from fact_response on every refresh. They
+    keep large analytical queries fast and standardize the calculations
+    used by `quickq report` and downstream tools.
+  '''
+}
+
+// ─── Aggregate tables ──────────────────────────────────────────────────
+
+Table agg_question_distribution {
+  study_id integer
+  questionnaire_id integer
+  question_id integer
+  option_id integer
+  option_value varchar
+  n integer
+  pct double
+  Note: '+ 3 more columns; one row per (question, answer)'
+}
+
+Table agg_session_completion {
+  study_id integer
+  questionnaire_id integer
+  date_key date
+  n_started integer
+  n_completed integer
+  completion_rate double
+  median_duration_sec integer
+  Note: '+ 2 more columns; daily rollup by admin_mode'
+}
+
+Table agg_respondent_scores {
+  respondent_id bigint
+  questionnaire_id integer
+  scoring_rule_id integer
+  scoring_rule_name varchar
+  session_id bigint
+  score_raw double
+  score_category varchar
+  items_answered integer
+  items_total integer
+  Note: 'one row per (respondent, session, scoring_rule)'
+}
+
+Table agg_numeric_stats {
+  study_id integer
+  questionnaire_id integer
+  question_id integer
+  n integer
+  mean double
+  median double
+  std_dev double
+  min_val double
+  max_val double
+  Note: '+ 4 more columns (percentiles)'
+}
+
+// ─── Dimensions referenced (subset; full definitions live in the star diagram) ───
+
+Table dim_study {
+  study_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_questionnaire {
+  questionnaire_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_question {
+  question_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_response_option {
+  option_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_respondent {
+  respondent_id bigint [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_session {
+  session_id bigint [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_date {
+  date_key date [pk]
+  Note: 'see star schema for full definition'
+}
+
+// ─── Edges from aggregates to dimensions ───────────────────────────────
+
+Ref: agg_question_distribution.study_id > dim_study.study_id
+Ref: agg_question_distribution.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: agg_question_distribution.question_id > dim_question.question_id
+Ref: agg_question_distribution.option_id > dim_response_option.option_id
+
+Ref: agg_session_completion.study_id > dim_study.study_id
+Ref: agg_session_completion.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: agg_session_completion.date_key > dim_date.date_key
+
+Ref: agg_respondent_scores.respondent_id > dim_respondent.respondent_id
+Ref: agg_respondent_scores.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: agg_respondent_scores.session_id > dim_session.session_id
+
+Ref: agg_numeric_stats.study_id > dim_study.study_id
+Ref: agg_numeric_stats.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: agg_numeric_stats.question_id > dim_question.question_id
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup aggregates [color: #7AC36A] {
+  agg_question_distribution
+  agg_session_completion
+  agg_respondent_scores
+  agg_numeric_stats
+}
+
+TableGroup dimensions_referenced [color: #5A9BD4] {
+  dim_study
+  dim_questionnaire
+  dim_question
+  dim_response_option
+  dim_respondent
+  dim_session
+  dim_date
+}

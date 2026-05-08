@@ -1,0 +1,88 @@
+// quickq OLTP — study, identity, and response flow
+// Source of truth: quickq/sql/oltp_schema.sql
+// The data-collection lifecycle: study definition, respondent identity,
+// session metadata, and the responses themselves.
+
+Project quickq_oltp_study_response {
+  database_type: 'SQLite'
+  Note: '''
+    Study and response plane. A study has many respondents; each
+    respondent has many sessions; each session has many responses.
+    person_map is an optional separate identity index for studies
+    that need linkable identity outside the response_session table.
+  '''
+}
+
+// ─── Study and identity ────────────────────────────────────────────────
+
+Table study {
+  study_id integer [pk]
+  name text [not null]
+  principal_investigator text
+  irb_number text
+  license text
+  doi text
+  Note: '+ 8 more columns (description, population, dates, ...)'
+}
+
+Table respondent {
+  respondent_id integer [pk]
+  study_id integer [ref: > study.study_id, not null]
+  external_id text [not null, note: 'study-assigned participant identifier']
+  enrollment_date text
+}
+
+Table person_map {
+  respondent_id integer [pk, ref: > respondent.respondent_id]
+  identity_hash text [not null]
+  identity_type text
+  Note: 'optional: separate identity-linkage index'
+}
+
+// ─── Sessions and responses ────────────────────────────────────────────
+
+Table response_session {
+  session_id integer [pk]
+  respondent_id integer [ref: > respondent.respondent_id, not null]
+  questionnaire_id integer [not null, note: 'FK to questionnaire (see instrument diagram)']
+  started_at text [not null]
+  completed_at text
+  admin_mode text [note: 'web | paper | phone | kiosk']
+  fhir_response_id text [note: 'echoes the FHIR QuestionnaireResponse.id']
+  Note: '+ 6 more columns (proxy flag, interviewer, consent, ...)'
+}
+
+Table response {
+  response_id integer [pk]
+  session_id integer [ref: > response_session.session_id, not null]
+  qq_id integer [not null, note: 'FK to questionnaire_question (see instrument diagram)']
+  option_id integer [note: 'FK to response_option (see instrument diagram)']
+  response_text text
+  response_numeric real
+  response_date text
+  repeat_index integer [note: '0-based for repeating_group instances; NULL otherwise']
+  Note: '+ 4 more columns (boolean, datetime, raw FHIR, ...)'
+}
+
+Table admin_event {
+  event_id integer [pk]
+  session_id integer [ref: > response_session.session_id]
+  event_type text [not null, note: 'dispatch | reminder | interviewer_assigned | mode_change']
+  occurred_at text [not null]
+  performed_by text
+  Note: '+ 3 more columns'
+}
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup study_identity [color: #5A9BD4] {
+  study
+  respondent
+  person_map
+}
+
+TableGroup session_response [color: #FAA75B] {
+  response_session
+  response
+  admin_event
+}

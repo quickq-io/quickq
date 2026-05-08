@@ -1,0 +1,68 @@
+// quickq OLAP — provenance & lineage tables
+// Source of truth: quickq/sql/olap_schema.sql
+// Tracks how the OLAP was built and how questions evolved across versions.
+// Useful for auditing analytical results and harmonizing across study versions.
+
+Project quickq_olap_provenance {
+  database_type: 'DuckDB'
+  Note: '''
+    Provenance tables let analysts answer "when was this refreshed",
+    "what changed between versions", and "which questions are
+    semantically equivalent across studies".
+  '''
+}
+
+// ─── Refresh provenance ────────────────────────────────────────────────
+
+Table refresh_log {
+  refresh_id integer [pk]
+  started_at timestamp
+  completed_at timestamp
+  rows_inserted integer
+  rows_updated integer
+  Note: '+ 3 more columns; one row per `quickq refresh` invocation'
+}
+
+// ─── Question lineage and equivalence ──────────────────────────────────
+
+Table dim_question_lineage {
+  lineage_id integer [pk]
+  question_id integer
+  parent_question_id integer
+  change_type varchar
+  Note: '+ 3 more columns; mirrors OLTP question_lineage'
+}
+
+Table dim_question_equivalence {
+  equivalence_id integer [pk]
+  source_question_id integer
+  target_question_id integer
+  equivalence_type varchar
+  Note: '+ 2 more columns; declares which questions can be pooled across versions'
+}
+
+// ─── Dimensions referenced ─────────────────────────────────────────────
+
+Table dim_question {
+  question_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+// ─── Edges ─────────────────────────────────────────────────────────────
+
+Ref: dim_question_lineage.question_id > dim_question.question_id
+Ref: dim_question_lineage.parent_question_id > dim_question.question_id
+Ref: dim_question_equivalence.source_question_id > dim_question.question_id
+Ref: dim_question_equivalence.target_question_id > dim_question.question_id
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup provenance [color: #9E67AB] {
+  refresh_log
+  dim_question_lineage
+  dim_question_equivalence
+}
+
+TableGroup dimensions_referenced [color: #5A9BD4] {
+  dim_question
+}

@@ -1,0 +1,141 @@
+// quickq OLAP — star schema overview
+// Source of truth: quickq/sql/olap_schema.sql
+// Trimmed to just the analytical core: fact_response + 8 dimensions.
+// Aggregates, provenance, and OMOP interop tables live in their own diagrams.
+
+Project quickq_olap_star {
+  database_type: 'DuckDB'
+  Note: '''
+    Star schema. fact_response is one row per answer atom. Every
+    analytical query starts here and joins outward to dimensions.
+  '''
+}
+
+// ─── Fact ──────────────────────────────────────────────────────────────
+
+Table fact_response {
+  response_id bigint [pk]
+  session_id bigint
+  respondent_id bigint
+  questionnaire_id integer
+  study_id integer
+  question_id integer
+  option_id integer
+  repeat_index integer [note: '0-based for repeating_group instances; NULL otherwise']
+  response_text varchar
+  response_numeric double
+  response_date date
+  option_value varchar
+  Note: '+ 12 more columns (concept FKs, date keys, admin context)'
+}
+
+// ─── Dimensions ────────────────────────────────────────────────────────
+
+Table dim_study {
+  study_id integer [pk]
+  name varchar
+  pi varchar
+  irb_number varchar
+  start_date date
+  Note: '+ 2 more columns'
+}
+
+Table dim_questionnaire {
+  questionnaire_id integer [pk]
+  name varchar
+  version varchar
+  canonical_url varchar
+  study_id integer
+  Note: '+ 1 more column'
+}
+
+Table dim_question {
+  question_id integer [pk]
+  link_id varchar
+  text varchar
+  type varchar
+  source_instrument varchar
+  concept_id integer
+  Note: '+ 7 more columns'
+}
+
+Table dim_response_option {
+  option_id integer [pk]
+  question_id integer
+  text varchar
+  value varchar
+  concept_id integer
+  Note: '+ 7 more columns'
+}
+
+Table dim_respondent {
+  respondent_id bigint [pk]
+  study_id integer
+  external_id varchar
+  enrollment_date date
+}
+
+Table dim_session {
+  session_id bigint [pk]
+  respondent_id bigint
+  questionnaire_id integer
+  started_at timestamp
+  completed_at timestamp
+  admin_mode varchar
+  duration_sec integer
+  Note: '+ 4 more columns'
+}
+
+Table dim_concept {
+  concept_id integer [pk]
+  concept_name varchar
+  domain_id varchar
+  vocabulary_id varchar
+  concept_code varchar
+  Note: '+ 2 more columns'
+}
+
+Table dim_date {
+  date_key date [pk]
+  year integer
+  month integer
+  quarter integer
+  day_of_week integer
+  Note: '+ 3 more columns; referenced by fact_response.response_date_key (trimmed above)'
+}
+
+// ─── Star edges (fact -> dim) ──────────────────────────────────────────
+
+Ref: fact_response.session_id > dim_session.session_id
+Ref: fact_response.respondent_id > dim_respondent.respondent_id
+Ref: fact_response.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: fact_response.study_id > dim_study.study_id
+Ref: fact_response.question_id > dim_question.question_id
+Ref: fact_response.option_id > dim_response_option.option_id
+
+// ─── Snowflake edges (dim -> dim) ──────────────────────────────────────
+
+Ref: dim_session.respondent_id > dim_respondent.respondent_id
+Ref: dim_session.questionnaire_id > dim_questionnaire.questionnaire_id
+Ref: dim_questionnaire.study_id > dim_study.study_id
+Ref: dim_respondent.study_id > dim_study.study_id
+Ref: dim_question.concept_id > dim_concept.concept_id
+Ref: dim_response_option.concept_id > dim_concept.concept_id
+Ref: dim_response_option.question_id > dim_question.question_id
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup fact [color: #FAA75B] {
+  fact_response
+}
+
+TableGroup dimensions [color: #5A9BD4] {
+  dim_study
+  dim_questionnaire
+  dim_question
+  dim_response_option
+  dim_respondent
+  dim_session
+  dim_concept
+  dim_date
+}
