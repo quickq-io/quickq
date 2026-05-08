@@ -12,31 +12,31 @@
         <meta name="author" content="quickq Contributors">
       
       
-        <link rel="canonical" href="https://quickq-io.github.io/quickq/analytics/">
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/database/data-model/">
       
       
-        <link rel="prev" href="../philosophy/">
+        <link rel="prev" href="../../analytics/">
       
       
-        <link rel="next" href="../database/data-model/">
+        <link rel="next" href="../oltp/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Analytics & Data Model - quickq</title>
+        <title>Data Model (overview) - quickq</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,7 +55,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#analytics-refresh" class="md-skip">
+        <a href="#the-quickq-data-model" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+    <a href="../.." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Analytics & Data Model
+              Data Model (overview)
             
           </span>
         </div>
@@ -232,7 +232,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+    <a href="../.." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -262,7 +262,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -341,7 +341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/end-to-end/" class="md-nav__link">
+      <a href="../../tutorials/end-to-end/" class="md-nav__link">
         
   
   
@@ -369,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
+      <a href="../../tutorial/" class="md-nav__link">
         
   
   
@@ -397,7 +397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/authoring/" class="md-nav__link">
+      <a href="../../tutorials/authoring/" class="md-nav__link">
         
   
   
@@ -425,7 +425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/collect/" class="md-nav__link">
+      <a href="../../tutorials/collect/" class="md-nav__link">
         
   
   
@@ -453,7 +453,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/analytics/" class="md-nav__link">
+      <a href="../../tutorials/analytics/" class="md-nav__link">
         
   
   
@@ -481,7 +481,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/data-quality/" class="md-nav__link">
+      <a href="../../tutorials/data-quality/" class="md-nav__link">
         
   
   
@@ -568,7 +568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/question-types/" class="md-nav__link">
+      <a href="../../reference/question-types/" class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring/" class="md-nav__link">
+      <a href="../../authoring/" class="md-nav__link">
         
   
   
@@ -624,7 +624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/query-patterns/" class="md-nav__link">
+      <a href="../../reference/query-patterns/" class="md-nav__link">
         
   
   
@@ -652,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/analysis-recipes/" class="md-nav__link">
+      <a href="../../reference/analysis-recipes/" class="md-nav__link">
         
   
   
@@ -680,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/analysis-recipes-r/" class="md-nav__link">
+      <a href="../../reference/analysis-recipes-r/" class="md-nav__link">
         
   
   
@@ -708,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/seed/" class="md-nav__link">
+      <a href="../../reference/seed/" class="md-nav__link">
         
   
   
@@ -736,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/versioning/" class="md-nav__link">
+      <a href="../../reference/versioning/" class="md-nav__link">
         
   
   
@@ -764,7 +764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/compliance/" class="md-nav__link">
+      <a href="../../reference/compliance/" class="md-nav__link">
         
   
   
@@ -792,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/federated/" class="md-nav__link">
+      <a href="../../reference/federated/" class="md-nav__link">
         
   
   
@@ -820,7 +820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fhir/" class="md-nav__link">
+      <a href="../../fhir/" class="md-nav__link">
         
   
   
@@ -848,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/omop/" class="md-nav__link">
+      <a href="../../reference/omop/" class="md-nav__link">
         
   
   
@@ -925,7 +925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-phq9/" class="md-nav__link">
+      <a href="../../reference/example-phq9/" class="md-nav__link">
         
   
   
@@ -953,7 +953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-prapare-data-dict/" class="md-nav__link">
+      <a href="../../reference/example-prapare-data-dict/" class="md-nav__link">
         
   
   
@@ -981,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/example-gout-checkin/" class="md-nav__link">
+      <a href="../../reference/example-gout-checkin/" class="md-nav__link">
         
   
   
@@ -1078,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -1106,7 +1106,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design_decisions/" class="md-nav__link">
+      <a href="../../design_decisions/" class="md-nav__link">
         
   
   
@@ -1134,7 +1134,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../philosophy/" class="md-nav__link">
+      <a href="../../philosophy/" class="md-nav__link">
         
   
   
@@ -1142,6 +1142,34 @@
     
   
     Design Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics & Data Model
   
 
     
@@ -1178,7 +1206,7 @@
   <span class="md-ellipsis">
     
   
-    Analytics & Data Model
+    Data Model (overview)
   
 
     
@@ -1196,7 +1224,7 @@
   <span class="md-ellipsis">
     
   
-    Analytics & Data Model
+    Data Model (overview)
   
 
     
@@ -1222,10 +1250,132 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#refresh" class="md-nav__link">
+  <a href="#oltp-whats-collected" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Refresh
+        OLTP — what's collected
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OLTP — what&#39;s collected">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-study-and-response-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Study and response flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-instrument-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Instrument definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-vocabulary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Vocabulary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-provenance-and-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Provenance and quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#olap-whats-derived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OLAP — what's derived
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OLAP — what&#39;s derived">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-star-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Star schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-aggregates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Aggregates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-omop-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. OMOP interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-oltp-becomes-olap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How OLTP becomes OLAP
       
     </span>
   </a>
@@ -1233,54 +1383,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-refresh-produces" class="md-nav__link">
+  <a href="#going-deeper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Refresh Produces
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#querying" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Querying
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cross-study-harmonization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cross-Study Harmonization
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#omop-extraction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OMOP Extraction
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reports" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reports
+        Going deeper
       
     </span>
   </a>
@@ -1303,35 +1409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../database/data-model/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Model (overview)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../database/oltp/" class="md-nav__link">
+      <a href="../oltp/" class="md-nav__link">
         
   
   
@@ -1359,7 +1437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../database/olap/" class="md-nav__link">
+      <a href="../olap/" class="md-nav__link">
         
   
   
@@ -1414,10 +1492,132 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#refresh" class="md-nav__link">
+  <a href="#oltp-whats-collected" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Refresh
+        OLTP — what's collected
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OLTP — what&#39;s collected">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-study-and-response-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Study and response flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-instrument-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Instrument definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-vocabulary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Vocabulary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-provenance-and-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Provenance and quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#olap-whats-derived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OLAP — what's derived
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OLAP — what&#39;s derived">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-star-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Star schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-aggregates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Aggregates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-omop-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. OMOP interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-oltp-becomes-olap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How OLTP becomes OLAP
       
     </span>
   </a>
@@ -1425,54 +1625,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-refresh-produces" class="md-nav__link">
+  <a href="#going-deeper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Refresh Produces
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#querying" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Querying
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cross-study-harmonization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cross-Study Harmonization
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#omop-extraction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OMOP Extraction
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reports" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reports
+        Going deeper
       
     </span>
   </a>
@@ -1499,134 +1655,103 @@
   
 
 
-<h1 id="analytics-refresh">Analytics &amp; Refresh<a class="headerlink" href="#analytics-refresh" title="Permanent link">&para;</a></h1>
-<p>The analytical layer is a DuckDB star schema populated on demand from the SQLite OLTP file. All reports, cohort queries, and cross-study analyses run here. The OLTP is never queried directly for analysis.</p>
+<h1 id="the-quickq-data-model">The quickq Data Model<a class="headerlink" href="#the-quickq-data-model" title="Permanent link">&para;</a></h1>
+<p>quickq's data model has two halves connected by a refresh.</p>
+<p>The <strong>OLTP</strong> half (SQLite) is the <em>source of truth</em>. It stores every authored instrument, every collected response, and every piece of provenance about how the study was run. One <code>.db</code> file is the complete portable study artifact.</p>
+<p>The <strong>OLAP</strong> half (DuckDB) is the <em>analytical projection</em>. It is rebuilt on demand from OLTP by <code>quickq refresh</code>. Every report, dashboard, federated query, and cross-study harmonization runs against OLAP — never against the OLTP file directly. The OLAP schema is stable and standardized; the OLTP schema is normalized and intentionally allowed to evolve over time.</p>
+<p>Each half has logical layers — distinct concerns that compose into the full model. The diagrams on this page show those layers individually rather than overwhelming you with a single 40-table chart. For the full table-by-table reference, see <a href="../oltp/">OLTP Schema</a> and <a href="../olap/">OLAP Schema</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Why per-layer diagrams</p>
+<p>Real-world cohort study databases run to 30–50 tables. A single diagram that tries to show all of them either crops out the columns that matter or routes lines through other tables. We adopt the OMOP CDM convention: one diagram per logical layer, with clear callouts where the layers connect. Each diagram below shows the most informative columns per table; the SQL DDL has the rest.</p>
+</div>
 <hr />
-<h2 id="refresh">Refresh<a class="headerlink" href="#refresh" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb
-</code></pre></div>
-<p>Refresh is incremental. It reads <code>refresh_log</code> to find the high-water mark from the last run, loads only new <code>response</code> and <code>response_session</code> rows, recomputes scores and aggregates, and updates the watermark on success. A failed run leaves the watermark unchanged so the next run retries the same window cleanly.</p>
-<p>DuckDB attaches the SQLite file directly — no intermediate export, no staging database:</p>
-<div class="highlight"><pre><span></span><code><span class="n">ATTACH</span><span class="w"> </span><span class="s1">&#39;study.db&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">oltp</span><span class="w"> </span><span class="p">(</span><span class="k">TYPE</span><span class="w"> </span><span class="n">sqlite</span><span class="p">,</span><span class="w"> </span><span class="n">READ_ONLY</span><span class="p">);</span>
-</code></pre></div>
+<h2 id="oltp-whats-collected">OLTP — what's collected<a class="headerlink" href="#oltp-whats-collected" title="Permanent link">&para;</a></h2>
+<p>Four layers. Together they answer <em>what was authored, what was collected, what does each value mean, and how do we know it's trustworthy</em>.</p>
+<h3 id="1-study-and-response-flow">1. Study and response flow<a class="headerlink" href="#1-study-and-response-flow" title="Permanent link">&para;</a></h3>
+<p>The data-collection lifecycle. A <code>study</code> has many <code>respondent</code>s; each respondent has many <code>response_session</code>s; each session has many <code>response</code>s. <code>admin_event</code> records dispatch / reminder / mode-change activity around a session. <code>person_map</code> is a separate identity index for studies that need linkable identity outside the response_session table.</p>
+<p><img alt="Study and response flow" src="../oltp_study_response.svg" /></p>
+<p>This layer is the entry point for almost every analytical question: "how many respondents", "how many sessions per respondent", "what's the completion rate by admin mode". The integer surrogate keys (<code>respondent_id</code>, <code>session_id</code>) are quickq's; the <code>external_id</code> on <code>respondent</code> is the study-assigned participant identifier that researchers actually recognize.</p>
+<h3 id="2-instrument-definition">2. Instrument definition<a class="headerlink" href="#2-instrument-definition" title="Permanent link">&para;</a></h3>
+<p>What the questionnaire actually asks. A <code>questionnaire</code> has <code>section</code>s; each section has <code>questionnaire_question</code> placements (the verb is "places this question here, in this order, with these skip rules and scoring weights"); each placement points to a reusable <code>question</code>. Options for choice questions live in <code>response_option</code>, optionally grouped into shared <code>response_option_set</code>s. Grid questions use <code>grid_row</code> × <code>grid_column</code>. Skip logic is structured in <code>skip_rule</code>. Scoring is structured in <code>scoring_rule</code> / <code>scoring_rule_item</code> / <code>scoring_category</code>.</p>
+<p><img alt="Instrument definition" src="../oltp_instrument.svg" /></p>
+<p>The reuse pattern is intentional: a question (LOINC <code>44250-9</code> "Little interest or pleasure in doing things") can be <em>placed</em> in many questionnaires under the same <code>link_id</code> with different display order, required flag, or scoring weight. That separation between <em>the question</em> and <em>the question's placement</em> is what makes harmonization across instruments possible.</p>
+<p><code>questionnaire_question.parent_qq_id</code> and <code>count_qq_id</code> together support repeating-group questions: parent_qq_id chains the children into a group, count_qq_id links the group to a numeric question that drives N. The <code>skip_rule</code> table is the structured form of FHIR's <code>enableWhen</code> and is what every cross-instrument skip-logic recipe queries against.</p>
+<h3 id="3-vocabulary">3. Vocabulary<a class="headerlink" href="#3-vocabulary" title="Permanent link">&para;</a></h3>
+<p>Standard concept codes for cross-study harmonization. Modeled directly on OMOP CDM v5.4: a <code>vocabulary</code> (LOINC, SNOMED, NCI, BRFSS, Local) groups <code>concept</code>s identified by <code>(vocabulary_id, concept_code)</code>, with <code>concept_id</code> as the surrogate. <code>concept_relationship</code> rows encode "Maps to", "Is a", "Subsumes", "Answer of".</p>
+<p><img alt="Vocabulary" src="../oltp_vocabulary.svg" /></p>
+<p>Every <code>question</code>, <code>response_option</code>, <code>grid_row</code>, and <code>grid_column</code> may reference a <code>concept_id</code> (the FK is shown in the instrument diagram, not redrawn here). When two studies use the same LOINC code on the same construct, joining their data is a single SQL JOIN. When they don't, the <code>concept_relationship</code> table makes the mapping explicit instead of folkloric.</p>
+<p>The vocabulary plane is small (three tables) but it is the single most important integration surface: it is what makes a quickq study composable with OMOP cohorts, REDCap projects with codings, and FHIR Implementation Guides.</p>
+<h3 id="4-provenance-and-quality">4. Provenance and quality<a class="headerlink" href="#4-provenance-and-quality" title="Permanent link">&para;</a></h3>
+<p>How questions evolved, what data quality issues were flagged, who did what to the database. <code>question_lineage</code> tracks rewords / option changes / splits / merges / adapted_from edges between question versions. <code>question_equivalence</code> declares which questions can be pooled across versions. <code>questionnaire_version_diff</code> records cross-version structural changes. <code>data_quality_flag</code> is written at collection time when the FHIR ingester rejects an answer. <code>study_errata_log</code> is the researcher's hand-recorded "we discovered after the fact that sessions 1–20 had a delivery bug" log. <code>tool_audit_log</code> records every quickq command that touched the database.</p>
+<p><img alt="Provenance and quality" src="../oltp_provenance.svg" /></p>
+<p>This layer is what lets a researcher answer "what changed between v1 and v2 of the instrument", "did this respondent's responses get flagged at any point", and "when was this database last modified, by what command". The lineage and equivalence tables propagate to the OLAP <code>dim_question_lineage</code> and <code>dim_question_equivalence</code> so analytical queries can use them too.</p>
 <hr />
-<h2 id="what-refresh-produces">What Refresh Produces<a class="headerlink" href="#what-refresh-produces" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>fact_response</code></td>
-<td>One row per answer atom, pre-joined with concept and dimension keys</td>
-</tr>
-<tr>
-<td><code>dim_question</code>, <code>dim_respondent</code>, <code>dim_session</code>, etc.</td>
-<td>Dimension tables for filtering and grouping</td>
-</tr>
-<tr>
-<td><code>agg_question_distribution</code></td>
-<td>Response frequency and percentage per question per option</td>
-</tr>
-<tr>
-<td><code>agg_numeric_stats</code></td>
-<td>Mean, median, SD, percentiles for numeric questions</td>
-</tr>
-<tr>
-<td><code>agg_session_completion</code></td>
-<td>Daily enrollment, completion rate, and median session duration by admin mode</td>
-</tr>
-<tr>
-<td><code>agg_respondent_scores</code></td>
-<td>Computed scale scores (PHQ-9 total, GAD-7 severity, etc.) per respondent per session</td>
-</tr>
-<tr>
-<td><code>omop_survey_conduct</code></td>
-<td>OMOP CDM SurveyConducts projection (when <code>person_map</code> is populated)</td>
-</tr>
-<tr>
-<td><code>omop_observation</code></td>
-<td>OMOP CDM Observations projection for concept-mapped responses</td>
-</tr>
-<tr>
-<td><code>omop_unmapped_questions</code></td>
-<td>Questions excluded from OMOP export due to missing <code>concept_id</code></td>
-</tr>
-</tbody>
-</table>
+<h2 id="olap-whats-derived">OLAP — what's derived<a class="headerlink" href="#olap-whats-derived" title="Permanent link">&para;</a></h2>
+<p>Four layers, all rebuilt by <code>quickq refresh</code>. The OLAP schema is the <em>contract</em> analytical tooling depends on: it is stable across releases, while the OLTP schema is allowed to evolve.</p>
+<h3 id="1-star-schema">1. Star schema<a class="headerlink" href="#1-star-schema" title="Permanent link">&para;</a></h3>
+<p>The analytical core. <code>fact_response</code> is one row per answer atom; the eight <code>dim_*</code> tables are the standard star points. Every analytical query starts with a SELECT against fact_response and joins outward to the dimensions.</p>
+<p><img alt="Star schema" src="../olap_star.svg" /></p>
+<p>Several things to notice:</p>
+<ul>
+<li><strong>The same query shape works for every question type and every instrument.</strong> A SELECT on <code>fact_response</code> joined to <code>dim_question</code> and <code>dim_response_option</code> answers "what's the distribution of answers to this question" regardless of whether the question is a single_choice, multiple_choice, likert, or boolean. That uniformity is what makes the star-schema model worth the redundancy of a wide fact table.</li>
+<li><strong>Snowflake edges connect the dimensions to each other.</strong> <code>dim_session → dim_respondent → dim_study</code> and <code>dim_session → dim_questionnaire → dim_study</code> form two parallel paths up to study, which is what enables study-level rollups without aggregating from facts. <code>dim_question → dim_concept</code> and <code>dim_response_option → dim_concept</code> make concept-based harmonization a JOIN, not a custom script.</li>
+<li><strong><code>fact_response</code> carries <code>repeat_index</code>.</strong> For repeating-group questions (a pregnancy history loop, an occupational history loop), each instance gets a 0-based index so per-instance aggregation works in standard SQL.</li>
+</ul>
+<p>The <code>dim_date</code> table participates in two date-keyed joins (<code>fact_response.response_date_key</code>, <code>fact_response.session_start_key</code>) that aren't drawn here because those columns are part of the "+ 12 more columns" trim — see the OLAP schema reference for the full fact table.</p>
+<h3 id="2-aggregates">2. Aggregates<a class="headerlink" href="#2-aggregates" title="Permanent link">&para;</a></h3>
+<p>Materialized rollups. Each <code>agg_*</code> table is a precomputed answer to a recurring analytical question, joinable to the same dim_* tables shown in the star schema.</p>
+<p><img alt="Aggregates" src="../olap_aggregates.svg" /></p>
+<ul>
+<li><strong><code>agg_question_distribution</code></strong> — for each (question, option), how many respondents picked it and what percentage. This is what <code>quickq report</code> reads to produce the per-question distribution tables.</li>
+<li><strong><code>agg_session_completion</code></strong> — daily enrollment and completion rates broken down by <code>admin_mode</code>. This is the "are people finishing the survey?" view.</li>
+<li><strong><code>agg_respondent_scores</code></strong> — one row per (respondent, session, scoring_rule). Stores the computed raw score and the severity category (PHQ-9 "moderate", GAD-7 "mild"). This is what cohort queries read to filter by score band.</li>
+<li><strong><code>agg_numeric_stats</code></strong> — n / mean / median / std_dev / quartiles for every numeric question. Avoids re-aggregating from facts when the answer is the same shape every time.</li>
+</ul>
+<p>Aggregates are recomputed in full on every <code>quickq refresh</code>. They exist for query performance and for standardization (every site, every report, every downstream tool reads the same definition of "PHQ-9 mean score").</p>
+<h3 id="3-omop-interoperability">3. OMOP interoperability<a class="headerlink" href="#3-omop-interoperability" title="Permanent link">&para;</a></h3>
+<p>OMOP CDM v5.4-aligned tables, projected from the star schema for cross-study harmonization with other OMOP cohorts.</p>
+<p><img alt="OMOP interop" src="../olap_omop.svg" /></p>
+<ul>
+<li><strong><code>omop_observation</code></strong> — every fact_response row that has a question concept_id projects into observation. This is what an OMOP-native analyst expects to query, by <code>observation_concept_id</code>, with the value resolved across <code>value_as_number</code> (numeric responses), <code>value_as_concept_id</code> (choice responses), and the date-typed columns. <code>person_id</code> here is <code>respondent_id</code> from quickq's perspective.</li>
+<li><strong><code>omop_survey_conduct</code></strong> — every response_session projects into survey_conduct. This is the "which respondent took which questionnaire, when, for how long" view.</li>
+<li><strong><code>omop_unmapped_questions</code></strong> — surfaces questions that don't have a <code>concept_id</code> and therefore can't project into observation. This is the actionable list for a researcher preparing to share data: map these before federated export.</li>
+</ul>
+<p>The OMOP layer is <em>additive</em>. quickq's native star schema (above) is the analytical contract for quickq itself; the OMOP layer is the bridge to the broader OHDSI ecosystem. Studies that don't need OHDSI compatibility can ignore the omop_* tables entirely.</p>
+<h3 id="4-provenance">4. Provenance<a class="headerlink" href="#4-provenance" title="Permanent link">&para;</a></h3>
+<p>Three small tables that record how the OLAP was built and how its dimensions evolved.</p>
+<p><img alt="OLAP provenance" src="../olap_provenance.svg" /></p>
+<ul>
+<li><strong><code>refresh_log</code></strong> — one row per <code>quickq refresh</code> invocation. Captures start / end timestamps, rows inserted, rows updated. Useful for "when was this analytical database last refreshed".</li>
+<li><strong><code>dim_question_lineage</code></strong> — mirrors OLTP <code>question_lineage</code>. Lets an analytical query that touches <code>dim_question</code> walk up the parent chain to find an earlier version of the same construct.</li>
+<li><strong><code>dim_question_equivalence</code></strong> — mirrors OLTP <code>question_equivalence</code>. Lets a cross-study cohort query pool semantically equivalent questions across instrument versions.</li>
+</ul>
+<p>The provenance layer is small but it is what makes "why did this score change between refreshes" and "show me the v1 question this v2 question replaces" answerable in standard SQL.</p>
 <hr />
-<h2 id="querying">Querying<a class="headerlink" href="#querying" title="Permanent link">&para;</a></h2>
-<p>The fact table is the starting point for most analytical queries. Dimensions provide the labels.</p>
-<p><strong>Prevalence of a symptom:</strong>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
-<span class="w">    </span><span class="n">option_value</span><span class="p">,</span>
-<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
-<span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">))</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">pct</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span><span class="w"> </span><span class="n">fr</span>
-<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="n">dq</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">question_id</span><span class="p">)</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;phq-1&#39;</span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">option_value</span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">option_value</span><span class="p">;</span>
-</code></pre></div></p>
-<p><strong>PHQ-9 scores by admin mode:</strong>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
-<span class="w">    </span><span class="n">ds</span><span class="p">.</span><span class="n">admin_mode</span><span class="p">,</span>
-<span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">score_raw</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mean_phq9</span><span class="p">,</span>
-<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">agg_respondent_scores</span><span class="w"> </span><span class="n">ars</span>
-<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_session</span><span class="w"> </span><span class="n">ds</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">ars</span><span class="p">.</span><span class="n">scoring_rule_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;PHQ-9 Total&#39;</span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="n">admin_mode</span><span class="p">;</span>
-</code></pre></div></p>
-<p><strong>Repeating group: per-visit data across pregnancies:</strong>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
-<span class="w">    </span><span class="n">fr</span><span class="p">.</span><span class="n">respondent_id</span><span class="p">,</span>
-<span class="w">    </span><span class="n">fr</span><span class="p">.</span><span class="n">repeat_index</span><span class="w">     </span><span class="k">AS</span><span class="w"> </span><span class="n">visit_number</span><span class="p">,</span>
-<span class="w">    </span><span class="n">fr</span><span class="p">.</span><span class="n">response_numeric</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">gestational_week</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span><span class="w"> </span><span class="n">fr</span>
-<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="n">dq</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">question_id</span><span class="p">)</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;visits.week&#39;</span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">respondent_id</span><span class="p">,</span><span class="w"> </span><span class="n">visit_number</span><span class="p">;</span>
-</code></pre></div></p>
+<h2 id="how-oltp-becomes-olap">How OLTP becomes OLAP<a class="headerlink" href="#how-oltp-becomes-olap" title="Permanent link">&para;</a></h2>
+<p>The bridge between the two halves is <code>quickq refresh</code>. It reads the OLTP file via DuckDB's native SQLite extension, applies a small set of transformations, and writes the standardized OLAP tables.</p>
+<pre class="mermaid"><code>graph LR
+    OLTP["OLTP — SQLite&lt;br/&gt;(source of truth)"]
+    REFRESH{{quickq refresh}}
+    OLAP["OLAP — DuckDB&lt;br/&gt;(analytical contract)"]
+
+    OLTP --&gt;|incremental by response_id| REFRESH
+    REFRESH --&gt; OLAP
+
+    OLAP --&gt;|reads| Reports["Reports · Cohort queries · Federated · OMOP export"]
+
+    style OLTP fill:#5A9BD4,color:#fff
+    style OLAP fill:#FAA75B,color:#fff
+    style REFRESH fill:#7AC36A,color:#fff</code></pre>
+<p>The refresh is <strong>incremental</strong> by <code>response_id</code> watermark — only newly arrived responses are processed on subsequent runs. It is <strong>on-demand</strong>, not streaming: appropriate for batch / research workflows. It is <strong>lossy in one direction</strong>: the OLAP can be regenerated entirely from OLTP at any time, but the OLTP cannot be regenerated from OLAP. The portable study artifact is always the SQLite file.</p>
+<p>For implementation detail, see <a href="../../architecture/#olap-refresh">Architecture</a>.</p>
 <hr />
-<h2 id="cross-study-harmonization">Cross-Study Harmonization<a class="headerlink" href="#cross-study-harmonization" title="Permanent link">&para;</a></h2>
-<p><code>dim_question.equivalence_group_id</code> is a computed cluster ID — the connected-component ID of the <code>question_equivalence</code> graph declared in the OLTP. Questions in the same group measure the same construct across different instruments or studies.</p>
-<div class="highlight"><pre><span></span><code><span class="c1">-- PHQ-9 item 1 prevalence pooled across instruments with different link_ids</span>
-<span class="k">SELECT</span>
-<span class="w">    </span><span class="n">dq</span><span class="p">.</span><span class="n">source_instrument</span><span class="p">,</span>
-<span class="w">    </span><span class="k">AVG</span><span class="p">(</span><span class="n">fr</span><span class="p">.</span><span class="n">response_numeric</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mean_score</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span><span class="w"> </span><span class="n">fr</span>
-<span class="k">JOIN</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="n">dq</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">question_id</span><span class="p">)</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">equivalence_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">equivalence_group_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">dim_question</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">link_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;phq-1&#39;</span>
-<span class="p">)</span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">dq</span><span class="p">.</span><span class="n">source_instrument</span><span class="p">;</span>
-</code></pre></div>
-<p>For concept-based queries, <code>question_concept_id</code> and <code>option_concept_id</code> are pre-joined onto <code>fact_response</code> — no extra join required:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">-- All responses to any LOINC 44250-9 question (PHQ-9 item 1, any instrument)</span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">respondent_id</span><span class="p">,</span><span class="w"> </span><span class="n">response_numeric</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">fact_response</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">question_concept_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">concept_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">dim_concept</span>
-<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">vocabulary_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;LOINC&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">concept_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;44250-9&#39;</span>
-<span class="p">);</span>
-</code></pre></div>
-<hr />
-<h2 id="omop-extraction">OMOP Extraction<a class="headerlink" href="#omop-extraction" title="Permanent link">&para;</a></h2>
-<p>Studies participating in federated networks (PCORnet, TriNetX, i2b2) can export OMOP CDM tables via <code>quickq refresh</code> once <code>person_map</code> is populated in the OLTP.</p>
-<p><code>omop_unmapped_questions</code> is the first data quality check before any federated query: it lists every question excluded from OMOP output due to a missing <code>concept_id</code>, with its response count. High response counts on unmapped questions indicate data that will be silently excluded from network queries.</p>
-<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">link_id</span><span class="p">,</span><span class="w"> </span><span class="n">question_text</span><span class="p">,</span><span class="w"> </span><span class="n">response_count</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">omop_unmapped_questions</span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">response_count</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
-</code></pre></div>
-<hr />
-<h2 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span>&lt;questionnaire_id&gt;
-</code></pre></div>
-<p>Generates a Markdown summary from the OLAP: enrollment counts, completion rates, question distributions, and scored scale summaries. The report reads exclusively from aggregate tables and requires a prior <code>quickq refresh</code>. Pass <code>--output report.md</code> to write to a file instead of stdout.</p>
+<h2 id="going-deeper">Going deeper<a class="headerlink" href="#going-deeper" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Full column-by-column reference</strong>: <a href="../oltp/">OLTP Schema</a>, <a href="../olap/">OLAP Schema</a>.</li>
+<li><strong>Architecture decisions</strong> (why two stores, why FHIR is the boundary, why scoring is in OLTP not OLAP): <a href="../../architecture/">Architecture</a>, <a href="../../design_decisions/">Design Decisions</a>.</li>
+<li><strong>Query patterns by question type</strong>: <a href="../../reference/query-patterns/">Query Patterns Reference</a>.</li>
+<li><strong>Diagram source</strong>: the <code>.dbml</code> files under <code>docs/database/source/</code> are the editable source for the diagrams above. They open directly in <a href="https://dbdiagram.io/d">dbdiagram.io</a> for layout adjustments.</li>
+</ul>
 
 
 
@@ -1682,10 +1807,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
