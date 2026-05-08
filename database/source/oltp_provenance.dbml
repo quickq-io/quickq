@@ -74,7 +74,8 @@ Table tool_audit_log {
 
 // ─── Edges within this plane ───────────────────────────────────────────
 
-Ref: question_lineage.parent_question_id > question_lineage.question_id [note: 'self-reference within lineage chain']
+// Self-reference within the lineage chain
+Ref: question_lineage.parent_question_id > question_lineage.question_id
 
 // ─── Coloring ──────────────────────────────────────────────────────────
 
