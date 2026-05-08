@@ -81,5 +81,6 @@ nav:
       - Design Decisions: design_decisions.md
       - Design Philosophy: philosophy.md
       - Analytics & Data Model: analytics.md
+      - 'Data Model (overview)': database/data-model.md
       - 'Database Schema (SQLite OLTP)': database/oltp.md
       - 'Database Schema (DuckDB OLAP)': database/olap.md
