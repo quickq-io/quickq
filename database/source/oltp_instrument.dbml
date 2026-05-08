@@ -1,0 +1,150 @@
+// quickq OLTP — instrument definition
+// Source of truth: quickq/sql/oltp_schema.sql
+// Everything the YAML loader produces for an instrument: questionnaire
+// structure, questions, options, grids, skip rules, scoring rules.
+
+Project quickq_oltp_instrument {
+  database_type: 'SQLite'
+  Note: '''
+    The instrument plane: how a questionnaire is defined, including
+    placement, structured skip logic, and scoring rules. This is what
+    `quickq load instrument.yaml` writes and what `quickq fhir export`
+    reads back.
+  '''
+}
+
+// ─── Top-level structure ───────────────────────────────────────────────
+
+Table questionnaire {
+  questionnaire_id integer [pk]
+  study_id integer [not null, note: 'FK to study (see study_response diagram)']
+  name text [not null]
+  version text [not null]
+  canonical_url text
+  Note: '+ 6 more columns (FHIR fields, license, status, ...)'
+}
+
+Table section {
+  section_id integer [pk]
+  questionnaire_id integer [ref: > questionnaire.questionnaire_id]
+  name text
+  display_order integer
+  Note: '+ 3 more columns'
+}
+
+Table questionnaire_question {
+  qq_id integer [pk]
+  questionnaire_id integer [ref: > questionnaire.questionnaire_id, not null]
+  question_id integer [ref: > question.question_id, not null]
+  section_id integer [ref: > section.section_id]
+  parent_qq_id integer [ref: > questionnaire_question.qq_id]
+  count_qq_id integer [ref: > questionnaire_question.qq_id, note: 'links repeating_group to its driving count question']
+  display_order integer
+  required boolean
+  Note: '+ 5 more columns'
+}
+
+// ─── Questions and options ─────────────────────────────────────────────
+
+Table question {
+  question_id integer [pk]
+  link_id text [not null]
+  question_type text [not null, note: 'single_choice | multiple_choice | sata_other | boolean | text | numeric | date | likert | grid | slider | ranked | repeating_group']
+  question_text text [not null]
+  concept_id integer [note: 'FK to concept (see vocabulary diagram)']
+  version text
+  Note: '+ 12 more columns (display, scoring metadata, validation, ...)'
+}
+
+Table response_option_set {
+  option_set_id integer [pk]
+  name text
+  canonical_url text
+  Note: '+ 2 more columns'
+}
+
+Table response_option {
+  option_id integer [pk]
+  question_id integer [ref: > question.question_id]
+  option_set_id integer [ref: > response_option_set.option_set_id]
+  option_text text [not null]
+  option_value text
+  concept_id integer [note: 'FK to concept (see vocabulary diagram)']
+  Note: '+ 6 more columns (display, exclusivity, free-text "Other", ...)'
+}
+
+Table grid_row {
+  row_id integer [pk]
+  question_id integer [ref: > question.question_id]
+  row_text text
+  display_order integer
+}
+
+Table grid_column {
+  column_id integer [pk]
+  question_id integer [ref: > question.question_id]
+  column_text text
+  column_value text
+  Note: '+ 3 more columns'
+}
+
+// ─── Skip logic ────────────────────────────────────────────────────────
+
+Table skip_rule {
+  skip_rule_id integer [pk]
+  qq_id integer [ref: > questionnaire_question.qq_id, not null]
+  trigger_qq_id integer [ref: > questionnaire_question.qq_id]
+  operator text [not null, note: '= != > < >= <= exists']
+  trigger_value text
+  action text [note: 'show | hide | require']
+  enable_behavior text [note: 'all | any']
+}
+
+// ─── Scoring ───────────────────────────────────────────────────────────
+
+Table scoring_rule {
+  scoring_rule_id integer [pk]
+  questionnaire_id integer [ref: > questionnaire.questionnaire_id, not null]
+  name text [not null]
+  formula text [note: 'sum | mean']
+  Note: '+ 2 more columns'
+}
+
+Table scoring_rule_item {
+  scoring_rule_id integer [ref: > scoring_rule.scoring_rule_id, not null]
+  qq_id integer [ref: > questionnaire_question.qq_id, not null]
+  weight real
+  reverse_score boolean
+  Note: 'composite key (scoring_rule_id, qq_id)'
+}
+
+Table scoring_category {
+  category_id integer [pk]
+  scoring_rule_id integer [ref: > scoring_rule.scoring_rule_id, not null]
+  label text
+  min_score real
+  max_score real
+}
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup structure [color: #5A9BD4] {
+  questionnaire
+  section
+  questionnaire_question
+}
+
+TableGroup questions_options [color: #7AC36A] {
+  question
+  response_option_set
+  response_option
+  grid_row
+  grid_column
+}
+
+TableGroup logic_scoring [color: #FAA75B] {
+  skip_rule
+  scoring_rule
+  scoring_rule_item
+  scoring_category
+}

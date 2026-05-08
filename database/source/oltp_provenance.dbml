@@ -1,0 +1,94 @@
+// quickq OLTP — provenance and quality
+// Source of truth: quickq/sql/oltp_schema.sql
+// Tracks how questions evolved across versions, what data quality issues
+// were flagged at collection time, and what tool operations have run
+// against the database.
+
+Project quickq_oltp_provenance {
+  database_type: 'SQLite'
+  Note: '''
+    Provenance plane. Versioning, errata, and audit. Lets researchers
+    answer "what changed", "what was flagged", and "who did what to
+    this database, when".
+  '''
+}
+
+// ─── Question lineage and version drift ────────────────────────────────
+
+Table question_lineage {
+  lineage_id integer [pk]
+  question_id integer [not null, note: 'FK to question (see instrument diagram)']
+  parent_question_id integer [note: 'FK to question (the original)']
+  change_type text [note: 'reword | option_change | split | merge | adapted_from']
+  Note: '+ 3 more columns'
+}
+
+Table question_equivalence {
+  equivalence_id integer [pk]
+  source_question_id integer [note: 'FK to question (see instrument diagram)']
+  target_question_id integer [note: 'FK to question; the equivalent version']
+  equivalence_type text
+  Note: '+ 4 more columns'
+}
+
+Table questionnaire_version_diff {
+  diff_id integer [pk]
+  source_questionnaire_id integer [note: 'FK to questionnaire (see instrument diagram)']
+  target_questionnaire_id integer
+  change_type text
+  Note: '+ 4 more columns'
+}
+
+// ─── Data quality and errata ───────────────────────────────────────────
+
+Table data_quality_flag {
+  flag_id integer [pk]
+  session_id integer [note: 'FK to response_session (see study_response diagram)']
+  qq_id integer [note: 'FK to questionnaire_question']
+  severity text
+  description text
+  raised_at text
+  Note: '+ 3 more columns'
+}
+
+Table study_errata_log {
+  errata_id integer [pk]
+  study_id integer [not null, note: 'FK to study (see study_response diagram)']
+  severity text [note: 'critical | major | minor | informational']
+  title text [not null]
+  status text [note: 'open | resolved | superseded']
+  raised_at text
+  Note: '+ 12 more columns (impact range, root cause, analyst guidance, ...)'
+}
+
+// ─── Tool audit ────────────────────────────────────────────────────────
+
+Table tool_audit_log {
+  audit_id integer [pk]
+  study_id integer [note: 'FK to study (see study_response diagram)']
+  operation text [not null, note: 'load | refresh | fork | merge | federated_query | ...']
+  performed_by text
+  occurred_at text [not null]
+  Note: '+ 1 more column (details)'
+}
+
+// ─── Edges within this plane ───────────────────────────────────────────
+
+Ref: question_lineage.parent_question_id > question_lineage.question_id [note: 'self-reference within lineage chain']
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup version_lineage [color: #5A9BD4] {
+  question_lineage
+  question_equivalence
+  questionnaire_version_diff
+}
+
+TableGroup quality_errata [color: #FAA75B] {
+  data_quality_flag
+  study_errata_log
+}
+
+TableGroup audit [color: #9E67AB] {
+  tool_audit_log
+}

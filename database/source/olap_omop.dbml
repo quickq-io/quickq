@@ -1,0 +1,86 @@
+// quickq OLAP — OMOP CDM interop tables
+// Source of truth: quickq/sql/olap_schema.sql
+// OMOP-aligned views built on top of the star schema. Enable cross-study
+// harmonization with other OMOP-compatible datasets without changing the
+// quickq-native analytical model.
+
+Project quickq_olap_omop {
+  database_type: 'DuckDB'
+  Note: '''
+    OMOP CDM v5.4-aligned tables. Each row in fact_response that has a
+    concept_id projects into omop_observation; each session projects
+    into omop_survey_conduct. Unmapped questions are surfaced for the
+    researcher to map before federated export.
+  '''
+}
+
+// ─── OMOP-aligned tables ───────────────────────────────────────────────
+
+Table omop_observation {
+  observation_id bigint [pk]
+  person_id bigint
+  observation_concept_id integer
+  observation_date date
+  value_as_number double
+  value_as_concept_id integer
+  Note: '+ 5 more columns; OMOP CDM v5.4 observation table'
+}
+
+Table omop_survey_conduct {
+  survey_conduct_id bigint [pk]
+  person_id bigint
+  survey_concept_id integer
+  survey_start_date date
+  survey_end_date date
+  Note: '+ 3 more columns; OMOP CDM v5.4 survey_conduct table'
+}
+
+Table omop_unmapped_questions {
+  question_id integer [pk]
+  link_id varchar
+  question_text varchar
+  source_instrument varchar
+  Note: '+ 2 more columns; surfaces questions without an OMOP concept_id'
+}
+
+// ─── Dimensions referenced ─────────────────────────────────────────────
+
+Table dim_question {
+  question_id integer [pk]
+  Note: 'see star schema for full definition'
+}
+
+Table dim_concept {
+  concept_id integer [pk]
+  Note: 'see star schema for full definition; OMOP concept FKs resolve here'
+}
+
+Table dim_respondent {
+  respondent_id bigint [pk]
+  Note: 'see star schema; person_id in OMOP tables corresponds to respondent_id'
+}
+
+// ─── Edges ─────────────────────────────────────────────────────────────
+
+Ref: omop_observation.person_id > dim_respondent.respondent_id
+Ref: omop_observation.observation_concept_id > dim_concept.concept_id
+Ref: omop_observation.value_as_concept_id > dim_concept.concept_id
+
+Ref: omop_survey_conduct.person_id > dim_respondent.respondent_id
+Ref: omop_survey_conduct.survey_concept_id > dim_concept.concept_id
+
+Ref: omop_unmapped_questions.question_id > dim_question.question_id
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup omop [color: #9E67AB] {
+  omop_observation
+  omop_survey_conduct
+  omop_unmapped_questions
+}
+
+TableGroup dimensions_referenced [color: #5A9BD4] {
+  dim_question
+  dim_concept
+  dim_respondent
+}

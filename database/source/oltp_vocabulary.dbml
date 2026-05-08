@@ -1,0 +1,49 @@
+// quickq OLTP — vocabulary plane
+// Source of truth: quickq/sql/oltp_schema.sql
+// OMOP-style concept model. Every question and response_option may
+// reference a concept; vocabularies group concepts (LOINC, SNOMED, NCI,
+// BRFSS, Local). Concept_relationship encodes "Maps to", "Is a", etc.
+
+Project quickq_oltp_vocabulary {
+  database_type: 'SQLite'
+  Note: '''
+    Concept plane. The harmonization key for cross-study analysis.
+    Modeled after OMOP CDM v5.4: a concept is identified by
+    (vocabulary_id, concept_code), with concept_id as the surrogate.
+  '''
+}
+
+// ─── Vocabulary tables ─────────────────────────────────────────────────
+
+Table vocabulary {
+  vocabulary_id text [pk, note: 'LOINC | SNOMED | NCI | BRFSS | Local']
+  vocabulary_name text [not null]
+  vocabulary_reference text
+  version text
+  Note: '+ 1 more column (created_at)'
+}
+
+Table concept {
+  concept_id integer [pk]
+  concept_name text [not null]
+  domain_id text [not null, note: 'Question | Answer | Measurement | ...']
+  vocabulary_id text [ref: > vocabulary.vocabulary_id, not null]
+  concept_code text [not null]
+  standard_concept text [note: 'S | C | NULL']
+  Note: '+ 3 more columns (validity dates, class)'
+}
+
+Table concept_relationship {
+  concept_id_1 integer [ref: > concept.concept_id, not null]
+  concept_id_2 integer [ref: > concept.concept_id, not null]
+  relationship_id text [not null, note: 'Maps to | Is a | Subsumes | Answer of']
+  Note: 'composite key; + 2 validity-date columns'
+}
+
+// ─── Coloring ──────────────────────────────────────────────────────────
+
+TableGroup vocabulary_plane [color: #9E67AB] {
+  vocabulary
+  concept
+  concept_relationship
+}
