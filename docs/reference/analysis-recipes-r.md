@@ -397,13 +397,18 @@ df <- q("
     GROUP BY 1, 2
 ")
 
-# Distribution of visit count per respondent
-visit_count <- aggregate(visit ~ respondent_id, df, max)
-visit_count$n_visits <- visit_count$visit + 1
+# Distribution of visit count per respondent.
+# The aggregate() call below errors on an empty data.frame, so guard it —
+# this lets the snippet run cleanly against a demo that has no repeating
+# group while still producing the chart whenever real data is present.
+if (nrow(df) > 0) {
+    visit_count <- aggregate(visit ~ respondent_id, df, max)
+    visit_count$n_visits <- visit_count$visit + 1
 
-ggplot(visit_count, aes(x = factor(n_visits))) +
-    geom_bar() +
-    labs(x = "Visits recorded", y = "Respondents")
+    ggplot(visit_count, aes(x = factor(n_visits))) +
+        geom_bar() +
+        labs(x = "Visits recorded", y = "Respondents")
+}
 ```
 
 ---
