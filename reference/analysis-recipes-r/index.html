@@ -2065,13 +2065,18 @@ uses placeholder <code>visits.*</code> link_ids. Substitute your own.</p>
 <span class="s">    GROUP BY 1, 2</span>
 <span class="s">&quot;</span><span class="p">)</span>
 
-<span class="c1"># Distribution of visit count per respondent</span>
-<span class="n">visit_count</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span><span class="n">visit</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">respondent_id</span><span class="p">,</span><span class="w"> </span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">)</span>
-<span class="n">visit_count</span><span class="o">$</span><span class="n">n_visits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">visit_count</span><span class="o">$</span><span class="n">visit</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span>
+<span class="c1"># Distribution of visit count per respondent.</span>
+<span class="c1"># The aggregate() call below errors on an empty data.frame, so guard it —</span>
+<span class="c1"># this lets the snippet run cleanly against a demo that has no repeating</span>
+<span class="c1"># group while still producing the chart whenever real data is present.</span>
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nf">nrow</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">visit_count</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span><span class="n">visit</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">respondent_id</span><span class="p">,</span><span class="w"> </span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">)</span>
+<span class="w">    </span><span class="n">visit_count</span><span class="o">$</span><span class="n">n_visits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">visit_count</span><span class="o">$</span><span class="n">visit</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span>
 
-<span class="nf">ggplot</span><span class="p">(</span><span class="n">visit_count</span><span class="p">,</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">n_visits</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
-<span class="w">    </span><span class="nf">geom_bar</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
-<span class="w">    </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Visits recorded&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Respondents&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nf">ggplot</span><span class="p">(</span><span class="n">visit_count</span><span class="p">,</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">n_visits</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">        </span><span class="nf">geom_bar</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">        </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Visits recorded&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Respondents&quot;</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <hr />
 <h2 id="skip-patterns">Skip patterns<a class="headerlink" href="#skip-patterns" title="Permanent link">&para;</a></h2>
