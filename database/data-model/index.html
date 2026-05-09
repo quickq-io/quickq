@@ -1683,7 +1683,47 @@
 <p>The vocabulary plane is small (three tables) but it is the single most important integration surface: it is what makes a quickq study composable with OMOP cohorts, REDCap projects with codings, and FHIR Implementation Guides.</p>
 <h3 id="4-provenance-and-quality">4. Provenance and quality<a class="headerlink" href="#4-provenance-and-quality" title="Permanent link">&para;</a></h3>
 <p>How questions evolved, what data quality issues were flagged, who did what to the database. <code>question_lineage</code> tracks rewords / option changes / splits / merges / adapted_from edges between question versions. <code>question_equivalence</code> declares which questions can be pooled across versions. <code>questionnaire_version_diff</code> records cross-version structural changes. <code>data_quality_flag</code> is written at collection time when the FHIR ingester rejects an answer. <code>study_errata_log</code> is the researcher's hand-recorded "we discovered after the fact that sessions 1–20 had a delivery bug" log. <code>tool_audit_log</code> records every quickq command that touched the database.</p>
-<p><img alt="Provenance and quality" src="../oltp_provenance.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>question_lineage</code></td>
+<td>Edges between question versions: reword, option_change, split, merge, adapted_from</td>
+<td>lineage_id, question_id, parent_question_id, change_type</td>
+</tr>
+<tr>
+<td><code>question_equivalence</code></td>
+<td>Declares which questions can be pooled across versions</td>
+<td>equivalence_id, source_question_id, target_question_id, equivalence_type</td>
+</tr>
+<tr>
+<td><code>questionnaire_version_diff</code></td>
+<td>Cross-version structural changes at questionnaire level</td>
+<td>diff_id, source_questionnaire_id, target_questionnaire_id, change_type</td>
+</tr>
+<tr>
+<td><code>data_quality_flag</code></td>
+<td>Written at collection time when the FHIR ingester rejects an answer</td>
+<td>flag_id, session_id, qq_id, severity, description, raised_at</td>
+</tr>
+<tr>
+<td><code>study_errata_log</code></td>
+<td>Researcher's hand-recorded errata (delivery bugs, batch issues, retracted sessions)</td>
+<td>errata_id, study_id, severity, title, status, raised_at</td>
+</tr>
+<tr>
+<td><code>tool_audit_log</code></td>
+<td>Every quickq command that touched the database</td>
+<td>audit_id, study_id, operation, performed_by, occurred_at</td>
+</tr>
+</tbody>
+</table>
 <p>This layer is what lets a researcher answer "what changed between v1 and v2 of the instrument", "did this respondent's responses get flagged at any point", and "when was this database last modified, by what command". The lineage and equivalence tables propagate to the OLAP <code>dim_question_lineage</code> and <code>dim_question_equivalence</code> so analytical queries can use them too.</p>
 <hr />
 <h2 id="olap-whats-derived">OLAP — what's derived<a class="headerlink" href="#olap-whats-derived" title="Permanent link">&para;</a></h2>
@@ -1700,7 +1740,37 @@
 <p>The <code>dim_date</code> table participates in two date-keyed joins (<code>fact_response.response_date_key</code>, <code>fact_response.session_start_key</code>) that aren't drawn here because those columns are part of the "+ 12 more columns" trim — see the OLAP schema reference for the full fact table.</p>
 <h3 id="2-aggregates">2. Aggregates<a class="headerlink" href="#2-aggregates" title="Permanent link">&para;</a></h3>
 <p>Materialized rollups. Each <code>agg_*</code> table is a precomputed answer to a recurring analytical question, joinable to the same dim_* tables shown in the star schema.</p>
-<p><img alt="Aggregates" src="../olap_aggregates.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agg_question_distribution</code></td>
+<td>One row per (question, answer) — counts and percentages</td>
+<td>study_id, questionnaire_id, question_id, option_id, n, pct</td>
+</tr>
+<tr>
+<td><code>agg_session_completion</code></td>
+<td>Daily enrollment and completion rollup by admin_mode</td>
+<td>study_id, questionnaire_id, date_key, n_started, n_completed, completion_rate, median_duration_sec</td>
+</tr>
+<tr>
+<td><code>agg_respondent_scores</code></td>
+<td>One row per (respondent, session, scoring_rule) — raw score and severity band</td>
+<td>respondent_id, scoring_rule_id, scoring_rule_name, score_raw, score_category, items_answered</td>
+</tr>
+<tr>
+<td><code>agg_numeric_stats</code></td>
+<td>Per-question numeric summary (mean, median, std_dev, percentiles)</td>
+<td>study_id, question_id, n, mean, median, std_dev, min_val, max_val</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li><strong><code>agg_question_distribution</code></strong> — for each (question, option), how many respondents picked it and what percentage. This is what <code>quickq report</code> reads to produce the per-question distribution tables.</li>
 <li><strong><code>agg_session_completion</code></strong> — daily enrollment and completion rates broken down by <code>admin_mode</code>. This is the "are people finishing the survey?" view.</li>
@@ -1710,7 +1780,32 @@
 <p>Aggregates are recomputed in full on every <code>quickq refresh</code>. They exist for query performance and for standardization (every site, every report, every downstream tool reads the same definition of "PHQ-9 mean score").</p>
 <h3 id="3-omop-interoperability">3. OMOP interoperability<a class="headerlink" href="#3-omop-interoperability" title="Permanent link">&para;</a></h3>
 <p>OMOP CDM v5.4-aligned tables, projected from the star schema for cross-study harmonization with other OMOP cohorts.</p>
-<p><img alt="OMOP interop" src="../olap_omop.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>omop_observation</code></td>
+<td>Every fact_response with a question concept_id projects here. Values resolve across <code>value_as_number</code> (numeric), <code>value_as_concept_id</code> (choice), and the date columns. <code>person_id</code> is <code>respondent_id</code>.</td>
+<td>observation_id, person_id, observation_concept_id, observation_date, value_as_number, value_as_concept_id</td>
+</tr>
+<tr>
+<td><code>omop_survey_conduct</code></td>
+<td>Every response_session projects here — which respondent took which questionnaire, when, for how long</td>
+<td>survey_conduct_id, person_id, survey_concept_id, survey_start_date, survey_end_date</td>
+</tr>
+<tr>
+<td><code>omop_unmapped_questions</code></td>
+<td>Questions without a concept_id, surfaced as the actionable list before federated export</td>
+<td>question_id, link_id, question_text, source_instrument</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li><strong><code>omop_observation</code></strong> — every fact_response row that has a question concept_id projects into observation. This is what an OMOP-native analyst expects to query, by <code>observation_concept_id</code>, with the value resolved across <code>value_as_number</code> (numeric responses), <code>value_as_concept_id</code> (choice responses), and the date-typed columns. <code>person_id</code> here is <code>respondent_id</code> from quickq's perspective.</li>
 <li><strong><code>omop_survey_conduct</code></strong> — every response_session projects into survey_conduct. This is the "which respondent took which questionnaire, when, for how long" view.</li>
@@ -1719,7 +1814,32 @@
 <p>The OMOP layer is <em>additive</em>. quickq's native star schema (above) is the analytical contract for quickq itself; the OMOP layer is the bridge to the broader OHDSI ecosystem. Studies that don't need OHDSI compatibility can ignore the omop_* tables entirely.</p>
 <h3 id="4-provenance">4. Provenance<a class="headerlink" href="#4-provenance" title="Permanent link">&para;</a></h3>
 <p>Three small tables that record how the OLAP was built and how its dimensions evolved.</p>
-<p><img alt="OLAP provenance" src="../olap_provenance.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>refresh_log</code></td>
+<td>One row per <code>quickq refresh</code> invocation</td>
+<td>refresh_id, started_at, completed_at, rows_inserted, rows_updated</td>
+</tr>
+<tr>
+<td><code>dim_question_lineage</code></td>
+<td>Mirrors OLTP <code>question_lineage</code>. Lets analytical queries walk the parent chain to find earlier versions of the same construct.</td>
+<td>lineage_id, question_id, parent_question_id, change_type</td>
+</tr>
+<tr>
+<td><code>dim_question_equivalence</code></td>
+<td>Mirrors OLTP <code>question_equivalence</code>. Lets cross-study cohort queries pool semantically equivalent questions across versions.</td>
+<td>equivalence_id, source_question_id, target_question_id, equivalence_type</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li><strong><code>refresh_log</code></strong> — one row per <code>quickq refresh</code> invocation. Captures start / end timestamps, rows inserted, rows updated. Useful for "when was this analytical database last refreshed".</li>
 <li><strong><code>dim_question_lineage</code></strong> — mirrors OLTP <code>question_lineage</code>. Lets an analytical query that touches <code>dim_question</code> walk up the parent chain to find an earlier version of the same construct.</li>

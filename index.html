@@ -1470,6 +1470,10 @@
 </div>
 
 <p><em>A well-designed data model is the best foundation for a survey study.</em> It encodes claims about what exists in your research, claims that determine what data quality can be enforced at collection time and what analyses become possible later. quickq makes those claims explicit in the two-layer architecture above.</p>
+<div class="admonition tip">
+<p class="admonition-title">Start with the data model</p>
+<p>The data model is quickq's primary contract. Before you write your first query or author your first instrument, the most useful thing to read is the <strong><a href="database/data-model/">Data Model overview</a></strong> — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with ER diagrams for the four that carry the most analytical weight.</p>
+</div>
 <p><strong><code>study.db</code> is the portable study artifact.</strong> It is a standard SQLite file. Any SQL tool or language with SQLite bindings can read it directly. The framework is built around open standards:</p>
 <ul>
 <li>Instruments are authored in YAML and validated against existing instruments in the database to avoid duplicating established questions; a preview renderer shows the instrument before deployment</li>
