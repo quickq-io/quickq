@@ -64,6 +64,7 @@ nav:
       - Question Types: reference/question-types.md
       - Survey Authoring (YAML): authoring.md
       - Query Patterns by Question Type: reference/query-patterns.md
+      - Skip-Logic Recipes: reference/skip-logic-qc.md
       - Analysis Recipes (Python): reference/analysis-recipes.md
       - Analysis Recipes (R): reference/analysis-recipes-r.md
       - Synthetic Data (seed): reference/seed.md
