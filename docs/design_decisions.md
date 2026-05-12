@@ -6,9 +6,9 @@ For the questionnaire layer, the answer should be: receive a `study.db`, deploy 
 
 That is the standard quickq is designed to clear. Every architectural decision is evaluated against it.
 
-The data model has to outlast any tool used to collect or analyze the data. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes. quickq is an authoring, administration, and analytics layer, not a survey platform.
+The decisions on this page all reduce to one commitment: **the data model is the contract.** Skip logic, scoring rules, vocabulary mappings, the data dictionary, missingness audits — every artifact that a study needs to be reproducible — is a *derivation* of the database, not a parallel document maintained beside it. That rules out architectures where the schema is owned by a platform, generated at runtime, or defined in a spreadsheet that drifts from the data it describes. The data model has to outlast any tool used to collect or analyze the data. quickq is an authoring, administration, and analytics layer, not a survey platform.
 
-> *This page lays out the design choices and the use cases they enable. For the schema-level mechanics (planes, refresh model, file layout) see [Architecture](architecture.md). For the underlying invariants that the architecture and the use cases both follow from, see [Design Philosophy](philosophy.md).*
+> *This page lays out the design choices and the use cases they enable. For the schema-level mechanics (planes, refresh model, file layout) see [Architecture](architecture.md). For the underlying invariants that the architecture and the use cases both follow from, see [Design Philosophy](philosophy.md). For the model itself in eight diagrams, see the [Data Model overview](database/data-model.md).*
 
 ---
 

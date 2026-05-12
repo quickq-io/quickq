@@ -1,6 +1,23 @@
 # quickq
 
-quickq is a survey authoring and analytics toolkit for health and epidemiology research, built on two open file formats with no server required.
+**quickq is a survey authoring and analytics toolkit for health and epidemiology research, built around a single principle: the data model is the contract.** Skip logic, data dictionaries, scoring rules, completion analyses, missingness audits, and cross-study harmonization are all *derivations* of the data model — not parallel sidecar documents maintained alongside it. That choice is the central argument for using quickq, and every other feature in this documentation follows from it.
+
+## Why the data model is the argument
+
+Good data modelling is the difference between a study where every analysis starts with rebuilding the model from sidecar documents, and a study where every analysis is a SQL query against the model itself. Three concrete consequences of the way quickq stores a study:
+
+- **Skip logic is structured rows in `skip_rule`, not prose in a PDF.** Eligibility, integrity, and the structurally-missing / truly-missing distinction are SQL recipes that work across every instrument unchanged. See [Skip-Logic Recipes](reference/skip-logic-qc.md).
+- **The data dictionary is a query, not a Word document.** `quickq data-dict` reads the live schema and emits a complete, up-to-date dictionary (question text, types, concept codes, valid response values, skip conditions, scoring memberships). It can't drift from the data because it is the data. See the [PRAPARE Data Dictionary](reference/example-prapare-data-dict.md) for a worked example.
+- **Every question type stores answers in `fact_response` the same way.** Choice answers in `option_id` and `option_value`, numeric in `response_numeric`, date in `response_date`, text in `response_text`. The same query shape works for single_choice, multiple_choice, likert, boolean, numeric, date, slider, ranked, and grid questions, with no instrument-specific code. See [Query Patterns by Question Type](reference/query-patterns.md).
+
+The alternative — skip logic in delivery configs, data dictionaries in Word, custom storage per question type, completion rates that hand-encode the rules — turns every analytical question into a model-reconstruction exercise. The pattern compounds: every analyst rebuilds the same understanding from the same sidecar documents, every reproduction is an opportunity for drift, every audit is a manual diff between artifacts that should have been one. quickq treats those reconstructions as the design smell they are.
+
+Scoring rules, concept codes, errata, lineage between question versions, and the data-quality flags raised at collection time follow the same pattern: they are first-class rows in the model, not annotations bolted onto it later.
+
+!!! tip "Start with the data model"
+    Before you write your first query or author your first instrument, read the **[Data Model overview](database/data-model.md)** — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with ER diagrams for the four that carry the most analytical weight. Every other page in this documentation cross-references those eight layers.
+
+## How quickq implements this
 
 <div style="max-width: 50%; margin: 0 auto;">
 
@@ -20,32 +37,18 @@ graph TD
 
 </div>
 
-*A well-designed data model is the best foundation for a survey study.* It encodes claims about what exists in your research, claims that determine what data quality can be enforced at collection time and what analyses become possible later. quickq makes those claims explicit in the two-layer architecture above.
+Two layers connected by a refresh. `study.db` (SQLite) is the *source of truth* — normalized, FK-constrained, FHIR-compatible, the file that gets backed up, version-controlled, and handed to collaborators. `analytics.duckdb` (DuckDB) is the *analytical contract* — a star schema rebuilt on demand from the OLTP, the same for every quickq study so the same query works against any of them.
 
-!!! tip "Start with the data model"
-    The data model is quickq's primary contract. Before you write your first query or author your first instrument, the most useful thing to read is the **[Data Model overview](database/data-model.md)** — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with ER diagrams for the four that carry the most analytical weight.
-
-**`study.db` is the portable study artifact.** It is a standard SQLite file. Any SQL tool or language with SQLite bindings can read it directly. The framework is built around open standards:
+**`study.db` is the portable study artifact.** It is a standard SQLite file readable by any SQL tool or language with SQLite bindings. The framework around it is built on open standards:
 
 - Instruments are authored in YAML and validated against existing instruments in the database to avoid duplicating established questions; a preview renderer shows the instrument before deployment
 - Delivery is via FHIR. quickq exports a `Questionnaire.json`, any compliant tool renders and collects responses, and quickq ingests the `QuestionnaireResponse.json` back
 - Questions and response options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization
 - A Python SDK provides a clean interface to both databases; the SQLite schema is the contract for non-Python implementations
 
-Together these are the building blocks of a complete, portable, questionnaire-driven study. Hook up a delivery tool, collect responses, and the rest follows from the data model.
+**OLTP layer (`study.db`, SQLite): correctness and provenance.** Questions are immutable once used in a study — a reword or option change produces a new versioned definition, so every response points to exactly what was asked. Skip logic is structured rules in `skip_rule`, not prose in external documentation. Foreign key constraints and typed response storage enforce integrity at collection time; data quality issues are flagged without interrupting collection.
 
-**OLTP layer (`study.db`, SQLite): correctness and provenance**
-
-- Questions are immutable once used in a study; a reword or option change produces a new versioned definition, so every response points to exactly what was asked
-- Skip logic is stored as structured rules in the database, not in external documentation, making it auditable and testable
-- Foreign key constraints and typed response storage enforce integrity at collection time; data quality issues are flagged without interrupting collection
-
-**OLAP layer (`analytics.duckdb`, DuckDB): standardized analysis**
-
-- Every answered question is one row in `fact_response`. The same query pattern works for every question type and every instrument, with no instrument-specific code
-- Skip logic violations, out-of-range values, and unexpected missing data are standard SQL queries against the star schema, not custom scripts per instrument
-- Subscale scores (PHQ-9, GAD-7, AUDIT) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time
-- Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization of shared LOINC or SNOMED codes is a join
+**OLAP layer (`analytics.duckdb`, DuckDB): standardized analysis.** Every answered question is one row in `fact_response`, so the same query pattern works for every question type and every instrument. Skip logic violations, out-of-range values, and truly-missing responses are standard SQL queries against the star schema, not custom scripts per instrument. Subscale scores (PHQ-9, GAD-7, AUDIT) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time. Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization on shared LOINC or SNOMED codes is a JOIN.
 
 ---
 

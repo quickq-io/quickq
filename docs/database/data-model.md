@@ -1,5 +1,7 @@
 # The quickq Data Model
 
+The data model is the central argument for using quickq. Every analytical capability described in the rest of this documentation — skip-logic recipes, completion-rate accounting, the auto-generated data dictionary, scoring, cross-study harmonization on concept codes — falls out of the way data is stored. Read this page first; the rest of the docs is downstream from it.
+
 quickq's data model has two halves connected by a refresh.
 
 The **OLTP** half (SQLite) is the *source of truth*. It stores every authored instrument, every collected response, and every piece of provenance about how the study was run. One `.db` file is the complete portable study artifact.
