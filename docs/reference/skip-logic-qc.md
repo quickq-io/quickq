@@ -21,7 +21,7 @@ The `skip_rule` table lives in the OLTP (SQLite). Attach it to the OLAP DuckDB s
 ATTACH 'study.db' AS oltp (TYPE sqlite, READ_ONLY);
 ```
 
-The shared CTE below walks every skip rule in the study, evaluates it against each session's responses to the trigger question, and combines rules per gated question using `enable_behavior` (`all` = AND, `any` = OR). The result is a row per `(session_id, gated_qq_id, eligible)`. The two recipes that follow are short queries on top of it.
+The shared CTE below walks every skip rule in the study, evaluates it against each session's responses to the trigger question, and combines rules per gated question using `enable_behavior` (`all` = AND, `any` = OR). The result is a row per `(session_id, gated_qq_id, eligible)`. Each recipe below re-includes this CTE inline so every code block is self-contained and copy-paste runnable.
 
 ```sql
 WITH rule_evaluation AS (
@@ -68,10 +68,35 @@ For each gated question, count separately the respondents who *should* have answ
 
 ```sql
 WITH rule_evaluation AS (
-    -- [shared CTE from Setup]
+    SELECT
+        ds.session_id,
+        sr.qq_id                                                    AS gated_qq_id,
+        MAX(sr.enable_behavior) OVER (PARTITION BY sr.qq_id)        AS combinator,
+        CASE
+            WHEN sr.operator = '='  AND fr.option_value =  sr.trigger_value THEN TRUE
+            WHEN sr.operator = '!=' AND fr.option_value <> sr.trigger_value THEN TRUE
+            WHEN sr.operator = '>'  AND TRY_CAST(fr.option_value AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<'  AND TRY_CAST(fr.option_value AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '>=' AND TRY_CAST(fr.option_value AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<=' AND TRY_CAST(fr.option_value AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = 'exists'     AND fr.response_id IS NOT NULL THEN TRUE
+            WHEN sr.operator = 'not_exists' AND fr.response_id IS NULL     THEN TRUE
+            ELSE FALSE
+        END AS rule_satisfied
+    FROM      dim_session    ds
+    CROSS JOIN oltp.skip_rule sr
+    LEFT JOIN fact_response   fr  ON fr.session_id = ds.session_id
+                                  AND fr.qq_id     = sr.trigger_qq_id
 ),
 eligibility AS (
-    -- [shared CTE from Setup]
+    SELECT
+        session_id,
+        gated_qq_id,
+        CASE WHEN MAX(combinator) = 'any' THEN BOOL_OR(rule_satisfied)
+                                          ELSE BOOL_AND(rule_satisfied)
+        END AS eligible
+    FROM rule_evaluation
+    GROUP BY session_id, gated_qq_id
 )
 SELECT
     dq.link_id,
@@ -107,10 +132,35 @@ The inverse: count respondents who answered the gated question *despite* the rul
 
 ```sql
 WITH rule_evaluation AS (
-    -- [shared CTE from Setup]
+    SELECT
+        ds.session_id,
+        sr.qq_id                                                    AS gated_qq_id,
+        MAX(sr.enable_behavior) OVER (PARTITION BY sr.qq_id)        AS combinator,
+        CASE
+            WHEN sr.operator = '='  AND fr.option_value =  sr.trigger_value THEN TRUE
+            WHEN sr.operator = '!=' AND fr.option_value <> sr.trigger_value THEN TRUE
+            WHEN sr.operator = '>'  AND TRY_CAST(fr.option_value AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<'  AND TRY_CAST(fr.option_value AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '>=' AND TRY_CAST(fr.option_value AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<=' AND TRY_CAST(fr.option_value AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = 'exists'     AND fr.response_id IS NOT NULL THEN TRUE
+            WHEN sr.operator = 'not_exists' AND fr.response_id IS NULL     THEN TRUE
+            ELSE FALSE
+        END AS rule_satisfied
+    FROM      dim_session    ds
+    CROSS JOIN oltp.skip_rule sr
+    LEFT JOIN fact_response   fr  ON fr.session_id = ds.session_id
+                                  AND fr.qq_id     = sr.trigger_qq_id
 ),
 eligibility AS (
-    -- [shared CTE from Setup]
+    SELECT
+        session_id,
+        gated_qq_id,
+        CASE WHEN MAX(combinator) = 'any' THEN BOOL_OR(rule_satisfied)
+                                          ELSE BOOL_AND(rule_satisfied)
+        END AS eligible
+    FROM rule_evaluation
+    GROUP BY session_id, gated_qq_id
 )
 SELECT
     dq.link_id,

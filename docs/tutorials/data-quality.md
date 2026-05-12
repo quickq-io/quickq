@@ -8,6 +8,12 @@ Once the demo is generated, open the UI:
 quickq analytics demo/analytics.duckdb
 ```
 
+A few of the recipes below read OLTP-only tables (`data_quality_flag`, `study_errata_log`). Attach the OLTP once at the top of your session so those references resolve:
+
+```sql
+ATTACH 'demo/study.db' AS oltp (TYPE sqlite, READ_ONLY);
+```
+
 ---
 
 ## Sparsity overview with SUMMARIZE
@@ -119,9 +125,9 @@ High `response_count` on an unmapped question means real data will be silently e
 For any session where `import_fhir_response` encountered an unrecognised answer format or an unresolvable `linkId`, a row is written to `data_quality_flag` rather than raising an exception. Check it after any bulk import:
 
 ```sql
--- Query the OLTP directly; flags are not in the OLAP
+-- Query the OLTP via the ATTACH from the setup at the top of the page
 SELECT rule_name, severity, message, COUNT(*) AS n
-FROM data_quality_flag
+FROM oltp.data_quality_flag
 WHERE is_resolved = 0
 GROUP BY rule_name, severity, message
 ORDER BY n DESC;
@@ -142,7 +148,7 @@ For documented data quality events — a delivery platform bug, a protocol devia
 ```sql
 SELECT errata_id, event_type, severity, title,
        affects_session_from, affects_session_to, analyst_guidance
-FROM study_errata_log
+FROM oltp.study_errata_log
 WHERE status = 'open'
 ORDER BY CASE severity
     WHEN 'critical'      THEN 1
