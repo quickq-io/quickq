@@ -1,6 +1,6 @@
 # Tutorial: Data Quality
 
-This tutorial covers the data quality tools available after `quickq refresh`: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see [Analytics phase tutorials](../tutorial.md#analytics-phase-tutorials) for the one-line setup.
+This tutorial covers the data quality tools available after `quickq refresh`: checking for unexpected sparsity, separating **structurally missing** data (legitimately skipped) from **truly missing** data (should have been asked), auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see [Analytics phase tutorials](../tutorial.md#analytics-phase-tutorials) for the one-line setup.
 
 Once the demo is generated, open the UI:
 
@@ -34,15 +34,17 @@ The null pattern in the demo is instructive:
 
 ---
 
-## Skip logic vs. missingness
+## Structurally missing vs. truly missing
 
-`phq9.difficulty` has a skip rule: it only appears when at least one of items 1–3 is non-zero. In the data, 22 respondents (8.8%) did not answer it. Before treating that as missingness, check whether those respondents simply scored zero:
+Epidemiologists draw a sharp distinction between **structurally missing** data (a question wasn't asked because skip logic legitimately routed the respondent past it) and **truly missing** data (a question should have been asked but the respondent declined, abandoned, or the delivery tool failed to record it). The two demand different analytical responses: structural absences are part of the study design and need no imputation, while truly missing data threatens validity and may need to be reported, imputed, or excluded from analysis.
+
+`phq9.difficulty` has a skip rule: it only appears when at least one of items 1–3 is non-zero. In the data, 22 respondents (8.8%) did not answer it. Before treating that as a missingness problem, check whether those respondents simply scored zero on the upstream items (which makes the absence structural, not truly missing):
 
 ```sql
 SELECT
-    CASE WHEN phq9_total = 0 THEN 'score = 0 (correctly skipped)'
-         ELSE 'score > 0 (unexpectedly missing)'
-    END                          AS explanation,
+    CASE WHEN phq9_total = 0 THEN 'score = 0 (structurally missing — skipped)'
+         ELSE 'score > 0 (truly missing — should have been asked)'
+    END                          AS classification,
     COUNT(*)                     AS n
 FROM v_phq9_scores
 WHERE respondent NOT IN (
@@ -55,9 +57,11 @@ WHERE respondent NOT IN (
 GROUP BY 1;
 ```
 
-All 22 non-answers have `phq9_total = 0` — the skip logic worked correctly. A genuine missingness problem would show respondents with `score > 0` who never answered the item.
+All 22 non-answers have `phq9_total = 0` — every absence is explained by skip logic, so the truly-missing count is zero. The structurally-missing 22 are not a data quality issue; they are the study design behaving correctly.
 
-### Identifying items with unexpected missingness
+For a generic version of this analysis that works across every gated question in any instrument (rather than the hand-coded check above for `phq9.difficulty` specifically), see [Skip-Logic Recipes](../reference/skip-logic-qc.md). That page walks each `skip_rule` row programmatically and reports the truly-missing count per question.
+
+### Finding truly missing items across the instrument
 
 To check all items for respondents who were expected to answer but did not:
 

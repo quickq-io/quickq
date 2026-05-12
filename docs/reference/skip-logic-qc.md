@@ -1,11 +1,13 @@
 # Skip-Logic Recipes
 
-Skip logic is the difference between "this answer is missing" and "this answer was correctly skipped." When skip rules live in the database alongside the responses, that distinction is a SQL query — not a hand-coded interpretation per instrument.
+Epidemiologists draw a sharp distinction between **structurally missing** data (a question wasn't asked because skip logic legitimately routed the respondent past it) and **truly missing** data (a question *should* have been asked but the respondent declined, abandoned, or the delivery tool failed to record it). The two demand different analytical responses: structurally missing data is part of the study design and needs no imputation, while truly missing data threatens validity and may need to be reported, imputed, or excluded from analysis.
+
+The challenge in practice is telling them apart. A blank cell in a response table doesn't say which kind of missing it is. When skip rules live in the database alongside the responses, the distinction becomes a SQL query rather than a hand-coded interpretation per instrument.
 
 This page walks through two recipes that exercise the same idea: walk each `skip_rule` row, evaluate it against the respondent's session, and use the result as an eligibility predicate. The recipes are *generic* — they work across any quickq study without modification.
 
 !!! info "Why this matters"
-    In tools where skip logic lives in the survey configuration (REDCap branching logic, Qualtrics display logic, etc.), an analyst computing a completion rate has two options: hand-encode the rules in their analysis script (brittle, easy to forget), or accept that "blank" means "we don't know whether this was skipped or missing." quickq stores skip rules as structured rows in `skip_rule`, joined to the same star schema as the responses. Eligibility, integrity, and true-missingness fall out as standard SQL.
+    In tools where skip logic lives in the survey configuration (REDCap branching logic, Qualtrics display logic, etc.), an analyst computing a completion rate has two options: hand-encode the rules in their analysis script (brittle, easy to forget), or accept that "blank" means "we don't know whether this was skipped or truly missing." quickq stores skip rules as structured rows in `skip_rule`, joined to the same star schema as the responses. Eligibility, integrity, and the structurally-missing / truly-missing distinction fall out as standard SQL.
 
 The recipes below run against the bundled demo (`demo/analytics.duckdb`, produced by `scripts/generate_demo.py`). They generalize unchanged to any quickq study.
 
@@ -60,9 +62,9 @@ SELECT * FROM eligibility LIMIT 5;
 
 ---
 
-## Recipe 1: Eligibility-aware completion ("true missingness")
+## Recipe 1: Eligibility-aware completion (separating true missingness from structural missingness)
 
-For each gated question, count separately the respondents who *should* have answered (eligible) and the ones who *did* answer. The difference is the actionable QC number.
+For each gated question, count separately the respondents who *should* have answered (eligible) and the ones who *did* answer. The difference is the **truly missing** count — the actionable QC number. Respondents who didn't answer because the skip rule routed them past the question are **structurally missing** and are not counted as a problem.
 
 ```sql
 WITH rule_evaluation AS (
@@ -75,7 +77,7 @@ SELECT
     dq.link_id,
     SUM(CASE WHEN e.eligible THEN 1 ELSE 0 END)                                 AS n_eligible,
     SUM(CASE WHEN e.eligible AND fr.session_id IS NOT NULL THEN 1 ELSE 0 END)   AS n_answered,
-    SUM(CASE WHEN e.eligible AND fr.session_id IS NULL     THEN 1 ELSE 0 END)   AS n_unexpectedly_missing,
+    SUM(CASE WHEN e.eligible AND fr.session_id IS NULL     THEN 1 ELSE 0 END)   AS n_truly_missing,
     ROUND(100.0 * SUM(CASE WHEN e.eligible AND fr.session_id IS NOT NULL THEN 1 ELSE 0 END)
                 / NULLIF(SUM(CASE WHEN e.eligible THEN 1 ELSE 0 END), 0), 1)    AS completion_pct
 FROM      eligibility                                              e
@@ -88,13 +90,14 @@ GROUP BY dq.link_id;
 
 Result against the bundled demo:
 
-| link_id | n_eligible | n_answered | n_unexpectedly_missing | completion_pct |
+| link_id | n_eligible | n_answered | n_truly_missing | completion_pct |
 |---|---|---|---|---|
 | phq9.difficulty | 190 | 190 | 0 | 100.0 |
 
-Of the 400 PHQ-9 sessions, 190 had a non-zero answer to at least one of items 1-3 and therefore qualified to see the difficulty follow-up question. All 190 of those answered it. There are zero "unexpectedly missing" responses — every absence is explained by skip logic, not by data quality.
+Of the 400 PHQ-9 sessions, 190 had a non-zero answer to at least one of items 1-3 and therefore qualified to see the difficulty follow-up question. All 190 of those answered it. The remaining 210 sessions are **structurally missing** — they were correctly routed past the question by skip logic. There are zero **truly missing** responses: every absence is explained by the study design, not by data quality.
 
-Note the contrast with a naive completion-rate query that didn't know about skip logic. The naive query would compute `190 / 400 = 47.5%` completion for `phq9.difficulty`, falsely suggesting more than half of respondents abandoned the question. The eligibility-aware recipe correctly reports 100% completion among respondents who should have seen it.
+The contrast with a naive completion-rate query is instructive. A naive query would compute `190 / 400 = 47.5%` completion for `phq9.difficulty`, falsely suggesting more than half of respondents abandoned the question. The eligibility-aware recipe correctly reports 100% completion among respondents who should have seen it, and zero truly-missing cases that would need investigation, imputation, or reporting as a data-quality concern.
+
 
 ---
 
