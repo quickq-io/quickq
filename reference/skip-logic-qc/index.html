@@ -725,10 +725,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recipe-1-eligibility-aware-completion-true-missingness" class="md-nav__link">
+  <a href="#recipe-1-eligibility-aware-completion-separating-true-missingness-from-structural-missingness" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recipe 1: Eligibility-aware completion ("true missingness")
+        Recipe 1: Eligibility-aware completion (separating true missingness from structural missingness)
       
     </span>
   </a>
@@ -1442,10 +1442,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recipe-1-eligibility-aware-completion-true-missingness" class="md-nav__link">
+  <a href="#recipe-1-eligibility-aware-completion-separating-true-missingness-from-structural-missingness" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recipe 1: Eligibility-aware completion ("true missingness")
+        Recipe 1: Eligibility-aware completion (separating true missingness from structural missingness)
       
     </span>
   </a>
@@ -1506,11 +1506,12 @@
 
 
 <h1 id="skip-logic-recipes">Skip-Logic Recipes<a class="headerlink" href="#skip-logic-recipes" title="Permanent link">&para;</a></h1>
-<p>Skip logic is the difference between "this answer is missing" and "this answer was correctly skipped." When skip rules live in the database alongside the responses, that distinction is a SQL query — not a hand-coded interpretation per instrument.</p>
+<p>Epidemiologists draw a sharp distinction between <strong>structurally missing</strong> data (a question wasn't asked because skip logic legitimately routed the respondent past it) and <strong>truly missing</strong> data (a question <em>should</em> have been asked but the respondent declined, abandoned, or the delivery tool failed to record it). The two demand different analytical responses: structurally missing data is part of the study design and needs no imputation, while truly missing data threatens validity and may need to be reported, imputed, or excluded from analysis.</p>
+<p>The challenge in practice is telling them apart. A blank cell in a response table doesn't say which kind of missing it is. When skip rules live in the database alongside the responses, the distinction becomes a SQL query rather than a hand-coded interpretation per instrument.</p>
 <p>This page walks through two recipes that exercise the same idea: walk each <code>skip_rule</code> row, evaluate it against the respondent's session, and use the result as an eligibility predicate. The recipes are <em>generic</em> — they work across any quickq study without modification.</p>
 <div class="admonition info">
 <p class="admonition-title">Why this matters</p>
-<p>In tools where skip logic lives in the survey configuration (REDCap branching logic, Qualtrics display logic, etc.), an analyst computing a completion rate has two options: hand-encode the rules in their analysis script (brittle, easy to forget), or accept that "blank" means "we don't know whether this was skipped or missing." quickq stores skip rules as structured rows in <code>skip_rule</code>, joined to the same star schema as the responses. Eligibility, integrity, and true-missingness fall out as standard SQL.</p>
+<p>In tools where skip logic lives in the survey configuration (REDCap branching logic, Qualtrics display logic, etc.), an analyst computing a completion rate has two options: hand-encode the rules in their analysis script (brittle, easy to forget), or accept that "blank" means "we don't know whether this was skipped or truly missing." quickq stores skip rules as structured rows in <code>skip_rule</code>, joined to the same star schema as the responses. Eligibility, integrity, and the structurally-missing / truly-missing distinction fall out as standard SQL.</p>
 </div>
 <p>The recipes below run against the bundled demo (<code>demo/analytics.duckdb</code>, produced by <code>scripts/generate_demo.py</code>). They generalize unchanged to any quickq study.</p>
 <hr />
@@ -1554,8 +1555,8 @@
 </code></pre></div>
 <p><strong>Eligibility contract.</strong> A gated question is <code>eligible</code> for a session when its skip rules — combined according to <code>enable_behavior</code> — evaluate to <code>TRUE</code> against that session's responses. If the trigger question was never answered, every comparison evaluates to <code>FALSE</code> (the responses are joined <code>LEFT</code> and unmatched rows produce a <code>FALSE</code> from the <code>CASE</code>'s <code>ELSE</code> branch). This is the documented semantic; see <a href="#known-limits">Known limits</a> for what "trigger absent" means in other survey tools and what we'd need to change to match them.</p>
 <hr />
-<h2 id="recipe-1-eligibility-aware-completion-true-missingness">Recipe 1: Eligibility-aware completion ("true missingness")<a class="headerlink" href="#recipe-1-eligibility-aware-completion-true-missingness" title="Permanent link">&para;</a></h2>
-<p>For each gated question, count separately the respondents who <em>should</em> have answered (eligible) and the ones who <em>did</em> answer. The difference is the actionable QC number.</p>
+<h2 id="recipe-1-eligibility-aware-completion-separating-true-missingness-from-structural-missingness">Recipe 1: Eligibility-aware completion (separating true missingness from structural missingness)<a class="headerlink" href="#recipe-1-eligibility-aware-completion-separating-true-missingness-from-structural-missingness" title="Permanent link">&para;</a></h2>
+<p>For each gated question, count separately the respondents who <em>should</em> have answered (eligible) and the ones who <em>did</em> answer. The difference is the <strong>truly missing</strong> count — the actionable QC number. Respondents who didn't answer because the skip rule routed them past the question are <strong>structurally missing</strong> and are not counted as a problem.</p>
 <div class="highlight"><pre><span></span><code><span class="k">WITH</span><span class="w"> </span><span class="n">rule_evaluation</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="c1">-- [shared CTE from Setup]</span>
 <span class="p">),</span>
@@ -1566,7 +1567,7 @@
 <span class="w">    </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span>
 <span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">                                 </span><span class="k">AS</span><span class="w"> </span><span class="n">n_eligible</span><span class="p">,</span>
 <span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">   </span><span class="k">AS</span><span class="w"> </span><span class="n">n_answered</span><span class="p">,</span>
-<span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w">     </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">   </span><span class="k">AS</span><span class="w"> </span><span class="n">n_unexpectedly_missing</span><span class="p">,</span>
+<span class="w">    </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w">     </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w">   </span><span class="k">AS</span><span class="w"> </span><span class="n">n_truly_missing</span><span class="p">,</span>
 <span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">fr</span><span class="p">.</span><span class="n">session_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span>
 <span class="w">                </span><span class="o">/</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="k">SUM</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">eligible</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">    </span><span class="k">AS</span><span class="w"> </span><span class="n">completion_pct</span>
 <span class="k">FROM</span><span class="w">      </span><span class="n">eligibility</span><span class="w">                                              </span><span class="n">e</span>
@@ -1583,7 +1584,7 @@
 <th>link_id</th>
 <th>n_eligible</th>
 <th>n_answered</th>
-<th>n_unexpectedly_missing</th>
+<th>n_truly_missing</th>
 <th>completion_pct</th>
 </tr>
 </thead>
@@ -1597,8 +1598,8 @@
 </tr>
 </tbody>
 </table>
-<p>Of the 400 PHQ-9 sessions, 190 had a non-zero answer to at least one of items 1-3 and therefore qualified to see the difficulty follow-up question. All 190 of those answered it. There are zero "unexpectedly missing" responses — every absence is explained by skip logic, not by data quality.</p>
-<p>Note the contrast with a naive completion-rate query that didn't know about skip logic. The naive query would compute <code>190 / 400 = 47.5%</code> completion for <code>phq9.difficulty</code>, falsely suggesting more than half of respondents abandoned the question. The eligibility-aware recipe correctly reports 100% completion among respondents who should have seen it.</p>
+<p>Of the 400 PHQ-9 sessions, 190 had a non-zero answer to at least one of items 1-3 and therefore qualified to see the difficulty follow-up question. All 190 of those answered it. The remaining 210 sessions are <strong>structurally missing</strong> — they were correctly routed past the question by skip logic. There are zero <strong>truly missing</strong> responses: every absence is explained by the study design, not by data quality.</p>
+<p>The contrast with a naive completion-rate query is instructive. A naive query would compute <code>190 / 400 = 47.5%</code> completion for <code>phq9.difficulty</code>, falsely suggesting more than half of respondents abandoned the question. The eligibility-aware recipe correctly reports 100% completion among respondents who should have seen it, and zero truly-missing cases that would need investigation, imputation, or reporting as a data-quality concern.</p>
 <hr />
 <h2 id="recipe-2-skip-rule-integrity-violations">Recipe 2: Skip-rule integrity (violations)<a class="headerlink" href="#recipe-2-skip-rule-integrity-violations" title="Permanent link">&para;</a></h2>
 <p>The inverse: count respondents who answered the gated question <em>despite</em> the rule saying they shouldn't have. The expected number for a tested delivery tool is zero.</p>

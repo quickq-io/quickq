@@ -554,22 +554,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-logic-vs-missingness" class="md-nav__link">
+  <a href="#structurally-missing-vs-truly-missing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip logic vs. missingness
+        Structurally missing vs. truly missing
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skip logic vs. missingness">
+    <nav class="md-nav" aria-label="Structurally missing vs. truly missing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#identifying-items-with-unexpected-missingness" class="md-nav__link">
+  <a href="#finding-truly-missing-items-across-the-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Identifying items with unexpected missingness
+        Finding truly missing items across the instrument
       
     </span>
   </a>
@@ -1459,22 +1459,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-logic-vs-missingness" class="md-nav__link">
+  <a href="#structurally-missing-vs-truly-missing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip logic vs. missingness
+        Structurally missing vs. truly missing
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skip logic vs. missingness">
+    <nav class="md-nav" aria-label="Structurally missing vs. truly missing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#identifying-items-with-unexpected-missingness" class="md-nav__link">
+  <a href="#finding-truly-missing-items-across-the-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Identifying items with unexpected missingness
+        Finding truly missing items across the instrument
       
     </span>
   </a>
@@ -1540,7 +1540,7 @@
 
 
 <h1 id="tutorial-data-quality">Tutorial: Data Quality<a class="headerlink" href="#tutorial-data-quality" title="Permanent link">&para;</a></h1>
-<p>This tutorial covers the data quality tools available after <code>quickq refresh</code>: checking for unexpected sparsity, diagnosing skip logic vs. genuine missingness, auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see <a href="../../tutorial/#analytics-phase-tutorials">Analytics phase tutorials</a> for the one-line setup.</p>
+<p>This tutorial covers the data quality tools available after <code>quickq refresh</code>: checking for unexpected sparsity, separating <strong>structurally missing</strong> data (legitimately skipped) from <strong>truly missing</strong> data (should have been asked), auditing concept mapping coverage, and reviewing import flags. The queries below use the demo database; if you have not generated it yet, see <a href="../../tutorial/#analytics-phase-tutorials">Analytics phase tutorials</a> for the one-line setup.</p>
 <p>Once the demo is generated, open the UI:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
 </code></pre></div>
@@ -1596,12 +1596,13 @@
 <p>The <code>fact_response</code> table stores one row per answer atom with typed value columns (<code>response_numeric</code>, <code>response_text</code>, <code>option_id</code>, <code>response_date</code>). Any question type uses exactly one or two of these columns and leaves the rest null. High null rates on value columns are expected — they reflect question type, not missing data.</p>
 </div>
 <hr />
-<h2 id="skip-logic-vs-missingness">Skip logic vs. missingness<a class="headerlink" href="#skip-logic-vs-missingness" title="Permanent link">&para;</a></h2>
-<p><code>phq9.difficulty</code> has a skip rule: it only appears when at least one of items 1–3 is non-zero. In the data, 22 respondents (8.8%) did not answer it. Before treating that as missingness, check whether those respondents simply scored zero:</p>
+<h2 id="structurally-missing-vs-truly-missing">Structurally missing vs. truly missing<a class="headerlink" href="#structurally-missing-vs-truly-missing" title="Permanent link">&para;</a></h2>
+<p>Epidemiologists draw a sharp distinction between <strong>structurally missing</strong> data (a question wasn't asked because skip logic legitimately routed the respondent past it) and <strong>truly missing</strong> data (a question should have been asked but the respondent declined, abandoned, or the delivery tool failed to record it). The two demand different analytical responses: structural absences are part of the study design and need no imputation, while truly missing data threatens validity and may need to be reported, imputed, or excluded from analysis.</p>
+<p><code>phq9.difficulty</code> has a skip rule: it only appears when at least one of items 1–3 is non-zero. In the data, 22 respondents (8.8%) did not answer it. Before treating that as a missingness problem, check whether those respondents simply scored zero on the upstream items (which makes the absence structural, not truly missing):</p>
 <div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
-<span class="w">    </span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">phq9_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;score = 0 (correctly skipped)&#39;</span>
-<span class="w">         </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;score &gt; 0 (unexpectedly missing)&#39;</span>
-<span class="w">    </span><span class="k">END</span><span class="w">                          </span><span class="k">AS</span><span class="w"> </span><span class="n">explanation</span><span class="p">,</span>
+<span class="w">    </span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">phq9_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;score = 0 (structurally missing — skipped)&#39;</span>
+<span class="w">         </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;score &gt; 0 (truly missing — should have been asked)&#39;</span>
+<span class="w">    </span><span class="k">END</span><span class="w">                          </span><span class="k">AS</span><span class="w"> </span><span class="n">classification</span><span class="p">,</span>
 <span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">                     </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
 <span class="k">FROM</span><span class="w"> </span><span class="n">v_phq9_scores</span>
 <span class="k">WHERE</span><span class="w"> </span><span class="n">respondent</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span>
@@ -1613,8 +1614,9 @@
 <span class="p">)</span>
 <span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </code></pre></div>
-<p>All 22 non-answers have <code>phq9_total = 0</code> — the skip logic worked correctly. A genuine missingness problem would show respondents with <code>score &gt; 0</code> who never answered the item.</p>
-<h3 id="identifying-items-with-unexpected-missingness">Identifying items with unexpected missingness<a class="headerlink" href="#identifying-items-with-unexpected-missingness" title="Permanent link">&para;</a></h3>
+<p>All 22 non-answers have <code>phq9_total = 0</code> — every absence is explained by skip logic, so the truly-missing count is zero. The structurally-missing 22 are not a data quality issue; they are the study design behaving correctly.</p>
+<p>For a generic version of this analysis that works across every gated question in any instrument (rather than the hand-coded check above for <code>phq9.difficulty</code> specifically), see <a href="../../reference/skip-logic-qc/">Skip-Logic Recipes</a>. That page walks each <code>skip_rule</code> row programmatically and reports the truly-missing count per question.</p>
+<h3 id="finding-truly-missing-items-across-the-instrument">Finding truly missing items across the instrument<a class="headerlink" href="#finding-truly-missing-items-across-the-instrument" title="Permanent link">&para;</a></h3>
 <p>To check all items for respondents who were expected to answer but did not:</p>
 <div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
 <span class="w">    </span><span class="n">dq</span><span class="p">.</span><span class="n">link_id</span><span class="p">,</span>
