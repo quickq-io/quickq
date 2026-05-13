@@ -50,7 +50,7 @@ def _parse_option(raw: dict) -> OptionDef:
 
 def _parse_show_when(raw: Any) -> ShowWhen:
     """
-    Accepts two shapes:
+    Accepts three shapes:
 
       Single condition (shorthand):
         show_when:
@@ -63,28 +63,71 @@ def _parse_show_when(raw: Any) -> ShowWhen:
           behavior: all
           conditions:
             - { question: q1, operator: "=", value: "yes" }
+
+      Multi-value (operator: in):
+        show_when:
+          question: condition_history
+          operator: in
+          values: [cancer, heart_disease, diabetes]
+          # Equivalent to behavior=any over three '=' conditions.
+
+    `on_missing` may be added to any condition to substitute a value
+    when the trigger question wasn't answered:
+
+        show_when:
+          question: age
+          operator: ">="
+          value: 65
+          on_missing: 0      # treat absent age as 0 → rule evaluates to FALSE
     """
     if "conditions" in raw:
-        conditions = [
-            SkipCondition(
-                question=c["question"],
-                operator=c.get("operator", "="),
-                value=str(c["value"]) if "value" in c else None,
-            )
-            for c in raw["conditions"]
-        ]
+        conditions = []
+        for c in raw["conditions"]:
+            conditions.extend(_expand_condition(c))
         return ShowWhen(conditions=conditions, behavior=raw.get("behavior", "all"))
 
-    return ShowWhen(
-        conditions=[
-            SkipCondition(
-                question=raw["question"],
-                operator=raw.get("operator", "="),
-                value=str(raw["value"]) if "value" in raw else None,
+    expanded = _expand_condition(raw)
+    # A single `operator: in` expands into multiple '=' conditions that must
+    # be combined with OR, not AND.
+    behavior = "any" if len(expanded) > 1 else "all"
+    return ShowWhen(conditions=expanded, behavior=behavior)
+
+
+def _expand_condition(c: dict) -> list[SkipCondition]:
+    """Expand the YAML condition into one or more SkipCondition rows.
+
+    `operator: in` with `values: [...]` becomes one '=' condition per value
+    (combined via enable_behavior='any' at the ShowWhen level). All other
+    operators produce a single condition.
+    """
+    op = c.get("operator", "=")
+    on_missing = str(c["on_missing"]) if "on_missing" in c else None
+
+    if op in ("in", "is_one_of"):
+        values = c.get("values")
+        if not values:
+            raise ValueError(
+                f"show_when on {c.get('question')!r}: operator {op!r} requires "
+                f"a `values:` list of one or more allowed values."
             )
-        ],
-        behavior="all",
-    )
+        return [
+            SkipCondition(
+                question=c["question"],
+                operator="=",
+                value=str(v),
+                on_missing=on_missing,
+            )
+            for v in values
+        ]
+
+    return [
+        SkipCondition(
+            question=c["question"],
+            operator=op,
+            value=str(c["value"]) if "value" in c else None,
+            on_missing=on_missing,
+        )
+    ]
 
 
 def _parse_question(raw: dict) -> QuestionDef:
@@ -396,6 +439,7 @@ def load_def(
                     operator=condition.operator,
                     trigger_value=condition.value,
                     enable_behavior=show_when.behavior,
+                    trigger_default_value=condition.on_missing,
                 )
 
         # Pass 3: scoring rules

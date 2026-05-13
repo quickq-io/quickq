@@ -568,13 +568,17 @@ def insert_skip_rule(
     trigger_value: str | None,
     enable_behavior: str = "all",
     action: str = "show",
+    trigger_default_value: str | None = None,
 ) -> int:
     conn.execute(
         """
-        INSERT INTO skip_rule (qq_id, enable_behavior, trigger_qq_id, operator, trigger_value, action)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO skip_rule
+            (qq_id, enable_behavior, trigger_qq_id, operator, trigger_value,
+             trigger_default_value, action)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (qq_id, enable_behavior, trigger_qq_id, operator, trigger_value, action),
+        (qq_id, enable_behavior, trigger_qq_id, operator, trigger_value,
+         trigger_default_value, action),
     )
     return conn.execute("SELECT last_insert_rowid()").fetchone()[0]
 

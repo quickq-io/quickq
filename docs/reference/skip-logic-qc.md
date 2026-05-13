@@ -30,12 +30,16 @@ WITH rule_evaluation AS (
         sr.qq_id                                                    AS gated_qq_id,
         MAX(sr.enable_behavior) OVER (PARTITION BY sr.qq_id)        AS combinator,
         CASE
-            WHEN sr.operator = '='  AND fr.option_value =  sr.trigger_value THEN TRUE
-            WHEN sr.operator = '!=' AND fr.option_value <> sr.trigger_value THEN TRUE
-            WHEN sr.operator = '>'  AND TRY_CAST(fr.option_value AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<'  AND TRY_CAST(fr.option_value AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '>=' AND TRY_CAST(fr.option_value AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<=' AND TRY_CAST(fr.option_value AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            -- COALESCE picks up trigger_default_value when the trigger
+            -- response is absent (NULL after the LEFT JOIN below). For
+            -- exists / not_exists the default doesn't apply — those
+            -- operators test response presence directly.
+            WHEN sr.operator = '='  AND COALESCE(fr.option_value, sr.trigger_default_value) =  sr.trigger_value THEN TRUE
+            WHEN sr.operator = '!=' AND COALESCE(fr.option_value, sr.trigger_default_value) <> sr.trigger_value THEN TRUE
+            WHEN sr.operator = '>'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '>=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
             WHEN sr.operator = 'exists'     AND fr.response_id IS NOT NULL THEN TRUE
             WHEN sr.operator = 'not_exists' AND fr.response_id IS NULL     THEN TRUE
             ELSE FALSE
@@ -58,7 +62,20 @@ eligibility AS (
 SELECT * FROM eligibility LIMIT 5;
 ```
 
-**Eligibility contract.** A gated question is `eligible` for a session when its skip rules — combined according to `enable_behavior` — evaluate to `TRUE` against that session's responses. If the trigger question was never answered, every comparison evaluates to `FALSE` (the responses are joined `LEFT` and unmatched rows produce a `FALSE` from the `CASE`'s `ELSE` branch). This is the documented semantic; see [Known limits](#known-limits) for what "trigger absent" means in other survey tools and what we'd need to change to match them.
+**Eligibility contract.** A gated question is `eligible` for a session when its skip rules — combined according to `enable_behavior` — evaluate to `TRUE` against that session's responses. If the trigger question was never answered, the rule's declared `trigger_default_value` is substituted via `COALESCE`. If no default is set, every comparison evaluates to `FALSE` (the responses are joined `LEFT` and unmatched rows produce a `FALSE` from the `CASE`'s `ELSE` branch). Authors set the default per-rule by adding `on_missing: <value>` to a `show_when` condition in YAML.
+
+### Authoring shorthand: multi-value gates
+
+A common pattern is "show this question if the trigger was any one of N values." Author this once in YAML with `operator: in` and a `values` list:
+
+```yaml
+show_when:
+  question: condition_history
+  operator: in
+  values: ["cancer", "heart_disease", "diabetes"]
+```
+
+The loader expands this into one `=` rule per value, combined with `enable_behavior: any`. The shape that lands in `skip_rule` is identical to writing the three rules by hand, so the eligibility CTE above and every downstream recipe work unchanged.
 
 ---
 
@@ -73,12 +90,16 @@ WITH rule_evaluation AS (
         sr.qq_id                                                    AS gated_qq_id,
         MAX(sr.enable_behavior) OVER (PARTITION BY sr.qq_id)        AS combinator,
         CASE
-            WHEN sr.operator = '='  AND fr.option_value =  sr.trigger_value THEN TRUE
-            WHEN sr.operator = '!=' AND fr.option_value <> sr.trigger_value THEN TRUE
-            WHEN sr.operator = '>'  AND TRY_CAST(fr.option_value AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<'  AND TRY_CAST(fr.option_value AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '>=' AND TRY_CAST(fr.option_value AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<=' AND TRY_CAST(fr.option_value AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            -- COALESCE picks up trigger_default_value when the trigger
+            -- response is absent (NULL after the LEFT JOIN below). For
+            -- exists / not_exists the default doesn't apply — those
+            -- operators test response presence directly.
+            WHEN sr.operator = '='  AND COALESCE(fr.option_value, sr.trigger_default_value) =  sr.trigger_value THEN TRUE
+            WHEN sr.operator = '!=' AND COALESCE(fr.option_value, sr.trigger_default_value) <> sr.trigger_value THEN TRUE
+            WHEN sr.operator = '>'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '>=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
             WHEN sr.operator = 'exists'     AND fr.response_id IS NOT NULL THEN TRUE
             WHEN sr.operator = 'not_exists' AND fr.response_id IS NULL     THEN TRUE
             ELSE FALSE
@@ -137,12 +158,16 @@ WITH rule_evaluation AS (
         sr.qq_id                                                    AS gated_qq_id,
         MAX(sr.enable_behavior) OVER (PARTITION BY sr.qq_id)        AS combinator,
         CASE
-            WHEN sr.operator = '='  AND fr.option_value =  sr.trigger_value THEN TRUE
-            WHEN sr.operator = '!=' AND fr.option_value <> sr.trigger_value THEN TRUE
-            WHEN sr.operator = '>'  AND TRY_CAST(fr.option_value AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<'  AND TRY_CAST(fr.option_value AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '>=' AND TRY_CAST(fr.option_value AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
-            WHEN sr.operator = '<=' AND TRY_CAST(fr.option_value AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            -- COALESCE picks up trigger_default_value when the trigger
+            -- response is absent (NULL after the LEFT JOIN below). For
+            -- exists / not_exists the default doesn't apply — those
+            -- operators test response presence directly.
+            WHEN sr.operator = '='  AND COALESCE(fr.option_value, sr.trigger_default_value) =  sr.trigger_value THEN TRUE
+            WHEN sr.operator = '!=' AND COALESCE(fr.option_value, sr.trigger_default_value) <> sr.trigger_value THEN TRUE
+            WHEN sr.operator = '>'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<'  AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <  TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '>=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) >= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
+            WHEN sr.operator = '<=' AND TRY_CAST(COALESCE(fr.option_value, sr.trigger_default_value) AS DOUBLE) <= TRY_CAST(sr.trigger_value AS DOUBLE) THEN TRUE
             WHEN sr.operator = 'exists'     AND fr.response_id IS NOT NULL THEN TRUE
             WHEN sr.operator = 'not_exists' AND fr.response_id IS NULL     THEN TRUE
             ELSE FALSE
@@ -196,8 +221,6 @@ quickq's `skip_rule` table is a flat-predicate model. It handles the common shap
 
 | Limit | What this means for the recipes |
 |---|---|
-| **Multi-value gates** (`valueIsOneOf`) are not a native operator. Authoring requires multiple rules with `enable_behavior=any`. | The recipes still work, just verbosely — one row per allowed value rather than one row with a list. |
-| **Default-when-missing** behavior is implicit: an absent trigger response yields `rule_satisfied=FALSE`, which combined with `enable_behavior=all` makes the gated question ineligible. Tools like NCI Connect use `valueOrDefault(QID, default)` to substitute a value when the trigger wasn't answered; quickq does not. | If your instrument depends on default-fallback semantics, the eligibility column on this page will mark some sessions ineligible that the original instrument considered eligible. |
 | **Nested boolean composition** deeper than one AND/OR level is not natively supported. A condition like `and(or(A, B), and(C, D))` requires either flattening into multiple rules or expressing it as a FHIRPath string in the unstructured `display_condition` column, which the recipes do not evaluate. | Any rule expressed in `display_condition` is invisible to these recipes. |
 | **Cross-instrument skip references** are not supported. Skip rules can only reference other `qq_id`s in the same questionnaire. | A questionnaire that should gate Q2 on a response from Q1 in a *different* questionnaire (e.g., baseline vs. follow-up) cannot be expressed in `skip_rule` and is invisible to these recipes. |
 | **Demographic / profile attributes** (`age`, `sex_at_birth`) cannot be skip-rule triggers. Only other questions in the same questionnaire can. | Recipes don't apply to age-bracket gates or similar; those need a different approach (study-level filters before joining responses). |

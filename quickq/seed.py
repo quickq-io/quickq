@@ -135,7 +135,8 @@ def _load_skip_rules(conn: sqlite3.Connection, qq_id: int) -> list[dict]:
     return [
         dict(r)
         for r in conn.execute(
-            "SELECT trigger_qq_id, operator, trigger_value, action, enable_behavior "
+            "SELECT trigger_qq_id, operator, trigger_value, trigger_default_value, "
+            "       action, enable_behavior "
             "FROM skip_rule WHERE qq_id = ?",
             (qq_id,),
         ).fetchall()
@@ -203,8 +204,15 @@ def _eval_condition(rule: dict, answers: dict[int, Any]) -> bool:
         return actual is not None
     if op == "not_exists":
         return actual is None
+
+    # If the trigger wasn't answered, fall back to the rule's declared default
+    # (if any) for the comparison. None default preserves the original
+    # semantic: absent trigger → rule evaluates to FALSE.
     if actual is None:
-        return False
+        default = rule.get("trigger_default_value")
+        if default is None:
+            return False
+        actual = default
     if op == "=":
         return str(actual) == str(expected)
     if op == "!=":

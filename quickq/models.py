@@ -33,6 +33,12 @@ class SkipCondition:
     question: str                   # link_id of the trigger question
     operator: str                   # =, !=, >, <, >=, <=, exists, not_exists
     value: str | None = None
+    # When the trigger question wasn't answered, substitute this value
+    # for the comparison. None preserves the default semantic (absent
+    # trigger → rule evaluates to FALSE). Useful for chains where the
+    # trigger itself is gated by upstream skip logic and a default
+    # eligibility decision is more appropriate than dropping out.
+    on_missing: str | None = None
 
 
 @dataclass

@@ -208,6 +208,10 @@ CREATE TABLE IF NOT EXISTS skip_rule (
     operator             TEXT    NOT NULL
                              CHECK (operator IN ('exists', 'not_exists', '=', '!=', '>', '<', '>=', '<=')),
     trigger_value        TEXT,                      -- the expected value; NULL valid for exists/not_exists
+    -- When the trigger question wasn't answered, treat its value as
+    -- trigger_default_value if set. NULL preserves the original semantic
+    -- (absent trigger → rule evaluates to FALSE).
+    trigger_default_value TEXT,
     action               TEXT    NOT NULL DEFAULT 'show' CHECK (action IN ('show', 'hide', 'require')),
     created_at           TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
