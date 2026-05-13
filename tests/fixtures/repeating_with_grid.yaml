@@ -1,0 +1,32 @@
+name: Per-Visit Symptom Severity
+version: "1.0"
+canonical_url: http://quickq.io/instruments/repeating-with-grid-test
+description: Boundary fixture — repeating group whose children include a grid.
+
+questions:
+  - link_id: rg.visit_count
+    text: How many visits?
+    type: numeric
+    required: true
+
+  - link_id: rg.visits
+    text: Visit details
+    type: repeating_group
+    items:
+      - link_id: rg.visits.week
+        text: Week of visit
+        type: numeric
+        required: true
+
+      - link_id: rg.visits.severity
+        text: Symptom severity grid (this visit)
+        type: grid
+        rows:
+          - { text: "Pain" }
+          - { text: "Fatigue" }
+          - { text: "Sleep disturbance" }
+        columns:
+          - { text: "None",     value: "0" }
+          - { text: "Mild",     value: "1" }
+          - { text: "Moderate", value: "2" }
+          - { text: "Severe",   value: "3" }

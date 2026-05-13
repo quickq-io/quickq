@@ -262,13 +262,41 @@ class _ImportContext:
     def _process_repeating_child(self, child: dict, repeat_index: int) -> None:
         link_id: str = child.get("linkId", "")
         qq_id = self._qq_cache.get(link_id)
+        qtype = self._qtype_cache.get(link_id)
         if qq_id is None:
             return
+
+        # A grid as a repeating-group child has its own nested item[] of row
+        # cells. Dispatch to the grid handler with the parent's repeat_index
+        # threaded through so each cell is attributed to the correct instance.
+        if qtype == "grid":
+            for grid_cell in child.get("item", []):
+                self._process_grid_child(grid_cell, link_id, qq_id, repeat_index=repeat_index)
+            return
+
+        # Nested repeating groups (a repeating_group as a child of a
+        # repeating_group) are not currently supported: the schema does not
+        # model a per-instance index pair, and no real epi instrument we
+        # target requires it yet. Flag and skip so the data quality flag log
+        # records the limitation rather than silently dropping the responses.
+        if qtype == "repeating_group":
+            self._flag(
+                qq_id,
+                f"Nested repeating_group children are not supported; child {link_id!r} skipped.",
+                rule_name="nested_repeating_group",
+                severity="error",
+            )
+            return
+
         for answer in child.get("answer", []):
             self._write_answer(qq_id, link_id, answer, repeat_index=repeat_index)
 
     def _process_grid_child(
-        self, child: dict, parent_link_id: str, qq_id: int
+        self,
+        child: dict,
+        parent_link_id: str,
+        qq_id: int,
+        repeat_index: int | None = None,
     ) -> None:
         child_link_id: str = child.get("linkId", "")
         # child_link_id looks like "gout.joint_severity.r2"
@@ -291,10 +319,10 @@ class _ImportContext:
             self.conn.execute(
                 """
                 INSERT INTO response
-                    (session_id, qq_id, grid_row_id, grid_column_id)
-                VALUES (?, ?, ?, ?)
+                    (session_id, qq_id, grid_row_id, grid_column_id, repeat_index)
+                VALUES (?, ?, ?, ?, ?)
                 """,
-                (self.session_id, qq_id, row_id, col_id),
+                (self.session_id, qq_id, row_id, col_id, repeat_index),
             )
 
     def _write_answer(

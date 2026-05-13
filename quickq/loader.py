@@ -344,6 +344,14 @@ def load_def(
                         if child_def.options:
                             insert_options(conn, child_q_id, child_def.options, None,
                                            auto_concept=auto_concept)
+                        # Grid children carry their own rows/columns. Without
+                        # this insert the grid is loadable but the response
+                        # importer can't resolve row_id / column_id at
+                        # collection time.
+                        if child_def.rows and child_def.columns:
+                            insert_grid_rows_columns(conn, child_q_id,
+                                                     child_def.rows, child_def.columns,
+                                                     auto_concept=auto_concept)
                         child_qq_id = place_question(
                             conn,
                             questionnaire_id=questionnaire_id,

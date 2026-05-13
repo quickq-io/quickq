@@ -91,6 +91,17 @@ Research fields with no FHIR R4 base equivalent are serialized as extensions und
 
 `import_fhir_response(conn, resource)` parses a QuestionnaireResponse and writes response rows. The questionnaire is matched by `canonical_url`. Repeated group instances — multiple `item` entries with the same `linkId` — are assigned sequential `repeat_index` values (0-based). Unknown `linkId` values and unrecognized answer formats are written to `data_quality_flag` rather than raising exceptions.
 
+### Supported nested-item shapes
+
+| Shape | Supported | Notes |
+|---|---|---|
+| Top-level `group` (non-repeating) | ✅ | Children flatten to leaf questions during Questionnaire import; responses target the leaves directly. |
+| Top-level `group, repeats: true` (repeating group) | ✅ | Each `item` entry produces a `repeat_index` increment. Children populate `response.repeat_index` per instance. |
+| Repeating group with simple-type children (boolean, numeric, date, text, single_choice, multiple_choice, sata_other, likert, ranked, slider) | ✅ | All answer-bearing children inherit the parent's `repeat_index`. |
+| Repeating group with a **grid** child | ✅ | Grid cells inherit the containing instance's `repeat_index`. Covered by `tests/test_repeating_nested_boundary.py`. |
+| Repeating group with a **non-repeating group** child | ❌ | Not modelled — non-repeating groups don't exist as a `question_type` in quickq; they flatten at Questionnaire-import time. |
+| Repeating group with a **repeating_group** child (nested loops) | ❌ | Logged to `data_quality_flag` with `rule_name = nested_repeating_group` and skipped. The schema doesn't model the index-pair; see `quickq-io-ap8` for the structural roadmap. |
+
 ---
 
 ## Round-Trip Guarantee
