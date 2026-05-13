@@ -1062,6 +1062,230 @@ def test_prenatal_visits_repeating_group_round_trips_through_import(browser):
         )
 
 
+def test_audit_likert_round_trip(browser):
+    """AUDIT items are explicitly `type: likert` (ordered ordinal scale).
+    Fill three items via LHC-Forms, round-trip, assert each answer lands
+    with the correct `option_value` in fact_response.
+
+    Closes the dedicated likert round-trip cell (PHQ-9 covers single_choice
+    with ordinal options, but AUDIT is the proper likert anchor in the
+    library)."""
+    import tempfile
+    from quickq.library_loader import load_all_libraries
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(AUDIT_FIXTURE))
+        page.wait_for_selector("text=AUDIT", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        def _pick(combo_id: str, option_text: str) -> None:
+            combo = page.locator(f"input[role=combobox][id='{combo_id}']")
+            combo.click()
+            page.wait_for_selector(
+                f"#completionOptions li:has-text(\"{option_text}\")", timeout=5_000
+            )
+            page.locator(
+                f"#completionOptions li:has-text(\"{option_text}\")"
+            ).first.click()
+            combo.press("Tab")
+            page.wait_for_timeout(150)
+
+        _pick("audit.q1/1", "Monthly or less")
+        _pick("audit.q2/1", "3 or 4")
+        _pick("audit.q3/1", "Less than monthly")
+
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    extracted = {it["linkId"] for it in qresponse.get("item", [])}
+    assert {"audit.q1", "audit.q2", "audit.q3"}.issubset(extracted), (
+        f"expected AUDIT q1/q2/q3 in QR; got {extracted}"
+    )
+
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "audit_rt.db"
+        conn = init_oltp(db_path)
+        load_all_libraries(conn)
+        load_yaml(conn, fixtures_dir / "audit.yaml")
+        conn.commit()
+        qresponse.setdefault("subject", {"reference": "Patient/audit-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        rows = conn.execute(
+            """SELECT q.link_id, opt.option_value
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               JOIN response_option opt ON r.option_id = opt.option_id
+               WHERE r.session_id = ?
+                 AND q.link_id IN ('audit.q1', 'audit.q2', 'audit.q3')
+               ORDER BY q.link_id""",
+            (session_id,),
+        ).fetchall()
+        landed = {r[0]: r[1] for r in rows}
+        # AUDIT option_values: q1 Monthly or less = "1"; q2 3 or 4 = "1";
+        # q3 Less than monthly = "1"
+        assert landed == {"audit.q1": "1", "audit.q2": "1", "audit.q3": "1"}, (
+            f"likert round-trip mismatch: {landed}"
+        )
+
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0
+
+
+def test_gout_slider_round_trips_as_numeric(browser):
+    """quickq's `slider` type renders in LHC-Forms as a plain text input
+    (placeholder "Type a number"). Verify the round-trip: type a number,
+    submit, assert it lands in `response_numeric` with no quality flags."""
+    import tempfile
+    from quickq.library_loader import load_all_libraries
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(GOUT_CHECKIN_FIXTURE))
+        page.wait_for_selector("text=Gout Symptoms", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        slider = page.locator("input#gout\\.pain_vas\\/1")
+        slider.fill("7")
+        slider.press("Tab")
+        page.wait_for_timeout(200)
+
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    extracted = {it["linkId"] for it in qresponse.get("item", [])}
+    assert "gout.pain_vas" in extracted, (
+        f"slider answer missing from QR: {extracted}"
+    )
+
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "slider_rt.db"
+        conn = init_oltp(db_path)
+        load_all_libraries(conn)
+        load_yaml(conn, fixtures_dir / "gout_checkin.yaml")
+        conn.commit()
+        qresponse.setdefault("subject", {"reference": "Patient/slider-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        row = conn.execute(
+            """SELECT r.response_numeric
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gout.pain_vas'""",
+            (session_id,),
+        ).fetchone()
+        assert row is not None and row[0] == 7.0, (
+            f"slider value did not land as numeric: {row}"
+        )
+
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0
+
+
+def test_enable_behavior_all_round_trip(browser):
+    """Fill both triggers Yes plus the AND-gated follow-up; round-trip;
+    assert all three answers land. Closes the submission row of the
+    enable_behavior=all composite cell."""
+    import tempfile
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(ENABLE_BEHAVIOR_ALL_FIXTURE))
+        page.wait_for_selector("text=Multi-rule AND test", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        _select_radio_answer(page, "trig.age_18", True)
+        _select_radio_answer(page, "trig.smoker", True)
+        page.wait_for_timeout(300)  # let enableWhen re-evaluate
+
+        # Now the gated text question is visible
+        gated = page.locator(
+            "input[aria-label*='Cessation counseling'], textarea[id*='gated.cessation']"
+        ).first
+        gated.fill("Two months ago")
+        gated.press("Tab")
+        page.wait_for_timeout(150)
+
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    extracted = {it["linkId"] for it in qresponse.get("item", [])}
+    assert {"trig.age_18", "trig.smoker", "gated.cessation"}.issubset(extracted), (
+        f"expected all three answers in QR; got {extracted}"
+    )
+
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "ebh_rt.db"
+        conn = init_oltp(db_path)
+        load_yaml(conn, fixtures_dir / "enable_behavior_all.yaml")
+        conn.commit()
+        qresponse.setdefault("subject", {"reference": "Patient/ebh-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        gated_row = conn.execute(
+            """SELECT r.response_text
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gated.cessation'""",
+            (session_id,),
+        ).fetchone()
+        assert gated_row is not None and "Two months" in gated_row[0], (
+            f"AND-gated answer did not land: {gated_row}"
+        )
+
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0
+
+
 def test_grid_in_repeating_round_trip_closes_bv8(browser):
     """Fill two visit instances with grids in LHC-Forms; round-trip; assert
     every cell carries the correct (grid_row_id, grid_column_id, repeat_index).

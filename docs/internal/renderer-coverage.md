@@ -31,18 +31,25 @@ The test-path column points to the Playwright test (or other automation) that ba
 | `datetime` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_date_input_present` | gout `last_attack_datetime` |
 | `likert` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_audit_likert_*` | All 10 AUDIT items are explicitly `type: likert`. LHC-Forms renders them as comboboxes with ordered options (Never / Monthly or less / 2-4 times a month / ...) |
 | `grid` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_grid_in_repeating_renders_as_horizontal_table` | Spike `quickq-io-9u0` verified `.lhc-form-horizontal-table` rendering; coverage is *grid as child of a repeating group*, not standalone — but the spec-level pattern is identical |
-| `ranked` | 🟡 | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | The label renders. Whether LHC-Forms actually supports an ordering UI (drag-to-rank, numbered dropdown, etc.) for FHIR `choice` items with `ordinalValue` extensions is unverified — the question renders as a choice question, not necessarily as a ranking control |
+| `ranked` | 🟡 | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | **Partial support in LHC-Forms.** Renders as a single-select combobox with placeholder "Select one" — no drag-to-rank, no multi-position ordering. A respondent can pick *one* of the ranked options but cannot order them. The `ordinalValue` extension we emit is silently ignored. Empirical finding from `quickq-io-r4m` audit. |
 | `slider` | 🟡 | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_slider_question_renders_an_input` | **Partial support in LHC-Forms.** Renders as a plain text input with placeholder "Type a number" — the min/max metadata from the FHIR export is silently ignored. The question doesn't disappear; the slider *affordance* does. Empirical finding from `quickq-io-r4m` audit. |
 | `repeating_group` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_grid_in_repeating_first_instance_renders_week` | Verified with the grid-child case; basic flat-child case (prenatal_visits) not yet E2E-tested |
 
 ## FHIR extensions emitted by quickq
 
+LHC-Forms' behavior toward each of these extensions follows from the
+question-type rows above: where quickq emits an extension to enrich rendering
+(slider min/max, ordinalValue for ranked, itemControl), LHC-Forms appears to
+silently ignore the extension and fall back to a generic control. The
+quickq side of the round-trip (emit on export, parse on import) is verified
+through unit tests; the renderer side is the limitation.
+
 | Extension | LHC-Forms | quickq-forms | Notes |
 |---|---|---|---|
-| `questionnaire-maxOccurs` (count_qq_id linkage) | ⚪ | ⚪ | quickq emits this on export for repeating groups with `count_from`; whether either renderer reads it to drive the count UI is unverified |
-| `ordinalValue` (ranked items) | ⚪ | ⚪ | quickq emits and parses on FHIR round-trip; renderer-side display unverified |
-| `questionnaire-sliderStepValue` / min / max | ⚪ | ⚪ | Standard FHIR SDC extensions |
-| `questionnaire-itemControl` (slider hint) | ⚪ | ⚪ | quickq emits for sliders |
+| `questionnaire-maxOccurs` (count_qq_id linkage) | 🟡 (ignored) | ⚪ | quickq emits this for repeating groups with `count_from`. LHC-Forms doesn't appear to use it to constrain the Add button (untested at the limit case); the rendering of repeating groups itself works regardless. |
+| `ordinalValue` (ranked items) | 🟡 (ignored) | ⚪ | quickq emits and parses correctly. LHC-Forms renders ranked as a single-select combobox; the extension is not surfaced as an ordering UI. See `ranked` row above. |
+| `questionnaire-sliderStepValue` / min / max | 🟡 (ignored) | ⚪ | LHC-Forms renders slider as a plain text input; min/max metadata is silently ignored. See `slider` row above. |
+| `questionnaire-itemControl` (slider hint) | 🟡 (ignored) | ⚪ | Same as above — LHC-Forms falls back to text input for sliders. |
 
 ## Composite shapes
 
@@ -80,13 +87,9 @@ Beyond rendering, does the renderer correctly produce a FHIR `QuestionnaireRespo
 
 ## quickq-forms coverage
 
-Pending separate audit pass. quickq-forms' own test suite covers:
-- FHIR schema validation
-- File adapter, local adapter, server routes
+Tracked separately as **`quickq-io-<spinout>`**. The LHC-Forms column of this page reflects the renderer most users will deploy; quickq-forms is a distinct renderer (a React frontend served by our own FastAPI shim) that needs its own Playwright harness against the running dev server. Until that spinout lands, the `⚪` cells in the quickq-forms column should be read as un-verified, not as broken.
 
-It does NOT include Playwright/visual-rendering tests of the React frontend yet. The `⚪` cells in the quickq-forms column reflect this — not a claim of broken behavior, but a claim of un-verified.
-
-When quickq-forms gains an E2E Playwright suite (`quickq-io-ckf` may drive this if it unifies the renderer story), update this page's cells accordingly.
+When quickq-forms gains its own E2E Playwright suite, those cells get filled cell-by-cell using the same pattern proved out here for LHC-Forms (load fixture, render, structural checks, then submission round-trip via the frontend's serialization equivalent of `LForms.Util.getFormFHIRData`).
 
 ## Change log
 
@@ -101,6 +104,7 @@ When quickq-forms gains an E2E Playwright suite (`quickq-io-ckf` may drive this 
 | 2026-05-13 | **Multi-type round-trip** ✅ via gout_checkin: a single test fills boolean / numeric / date / multiple_choice / text in the rendered LHC-Forms output and verifies each lands in the correct typed column (`response_text`, `response_numeric`, `response_date`, `option_id`). Surfaced a Playwright mechanics finding worth recording for future tests: LHC-Forms' date input uses a custom keystroke listener, so `locator.fill()` doesn't stick — must `click()` then `page.keyboard.type()` character-by-character. Format is MM/DD/YYYY, not ISO. | `quickq-io-r4m` |
 | 2026-05-13 | **Repeating-group submission round-trip** ✅ via prenatal_visits: test fills two visit instances (week / provider / concern × 2), clicks the "+ Visit details" button to add the second instance, and asserts the imported responses carry the correct `repeat_index` per instance (0 for the first, 1 for the second). This closes the matching renderer-side loop for `quickq-io-bv8` — until now the import path was only exercised against hand-built FHIR JSON. Two more Playwright mechanics worth recording: (1) Add buttons can be partially overlapped by sticky UI elements, so use `click(force=True)`; (2) LHC-Forms numbers the second instance's children with the parent's repeat-index in the FIRST slot (`visits.week/2/1`, not `visits.week/1/2`). | `quickq-io-r4m` |
 | 2026-05-13 | **Grid-in-repeating submission round-trip** ✅ — the third leg of the bv8 verification trifecta. Test fills two visit instances each with a 3-row severity grid (6 grid cells total), submits, imports, and asserts every cell lands with the correct `(grid_row_id, grid_column_id, repeat_index)` triple. With this commit bv8 is fully verified end-to-end: data-model (3 boundary tests), structural rendering (5 tests), and submission round-trip (1 test). Grid-cell IDs follow the pattern `linkId/parent_repeat/grid_repeat/root` — instance 2's first grid row is `rg.visits.severity.r0/2/1/1`, not `/1/2/1` (recording in case the next nested-shape work re-encounters this). | `quickq-io-r4m` / `quickq-io-bv8` |
+| 2026-05-13 | **r4m closeout pass for LHC-Forms.** Three more round-trips: AUDIT likert (3 q1-q3 items), gout slider (numeric via the text-input fallback), and enable_behavior=all (two boolean triggers Yes + the gated text answer). Probed ranked empirically: LHC-Forms renders quickq's `ranked` type as a single-select combobox ("Select one") — no drag-to-rank, no multi-position ordering, `ordinalValue` extension silently ignored. Marked the `ranked` cell explicitly as 🟡 partial-support and reorganized the FHIR extensions table to reflect that LHC-Forms silently ignores `questionnaire-maxOccurs`, `ordinalValue`, slider min/max, and `itemControl` — known LHC-Forms limitations, not quickq bugs. quickq-forms column spun out to its own issue. | `quickq-io-r4m` (closing) |
 
 ## Related
 
