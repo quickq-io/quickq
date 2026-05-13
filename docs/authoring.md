@@ -310,7 +310,11 @@ Branching logic is expressed as `show_when` in YAML (or populated via the Python
         - { question: alcohol-frequency, operator: "!=", value: "never" }
 ```
 
-Operators: `exists`, `=`, `!=`, `>`, `<`, `>=`, `<=`. Skip rules map directly to FHIR `item.enableWhen`. For complex multi-condition logic that exceeds what structured rules can express, `display_condition` accepts a FHIRPath expression as a fallback.
+Operators: `exists`, `=`, `!=`, `>`, `<`, `>=`, `<=`. The multi-value shorthand `operator: in` with `values: [...]` expands to one `=` rule per value combined with `enable_behavior: any`. Skip rules map directly to FHIR `item.enableWhen`. For complex multi-condition logic that exceeds what structured rules can express, `display_condition` accepts a FHIRPath expression as a fallback.
+
+A per-condition `on_missing: <value>` substitutes a default when the trigger question wasn't answered (useful when the trigger itself is gated by upstream skip logic and you want a deterministic eligibility result rather than dropping out). See [Skip-Logic Recipes](reference/skip-logic-qc.md) for how this surfaces in analytical recipes.
+
+**Demographics as triggers.** quickq doesn't currently support attribute-typed gates (`age`, `sex_at_birth`) at the skip-rule level — only other questions in the same questionnaire can be triggers. For age-gated and sex-specific questions, model the demographic as a question at the top of the instrument and gate downstream questions on its `link_id` like any other trigger. This keeps the gates FHIR-clean for round-trip. See [Skip-Logic Recipes → Workaround](reference/skip-logic-qc.md#workaround-demographics-as-questions) for a worked example.
 
 ---
 

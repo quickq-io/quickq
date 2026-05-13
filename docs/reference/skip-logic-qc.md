@@ -223,9 +223,51 @@ quickq's `skip_rule` table is a flat-predicate model. It handles the common shap
 |---|---|
 | **Nested boolean composition** deeper than one AND/OR level is not natively supported. A condition like `and(or(A, B), and(C, D))` requires either flattening into multiple rules or expressing it as a FHIRPath string in the unstructured `display_condition` column, which the recipes do not evaluate. | Any rule expressed in `display_condition` is invisible to these recipes. |
 | **Cross-instrument skip references** are not supported. Skip rules can only reference other `qq_id`s in the same questionnaire. | A questionnaire that should gate Q2 on a response from Q1 in a *different* questionnaire (e.g., baseline vs. follow-up) cannot be expressed in `skip_rule` and is invisible to these recipes. |
-| **Demographic / profile attributes** (`age`, `sex_at_birth`) cannot be skip-rule triggers. Only other questions in the same questionnaire can. | Recipes don't apply to age-bracket gates or similar; those need a different approach (study-level filters before joining responses). |
+| **Demographic / profile attributes** (`age`, `sex_at_birth`) cannot be skip-rule triggers. Only other questions in the same questionnaire can. | Recipes don't apply to age-bracket gates or similar; use the workaround below. |
 
 The structural roadmap for closing these gaps is tracked in [the data-sharing tooling design constraints issue](https://github.com/quickq-io/quickq/issues) (search `quickq-io-ap8`).
+
+### Workaround: demographics as questions
+
+For age-gated and sex-specific questions, the practical pattern is to *include demographics as questions* in each questionnaire that needs to gate on them — typically a small intake block at the top:
+
+```yaml
+questions:
+  - link_id: demo.age
+    text: How old are you?
+    type: numeric
+    range: [0, 120]
+    required: true
+
+  - link_id: demo.sex_at_birth
+    text: What was your sex assigned at birth?
+    type: single_choice
+    options:
+      - { text: "Female", value: "female" }
+      - { text: "Male",   value: "male" }
+      - { text: "Prefer not to answer", value: "decline" }
+
+  # ... then gate downstream questions on these like any other trigger:
+  - link_id: clinical.pregnancy_history
+    text: Have you ever been pregnant?
+    type: boolean
+    show_when:
+      question: demo.sex_at_birth
+      operator: "="
+      value: "female"
+
+  - link_id: clinical.colonoscopy_screening
+    text: When was your last colonoscopy?
+    type: date
+    show_when:
+      question: demo.age
+      operator: ">="
+      value: 45
+```
+
+This is **FHIR-clean** — the demographics ride along with every QuestionnaireResponse, so any FHIR-compliant tool can render the gates correctly without quickq-specific extensions. The cost is a small amount of duplication when the same demographics appear in multiple instruments; cross-instrument harmonization on demographics works through standard concept codes (LOINC for age, SNOMED for sex) the same way it does for any other question.
+
+Native attribute-typed gates (e.g. `show_when: { attribute: age, operator: ">=", value: 65 }`) would remove the duplication but introduce a FHIR round-trip gap. The honest path forward is FHIR SDC's `enableWhenExpression` extension; that's a substantive design commitment we'll take on when a real study surfaces demand. Until then, model demographics as questions.
 
 ---
 
