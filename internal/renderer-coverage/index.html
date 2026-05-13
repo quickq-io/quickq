@@ -1560,7 +1560,7 @@
 <td>🟡</td>
 <td>⚪</td>
 <td><code>test_e2e_lhcforms.py::test_gout_checkin_question_labels_render</code></td>
-<td>The label renders. Whether LHC-Forms actually supports an ordering UI (drag-to-rank, numbered dropdown, etc.) for FHIR <code>choice</code> items with <code>ordinalValue</code> extensions is unverified — the question renders as a choice question, not necessarily as a ranking control</td>
+<td><strong>Partial support in LHC-Forms.</strong> Renders as a single-select combobox with placeholder "Select one" — no drag-to-rank, no multi-position ordering. A respondent can pick <em>one</em> of the ranked options but cannot order them. The <code>ordinalValue</code> extension we emit is silently ignored. Empirical finding from <code>quickq-io-r4m</code> audit.</td>
 </tr>
 <tr>
 <td><code>slider</code></td>
@@ -1579,6 +1579,12 @@
 </tbody>
 </table>
 <h2 id="fhir-extensions-emitted-by-quickq">FHIR extensions emitted by quickq<a class="headerlink" href="#fhir-extensions-emitted-by-quickq" title="Permanent link">&para;</a></h2>
+<p>LHC-Forms' behavior toward each of these extensions follows from the
+question-type rows above: where quickq emits an extension to enrich rendering
+(slider min/max, ordinalValue for ranked, itemControl), LHC-Forms appears to
+silently ignore the extension and fall back to a generic control. The
+quickq side of the round-trip (emit on export, parse on import) is verified
+through unit tests; the renderer side is the limitation.</p>
 <table>
 <thead>
 <tr>
@@ -1591,27 +1597,27 @@
 <tbody>
 <tr>
 <td><code>questionnaire-maxOccurs</code> (count_qq_id linkage)</td>
+<td>🟡 (ignored)</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>quickq emits this on export for repeating groups with <code>count_from</code>; whether either renderer reads it to drive the count UI is unverified</td>
+<td>quickq emits this for repeating groups with <code>count_from</code>. LHC-Forms doesn't appear to use it to constrain the Add button (untested at the limit case); the rendering of repeating groups itself works regardless.</td>
 </tr>
 <tr>
 <td><code>ordinalValue</code> (ranked items)</td>
+<td>🟡 (ignored)</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>quickq emits and parses on FHIR round-trip; renderer-side display unverified</td>
+<td>quickq emits and parses correctly. LHC-Forms renders ranked as a single-select combobox; the extension is not surfaced as an ordering UI. See <code>ranked</code> row above.</td>
 </tr>
 <tr>
 <td><code>questionnaire-sliderStepValue</code> / min / max</td>
+<td>🟡 (ignored)</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>Standard FHIR SDC extensions</td>
+<td>LHC-Forms renders slider as a plain text input; min/max metadata is silently ignored. See <code>slider</code> row above.</td>
 </tr>
 <tr>
 <td><code>questionnaire-itemControl</code> (slider hint)</td>
+<td>🟡 (ignored)</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>quickq emits for sliders</td>
+<td>Same as above — LHC-Forms falls back to text input for sliders.</td>
 </tr>
 </tbody>
 </table>
@@ -1741,11 +1747,8 @@
 </tbody>
 </table>
 <h2 id="quickq-forms-coverage">quickq-forms coverage<a class="headerlink" href="#quickq-forms-coverage" title="Permanent link">&para;</a></h2>
-<p>Pending separate audit pass. quickq-forms' own test suite covers:
-- FHIR schema validation
-- File adapter, local adapter, server routes</p>
-<p>It does NOT include Playwright/visual-rendering tests of the React frontend yet. The <code>⚪</code> cells in the quickq-forms column reflect this — not a claim of broken behavior, but a claim of un-verified.</p>
-<p>When quickq-forms gains an E2E Playwright suite (<code>quickq-io-ckf</code> may drive this if it unifies the renderer story), update this page's cells accordingly.</p>
+<p>Tracked separately as <strong><code>quickq-io-&lt;spinout&gt;</code></strong>. The LHC-Forms column of this page reflects the renderer most users will deploy; quickq-forms is a distinct renderer (a React frontend served by our own FastAPI shim) that needs its own Playwright harness against the running dev server. Until that spinout lands, the <code>⚪</code> cells in the quickq-forms column should be read as un-verified, not as broken.</p>
+<p>When quickq-forms gains its own E2E Playwright suite, those cells get filled cell-by-cell using the same pattern proved out here for LHC-Forms (load fixture, render, structural checks, then submission round-trip via the frontend's serialization equivalent of <code>LForms.Util.getFormFHIRData</code>).</p>
 <h2 id="change-log">Change log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1800,6 +1803,11 @@
 <td>2026-05-13</td>
 <td><strong>Grid-in-repeating submission round-trip</strong> ✅ — the third leg of the bv8 verification trifecta. Test fills two visit instances each with a 3-row severity grid (6 grid cells total), submits, imports, and asserts every cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. With this commit bv8 is fully verified end-to-end: data-model (3 boundary tests), structural rendering (5 tests), and submission round-trip (1 test). Grid-cell IDs follow the pattern <code>linkId/parent_repeat/grid_repeat/root</code> — instance 2's first grid row is <code>rg.visits.severity.r0/2/1/1</code>, not <code>/1/2/1</code> (recording in case the next nested-shape work re-encounters this).</td>
 <td><code>quickq-io-r4m</code> / <code>quickq-io-bv8</code></td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>r4m closeout pass for LHC-Forms.</strong> Three more round-trips: AUDIT likert (3 q1-q3 items), gout slider (numeric via the text-input fallback), and enable_behavior=all (two boolean triggers Yes + the gated text answer). Probed ranked empirically: LHC-Forms renders quickq's <code>ranked</code> type as a single-select combobox ("Select one") — no drag-to-rank, no multi-position ordering, <code>ordinalValue</code> extension silently ignored. Marked the <code>ranked</code> cell explicitly as 🟡 partial-support and reorganized the FHIR extensions table to reflect that LHC-Forms silently ignores <code>questionnaire-maxOccurs</code>, <code>ordinalValue</code>, slider min/max, and <code>itemControl</code> — known LHC-Forms limitations, not quickq bugs. quickq-forms column spun out to its own issue.</td>
+<td><code>quickq-io-r4m</code> (closing)</td>
 </tr>
 </tbody>
 </table>
