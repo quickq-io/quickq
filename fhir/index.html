@@ -968,6 +968,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Import">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-nested-item-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported nested-item shapes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1506,6 +1523,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Import">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-nested-item-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported nested-item shapes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1750,6 +1784,48 @@ quickq  →  import_fhir_response()  →  OLTP response rows  →  quickq refres
 <h2 id="import">Import<a class="headerlink" href="#import" title="Permanent link">&para;</a></h2>
 <p><code>import_fhir(conn, fhir_json)</code> imports a FHIR Questionnaire into the OLTP. Non-repeating <code>group</code> items are flattened to their leaf questions. Repeating groups (<code>type: group, repeats: true</code>) are imported as <code>repeating_group</code> questions with their children linked via <code>parent_qq_id</code>.</p>
 <p><code>import_fhir_response(conn, resource)</code> parses a QuestionnaireResponse and writes response rows. The questionnaire is matched by <code>canonical_url</code>. Repeated group instances — multiple <code>item</code> entries with the same <code>linkId</code> — are assigned sequential <code>repeat_index</code> values (0-based). Unknown <code>linkId</code> values and unrecognized answer formats are written to <code>data_quality_flag</code> rather than raising exceptions.</p>
+<h3 id="supported-nested-item-shapes">Supported nested-item shapes<a class="headerlink" href="#supported-nested-item-shapes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Shape</th>
+<th>Supported</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top-level <code>group</code> (non-repeating)</td>
+<td>✅</td>
+<td>Children flatten to leaf questions during Questionnaire import; responses target the leaves directly.</td>
+</tr>
+<tr>
+<td>Top-level <code>group, repeats: true</code> (repeating group)</td>
+<td>✅</td>
+<td>Each <code>item</code> entry produces a <code>repeat_index</code> increment. Children populate <code>response.repeat_index</code> per instance.</td>
+</tr>
+<tr>
+<td>Repeating group with simple-type children (boolean, numeric, date, text, single_choice, multiple_choice, sata_other, likert, ranked, slider)</td>
+<td>✅</td>
+<td>All answer-bearing children inherit the parent's <code>repeat_index</code>.</td>
+</tr>
+<tr>
+<td>Repeating group with a <strong>grid</strong> child</td>
+<td>✅</td>
+<td>Grid cells inherit the containing instance's <code>repeat_index</code>. Covered by <code>tests/test_repeating_nested_boundary.py</code>.</td>
+</tr>
+<tr>
+<td>Repeating group with a <strong>non-repeating group</strong> child</td>
+<td>❌</td>
+<td>Not modelled — non-repeating groups don't exist as a <code>question_type</code> in quickq; they flatten at Questionnaire-import time.</td>
+</tr>
+<tr>
+<td>Repeating group with a <strong>repeating_group</strong> child (nested loops)</td>
+<td>❌</td>
+<td>Logged to <code>data_quality_flag</code> with <code>rule_name = nested_repeating_group</code> and skipped. The schema doesn't model the index-pair; see <code>quickq-io-ap8</code> for the structural roadmap.</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="round-trip-guarantee">Round-Trip Guarantee<a class="headerlink" href="#round-trip-guarantee" title="Permanent link">&para;</a></h2>
 <p>Any FHIR Questionnaire that can be imported can be exported back to valid FHIR without loss of structure or semantics. The round-trip is tested against the HL7 reference example suite, including the US Surgeon General Family Health Portrait (USSG-FHT, LOINC 54127-6) which exercises nested repeating groups at two levels.</p>
