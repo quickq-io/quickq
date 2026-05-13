@@ -1544,6 +1544,9 @@
 <p>Once the demo is generated, open the UI:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>analytics<span class="w"> </span>demo/analytics.duckdb
 </code></pre></div>
+<p>A few of the recipes below read OLTP-only tables (<code>data_quality_flag</code>, <code>study_errata_log</code>). Attach the OLTP once at the top of your session so those references resolve:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ATTACH</span><span class="w"> </span><span class="s1">&#39;demo/study.db&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">oltp</span><span class="w"> </span><span class="p">(</span><span class="k">TYPE</span><span class="w"> </span><span class="n">sqlite</span><span class="p">,</span><span class="w"> </span><span class="n">READ_ONLY</span><span class="p">);</span>
+</code></pre></div>
 <hr />
 <h2 id="sparsity-overview-with-summarize">Sparsity overview with SUMMARIZE<a class="headerlink" href="#sparsity-overview-with-summarize" title="Permanent link">&para;</a></h2>
 <p>DuckDB's built-in <code>SUMMARIZE</code> gives null counts and percentages for every column in one shot:</p>
@@ -1657,9 +1660,9 @@
 <hr />
 <h2 id="import-flags">Import flags<a class="headerlink" href="#import-flags" title="Permanent link">&para;</a></h2>
 <p>For any session where <code>import_fhir_response</code> encountered an unrecognised answer format or an unresolvable <code>linkId</code>, a row is written to <code>data_quality_flag</code> rather than raising an exception. Check it after any bulk import:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">-- Query the OLTP directly; flags are not in the OLAP</span>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Query the OLTP via the ATTACH from the setup at the top of the page</span>
 <span class="k">SELECT</span><span class="w"> </span><span class="n">rule_name</span><span class="p">,</span><span class="w"> </span><span class="n">severity</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">data_quality_flag</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">oltp</span><span class="p">.</span><span class="n">data_quality_flag</span>
 <span class="k">WHERE</span><span class="w"> </span><span class="n">is_resolved</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
 <span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">rule_name</span><span class="p">,</span><span class="w"> </span><span class="n">severity</span><span class="p">,</span><span class="w"> </span><span class="n">message</span>
 <span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
@@ -1675,7 +1678,7 @@
 <p>For documented data quality events — a delivery platform bug, a protocol deviation, a discovered instrument error — use the errata log rather than modifying the underlying responses:</p>
 <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">errata_id</span><span class="p">,</span><span class="w"> </span><span class="n">event_type</span><span class="p">,</span><span class="w"> </span><span class="n">severity</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="p">,</span>
 <span class="w">       </span><span class="n">affects_session_from</span><span class="p">,</span><span class="w"> </span><span class="n">affects_session_to</span><span class="p">,</span><span class="w"> </span><span class="n">analyst_guidance</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">study_errata_log</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">oltp</span><span class="p">.</span><span class="n">study_errata_log</span>
 <span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;open&#39;</span>
 <span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">CASE</span><span class="w"> </span><span class="n">severity</span>
 <span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="s1">&#39;critical&#39;</span><span class="w">      </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span>
