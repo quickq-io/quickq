@@ -1060,3 +1060,160 @@ def test_prenatal_visits_repeating_group_round_trips_through_import(browser):
         assert flag_count == 0, (
             f"expected zero data_quality_flag rows; got {flag_count}"
         )
+
+
+def test_grid_in_repeating_round_trip_closes_bv8(browser):
+    """Fill two visit instances with grids in LHC-Forms; round-trip; assert
+    every cell carries the correct (grid_row_id, grid_column_id, repeat_index).
+
+    This is the final cell of quickq-io-bv8's verification trifecta. The
+    data-model side (loader + parser handling grid-as-child-of-repeating-
+    group) was proven by 3 boundary tests against hand-built JSON. The
+    structural rendering side was proven by 5 tests against the rendered
+    DOM. This test closes the loop: a real LHC-Forms submission produces
+    a FHIR QuestionnaireResponse that round-trips into populated grid
+    cells with intact per-instance repeat_index attribution.
+    """
+    import tempfile
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    # Grid options from the YAML fixture: 0=None, 1=Mild, 2=Moderate, 3=Severe
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(GRID_IN_REPEATING_FIXTURE))
+        page.wait_for_selector("text=Week of visit", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        def _pick_grid_cell(row_id_path: str, label: str) -> None:
+            """Open the row's combobox, pick the option matching `label`, commit."""
+            cell = page.locator(f"input[role=combobox][id='{row_id_path}']")
+            cell.scroll_into_view_if_needed()
+            cell.click()
+            page.wait_for_selector(
+                f"#completionOptions li:has-text(\"{label}\")", timeout=5_000
+            )
+            page.locator(
+                f"#completionOptions li:has-text(\"{label}\")"
+            ).first.click()
+            cell.press("Tab")
+            page.wait_for_timeout(150)
+
+        # visit_count = 2
+        vc = page.locator("input#rg\\.visit_count\\/1")
+        vc.fill("2")
+        vc.press("Tab")
+        page.wait_for_timeout(150)
+
+        # --- Instance 1: week=8, severity grid (Moderate / Mild / None) ---
+        week1 = page.locator("input#rg\\.visits\\.week\\/1\\/1")
+        week1.fill("8")
+        week1.press("Tab")
+        page.wait_for_timeout(150)
+
+        # Grid cells in instance 1 use ID pattern: rg.visits.severity.rN/1/1/1
+        _pick_grid_cell("rg.visits.severity.r0/1/1/1", "Moderate")   # Pain
+        _pick_grid_cell("rg.visits.severity.r1/1/1/1", "Mild")       # Fatigue
+        _pick_grid_cell("rg.visits.severity.r2/1/1/1", "None")       # Sleep disturbance
+
+        # --- Add a second instance ---
+        add_button = page.locator("button#add-rg\\.visits\\/1").first
+        add_button.scroll_into_view_if_needed()
+        add_button.click(force=True)
+        page.wait_for_selector("input#rg\\.visits\\.week\\/2\\/1", timeout=5_000)
+
+        # --- Instance 2: week=20, severity grid (Severe / Moderate / Mild) ---
+        week2 = page.locator("input#rg\\.visits\\.week\\/2\\/1")
+        week2.fill("20")
+        week2.press("Tab")
+        page.wait_for_timeout(150)
+
+        # Grid cells in instance 2: parent repeat-index is in the SECOND
+        # slot — e.g. rg.visits.severity.r0/2/1/1 (linkId/parent_repeat/
+        # grid_repeat/root).
+        _pick_grid_cell("rg.visits.severity.r0/2/1/1", "Severe")
+        _pick_grid_cell("rg.visits.severity.r1/2/1/1", "Moderate")
+        _pick_grid_cell("rg.visits.severity.r2/2/1/1", "Mild")
+
+        # --- Extract the QuestionnaireResponse ---
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    # Sanity: two rg.visits instances in the QR
+    visit_items = [
+        it for it in qresponse.get("item", []) if it["linkId"] == "rg.visits"
+    ]
+    assert len(visit_items) == 2, (
+        f"expected 2 rg.visits instances in QR; got {len(visit_items)}"
+    )
+
+    # --- Round-trip through quickq import ---
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "round_trip.db"
+        conn = init_oltp(db_path)
+        load_yaml(conn, fixtures_dir / "repeating_with_grid.yaml")
+        conn.commit()
+
+        qresponse.setdefault("subject", {"reference": "Patient/grid-rg-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        # --- Assertions ---
+        # Per-instance week values
+        weeks = conn.execute(
+            """SELECT r.response_numeric, r.repeat_index
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'rg.visits.week'
+               ORDER BY r.repeat_index""",
+            (session_id,),
+        ).fetchall()
+        assert [(w[1], w[0]) for w in weeks] == [(0, 8.0), (1, 20.0)], (
+            f"weeks by repeat_index: {[(w[1], w[0]) for w in weeks]}"
+        )
+
+        # Grid cells: 6 total (3 rows × 2 instances), each with grid_row_id,
+        # grid_column_id, and the correct repeat_index.
+        grid_rows = conn.execute(
+            """SELECT r.repeat_index, gr.row_text, gc.column_value
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               JOIN grid_row gr ON r.grid_row_id = gr.row_id
+               JOIN grid_column gc ON r.grid_column_id = gc.column_id
+               WHERE r.session_id = ? AND q.link_id = 'rg.visits.severity'
+               ORDER BY r.repeat_index, gr.display_order""",
+            (session_id,),
+        ).fetchall()
+        # Expected: instance 0 → (Pain=2, Fatigue=1, Sleep disturbance=0),
+        #          instance 1 → (Pain=3, Fatigue=2, Sleep disturbance=1)
+        expected = [
+            (0, "Pain", "2"),
+            (0, "Fatigue", "1"),
+            (0, "Sleep disturbance", "0"),
+            (1, "Pain", "3"),
+            (1, "Fatigue", "2"),
+            (1, "Sleep disturbance", "1"),
+        ]
+        actual = [(r[0], r[1], r[2]) for r in grid_rows]
+        assert actual == expected, (
+            f"grid cells did not land as expected.\nactual:   {actual}\nexpected: {expected}"
+        )
+
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0, (
+            f"expected zero data_quality_flag rows; got {flag_count}"
+        )
