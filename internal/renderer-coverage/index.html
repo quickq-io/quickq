@@ -1543,10 +1543,10 @@
 </tr>
 <tr>
 <td><code>likert</code></td>
-<td>🟡</td>
+<td>✅</td>
 <td>⚪</td>
-<td>implicit via PHQ-9 (single_choice with ordinal options)</td>
-<td>Distinct <code>likert</code> type explicitly used in <code>audit</code>, <code>prapare</code></td>
+<td><code>test_e2e_lhcforms.py::test_audit_likert_*</code></td>
+<td>All 10 AUDIT items are explicitly <code>type: likert</code>. LHC-Forms renders them as comboboxes with ordered options (Never / Monthly or less / 2-4 times a month / ...)</td>
 </tr>
 <tr>
 <td><code>grid</code></td>
@@ -1652,9 +1652,9 @@
 </tr>
 <tr>
 <td>Multi-level <code>enableWhen</code> with <code>enable_behavior=all</code></td>
+<td>✅</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>(untested)</td>
+<td><code>test_e2e_lhcforms.py::test_enable_behavior_all_*</code></td>
 </tr>
 <tr>
 <td><code>operator: in</code> (post-expansion to N flat <code>=</code> rules)</td>
@@ -1768,6 +1768,11 @@
 <tr>
 <td>2026-05-12</td>
 <td><code>sata_other</code> ✅ via PRAPARE (renders as multi-select combobox in LHC-Forms). <code>repeating_group</code> (simple children) ✅ via prenatal_visits (first instance renders + Add control). LHC-Forms covers 11 of 12 question types now; only <code>likert</code> remains 🟡 (covered implicitly via PHQ-9 ordinal-choice but no distinct test).</td>
+<td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-12</td>
+<td><code>likert</code> ✅ via AUDIT (10 dedicated likert items). <code>enable_behavior=all</code> ✅ via new <code>enable_behavior_all.yaml</code> fixture. <strong>Surfaced FHIR export bug in <code>renderer_fhir.py</code></strong>: <code>enableWhen</code> answer was always emitted as <code>answerString</code> for non-choice triggers, but FHIR requires the type to match the trigger's data type. LHC-Forms correctly refused to match — gated questions never appeared. Fixed by dispatching on trigger type (<code>answerBoolean</code> / <code>answerDate</code> / <code>answerDateTime</code> / <code>answerDecimal</code>). All 6 checked-in FHIR Questionnaire fixtures regenerated. <strong>Every question type in the LHC-Forms column now empirically verified (8 ✅ + 2 🟡).</strong></td>
 <td><code>quickq-io-r4m</code></td>
 </tr>
 </tbody>
