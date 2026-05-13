@@ -79,7 +79,7 @@ Permanently deletes all data for a participant (sessions, responses, quality fla
 quickq compliance delete study.db <external_id>
 ```
 
-Use `--study-id N` to disambiguate when the same `external_id` exists in multiple studies. The action is recorded in `tool_audit_log`.
+Use `--study-id N` to disambiguate when the same `external_id` exists in multiple studies. The action is recorded in `tool_audit_log`. Modifies the OLTP only — rerun `quickq refresh` to propagate the deletion into the analytics layer.
 
 If the participant requested withdrawal rather than erasure, use `quickq compliance withdraw` instead. Most IRB withdrawal protocols require data retention for already-consented responses.
 
@@ -87,7 +87,7 @@ If the participant requested withdrawal rather than erasure, use `quickq complia
 
 ## `quickq compliance withdraw`
 
-Records a participant's withdrawal without deleting their data. Stops future data collection for this participant while retaining all previously collected responses. A `withdrawn` event is written to `admin_event`.
+Records a participant's withdrawal without deleting their data. Stops future data collection for this participant while retaining all previously collected responses. A `withdrawn` event is written to `admin_event`. Modifies the OLTP only — rerun `quickq refresh` to propagate the new event into the analytics layer.
 
 ```bash
 quickq compliance withdraw study.db <external_id> --notes "Participant withdrew via study portal"

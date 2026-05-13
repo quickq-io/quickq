@@ -106,7 +106,7 @@ quickq preview study.db 1
 ```
 
 !!! note "Two renderers in this tutorial"
-    `quickq preview` uses **LHC-Forms** (NIH's reference FHIR renderer, CDN-loaded, read-only) for quick visual checks during authoring. Step 5's `quickq serve` uses **quickq-forms**, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.
+    `quickq preview` uses **LHC-Forms** (NIH's reference FHIR renderer, CDN-loaded on first run, then cached at `~/.cache/quickq/lhcforms/` for offline reuse) for quick visual checks during authoring. Step 5's `quickq serve` uses **quickq-forms**, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.
 
 ### Stage 2 — Add an option set
 

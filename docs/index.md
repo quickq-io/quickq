@@ -95,7 +95,7 @@ quickq serve study.db                           # launch the form server in your
 # Build and inspect the analytics layer
 quickq refresh study.db analytics.duckdb        # OLTP → OLAP star schema
 quickq report  analytics.duckdb study.db 1      # Markdown summary
-quickq analytics                                # interactive DuckDB UI in your browser
+quickq analytics                                # interactive DuckDB UI (requires duckdb on PATH)
 ```
 
 For a copy-paste-runnable walkthrough that authors a complete questionnaire from scratch, see the [End-to-End Walkthrough](tutorials/end-to-end.md).

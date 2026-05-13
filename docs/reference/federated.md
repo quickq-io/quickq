@@ -110,7 +110,7 @@ Useful for distributing a canonical instrument to sites at the start of a multi-
 
 ### `quickq merge`
 
-Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR `QuestionnaireResponse.id`, respondents by `(study_id, external_id)`). Schema divergence is detected at merge time, not at analysis time.
+Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR `QuestionnaireResponse.id`, respondents by `(study_id, external_id)`). Question-text divergence by `link_id` is detected at merge time; deeper structural drift between questionnaire versions is not — pre-merge, hash the FHIR export from each site and confirm they match.
 
 ```bash
 quickq merge site_a.db site_b.db site_c.db --output combined.db
