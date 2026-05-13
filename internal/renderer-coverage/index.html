@@ -1728,9 +1728,9 @@
 </tr>
 <tr>
 <td>Repeating-group fill → import (basic)</td>
+<td>✅</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>bv8 import path tested via Python-constructed FHIR JSON, not via real renderer submission</td>
+<td><code>test_e2e_lhcforms.py::test_prenatal_visits_repeating_group_round_trips_through_import</code> — fills two visit instances in the rendered form (week / provider / concern × 2), clicks "+ Visit details" to add the second instance, asserts each child lands with the correct <code>repeat_index</code> (0 for instance 1, 1 for instance 2)</td>
 </tr>
 <tr>
 <td>Grid-in-repeating fill → import</td>
@@ -1789,6 +1789,11 @@
 <tr>
 <td>2026-05-13</td>
 <td><strong>Multi-type round-trip</strong> ✅ via gout_checkin: a single test fills boolean / numeric / date / multiple_choice / text in the rendered LHC-Forms output and verifies each lands in the correct typed column (<code>response_text</code>, <code>response_numeric</code>, <code>response_date</code>, <code>option_id</code>). Surfaced a Playwright mechanics finding worth recording for future tests: LHC-Forms' date input uses a custom keystroke listener, so <code>locator.fill()</code> doesn't stick — must <code>click()</code> then <code>page.keyboard.type()</code> character-by-character. Format is MM/DD/YYYY, not ISO.</td>
+<td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>Repeating-group submission round-trip</strong> ✅ via prenatal_visits: test fills two visit instances (week / provider / concern × 2), clicks the "+ Visit details" button to add the second instance, and asserts the imported responses carry the correct <code>repeat_index</code> per instance (0 for the first, 1 for the second). This closes the matching renderer-side loop for <code>quickq-io-bv8</code> — until now the import path was only exercised against hand-built FHIR JSON. Two more Playwright mechanics worth recording: (1) Add buttons can be partially overlapped by sticky UI elements, so use <code>click(force=True)</code>; (2) LHC-Forms numbers the second instance's children with the parent's repeat-index in the FIRST slot (<code>visits.week/2/1</code>, not <code>visits.week/1/2</code>).</td>
 <td><code>quickq-io-r4m</code></td>
 </tr>
 </tbody>
