@@ -5,7 +5,7 @@
   "version": "2019",
   "url": "http://quickq.io/instruments/prapare",
   "description": "Protocol for Responding to and Assessing Patients' Assets, Risks, and Experiences \u2014 21-item social determinants of health screening tool (LOINC panel 93025-5)",
-  "date": "2026-04-22T23:05:23Z",
+  "date": "2026-05-13T01:21:43Z",
   "name": "PRAPARE",
   "item": [
     {
@@ -722,6 +722,10 @@
         }
       ],
       "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "PRAPARE"

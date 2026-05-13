@@ -4,8 +4,8 @@
   "title": "Gout Symptoms Check-In and Family History",
   "version": "1.0",
   "url": "http://quickq.io/instruments/gout-checkin",
-  "description": "Synthetic gout check-in form. Covers question types: date, multiple_choice, grid, ranked, boolean, numeric, text.",
-  "date": "2026-04-22T23:05:23Z",
+  "description": "Synthetic gout check-in form. Covers question types: date, datetime, multiple_choice, grid, slider, ranked, boolean, numeric, text.",
+  "date": "2026-05-13T01:21:43Z",
   "name": "GoutSymptomsCheckInandFamilyHistory",
   "item": [
     {
@@ -20,6 +20,21 @@
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
           "valueString": "GOUT-H1"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.last_attack_datetime",
+      "text": "Date and time your most recent gout attack began (if known):",
+      "type": "dateTime",
+      "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-H1b"
         }
       ]
     },
@@ -559,6 +574,40 @@
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
           "valueString": "GOUT-M3"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.pain_vas",
+      "text": "How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)",
+      "type": "integer",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 100
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "slider"
+              }
+            ]
+          }
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-M4"
         }
       ]
     },

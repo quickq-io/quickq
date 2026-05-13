@@ -5,7 +5,7 @@
   "version": "2001",
   "url": "http://quickq.io/instruments/audit",
   "description": "Alcohol Use Disorders Identification Test \u2014 10-item WHO screening instrument (LOINC panel 72110-0)",
-  "date": "2026-04-22T23:05:23Z",
+  "date": "2026-05-13T01:21:43Z",
   "name": "AUDIT",
   "extension": [
     {
@@ -70,6 +70,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -121,6 +125,10 @@
         }
       ],
       "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
@@ -174,6 +182,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -225,6 +237,10 @@
         }
       ],
       "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
@@ -278,6 +294,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -329,6 +349,10 @@
         }
       ],
       "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
@@ -382,6 +406,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -434,6 +462,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -472,6 +504,10 @@
       ],
       "extension": [
         {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
+        {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"
         },
@@ -509,6 +545,10 @@
         }
       ],
       "extension": [
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/likert",
+          "valueBoolean": true
+        },
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
           "valueString": "AUDIT"

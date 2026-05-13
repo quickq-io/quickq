@@ -5,7 +5,7 @@
   "version": "1.0",
   "url": "http://quickq.io/instruments/phq9",
   "description": "9-item depression screening instrument (Kroenke & Spitzer, 2002)",
-  "date": "2026-04-22T23:05:23Z",
+  "date": "2026-05-13T01:21:43Z",
   "name": "PHQ9PatientHealthQuestionnaire",
   "extension": [
     {
@@ -449,25 +449,29 @@
         {
           "valueCoding": {
             "display": "Not difficult at all",
-            "code": "0"
+            "code": "LA6572-7",
+            "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
             "display": "Somewhat difficult",
-            "code": "1"
+            "code": "LA6573-5",
+            "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
             "display": "Very difficult",
-            "code": "2"
+            "code": "LA6574-3",
+            "system": "http://loinc.org"
           }
         },
         {
           "valueCoding": {
             "display": "Extremely difficult",
-            "code": "3"
+            "code": "LA6575-0",
+            "system": "http://loinc.org"
           }
         }
       ],

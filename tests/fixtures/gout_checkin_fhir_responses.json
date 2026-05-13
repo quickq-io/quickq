@@ -3,7 +3,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/gout-checkin",
-    "authored": "2026-04-22T23:05:23Z",
+    "authored": "2026-05-13T01:21:43Z",
     "subject": {
       "reference": "Patient/synthetic-001"
     },
@@ -249,7 +249,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/gout-checkin",
-    "authored": "2026-04-22T23:05:23Z",
+    "authored": "2026-05-13T01:21:43Z",
     "subject": {
       "reference": "Patient/synthetic-002"
     },

@@ -408,7 +408,10 @@ def generate_prapare(conn) -> None:
 # ------------------------------------------------------------------
 
 def _gout_sata(link_id: str, values: list[str]) -> dict:
-    return {"linkId": link_id, "answer": [{"valueString": v} for v in values]}
+    # multiple_choice questions store answers as valueCoding (FHIR `choice`
+    # type expects answerOption codings). Using valueString here previously
+    # caused a type_mismatch flag in import_fhir_response.
+    return {"linkId": link_id, "answer": [{"valueCoding": {"code": v}} for v in values]}
 
 
 def _gout_grid(link_id: str, row_answers: list[tuple[str, str]]) -> dict:
