@@ -712,3 +712,177 @@ def test_phq9_submission_round_trips_through_import_fhir_response(browser):
             f"expected zero data_quality_flag rows for clean PHQ-9 answers; "
             f"got {flag_count}"
         )
+
+
+def test_gout_checkin_submission_round_trips_through_import_fhir_response(browser):
+    """Fill gout_checkin in LHC-Forms across five question types, extract the
+    QuestionnaireResponse, import it through quickq, and assert each typed
+    column landed correctly.
+
+    Covers: boolean, numeric, date, multiple_choice, text. Demonstrates the
+    end-to-end FHIR contract for a richer fixture than PHQ-9 (which is
+    single_choice only).
+    """
+    import tempfile
+    from quickq.library_loader import load_all_libraries
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    # --- 1. Render and fill ---
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(GOUT_CHECKIN_FIXTURE))
+        page.wait_for_selector("text=Gout Symptoms", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        # boolean: gout.on_ult = true
+        _select_radio_answer(page, "gout.on_ult", True)
+
+        # numeric: gout.attacks_12mo = 4
+        page.locator("input#gout\\.attacks_12mo\\/1").fill("4")
+        page.locator("input#gout\\.attacks_12mo\\/1").press("Tab")
+
+        # date: gout.last_attack_date. LHC-Forms renders date as a text
+        # input with empty id and a unique aria-label. The custom date
+        # picker watches keystroke events, so `fill` doesn't stick — must
+        # type character-by-character via page.keyboard.type for the
+        # change to register. Format is MM/DD/YYYY.
+        date_input = page.locator(
+            "input[aria-label='When did your most recent gout attack begin?']"
+        )
+        date_input.click()
+        page.keyboard.type("04/15/2026", delay=20)
+        page.keyboard.press("Tab")
+        page.wait_for_timeout(200)
+
+        # multiple_choice: gout.attack_joints — pick "Big toe" via the combobox.
+        # (Multi-select; we add one option to keep the test focused.)
+        mc_combo = page.locator("input[role=combobox][id='gout.attack_joints/1']")
+        mc_combo.click()
+        page.wait_for_selector(
+            "#completionOptions li:has-text(\"Big toe\")", timeout=5_000
+        )
+        page.locator("#completionOptions li:has-text(\"Big toe\")").first.click()
+        mc_combo.press("Tab")
+        page.wait_for_timeout(150)
+
+        # text: gout.notes — type a short string into the textarea
+        notes = page.locator("textarea#gout\\.notes\\/1")
+        if notes.count() == 0:
+            # Some LHC-Forms versions render text as input[type=text] for short fields
+            notes = page.locator("input#gout\\.notes\\/1")
+        notes.fill("Avoiding shellfish helped this month.")
+        notes.press("Tab")
+        page.wait_for_timeout(150)
+
+        # --- 2. Extract the QuestionnaireResponse ---
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    # Sanity check that all five answers made it into the QR
+    extracted_link_ids = {item["linkId"] for item in qresponse.get("item", [])}
+    expected = {
+        "gout.on_ult", "gout.attacks_12mo", "gout.last_attack_date",
+        "gout.attack_joints", "gout.notes",
+    }
+    missing = expected - extracted_link_ids
+    assert not missing, (
+        f"these answers didn't make it into the QuestionnaireResponse: {missing}"
+    )
+
+    # --- 3. Round-trip: import into a fresh OLTP with the library loaded ---
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "round_trip.db"
+        conn = init_oltp(db_path)
+        load_all_libraries(conn)
+        load_yaml(conn, Path(__file__).parent / "fixtures" / "gout_checkin.yaml")
+        conn.commit()
+
+        qresponse.setdefault("subject", {"reference": "Patient/gout-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        # --- 4. Assert each typed column was populated correctly ---
+        # boolean → response_text 'true'
+        bool_row = conn.execute(
+            """SELECT r.response_text
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gout.on_ult'""",
+            (session_id,),
+        ).fetchone()
+        assert bool_row is not None and bool_row[0] == "true", (
+            f"boolean answer did not land: {bool_row}"
+        )
+
+        # numeric → response_numeric 4.0
+        num_row = conn.execute(
+            """SELECT r.response_numeric
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gout.attacks_12mo'""",
+            (session_id,),
+        ).fetchone()
+        assert num_row is not None and num_row[0] == 4.0, (
+            f"numeric answer did not land: {num_row}"
+        )
+
+        # date → response_date 2026-04-15
+        date_row = conn.execute(
+            """SELECT r.response_date
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gout.last_attack_date'""",
+            (session_id,),
+        ).fetchone()
+        assert date_row is not None and date_row[0] == "2026-04-15", (
+            f"date answer did not land: {date_row}"
+        )
+
+        # multiple_choice → at least one option_id row for the question
+        mc_count = conn.execute(
+            """SELECT COUNT(*)
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ?
+                 AND q.link_id = 'gout.attack_joints'
+                 AND r.option_id IS NOT NULL""",
+            (session_id,),
+        ).fetchone()[0]
+        assert mc_count >= 1, (
+            f"multiple_choice answer did not land: 0 option rows"
+        )
+
+        # text → response_text matches
+        text_row = conn.execute(
+            """SELECT r.response_text
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'gout.notes'""",
+            (session_id,),
+        ).fetchone()
+        assert text_row is not None and "shellfish" in text_row[0], (
+            f"text answer did not land or got mangled: {text_row}"
+        )
+
+        # No data quality flags for clean answers
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0, (
+            f"expected zero data_quality_flag rows for clean answers; got {flag_count}"
+        )
