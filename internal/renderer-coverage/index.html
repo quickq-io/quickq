@@ -1716,9 +1716,9 @@
 <tbody>
 <tr>
 <td>PHQ-9 fill + submit → import</td>
-<td>⚪</td>
+<td>✅</td>
 <td>🟡 (server-tested)</td>
-<td>(LHC-Forms direction untested)</td>
+<td><code>test_e2e_lhcforms.py::test_phq9_submission_round_trips_through_import_fhir_response</code> — fills three items via Playwright, extracts the QuestionnaireResponse via <code>LForms.Util.getFormFHIRData</code>, imports through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts the right <code>option_value</code>s landed with zero data_quality_flag rows</td>
 </tr>
 <tr>
 <td>Repeating-group fill → import (basic)</td>
@@ -1773,6 +1773,11 @@
 <tr>
 <td>2026-05-12</td>
 <td><code>likert</code> ✅ via AUDIT (10 dedicated likert items). <code>enable_behavior=all</code> ✅ via new <code>enable_behavior_all.yaml</code> fixture. <strong>Surfaced FHIR export bug in <code>renderer_fhir.py</code></strong>: <code>enableWhen</code> answer was always emitted as <code>answerString</code> for non-choice triggers, but FHIR requires the type to match the trigger's data type. LHC-Forms correctly refused to match — gated questions never appeared. Fixed by dispatching on trigger type (<code>answerBoolean</code> / <code>answerDate</code> / <code>answerDateTime</code> / <code>answerDecimal</code>). All 6 checked-in FHIR Questionnaire fixtures regenerated. <strong>Every question type in the LHC-Forms column now empirically verified (8 ✅ + 2 🟡).</strong></td>
+<td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-12</td>
+<td><strong>End-to-end submission round-trip</strong> ✅ for LHC-Forms via PHQ-9. Test fills three items in the rendered form via Playwright, extracts the QuestionnaireResponse via <code>LForms.Util.getFormFHIRData</code>, imports through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts the option_values landed with zero data_quality_flag rows. <strong>Also fixed a second FHIR resolver bug</strong>: <code>_resolve_questionnaire</code> did an exact <code>canonical_url</code> match, but LHC-Forms emits the URL with a <code>|&lt;version&gt;</code> suffix per FHIR convention. Fixed to split on <code>|</code> before matching. This is the load-bearing test that closes the data-model-as-contract loop end-to-end.</td>
 <td><code>quickq-io-r4m</code></td>
 </tr>
 </tbody>
