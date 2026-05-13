@@ -1,9 +1,14 @@
 """
 Local browser preview for a quickq questionnaire.
 
-Exports the questionnaire as FHIR R4 JSON, spins up a local HTTP server,
-and opens a browser tab rendering it via the NLM LHC-Forms web component.
-Read-only: responses are not collected or saved.
+Default path delegates to quickq-forms (the same renderer used by `quickq
+serve`): a tighter visual match to what respondents actually see, no CDN
+dependency, no internet required after install. Read-only — submissions are
+rejected at the server level.
+
+The LHC-Forms-based ``build_preview_html`` is retained for the
+``quickq preview --output file.html`` use case (single-file static export,
+useful for emailing a preview).
 
 Usage:
     from quickq.preview import preview
@@ -14,8 +19,10 @@ Usage:
 """
 from __future__ import annotations
 
+import json
 import mimetypes
 import socket
+import tempfile
 import threading
 import urllib.request
 import webbrowser
@@ -135,10 +142,67 @@ def preview(
     open_browser: bool = True,
 ) -> None:
     """
-    Render the questionnaire in a local browser tab via LHC-Forms.
+    Render the questionnaire in a local browser tab via quickq-forms.
 
-    Blocks until the user presses Ctrl+C. The server is read-only;
-    no responses are collected.
+    Blocks until the user presses Ctrl+C. Read-only — the server rejects any
+    submission with HTTP 403.
+    """
+    try:
+        from quickq_forms.serve import run as _serve_run
+    except ImportError as e:
+        raise RuntimeError(
+            "quickq-forms is not installed. Install with:\n"
+            "  pip install quickq[serve]\n"
+            "(or for development: pip install -e ../quickq-forms)"
+        ) from e
+
+    from .schema import open_oltp
+    from .renderer_fhir import export_fhir
+
+    conn = open_oltp(db_path, read_only=True)
+    fhir_dict = export_fhir(conn, questionnaire_id)
+    conn.close()
+
+    # quickq-forms reads the questionnaire from a JSON file. Write a temp
+    # copy and hand the path off. The file lives for the duration of the
+    # preview server; uvicorn blocks here until Ctrl+C.
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".QuestionnaireResponse.json", delete=False, encoding="utf-8"
+    ) as tmp:
+        json.dump(fhir_dict, tmp)
+        tmp_path = tmp.name
+
+    title = fhir_dict.get("title", f"Questionnaire {questionnaire_id}")
+    version = fhir_dict.get("version", "")
+    print(f"quickq preview  →  http://localhost:{port}")
+    print(f"Questionnaire:     {title} (v{version})")
+    print("Press Ctrl+C to stop.\n")
+
+    try:
+        _serve_run(
+            questionnaire_path=tmp_path,
+            port=port,
+            open_browser=open_browser,
+            preview=True,
+        )
+    finally:
+        try:
+            Path(tmp_path).unlink()
+        except FileNotFoundError:
+            pass
+
+
+def preview_lhcforms(
+    db_path: str,
+    questionnaire_id: int,
+    *,
+    port: int = 5173,
+    open_browser: bool = True,
+) -> None:
+    """
+    Legacy LHC-Forms-based preview server. Retained for parity testing and
+    as a fallback when quickq-forms is unavailable. The CLI does not call
+    this by default — `quickq preview` uses `preview()` above.
     """
     from .schema import open_oltp
     from .renderer_fhir import export_fhir, export_fhir_json
@@ -157,7 +221,6 @@ def preview(
 
     port = _find_port(port)
 
-    # Serve assets from localhost so browser extensions can't block them.
     html = _HTML_TEMPLATE.format(
         title=title,
         version=version,
@@ -170,8 +233,8 @@ def preview(
     server = _make_server(html, port)
     local_url = f"http://localhost:{port}"
 
-    print(f"quickq preview  →  {local_url}")
-    print(f"Questionnaire:     {title} (v{version})")
+    print(f"quickq preview (LHC-Forms)  →  {local_url}")
+    print(f"Questionnaire:               {title} (v{version})")
     print("Press Ctrl+C to stop.\n")
 
     if open_browser:

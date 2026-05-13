@@ -1,15 +1,24 @@
 """
-E2E test: PHQ-9 FHIR Questionnaire → LHC-Forms rendering.
+Interoperability E2E: FHIR Questionnaire fixtures → LHC-Forms rendering.
 
 Validates that the FHIR JSON exported by quickq renders correctly in the
-NLM LHC-Forms demo app — confirming the FHIR contract between quickq and
-real delivery tools.
+NLM LHC-Forms reference renderer — independent evidence that quickq's FHIR
+contract is portable, not just coincidentally shaped for quickq-forms.
 
-Run with:
-    uv run pytest tests/test_e2e_lhcforms.py -v
+This is the **interop** layer. Product-correctness for the default
+delivery path is covered by quickq-forms' own Playwright suite
+(quickq-forms/tests/e2e/test_render_round_trip.py), which runs every
+commit. This suite has higher overhead (network, slower DOM, brittle to
+upstream LHC-Forms updates) and should run:
 
-Kept separate from the unit test suite; CI should gate this test so it
-doesn't block fast local iteration (requires network + browser).
+  - Before any FHIR-export change ships (`renderer_fhir.py`, schema, etc.)
+  - Before any release
+  - Nightly in CI
+
+Run explicitly:
+    uv run pytest -m interop -v
+    # or by the broader e2e marker (also includes other slow suites)
+    uv run pytest -m e2e tests/test_e2e_lhcforms.py -v
 """
 from __future__ import annotations
 
@@ -18,7 +27,7 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import Page, expect
 
-pytestmark = pytest.mark.e2e
+pytestmark = [pytest.mark.e2e, pytest.mark.interop]
 
 LHCFORMS_URL = "https://lhcforms.nlm.nih.gov/lforms-fhir-app/"
 FIXTURE = Path(__file__).parent / "fixtures" / "phq9_fhir_questionnaire.json"

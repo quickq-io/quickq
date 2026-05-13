@@ -1,10 +1,20 @@
 """
-Tests for quickq preview (renderer_md.py + preview server).
+Tests for quickq preview.
 
-We test via build_preview_html() — same output as the server, no browser needed.
+Two paths are covered:
+  - build_preview_html — the static HTML export used by `quickq preview -o`
+    (LHC-Forms-based, retained for single-file static export)
+  - preview() — delegates to quickq-forms preview mode (default path for
+    `quickq preview`); tested via a backgrounded server when quickq-forms
+    is importable.
 """
 import json
+import socket
 import sys
+import threading
+import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -122,3 +132,84 @@ def test_find_port_consistent_for_same_input():
 def test_unknown_questionnaire_raises(phq9_db):
     with pytest.raises(ValueError):
         build_preview_html(phq9_db, 999)
+
+
+# ------------------------------------------------------------------
+# quickq-forms delegation (default preview path)
+# ------------------------------------------------------------------
+
+_quickq_forms = pytest.importorskip(
+    "quickq_forms",
+    reason="quickq-forms not installed — `pip install -e ../quickq-forms`",
+)
+
+
+def _free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def _wait_for_health(port: int, timeout: float = 10.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=0.5) as r:
+                if r.status == 200:
+                    return True
+        except (urllib.error.URLError, ConnectionError):
+            pass
+        time.sleep(0.2)
+    return False
+
+
+@pytest.fixture
+def preview_server(phq9_db):
+    """Start quickq.preview.preview() on a free port in a thread; tear down after."""
+    from quickq.preview import preview
+
+    port = _free_port()
+    thread = threading.Thread(
+        target=preview,
+        args=(phq9_db, 1),
+        kwargs={"port": port, "open_browser": False},
+        daemon=True,
+    )
+    thread.start()
+    assert _wait_for_health(port), "quickq.preview did not become healthy"
+    yield port
+    # uvicorn doesn't expose a graceful shutdown from the thread without
+    # the Server handle. Daemon thread + test process exit is sufficient.
+
+
+def test_preview_delegates_to_quickq_forms_in_preview_mode(preview_server):
+    port = preview_server
+    with urllib.request.urlopen(f"http://127.0.0.1:{port}/config", timeout=2) as r:
+        body = json.load(r)
+    assert body == {"preview": True}
+
+
+def test_preview_rejects_submissions(preview_server):
+    port = preview_server
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}/response",
+        data=json.dumps({
+            "resourceType": "QuestionnaireResponse",
+            "questionnaire": "http://example.com/instruments/phq-9",
+            "status": "completed",
+            "item": [],
+        }).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        urllib.request.urlopen(req, timeout=2)
+    assert exc.value.code == 403
+
+
+def test_preview_serves_the_exported_fhir_questionnaire(preview_server):
+    port = preview_server
+    with urllib.request.urlopen(f"http://127.0.0.1:{port}/questionnaire", timeout=2) as r:
+        q = json.load(r)
+    assert q["resourceType"] == "Questionnaire"
+    assert any(it.get("linkId", "").startswith("phq9.") for it in q.get("item", []))

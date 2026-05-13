@@ -56,4 +56,5 @@ packages = ["quickq"]
 addopts = "-m 'not e2e'"
 markers = [
     "e2e: end-to-end tests that build real wheels, boot subprocesses, or require network/browser (run with -m e2e)",
+    "interop: FHIR interoperability tests against third-party renderers (e.g. LHC-Forms) — independent evidence that the FHIR contract is portable. Run before any FHIR-export change ships and nightly in CI (`pytest -m interop`).",
 ]
