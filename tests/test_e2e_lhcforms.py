@@ -886,3 +886,177 @@ def test_gout_checkin_submission_round_trips_through_import_fhir_response(browse
         assert flag_count == 0, (
             f"expected zero data_quality_flag rows for clean answers; got {flag_count}"
         )
+
+
+def test_prenatal_visits_repeating_group_round_trips_through_import(browser):
+    """Fill a 2-instance repeating group in LHC-Forms; round-trip through
+    quickq's response import; assert repeat_index lands correctly.
+
+    This is the load-bearing claim for `quickq-io-bv8` and the
+    repeating_group composite shape: a real renderer session produces a
+    QuestionnaireResponse with multiple `item` entries sharing the same
+    linkId, and quickq's parser assigns sequential repeat_index values
+    that distinguish per-instance answers in fact_response.
+    """
+    import tempfile
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+    from quickq.schema import init_oltp
+
+    # --- 1. Render and fill two visit instances ---
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(PRENATAL_VISITS_FIXTURE))
+        page.wait_for_selector("text=Prenatal Visit Log", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        def _fill_combo(combo_id: str, option_text: str) -> None:
+            """Click a combobox, pick an option, Tab to commit."""
+            combo = page.locator(f"input[role=combobox][id='{combo_id}']")
+            combo.click()
+            page.wait_for_selector(
+                f"#completionOptions li:has-text(\"{option_text}\")", timeout=5_000
+            )
+            page.locator(
+                f"#completionOptions li:has-text(\"{option_text}\")"
+            ).first.click()
+            combo.press("Tab")
+            page.wait_for_timeout(150)
+
+        # visit_count = 2 (top-level numeric)
+        vc = page.locator("input#visit_count\\/1")
+        vc.fill("2")
+        vc.press("Tab")
+        page.wait_for_timeout(150)
+
+        # --- Instance 1: week=12, provider=ob, concern=false ---
+        week1 = page.locator("input#visits\\.week\\/1\\/1")
+        week1.fill("12")
+        week1.press("Tab")
+        page.wait_for_timeout(150)
+
+        _fill_combo("visits.provider/1/1", "OB/GYN")
+
+        # boolean concern: click the "No" label for instance 1
+        _select_radio_answer(page, "visits.concern/1/1", False)
+        page.wait_for_timeout(150)
+
+        # --- Add a second instance via the "+ Visit details" button ---
+        # The button can be partially overlapped by sticky UI; force=True
+        # bypasses Playwright's actionability check. LHC-Forms numbers the
+        # new instance with the parent's repeat index in the FIRST slot
+        # (`visits.week/2/1`, not `/1/2`).
+        add_button = page.locator(
+            "button[aria-label='add button for Visit details']"
+        ).first
+        add_button.scroll_into_view_if_needed()
+        add_button.click(force=True)
+        page.wait_for_selector("input#visits\\.week\\/2\\/1", timeout=5_000)
+
+        # --- Instance 2: week=20, provider=midwife, concern=true ---
+        week2 = page.locator("input#visits\\.week\\/2\\/1")
+        week2.fill("20")
+        week2.press("Tab")
+        page.wait_for_timeout(150)
+
+        _fill_combo("visits.provider/2/1", "Midwife")
+
+        _select_radio_answer(page, "visits.concern/2/1", True)
+        page.wait_for_timeout(150)
+
+        # --- 2. Extract the QuestionnaireResponse ---
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    # Sanity check: two 'visits' entries with the same linkId
+    visit_entries = [it for it in qresponse.get("item", []) if it["linkId"] == "visits"]
+    assert len(visit_entries) == 2, (
+        f"expected 2 visit instances in the QR; got {len(visit_entries)}"
+    )
+
+    # --- 3. Round-trip through quickq import ---
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "round_trip.db"
+        conn = init_oltp(db_path)
+        load_yaml(conn, fixtures_dir / "prenatal_visits.yaml")
+        conn.commit()
+
+        qresponse.setdefault("subject", {"reference": "Patient/prenatal-rt-test"})
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        # --- 4. Assert per-instance answers landed with correct repeat_index ---
+        # visit_count = 2 at the top level, NULL repeat_index
+        vc_row = conn.execute(
+            """SELECT r.response_numeric, r.repeat_index
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'visit_count'""",
+            (session_id,),
+        ).fetchone()
+        assert vc_row is not None
+        assert vc_row[0] == 2.0, f"visit_count value: {vc_row[0]}"
+        assert vc_row[1] is None, (
+            f"visit_count is not a repeating-group child; repeat_index should be NULL, got {vc_row[1]}"
+        )
+
+        # Weeks: instance 0 → 12, instance 1 → 20
+        weeks = conn.execute(
+            """SELECT r.response_numeric, r.repeat_index
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'visits.week'
+               ORDER BY r.repeat_index""",
+            (session_id,),
+        ).fetchall()
+        assert [(w[1], w[0]) for w in weeks] == [(0, 12.0), (1, 20.0)], (
+            f"weeks by repeat_index: {[(w[1], w[0]) for w in weeks]}"
+        )
+
+        # Providers via option_value: instance 0 → ob, instance 1 → midwife
+        providers = conn.execute(
+            """SELECT opt.option_value, r.repeat_index
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               JOIN response_option opt ON r.option_id = opt.option_id
+               WHERE r.session_id = ? AND q.link_id = 'visits.provider'
+               ORDER BY r.repeat_index""",
+            (session_id,),
+        ).fetchall()
+        assert [(p[1], p[0]) for p in providers] == [(0, "ob"), (1, "midwife")], (
+            f"providers by repeat_index: {[(p[1], p[0]) for p in providers]}"
+        )
+
+        # Concern booleans: instance 0 → false, instance 1 → true
+        concerns = conn.execute(
+            """SELECT r.response_text, r.repeat_index
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               WHERE r.session_id = ? AND q.link_id = 'visits.concern'
+               ORDER BY r.repeat_index""",
+            (session_id,),
+        ).fetchall()
+        assert [(c[1], c[0]) for c in concerns] == [(0, "false"), (1, "true")], (
+            f"concerns by repeat_index: {[(c[1], c[0]) for c in concerns]}"
+        )
+
+        # Zero data quality flags
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0, (
+            f"expected zero data_quality_flag rows; got {flag_count}"
+        )
