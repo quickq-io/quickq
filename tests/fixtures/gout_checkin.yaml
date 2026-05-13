@@ -20,7 +20,6 @@ questionnaire:
     - title: "Family History"
       questions:
         - { library: gout.family_gout }
-        - { library: gout.family_conditions }
 
     - title: "Management & Labs"
       questions:
@@ -28,6 +27,10 @@ questionnaire:
         - { library: gout.uric_acid }
         - { library: gout.uric_acid_date }
         - { library: gout.pain_vas }
+
+    - title: "Self-Management"
+      questions:
+        - { library: gout.management_confidence }
 
     - title: "Priorities & Notes"
       questions:

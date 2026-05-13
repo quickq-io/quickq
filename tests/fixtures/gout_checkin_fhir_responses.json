@@ -3,7 +3,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/gout-checkin",
-    "authored": "2026-05-13T01:35:30Z",
+    "authored": "2026-05-13T22:33:11Z",
     "subject": {
       "reference": "Patient/synthetic-001"
     },
@@ -116,42 +116,6 @@
         ]
       },
       {
-        "linkId": "gout.family_conditions",
-        "answer": [],
-        "item": [
-          {
-            "linkId": "gout.family_conditions.r0",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "gout"
-                }
-              }
-            ]
-          },
-          {
-            "linkId": "gout.family_conditions.r1",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "none"
-                }
-              }
-            ]
-          },
-          {
-            "linkId": "gout.family_conditions.r2",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "none"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
         "linkId": "gout.on_ult",
         "answer": [
           {
@@ -236,6 +200,62 @@
         ]
       },
       {
+        "linkId": "gout.management_confidence",
+        "answer": [],
+        "item": [
+          {
+            "linkId": "gout.management_confidence.r0",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "3"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r1",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "4"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r2",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "4"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r3",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "3"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r4",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "linkId": "gout.notes",
         "answer": [
           {
@@ -249,7 +269,7 @@
     "resourceType": "QuestionnaireResponse",
     "status": "completed",
     "questionnaire": "http://quickq.io/instruments/gout-checkin",
-    "authored": "2026-05-13T01:35:30Z",
+    "authored": "2026-05-13T22:33:11Z",
     "subject": {
       "reference": "Patient/synthetic-002"
     },
@@ -382,42 +402,6 @@
         ]
       },
       {
-        "linkId": "gout.family_conditions",
-        "answer": [],
-        "item": [
-          {
-            "linkId": "gout.family_conditions.r0",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "gout"
-                }
-              }
-            ]
-          },
-          {
-            "linkId": "gout.family_conditions.r1",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "htn"
-                }
-              }
-            ]
-          },
-          {
-            "linkId": "gout.family_conditions.r2",
-            "answer": [
-              {
-                "valueCoding": {
-                  "code": "none"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
         "linkId": "gout.on_ult",
         "answer": [
           {
@@ -496,6 +480,62 @@
               {
                 "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
                 "valueDecimal": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "linkId": "gout.management_confidence",
+        "answer": [],
+        "item": [
+          {
+            "linkId": "gout.management_confidence.r0",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "2"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r1",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "2"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r2",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "3"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r3",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "1"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "gout.management_confidence.r4",
+            "answer": [
+              {
+                "valueCoding": {
+                  "code": "2"
+                }
               }
             ]
           }

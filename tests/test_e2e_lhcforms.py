@@ -286,7 +286,7 @@ def test_gout_checkin_text_area_present(gout_checkin_page: Page):
 
 
 def test_gout_checkin_grid_renders_as_horizontal_table(gout_checkin_page: Page):
-    """gout_checkin has two grids (joint_severity, family_conditions).
+    """gout_checkin has two grids (joint_severity, management_confidence).
     Both should produce horizontal-table layouts. At least one is visible
     in the initial viewport (LHC-Forms may not render below-fold sections
     until scrolled into view, so the strict count is ≥1)."""

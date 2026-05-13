@@ -1,6 +1,3 @@
-!!! note "Generated output"
-    This page was produced by running `quickq render demo/study.db <id>` against a database loaded with the Gout Symptoms Check-In instrument. Nothing was written by hand.
-
 # Gout Symptoms Check-In and Family History
 
 **Version:** 1.0  
@@ -64,36 +61,40 @@ Synthetic gout check-in form. Covers question types: date, datetime, multiple_ch
 - `cousin` First cousin, aunt, or uncle
 - `none` None of the above
 
-**7. Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?**
-`gout.family_conditions` · `grid`
-
-| | Gout (`gout`) | Kidney stones (`kidney`) | Hypertension (`htn`) | Diabetes (`dm`) | None of the above (`none`) |
-|---|---|---|---|---|---|
-| Biological father | | | | | |
-| Biological mother | | | | | |
-| Brother or sister | | | | | |
-
 ## Management & Labs
 
-**8. Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?**
+**7. Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?**
 `gout.on_ult` · `boolean`
 
 - Yes / No
 
-**9. Most recent serum uric acid level (mg/dL):**
+**8. Most recent serum uric acid level (mg/dL):**
 `gout.uric_acid` · `numeric`
 
 *Numeric response*
 
-**10. Date of that uric acid blood test:**
+**9. Date of that uric acid blood test:**
 `gout.uric_acid_date` · `date`
 
 *Date*
 
-**11. How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)**
+**10. How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)**
 `gout.pain_vas` · `slider`
 
 *Slider (visual analog scale)*
+
+## Self-Management
+
+**11. How confident are you in each of these self-management approaches?**
+`gout.management_confidence` · `grid`
+
+| | Not confident (`1`) | Slightly confident (`2`) | Moderately confident (`3`) | Very confident (`4`) |
+|---|---|---|---|---|
+| Following a low-purine diet | | | | |
+| Taking medication as prescribed | | | | |
+| Staying hydrated | | | | |
+| Reducing alcohol intake | | | | |
+| Recognizing flare warning signs | | | | |
 
 ## Priorities & Notes
 
@@ -110,3 +111,4 @@ Synthetic gout check-in form. Covers question types: date, datetime, multiple_ch
 `gout.notes` · `text`
 
 *Free-text response*
+

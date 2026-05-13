@@ -5,7 +5,7 @@
   "version": "1.0",
   "url": "http://quickq.io/instruments/gout-checkin",
   "description": "Synthetic gout check-in form. Covers question types: date, datetime, multiple_choice, grid, slider, ranked, boolean, numeric, text.",
-  "date": "2026-05-13T01:35:30Z",
+  "date": "2026-05-13T22:33:11Z",
   "name": "GoutSymptomsCheckInandFamilyHistory",
   "item": [
     {
@@ -386,145 +386,6 @@
       ]
     },
     {
-      "linkId": "gout.family_conditions",
-      "text": "Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?",
-      "type": "group",
-      "item": [
-        {
-          "linkId": "gout.family_conditions.r0",
-          "text": "Biological father",
-          "type": "choice",
-          "answerOption": [
-            {
-              "valueCoding": {
-                "code": "gout",
-                "display": "Gout"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "kidney",
-                "display": "Kidney stones"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "htn",
-                "display": "Hypertension"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "dm",
-                "display": "Diabetes"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "none",
-                "display": "None of the above"
-              }
-            }
-          ]
-        },
-        {
-          "linkId": "gout.family_conditions.r1",
-          "text": "Biological mother",
-          "type": "choice",
-          "answerOption": [
-            {
-              "valueCoding": {
-                "code": "gout",
-                "display": "Gout"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "kidney",
-                "display": "Kidney stones"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "htn",
-                "display": "Hypertension"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "dm",
-                "display": "Diabetes"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "none",
-                "display": "None of the above"
-              }
-            }
-          ]
-        },
-        {
-          "linkId": "gout.family_conditions.r2",
-          "text": "Brother or sister",
-          "type": "choice",
-          "answerOption": [
-            {
-              "valueCoding": {
-                "code": "gout",
-                "display": "Gout"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "kidney",
-                "display": "Kidney stones"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "htn",
-                "display": "Hypertension"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "dm",
-                "display": "Diabetes"
-              }
-            },
-            {
-              "valueCoding": {
-                "code": "none",
-                "display": "None of the above"
-              }
-            }
-          ]
-        }
-      ],
-      "extension": [
-        {
-          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-          "valueCodeableConcept": {
-            "coding": [
-              {
-                "system": "http://hl7.org/fhir/questionnaire-item-control",
-                "code": "gtable"
-              }
-            ]
-          }
-        },
-        {
-          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
-          "valueString": "GoutCheckin"
-        },
-        {
-          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
-          "valueString": "GOUT-F2"
-        }
-      ]
-    },
-    {
       "linkId": "gout.on_ult",
       "text": "Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?",
       "type": "boolean",
@@ -608,6 +469,189 @@
         {
           "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
           "valueString": "GOUT-M4"
+        }
+      ]
+    },
+    {
+      "linkId": "gout.management_confidence",
+      "text": "How confident are you in each of these self-management approaches?",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "gout.management_confidence.r0",
+          "text": "Following a low-purine diet",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Not confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Slightly confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Moderately confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "4",
+                "display": "Very confident"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.management_confidence.r1",
+          "text": "Taking medication as prescribed",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Not confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Slightly confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Moderately confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "4",
+                "display": "Very confident"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.management_confidence.r2",
+          "text": "Staying hydrated",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Not confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Slightly confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Moderately confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "4",
+                "display": "Very confident"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.management_confidence.r3",
+          "text": "Reducing alcohol intake",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Not confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Slightly confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Moderately confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "4",
+                "display": "Very confident"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "gout.management_confidence.r4",
+          "text": "Recognizing flare warning signs",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "code": "1",
+                "display": "Not confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "2",
+                "display": "Slightly confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "3",
+                "display": "Moderately confident"
+              }
+            },
+            {
+              "valueCoding": {
+                "code": "4",
+                "display": "Very confident"
+              }
+            }
+          ]
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "gtable"
+              }
+            ]
+          }
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-instrument",
+          "valueString": "GoutCheckin"
+        },
+        {
+          "url": "https://quickq.io/fhir/StructureDefinition/source-item-id",
+          "valueString": "GOUT-M1"
         }
       ]
     },

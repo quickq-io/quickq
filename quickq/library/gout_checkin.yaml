@@ -82,20 +82,21 @@ library:
       source_item_id: "GOUT-F1"
       options: $family_gout_options
 
-    - link_id: gout.family_conditions
-      text: "Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?"
+    - link_id: gout.management_confidence
+      text: "How confident are you in each of these self-management approaches?"
       type: grid
-      source_item_id: "GOUT-F2"
+      source_item_id: "GOUT-M1"
       rows:
-        - { text: "Biological father" }
-        - { text: "Biological mother" }
-        - { text: "Brother or sister" }
+        - { text: "Following a low-purine diet" }
+        - { text: "Taking medication as prescribed" }
+        - { text: "Staying hydrated" }
+        - { text: "Reducing alcohol intake" }
+        - { text: "Recognizing flare warning signs" }
       columns:
-        - { text: "Gout",              value: "gout"    }
-        - { text: "Kidney stones",     value: "kidney"  }
-        - { text: "Hypertension",      value: "htn"     }
-        - { text: "Diabetes",          value: "dm"      }
-        - { text: "None of the above", value: "none"    }
+        - { text: "Not confident",        value: "1" }
+        - { text: "Slightly confident",   value: "2" }
+        - { text: "Moderately confident", value: "3" }
+        - { text: "Very confident",       value: "4" }
 
     # ── Management & Labs ─────────────────────────────────────────────
     - link_id: gout.on_ult

@@ -448,16 +448,18 @@ def _build_gout_mild(url: str, subject_id: str) -> dict:
             ("gout.joint_severity.r5", "0"),
         ]),
         _gout_sata("gout.family_gout",        ["father"]),
-        _gout_grid("gout.family_conditions", [
-            ("gout.family_conditions.r0", "gout"),
-            ("gout.family_conditions.r1", "none"),
-            ("gout.family_conditions.r2", "none"),
-        ]),
         {"linkId": "gout.on_ult",           "answer": [{"valueBoolean": True}]},
         {"linkId": "gout.uric_acid",         "answer": [{"valueDecimal": 6.2}]},
         {"linkId": "gout.uric_acid_date",    "answer": [{"valueDate": "2026-03-01"}]},
         _gout_ranked("gout.treatment_priorities",
                      ["prevention", "uric_acid", "pain_relief", "function", "side_effects"]),
+        _gout_grid("gout.management_confidence", [
+            ("gout.management_confidence.r0", "3"),
+            ("gout.management_confidence.r1", "4"),
+            ("gout.management_confidence.r2", "4"),
+            ("gout.management_confidence.r3", "3"),
+            ("gout.management_confidence.r4", "3"),
+        ]),
         {"linkId": "gout.notes", "answer": [{"valueString": "Doing well on allopurinol."}]},
     ]
     return _fhir_response(url, subject_id, items)
@@ -478,16 +480,18 @@ def _build_gout_severe(url: str, subject_id: str) -> dict:
             ("gout.joint_severity.r5", "0"),
         ]),
         _gout_sata("gout.family_gout",        ["father", "mat_gp", "pat_gp"]),
-        _gout_grid("gout.family_conditions", [
-            ("gout.family_conditions.r0", "gout"),
-            ("gout.family_conditions.r1", "htn"),
-            ("gout.family_conditions.r2", "none"),
-        ]),
         {"linkId": "gout.on_ult",           "answer": [{"valueBoolean": False}]},
         {"linkId": "gout.uric_acid",         "answer": [{"valueDecimal": 9.8}]},
         {"linkId": "gout.uric_acid_date",    "answer": [{"valueDate": "2026-04-15"}]},
         _gout_ranked("gout.treatment_priorities",
                      ["pain_relief", "prevention", "function", "uric_acid", "side_effects"]),
+        _gout_grid("gout.management_confidence", [
+            ("gout.management_confidence.r0", "2"),
+            ("gout.management_confidence.r1", "2"),
+            ("gout.management_confidence.r2", "3"),
+            ("gout.management_confidence.r3", "1"),
+            ("gout.management_confidence.r4", "2"),
+        ]),
         {"linkId": "gout.notes",
          "answer": [{"valueString": "Attacks getting worse. Concerned about kidneys."}]},
     ]
