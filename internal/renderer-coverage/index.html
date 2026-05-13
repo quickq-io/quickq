@@ -1501,10 +1501,10 @@
 </tr>
 <tr>
 <td><code>sata_other</code></td>
+<td>✅</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>(untested)</td>
-<td>YAML fixture: <code>prapare</code>, <code>health_intake_demo</code></td>
+<td><code>test_e2e_lhcforms.py::test_prapare_sata_other_renders_a_combobox</code></td>
+<td>LHC-Forms renders sata_other (FHIR <code>open-choice</code>) as a multi-select combobox; options visible after dropdown interaction</td>
 </tr>
 <tr>
 <td><code>boolean</code></td>
@@ -1628,9 +1628,9 @@
 <tbody>
 <tr>
 <td><code>repeating_group</code> with simple-type children</td>
+<td>✅</td>
 <td>⚪</td>
-<td>⚪</td>
-<td><code>prenatal_visits</code> fixture is the natural anchor; no E2E test</td>
+<td><code>test_e2e_lhcforms.py::test_prenatal_basic_repeating_group_first_instance_renders</code> + <code>test_prenatal_repeating_group_add_control_present</code> — LHC-Forms renders the first instance with all flat children plus an Add control</td>
 </tr>
 <tr>
 <td><code>repeating_group</code> with a <code>grid</code> child</td>
@@ -1763,6 +1763,11 @@
 <tr>
 <td>2026-05-12</td>
 <td>gout_checkin sweep added: <code>multiple_choice</code> / <code>boolean</code> / <code>text</code> / <code>numeric</code> / <code>date</code> / <code>datetime</code> → ✅ for LHC-Forms; <code>slider</code> and <code>ranked</code> → 🟡 with notes on partial support. Stale FHIR fixtures regenerated (8 files).</td>
+<td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-12</td>
+<td><code>sata_other</code> ✅ via PRAPARE (renders as multi-select combobox in LHC-Forms). <code>repeating_group</code> (simple children) ✅ via prenatal_visits (first instance renders + Add control). LHC-Forms covers 11 of 12 question types now; only <code>likert</code> remains 🟡 (covered implicitly via PHQ-9 ordinal-choice but no distinct test).</td>
 <td><code>quickq-io-r4m</code></td>
 </tr>
 </tbody>
