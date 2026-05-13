@@ -772,6 +772,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Known limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workaround-demographics-as-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workaround: demographics as questions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1506,6 +1523,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Known limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workaround-demographics-as-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workaround: demographics as questions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1769,11 +1803,47 @@
 </tr>
 <tr>
 <td><strong>Demographic / profile attributes</strong> (<code>age</code>, <code>sex_at_birth</code>) cannot be skip-rule triggers. Only other questions in the same questionnaire can.</td>
-<td>Recipes don't apply to age-bracket gates or similar; those need a different approach (study-level filters before joining responses).</td>
+<td>Recipes don't apply to age-bracket gates or similar; use the workaround below.</td>
 </tr>
 </tbody>
 </table>
 <p>The structural roadmap for closing these gaps is tracked in <a href="https://github.com/quickq-io/quickq/issues">the data-sharing tooling design constraints issue</a> (search <code>quickq-io-ap8</code>).</p>
+<h3 id="workaround-demographics-as-questions">Workaround: demographics as questions<a class="headerlink" href="#workaround-demographics-as-questions" title="Permanent link">&para;</a></h3>
+<p>For age-gated and sex-specific questions, the practical pattern is to <em>include demographics as questions</em> in each questionnaire that needs to gate on them — typically a small intake block at the top:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">questions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo.age</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">How old are you?</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">numeric</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">120</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo.sex_at_birth</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">What was your sex assigned at birth?</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single_choice</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Female&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;female&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Male&quot;</span><span class="p p-Indicator">,</span><span class="nt">   value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;male&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Prefer</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">answer&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;decline&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="c1"># ... then gate downstream questions on these like any other trigger:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clinical.pregnancy_history</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Have you ever been pregnant?</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">    </span><span class="nt">show_when</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">question</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo.sex_at_birth</span>
+<span class="w">      </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;=&quot;</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;female&quot;</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clinical.colonoscopy_screening</span>
+<span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">When was your last colonoscopy?</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span>
+<span class="w">    </span><span class="nt">show_when</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">question</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo.age</span>
+<span class="w">      </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&gt;=&quot;</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
+</code></pre></div>
+<p>This is <strong>FHIR-clean</strong> — the demographics ride along with every QuestionnaireResponse, so any FHIR-compliant tool can render the gates correctly without quickq-specific extensions. The cost is a small amount of duplication when the same demographics appear in multiple instruments; cross-instrument harmonization on demographics works through standard concept codes (LOINC for age, SNOMED for sex) the same way it does for any other question.</p>
+<p>Native attribute-typed gates (e.g. <code>show_when: { attribute: age, operator: "&gt;=", value: 65 }</code>) would remove the duplication but introduce a FHIR round-trip gap. The honest path forward is FHIR SDC's <code>enableWhenExpression</code> extension; that's a substantive design commitment we'll take on when a real study surfaces demand. Until then, model demographics as questions.</p>
 <hr />
 <h2 id="going-deeper">Going deeper<a class="headerlink" href="#going-deeper" title="Permanent link">&para;</a></h2>
 <ul>
