@@ -1334,6 +1334,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#two-suite-test-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-suite test strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#question-types" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1473,6 +1484,35 @@
 </tbody>
 </table>
 <p>The test-path column points to the Playwright test (or other automation) that backs a ✅. When a <code>⚪</code> becomes a ✅, update the cell and add a row to the change log at the bottom.</p>
+<h2 id="two-suite-test-strategy">Two-suite test strategy<a class="headerlink" href="#two-suite-test-strategy" title="Permanent link">&para;</a></h2>
+<p>The two columns aren't redundant — they ask different questions:</p>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>Location</th>
+<th>Question it answers</th>
+<th>When to run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LHC-Forms</strong> (interop)</td>
+<td><code>quickq/tests/test_e2e_lhcforms.py</code>, marked <code>interop</code> + <code>e2e</code></td>
+<td>Is quickq's FHIR contract portable to a third-party renderer (the NLM reference implementation)?</td>
+<td>Before any FHIR-export change ships (<code>renderer_fhir.py</code>, schema), before releases, nightly in CI. <code>pytest -m interop</code></td>
+</tr>
+<tr>
+<td><strong>quickq-forms</strong> (product)</td>
+<td><code>quickq-forms/tests/e2e/test_render_round_trip.py</code></td>
+<td>Does the default delivery product work end-to-end (render → submit → OLTP → OLAP)?</td>
+<td>Every commit. Fast (~10s), deterministic, no network</td>
+</tr>
+</tbody>
+</table>
+<p>A passing quickq-forms test with a failing LHC-Forms test on the same fixture is the signal "our FHIR shape is wrong but our renderer hides it." Drop the LHC-Forms suite and that class of bug becomes invisible — including the one that surfaced the <code>answerString</code>-for-non-choice-triggers bug fixed in May 2026.</p>
+<p>A passing LHC-Forms test with a failing quickq-forms test is the signal "our FHIR is fine, our renderer has a regression." Both suites cover most fixtures, so the gap shows up immediately.</p>
+<p>When adding a new fixture or question type, add coverage to <strong>both</strong> suites.</p>
 <h2 id="question-types">Question types<a class="headerlink" href="#question-types" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1488,8 +1528,8 @@
 <tr>
 <td><code>single_choice</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_frequency_options_present</code></td>
+<td>✅</td>
+<td>LHC: <code>test_frequency_options_present</code> · qq-forms: <code>test_phq9_basic_render_and_submit</code></td>
 <td>PHQ-9 frequency options</td>
 </tr>
 <tr>
@@ -1509,23 +1549,23 @@
 <tr>
 <td><code>boolean</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_gout_checkin_question_labels_render</code></td>
-<td>gout <code>on_ult</code></td>
+<td>✅</td>
+<td>LHC: <code>test_gout_checkin_question_labels_render</code> · qq-forms: <code>test_enable_behavior_all_round_trip</code></td>
+<td>gout <code>on_ult</code> (LHC); prenatal <code>visits.concern</code> + enable_behavior_all triggers (qq-forms)</td>
 </tr>
 <tr>
 <td><code>text</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_gout_checkin_text_area_present</code></td>
-<td>gout <code>notes</code></td>
+<td>✅</td>
+<td>LHC: <code>test_gout_checkin_text_area_present</code> · qq-forms: <code>test_enable_behavior_all_round_trip</code></td>
+<td>gout <code>notes</code> (LHC); gated <code>cessation</code> (qq-forms)</td>
 </tr>
 <tr>
 <td><code>numeric</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_gout_checkin_question_labels_render</code></td>
-<td>gout <code>attacks_12mo</code>, <code>uric_acid</code></td>
+<td>✅</td>
+<td>LHC: <code>test_gout_checkin_question_labels_render</code> · qq-forms: <code>test_prenatal_repeating_group_emits_separate_parent_items</code></td>
+<td>gout <code>attacks_12mo</code>, <code>uric_acid</code> (LHC); prenatal <code>visit_count</code> and per-instance <code>visits.week</code> (qq-forms)</td>
 </tr>
 <tr>
 <td><code>date</code></td>
@@ -1551,30 +1591,30 @@
 <tr>
 <td><code>grid</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_grid_in_repeating_renders_as_horizontal_table</code></td>
-<td>Spike <code>quickq-io-9u0</code> verified <code>.lhc-form-horizontal-table</code> rendering; coverage is <em>grid as child of a repeating group</em>, not standalone — but the spec-level pattern is identical</td>
+<td>✅</td>
+<td>LHC: <code>test_grid_in_repeating_renders_as_horizontal_table</code> · qq-forms: <code>test_grid_in_repeating_group_per_instance_keys</code></td>
+<td>Both verified inside a repeating-group parent; standalone-grid case implied by the same component but not directly tested in either suite</td>
 </tr>
 <tr>
 <td><code>ranked</code></td>
 <td>🟡</td>
 <td>⚪</td>
 <td><code>test_e2e_lhcforms.py::test_gout_checkin_question_labels_render</code></td>
-<td><strong>Partial support in LHC-Forms.</strong> Renders as a single-select combobox with placeholder "Select one" — no drag-to-rank, no multi-position ordering. A respondent can pick <em>one</em> of the ranked options but cannot order them. The <code>ordinalValue</code> extension we emit is silently ignored. Empirical finding from <code>quickq-io-r4m</code> audit.</td>
+<td><strong>Partial support in LHC-Forms.</strong> Renders as a single-select combobox with placeholder "Select one" — no drag-to-rank, no multi-position ordering. A respondent can pick <em>one</em> of the ranked options but cannot order them. The <code>ordinalValue</code> extension we emit is silently ignored. Empirical finding from <code>quickq-io-r4m</code> audit. quickq-forms component renders as numbered dropdowns (one per option) but is not yet E2E-tested.</td>
 </tr>
 <tr>
 <td><code>slider</code></td>
 <td>🟡</td>
 <td>⚪</td>
 <td><code>test_e2e_lhcforms.py::test_gout_checkin_slider_question_renders_an_input</code></td>
-<td><strong>Partial support in LHC-Forms.</strong> Renders as a plain text input with placeholder "Type a number" — the min/max metadata from the FHIR export is silently ignored. The question doesn't disappear; the slider <em>affordance</em> does. Empirical finding from <code>quickq-io-r4m</code> audit.</td>
+<td><strong>Partial support in LHC-Forms.</strong> Renders as a plain text input with placeholder "Type a number" — the min/max metadata from the FHIR export is silently ignored. The question doesn't disappear; the slider <em>affordance</em> does. Empirical finding from <code>quickq-io-r4m</code> audit. quickq-forms renders a real range input with min/max/labels; not yet E2E-tested.</td>
 </tr>
 <tr>
 <td><code>repeating_group</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_grid_in_repeating_first_instance_renders_week</code></td>
-<td>Verified with the grid-child case; basic flat-child case (prenatal_visits) not yet E2E-tested</td>
+<td>✅</td>
+<td>LHC: <code>test_grid_in_repeating_first_instance_renders_week</code> · qq-forms: <code>test_prenatal_repeating_group_emits_separate_parent_items</code> + <code>test_grid_in_repeating_group_per_instance_keys</code></td>
+<td>qq-forms verified both flat-child and grid-child shapes, including the fix to emit N separate parent items with the same linkId (one per instance)</td>
 </tr>
 </tbody>
 </table>
@@ -1635,37 +1675,37 @@ through unit tests; the renderer side is the limitation.</p>
 <tr>
 <td><code>repeating_group</code> with simple-type children</td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_prenatal_basic_repeating_group_first_instance_renders</code> + <code>test_prenatal_repeating_group_add_control_present</code> — LHC-Forms renders the first instance with all flat children plus an Add control</td>
+<td>✅</td>
+<td>LHC: <code>test_prenatal_basic_repeating_group_first_instance_renders</code> + <code>test_prenatal_repeating_group_add_control_present</code>. qq-forms: <code>test_prenatal_repeating_group_emits_separate_parent_items</code> — explicitly verifies the FHIR shape (N parent items with same linkId) that import_fhir_response expects</td>
 </tr>
 <tr>
 <td><code>repeating_group</code> with a <code>grid</code> child</td>
 <td>✅</td>
-<td>⚪</td>
-<td>bv8 + 9u0 spike verified end-to-end on LHC-Forms; tests in <code>test_e2e_lhcforms.py</code></td>
+<td>✅</td>
+<td>LHC: bv8 + 9u0 spike + <code>test_grid_in_repeating_round_trip_closes_bv8</code>. qq-forms: <code>test_grid_in_repeating_group_per_instance_keys</code> — verified per-instance keying (<code>parent[i]:child</code>) of grid cells inside the second visit's grid</td>
 </tr>
 <tr>
 <td><code>grid</code> (standalone, not inside a repeating group)</td>
 <td>🟡</td>
-<td>⚪</td>
-<td>The horizontal-table rendering pattern is the same as the verified grid-in-repeating case; standalone case is implied to work but not directly tested</td>
+<td>🟡</td>
+<td>The horizontal-table rendering pattern is the same as the verified grid-in-repeating case in both suites; standalone case is implied to work but not directly tested</td>
 </tr>
 <tr>
 <td>Multi-level <code>enableWhen</code> (multiple rules per item, <code>enable_behavior=any</code>)</td>
 <td>✅</td>
-<td>⚪</td>
-<td>PHQ-9 <code>difficulty</code> exercises 3 rules with <code>enable_behavior=any</code>, verified in <code>test_difficulty_appears_after_nonzero_answer</code></td>
+<td>✅</td>
+<td>LHC: <code>test_difficulty_appears_after_nonzero_answer</code>. qq-forms: <code>test_phq9_skip_logic_reveals_difficulty</code> — both exercise the PHQ-9 <code>difficulty</code> item with 3 <code>any-OR</code> rules</td>
 </tr>
 <tr>
 <td>Multi-level <code>enableWhen</code> with <code>enable_behavior=all</code></td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_enable_behavior_all_*</code></td>
+<td>✅</td>
+<td>LHC: <code>test_e2e_lhcforms.py::test_enable_behavior_all_*</code>. qq-forms: <code>test_enable_behavior_all_round_trip</code> — both use the dedicated <code>enable_behavior_all.yaml</code> fixture. The original LHC-Forms test <strong>surfaced a real bug in <code>quickq/renderer_fhir.py</code></strong>: enableWhen answer type was always <code>answerString</code> for non-choice triggers, but FHIR requires the type to match the trigger. LHC-Forms (correctly) refused to match. Fix in same commit: dispatch on trigger type for <code>answerBoolean</code> / <code>answerDate</code> / <code>answerDateTime</code> / <code>answerDecimal</code>.</td>
 </tr>
 <tr>
 <td><code>operator: in</code> (post-expansion to N flat <code>=</code> rules)</td>
 <td>🟡</td>
-<td>⚪</td>
+<td>🟡</td>
 <td>Lands as N standard FHIR <code>enableWhen</code> entries with <code>enable_behavior=any</code>; should render in any FHIR-compliant renderer but not directly tested</td>
 </tr>
 </tbody>
@@ -1723,32 +1763,39 @@ through unit tests; the renderer side is the limitation.</p>
 <tr>
 <td>PHQ-9 fill + submit → import</td>
 <td>✅</td>
-<td>🟡 (server-tested)</td>
-<td><code>test_e2e_lhcforms.py::test_phq9_submission_round_trips_through_import_fhir_response</code> — fills three items via Playwright, extracts the QuestionnaireResponse via <code>LForms.Util.getFormFHIRData</code>, imports through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts the right <code>option_value</code>s landed with zero data_quality_flag rows</td>
+<td>✅</td>
+<td>LHC: <code>test_phq9_submission_round_trips_through_import_fhir_response</code>. qq-forms: <code>test_phq9_imports_into_study_db</code> — fills all 9 PHQ items + the gated <code>difficulty</code>, submits via the FastAPI server, imports the saved QuestionnaireResponse JSON through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts 10 rows land in <code>response</code> table with zero data_quality_flag rows</td>
 </tr>
 <tr>
 <td>gout_checkin fill (5 types) + submit → import</td>
 <td>✅</td>
-<td>🟡 (server-tested)</td>
+<td>⚪</td>
 <td><code>test_e2e_lhcforms.py::test_gout_checkin_submission_round_trips_through_import_fhir_response</code> — fills boolean, numeric, date, multiple_choice, text; asserts each lands in the correct typed column with zero data_quality_flag rows</td>
 </tr>
 <tr>
 <td>Repeating-group fill → import (basic)</td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_prenatal_visits_repeating_group_round_trips_through_import</code> — fills two visit instances in the rendered form (week / provider / concern × 2), clicks "+ Visit details" to add the second instance, asserts each child lands with the correct <code>repeat_index</code> (0 for instance 1, 1 for instance 2)</td>
+<td>✅</td>
+<td>LHC: <code>test_prenatal_visits_repeating_group_round_trips_through_import</code>. qq-forms: <code>test_prenatal_visits_import_records_repeat_index</code> — adds a second instance via the React component, fills both, submits, imports, asserts both <code>0</code> and <code>1</code> appear in the <code>repeat_index</code> column</td>
 </tr>
 <tr>
 <td>Grid-in-repeating fill → import</td>
 <td>✅</td>
-<td>⚪</td>
-<td><code>test_e2e_lhcforms.py::test_grid_in_repeating_round_trip_closes_bv8</code> — fills two visit instances with a 3-row severity grid each (6 grid cells total), submits, imports, and asserts every grid cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. Closes the third leg of the bv8 verification trifecta.</td>
+<td>⚪ (renderer ✅, full import not yet)</td>
+<td>LHC: <code>test_e2e_lhcforms.py::test_grid_in_repeating_round_trip_closes_bv8</code>. qq-forms: <code>test_grid_in_repeating_group_per_instance_keys</code> proves the renderer emits the correct FHIR shape, but the import → DB-row assertion is not yet wired (the renderer shape is what bv8's third leg actually depends on)</td>
 </tr>
 </tbody>
 </table>
 <h2 id="quickq-forms-coverage">quickq-forms coverage<a class="headerlink" href="#quickq-forms-coverage" title="Permanent link">&para;</a></h2>
-<p>Tracked separately as <strong><code>quickq-io-&lt;spinout&gt;</code></strong>. The LHC-Forms column of this page reflects the renderer most users will deploy; quickq-forms is a distinct renderer (a React frontend served by our own FastAPI shim) that needs its own Playwright harness against the running dev server. Until that spinout lands, the <code>⚪</code> cells in the quickq-forms column should be read as un-verified, not as broken.</p>
-<p>When quickq-forms gains its own E2E Playwright suite, those cells get filled cell-by-cell using the same pattern proved out here for LHC-Forms (load fixture, render, structural checks, then submission round-trip via the frontend's serialization equivalent of <code>LForms.Util.getFormFHIRData</code>).</p>
+<p>quickq-forms has its own Playwright suite at <code>quickq-forms/tests/e2e/test_render_round_trip.py</code>. The pattern mirrors the LHC-Forms suite: boot the server with the FileAdapter pointing at a shared FHIR fixture, drive the DOM, read the saved QuestionnaireResponse from disk, optionally round-trip through <code>quickq.parser_fhir_response.import_fhir_response</code>.</p>
+<p>What's verified today (May 2026):
+- All four core simple types: <code>single_choice</code>, <code>boolean</code>, <code>text</code>, <code>numeric</code>
+- <code>grid</code> (inside a repeating-group parent)
+- <code>repeating_group</code> with both flat children and a grid child — including the FHIR-shape requirement to emit N separate parent items with the same linkId
+- Skip logic with <code>enable_behavior=any</code> (PHQ-9 difficulty reveal) and <code>enable_behavior=all</code> (cessation gate)
+- Preview mode: banner visible, every input disabled, <code>/response</code> returns 403
+- Full DB round-trip for PHQ-9 and prenatal_visits (the repeating-group + repeat_index case)</p>
+<p>Remaining ⚪ cells reflect untested types (datetime, likert, slider, ranked, multiple_choice, sata_other, standalone grid) and the gout_checkin multi-type round-trip. They aren't broken — the components exist and the parser handles them — they just aren't yet driven by the Playwright suite. Filling those cells is the same incremental pattern as the existing tests.</p>
 <h2 id="change-log">Change log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1809,13 +1856,24 @@ through unit tests; the renderer side is the limitation.</p>
 <td><strong>r4m closeout pass for LHC-Forms.</strong> Three more round-trips: AUDIT likert (3 q1-q3 items), gout slider (numeric via the text-input fallback), and enable_behavior=all (two boolean triggers Yes + the gated text answer). Probed ranked empirically: LHC-Forms renders quickq's <code>ranked</code> type as a single-select combobox ("Select one") — no drag-to-rank, no multi-position ordering, <code>ordinalValue</code> extension silently ignored. Marked the <code>ranked</code> cell explicitly as 🟡 partial-support and reorganized the FHIR extensions table to reflect that LHC-Forms silently ignores <code>questionnaire-maxOccurs</code>, <code>ordinalValue</code>, slider min/max, and <code>itemControl</code> — known LHC-Forms limitations, not quickq bugs. quickq-forms column spun out to its own issue.</td>
 <td><code>quickq-io-r4m</code> (closing)</td>
 </tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>quickq-forms parity pass.</strong> New Playwright suite at <code>quickq-forms/tests/e2e/test_render_round_trip.py</code> (10 tests) fills the previously-⚪ cells for <code>single_choice</code>, <code>boolean</code>, <code>text</code>, <code>numeric</code>, <code>grid</code> (in repeating), <code>repeating_group</code> (flat children + grid child), and both <code>enable_behavior</code> modes. Surfaced and fixed four correctness bugs along the way: (1) <code>serializeRepeatingGroup</code> was flattening all instances into a single parent item — fixed to emit N separate parents with the same linkId, matching what <code>import_fhir_response</code> expects; (2) grid cells inside repeating-group instances were keyed by bare <code>row.linkId</code>, ignoring the <code>parent[i]:</code> prefix — fixed in both component and serializer; (3) plain FHIR <code>group</code> items threw <code>Unsupported type</code> — now render as section headers; (4) FHIR <code>display</code> items were silently filtered out — now render as instructional text. The four bug fixes are the concrete payoff of the two-suite strategy: each was caught by the new quickq-forms tests, not the LHC-Forms ones. Two end-to-end DB round-trips also wired (PHQ-9 + prenatal repeat_index).</td>
+<td><code>quickq-io-sy2</code> (closing)</td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>Two-suite split formalized.</strong> Added <code>pytest.mark.interop</code> to the LHC-Forms suite (registered in <code>pyproject.toml</code>); the suite is now selectable as <code>pytest -m interop</code>. Cadence documented in this page's intro: quickq-forms every commit (fast, deterministic), LHC-Forms before FHIR-export changes / nightly. The split makes the "interop canary" role explicit — LHC-Forms is the independent renderer that catches FHIR-correctness bugs our own renderer would silently mirror, and that role doesn't go away when quickq-forms becomes the default delivery tool.</td>
+<td>n/a (policy decision recorded as part of <code>quickq-io-sy2</code>)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>quickq-io-r4m</code> — this audit (tracking issue)</li>
+<li><code>quickq-io-r4m</code> — this audit (tracking issue, closed)</li>
+<li><code>quickq-io-sy2</code> — quickq-forms renderer-coverage parity (closed; filled the quickq-forms column)</li>
 <li><code>quickq-io-9u0</code> — grid-in-repeating spike (closed; populated 4 cells)</li>
-<li><code>quickq-io-ckf</code> — strategic unify-on-quickq-forms decision; may halve future verification work</li>
+<li><code>quickq-io-ckf</code> — strategic unify-on-quickq-forms decision; the two-suite split formalized above is the <em>practical</em> answer (keep both, different cadences) rather than the unification originally implied</li>
 <li><code>quickq-io-bv8</code> — data-model side of grid-in-repeating (closed)</li>
 <li><code>quickq-io-ap8</code> — skip-logic schema extensions</li>
 </ul>

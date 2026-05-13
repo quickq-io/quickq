@@ -1117,6 +1117,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#self-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#priorities-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1477,6 +1488,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#self-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#priorities-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1507,10 +1529,6 @@
   
 
 
-<div class="admonition note">
-<p class="admonition-title">Generated output</p>
-<p>This page was produced by running <code>quickq render demo/study.db &lt;id&gt;</code> against a database loaded with the Gout Symptoms Check-In instrument. Nothing was written by hand.</p>
-</div>
 <h1 id="gout-symptoms-check-in-and-family-history">Gout Symptoms Check-In and Family History<a class="headerlink" href="#gout-symptoms-check-in-and-family-history" title="Permanent link">&para;</a></h1>
 <p><strong>Version:</strong> 1.0<br />
 <strong>URL:</strong> http://quickq.io/instruments/gout-checkin  </p>
@@ -1606,39 +1624,65 @@
 <li><code>cousin</code> First cousin, aunt, or uncle</li>
 <li><code>none</code> None of the above</li>
 </ul>
-<p><strong>7. Has any first-degree blood relative (parent, sibling) ever been diagnosed with any of the following?</strong>
-<code>gout.family_conditions</code> · <code>grid</code></p>
+<h2 id="management-labs">Management &amp; Labs<a class="headerlink" href="#management-labs" title="Permanent link">&para;</a></h2>
+<p><strong>7. Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?</strong>
+<code>gout.on_ult</code> · <code>boolean</code></p>
+<ul>
+<li>Yes / No</li>
+</ul>
+<p><strong>8. Most recent serum uric acid level (mg/dL):</strong>
+<code>gout.uric_acid</code> · <code>numeric</code></p>
+<p><em>Numeric response</em></p>
+<p><strong>9. Date of that uric acid blood test:</strong>
+<code>gout.uric_acid_date</code> · <code>date</code></p>
+<p><em>Date</em></p>
+<p><strong>10. How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)</strong>
+<code>gout.pain_vas</code> · <code>slider</code></p>
+<p><em>Slider (visual analog scale)</em></p>
+<h2 id="self-management">Self-Management<a class="headerlink" href="#self-management" title="Permanent link">&para;</a></h2>
+<p><strong>11. How confident are you in each of these self-management approaches?</strong>
+<code>gout.management_confidence</code> · <code>grid</code></p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Gout (<code>gout</code>)</th>
-<th>Kidney stones (<code>kidney</code>)</th>
-<th>Hypertension (<code>htn</code>)</th>
-<th>Diabetes (<code>dm</code>)</th>
-<th>None of the above (<code>none</code>)</th>
+<th>Not confident (<code>1</code>)</th>
+<th>Slightly confident (<code>2</code>)</th>
+<th>Moderately confident (<code>3</code>)</th>
+<th>Very confident (<code>4</code>)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Biological father</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Biological mother</td>
-<td></td>
+<td>Following a low-purine diet</td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>Brother or sister</td>
+<td>Taking medication as prescribed</td>
 <td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Staying hydrated</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Reducing alcohol intake</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Recognizing flare warning signs</td>
 <td></td>
 <td></td>
 <td></td>
@@ -1646,21 +1690,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="management-labs">Management &amp; Labs<a class="headerlink" href="#management-labs" title="Permanent link">&para;</a></h2>
-<p><strong>8. Are you currently taking a urate-lowering therapy (e.g., allopurinol, febuxostat, probenecid)?</strong>
-<code>gout.on_ult</code> · <code>boolean</code></p>
-<ul>
-<li>Yes / No</li>
-</ul>
-<p><strong>9. Most recent serum uric acid level (mg/dL):</strong>
-<code>gout.uric_acid</code> · <code>numeric</code></p>
-<p><em>Numeric response</em></p>
-<p><strong>10. Date of that uric acid blood test:</strong>
-<code>gout.uric_acid_date</code> · <code>date</code></p>
-<p><em>Date</em></p>
-<p><strong>11. How would you rate your overall gout-related pain right now? (0 = no pain, 100 = worst imaginable pain)</strong>
-<code>gout.pain_vas</code> · <code>slider</code></p>
-<p><em>Slider (visual analog scale)</em></p>
 <h2 id="priorities-notes">Priorities &amp; Notes<a class="headerlink" href="#priorities-notes" title="Permanent link">&para;</a></h2>
 <p><strong>12. Rank the following treatment goals from most important (1) to least important (5) to you:</strong>
 <code>gout.treatment_priorities</code> · <code>ranked</code></p>
