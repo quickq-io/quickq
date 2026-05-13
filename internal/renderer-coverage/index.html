@@ -1721,6 +1721,12 @@
 <td><code>test_e2e_lhcforms.py::test_phq9_submission_round_trips_through_import_fhir_response</code> — fills three items via Playwright, extracts the QuestionnaireResponse via <code>LForms.Util.getFormFHIRData</code>, imports through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts the right <code>option_value</code>s landed with zero data_quality_flag rows</td>
 </tr>
 <tr>
+<td>gout_checkin fill (5 types) + submit → import</td>
+<td>✅</td>
+<td>🟡 (server-tested)</td>
+<td><code>test_e2e_lhcforms.py::test_gout_checkin_submission_round_trips_through_import_fhir_response</code> — fills boolean, numeric, date, multiple_choice, text; asserts each lands in the correct typed column with zero data_quality_flag rows</td>
+</tr>
+<tr>
 <td>Repeating-group fill → import (basic)</td>
 <td>⚪</td>
 <td>⚪</td>
@@ -1778,6 +1784,11 @@
 <tr>
 <td>2026-05-12</td>
 <td><strong>End-to-end submission round-trip</strong> ✅ for LHC-Forms via PHQ-9. Test fills three items in the rendered form via Playwright, extracts the QuestionnaireResponse via <code>LForms.Util.getFormFHIRData</code>, imports through <code>quickq.parser_fhir_response.import_fhir_response</code>, asserts the option_values landed with zero data_quality_flag rows. <strong>Also fixed a second FHIR resolver bug</strong>: <code>_resolve_questionnaire</code> did an exact <code>canonical_url</code> match, but LHC-Forms emits the URL with a <code>|&lt;version&gt;</code> suffix per FHIR convention. Fixed to split on <code>|</code> before matching. This is the load-bearing test that closes the data-model-as-contract loop end-to-end.</td>
+<td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>Multi-type round-trip</strong> ✅ via gout_checkin: a single test fills boolean / numeric / date / multiple_choice / text in the rendered LHC-Forms output and verifies each lands in the correct typed column (<code>response_text</code>, <code>response_numeric</code>, <code>response_date</code>, <code>option_id</code>). Surfaced a Playwright mechanics finding worth recording for future tests: LHC-Forms' date input uses a custom keystroke listener, so <code>locator.fill()</code> doesn't stick — must <code>click()</code> then <code>page.keyboard.type()</code> character-by-character. Format is MM/DD/YYYY, not ISO.</td>
 <td><code>quickq-io-r4m</code></td>
 </tr>
 </tbody>
