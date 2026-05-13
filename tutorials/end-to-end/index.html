@@ -1856,7 +1856,7 @@ quickq<span class="w"> </span>list<span class="w"> </span>surveys<span class="w"
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Two renderers in this tutorial</p>
-<p><code>quickq preview</code> uses <strong>LHC-Forms</strong> (NIH's reference FHIR renderer, CDN-loaded, read-only) for quick visual checks during authoring. Step 5's <code>quickq serve</code> uses <strong>quickq-forms</strong>, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.</p>
+<p><code>quickq preview</code> uses <strong>LHC-Forms</strong> (NIH's reference FHIR renderer, CDN-loaded on first run, then cached at <code>~/.cache/quickq/lhcforms/</code> for offline reuse) for quick visual checks during authoring. Step 5's <code>quickq serve</code> uses <strong>quickq-forms</strong>, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.</p>
 </div>
 <h3 id="stage-2-add-an-option-set">Stage 2 — Add an option set<a class="headerlink" href="#stage-2-add-an-option-set" title="Permanent link">&para;</a></h3>
 <p>Option sets define a reusable list of choices that multiple questions can share. Add a frequency scale and two questions that use it:</p>

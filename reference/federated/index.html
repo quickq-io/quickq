@@ -1717,7 +1717,7 @@
 </code></pre></div>
 <p>Useful for distributing a canonical instrument to sites at the start of a multi-site study, scaffolding dev or staging copies of prod, or handing a study to another investigator without exposing respondent data.</p>
 <h3 id="quickq-merge"><code>quickq merge</code><a class="headerlink" href="#quickq-merge" title="Permanent link">&para;</a></h3>
-<p>Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR <code>QuestionnaireResponse.id</code>, respondents by <code>(study_id, external_id)</code>). Schema divergence is detected at merge time, not at analysis time.</p>
+<p>Combines multiple site databases into a single combined OLTP study database. Deduplicates by natural key (instrument definitions by canonical URL, sessions by FHIR <code>QuestionnaireResponse.id</code>, respondents by <code>(study_id, external_id)</code>). Question-text divergence by <code>link_id</code> is detected at merge time; deeper structural drift between questionnaire versions is not — pre-merge, hash the FHIR export from each site and confirm they match.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>merge<span class="w"> </span>site_a.db<span class="w"> </span>site_b.db<span class="w"> </span>site_c.db<span class="w"> </span>--output<span class="w"> </span>combined.db
 </code></pre></div>
 <hr />

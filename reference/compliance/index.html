@@ -1579,11 +1579,11 @@
 <p>Permanently deletes all data for a participant (sessions, responses, quality flags, identity row, person_map row). Aligns with the workflow shape of GDPR Article 17 (right to erasure). Irreversible within this database; whether deletion is complete in your deployment depends on backups and any downstream copies, which are outside this tool's scope.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>delete<span class="w"> </span>study.db<span class="w"> </span>&lt;external_id&gt;
 </code></pre></div>
-<p>Use <code>--study-id N</code> to disambiguate when the same <code>external_id</code> exists in multiple studies. The action is recorded in <code>tool_audit_log</code>.</p>
+<p>Use <code>--study-id N</code> to disambiguate when the same <code>external_id</code> exists in multiple studies. The action is recorded in <code>tool_audit_log</code>. Modifies the OLTP only — rerun <code>quickq refresh</code> to propagate the deletion into the analytics layer.</p>
 <p>If the participant requested withdrawal rather than erasure, use <code>quickq compliance withdraw</code> instead. Most IRB withdrawal protocols require data retention for already-consented responses.</p>
 <hr />
 <h2 id="quickq-compliance-withdraw"><code>quickq compliance withdraw</code><a class="headerlink" href="#quickq-compliance-withdraw" title="Permanent link">&para;</a></h2>
-<p>Records a participant's withdrawal without deleting their data. Stops future data collection for this participant while retaining all previously collected responses. A <code>withdrawn</code> event is written to <code>admin_event</code>.</p>
+<p>Records a participant's withdrawal without deleting their data. Stops future data collection for this participant while retaining all previously collected responses. A <code>withdrawn</code> event is written to <code>admin_event</code>. Modifies the OLTP only — rerun <code>quickq refresh</code> to propagate the new event into the analytics layer.</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>compliance<span class="w"> </span>withdraw<span class="w"> </span>study.db<span class="w"> </span>&lt;external_id&gt;<span class="w"> </span>--notes<span class="w"> </span><span class="s2">&quot;Participant withdrew via study portal&quot;</span>
 </code></pre></div>
 <p>This is the legally-distinct operation from <code>compliance delete</code>. Most IRB withdrawal protocols require data retention; full erasure is the GDPR right that may go further. Choose based on the request you received and the protocol you operate under.</p>
