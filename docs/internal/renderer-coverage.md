@@ -73,7 +73,7 @@ Beyond rendering, does the renderer correctly produce a FHIR `QuestionnaireRespo
 
 | Path | LHC-Forms | quickq-forms | Test path |
 |---|---|---|---|
-| PHQ-9 fill + submit → import | ⚪ | 🟡 (server-tested) | (LHC-Forms direction untested) |
+| PHQ-9 fill + submit → import | ✅ | 🟡 (server-tested) | `test_e2e_lhcforms.py::test_phq9_submission_round_trips_through_import_fhir_response` — fills three items via Playwright, extracts the QuestionnaireResponse via `LForms.Util.getFormFHIRData`, imports through `quickq.parser_fhir_response.import_fhir_response`, asserts the right `option_value`s landed with zero data_quality_flag rows |
 | Repeating-group fill → import (basic) | ⚪ | ⚪ | bv8 import path tested via Python-constructed FHIR JSON, not via real renderer submission |
 | Grid-in-repeating fill → import | ⚪ | ⚪ | Same caveat — bv8 import tested with hand-built JSON |
 
@@ -96,6 +96,7 @@ When quickq-forms gains an E2E Playwright suite (`quickq-io-ckf` may drive this 
 | 2026-05-12 | gout_checkin sweep added: `multiple_choice` / `boolean` / `text` / `numeric` / `date` / `datetime` → ✅ for LHC-Forms; `slider` and `ranked` → 🟡 with notes on partial support. Stale FHIR fixtures regenerated (8 files). | `quickq-io-r4m` |
 | 2026-05-12 | `sata_other` ✅ via PRAPARE (renders as multi-select combobox in LHC-Forms). `repeating_group` (simple children) ✅ via prenatal_visits (first instance renders + Add control). LHC-Forms covers 11 of 12 question types now; only `likert` remains 🟡 (covered implicitly via PHQ-9 ordinal-choice but no distinct test). | `quickq-io-r4m` |
 | 2026-05-12 | `likert` ✅ via AUDIT (10 dedicated likert items). `enable_behavior=all` ✅ via new `enable_behavior_all.yaml` fixture. **Surfaced FHIR export bug in `renderer_fhir.py`**: `enableWhen` answer was always emitted as `answerString` for non-choice triggers, but FHIR requires the type to match the trigger's data type. LHC-Forms correctly refused to match — gated questions never appeared. Fixed by dispatching on trigger type (`answerBoolean` / `answerDate` / `answerDateTime` / `answerDecimal`). All 6 checked-in FHIR Questionnaire fixtures regenerated. **Every question type in the LHC-Forms column now empirically verified (8 ✅ + 2 🟡).** | `quickq-io-r4m` |
+| 2026-05-12 | **End-to-end submission round-trip** ✅ for LHC-Forms via PHQ-9. Test fills three items in the rendered form via Playwright, extracts the QuestionnaireResponse via `LForms.Util.getFormFHIRData`, imports through `quickq.parser_fhir_response.import_fhir_response`, asserts the option_values landed with zero data_quality_flag rows. **Also fixed a second FHIR resolver bug**: `_resolve_questionnaire` did an exact `canonical_url` match, but LHC-Forms emits the URL with a `|<version>` suffix per FHIR convention. Fixed to split on `|` before matching. This is the load-bearing test that closes the data-model-as-contract loop end-to-end. | `quickq-io-r4m` |
 
 ## Related
 

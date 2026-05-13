@@ -575,3 +575,140 @@ def test_enable_behavior_all_both_triggers_reveal_followup(
     expect(
         page.get_by_text("Cessation counseling follow-up", exact=False).first
     ).to_be_visible(timeout=5_000)
+
+
+# ------------------------------------------------------------------
+# End-to-end submission round-trip
+# ------------------------------------------------------------------
+#
+# The load-bearing test for the "data model is the contract" thesis:
+# fill the rendered form in LHC-Forms via Playwright, extract the resulting
+# FHIR QuestionnaireResponse via LHC-Forms' JS API, pass it through
+# quickq.parser_fhir_response.import_fhir_response, and assert the
+# responses land in the OLTP correctly.
+#
+# Anchor: PHQ-9 because every item is single_choice (simple Playwright
+# interaction) and the answer→option_value mapping is one-to-one.
+
+def _lhcforms_get_qresponse(page: Page) -> dict:
+    """Extract the current QuestionnaireResponse from LHC-Forms via its
+    public JS API (LForms.Util.getFormFHIRData)."""
+    return page.evaluate(
+        "() => window.LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4')"
+    )
+
+
+def test_phq9_submission_round_trips_through_import_fhir_response(browser):
+    """Fill PHQ-9 in LHC-Forms, extract the QuestionnaireResponse, import it
+    back into a quickq OLTP, and assert the answers landed correctly.
+
+    This is the load-bearing end-to-end test for the FHIR boundary."""
+    import sqlite3
+    from quickq.schema import init_oltp
+    from quickq.loader import load_yaml
+    from quickq.parser_fhir_response import import_fhir_response
+
+    import tempfile
+
+    # --- 1. Render PHQ-9 in LHC-Forms and fill three items ---
+    page = browser.new_page()
+    try:
+        page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+        page.set_input_files("#loadFileInput", str(FIXTURE))
+        page.wait_for_selector("text=Little interest", timeout=15_000)
+        modal_close = page.locator("#serverSelectDialog .btn-close")
+        if modal_close.is_visible():
+            modal_close.click()
+            page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+        def _answer_first_three(items: list[str]) -> None:
+            """Set the first three PHQ-9 items to the given option labels.
+
+            LHC-Forms autocomplete dropdown options live in
+            #completionOptions ul li with text like "2:  Several days" —
+            target via the parent and a contains-text selector. A Tab
+            press after the click defocuses the field and commits the
+            selection into the form's data model (without it, the input
+            text updates visually but getFormFHIRData omits the answer).
+            """
+            for idx, label in enumerate(items, start=1):
+                combo = page.locator(f"input[role=combobox][id='phq9.{idx}/1']")
+                combo.click()
+                page.wait_for_selector(
+                    f"#completionOptions li:has-text(\"{label}\")", timeout=5_000
+                )
+                page.locator(
+                    f"#completionOptions li:has-text(\"{label}\")"
+                ).first.click()
+                combo.press("Tab")
+                # Brief settle so LHC-Forms registers the commit before
+                # we open the next combobox (without this, the most
+                # recent answer doesn't make it into getFormFHIRData).
+                page.wait_for_timeout(150)
+
+        _answer_first_three(["Several days", "More than half the days", "Nearly every day"])
+
+        # --- 2. Extract the QuestionnaireResponse via LHC-Forms' JS API ---
+        qresponse = _lhcforms_get_qresponse(page)
+    finally:
+        page.close()
+
+    # Sanity check on the extracted response
+    assert qresponse["resourceType"] == "QuestionnaireResponse"
+    assert "phq9" in qresponse["questionnaire"], (
+        f"unexpected questionnaire ref: {qresponse['questionnaire']!r}"
+    )
+    extracted_link_ids = {
+        item["linkId"] for item in qresponse.get("item", [])
+    }
+    assert {"phq9.1", "phq9.2", "phq9.3"}.issubset(extracted_link_ids), (
+        f"expected phq9.1/2/3 in extracted response; got {extracted_link_ids}"
+    )
+
+    # --- 3. Round-trip: import the response into a fresh quickq OLTP ---
+    fixtures_dir = Path(__file__).parent / "fixtures"
+    with tempfile.TemporaryDirectory() as tmp:
+        db_path = Path(tmp) / "round_trip.db"
+        conn = init_oltp(db_path)
+        load_yaml(conn, fixtures_dir / "phq9.yaml")
+        conn.commit()
+
+        # subject reference is required by the parser; LHC-Forms doesn't add one
+        qresponse.setdefault("subject", {"reference": "Patient/lhcforms-test"})
+        # status is required
+        qresponse.setdefault("status", "completed")
+
+        session_id = import_fhir_response(conn, qresponse)
+        conn.commit()
+
+        # --- 4. Assert the three answers landed with the right option_values ---
+        rows = conn.execute(
+            """SELECT q.link_id, opt.option_value
+               FROM response r
+               JOIN questionnaire_question qq ON r.qq_id = qq.qq_id
+               JOIN question q ON qq.question_id = q.question_id
+               JOIN response_option opt ON r.option_id = opt.option_id
+               WHERE r.session_id = ?
+                 AND q.link_id IN ('phq9.1', 'phq9.2', 'phq9.3')
+               ORDER BY q.link_id"""
+        , (session_id,)).fetchall()
+        landed = {r[0]: r[1] for r in rows}
+
+        # PHQ-9 frequency option_values: 0=Not at all, 1=Several days,
+        # 2=More than half the days, 3=Nearly every day
+        assert landed == {
+            "phq9.1": "1",
+            "phq9.2": "2",
+            "phq9.3": "3",
+        }, f"round-trip mismatch: expected 1/2/3 for items 1/2/3; got {landed}"
+
+        # No data quality flags should have been raised for clean
+        # well-formed answers like these.
+        flag_count = conn.execute(
+            "SELECT COUNT(*) FROM data_quality_flag WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()[0]
+        assert flag_count == 0, (
+            f"expected zero data_quality_flag rows for clean PHQ-9 answers; "
+            f"got {flag_count}"
+        )

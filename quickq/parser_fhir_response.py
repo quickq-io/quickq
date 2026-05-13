@@ -146,12 +146,18 @@ def import_fhir_response(
 # ------------------------------------------------------------------
 
 def _resolve_questionnaire(conn: sqlite3.Connection, ref: str) -> int:
+    # FHIR canonical references can carry a |<version> suffix
+    # (e.g. http://example.com/q/phq9|1.0). LHC-Forms emits this shape;
+    # other tools may or may not. Match on the URL part regardless of
+    # version since quickq doesn't currently disambiguate by version in
+    # response import (the canonical_url itself is unique per study).
+    url = ref.split("|", 1)[0]
     row = conn.execute(
         "SELECT questionnaire_id FROM questionnaire WHERE canonical_url = ?",
-        (ref,),
+        (url,),
     ).fetchone()
     if row is None:
-        raise ValueError(f"No questionnaire found with canonical_url={ref!r}")
+        raise ValueError(f"No questionnaire found with canonical_url={url!r}")
     return row[0]
 
 
