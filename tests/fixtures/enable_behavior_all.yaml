@@ -1,0 +1,22 @@
+name: "Multi-rule AND test"
+version: "1.0"
+canonical_url: "http://quickq.io/instruments/enable-behavior-all-test"
+description: "Boundary fixture — a question gated on two triggers combined with enable_behavior=all (AND). Used by the renderer-coverage E2E suite to verify LHC-Forms (and quickq-forms) correctly suppress the gated question until both triggers are satisfied."
+
+questions:
+  - link_id: trig.age_18
+    text: "Are you 18 or older?"
+    type: boolean
+
+  - link_id: trig.smoker
+    text: "Are you a current smoker?"
+    type: boolean
+
+  - link_id: gated.cessation
+    text: "Cessation counseling follow-up — when did you last try to quit?"
+    type: text
+    show_when:
+      behavior: all
+      conditions:
+        - { question: trig.age_18, operator: "=", value: "true" }
+        - { question: trig.smoker, operator: "=", value: "true" }

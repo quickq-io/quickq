@@ -421,3 +421,157 @@ def test_prenatal_repeating_group_add_control_present(prenatal_page: Page):
         "group; got none — LHC-Forms may not be rendering the repeats:true "
         "affordance"
     )
+
+
+# ------------------------------------------------------------------
+# likert via AUDIT (10 questions, all type: likert in source YAML)
+# ------------------------------------------------------------------
+
+AUDIT_FIXTURE = Path(__file__).parent / "fixtures" / "audit_fhir_questionnaire.json"
+
+AUDIT_QUESTION_FRAGMENTS = (
+    "How often do you have a drink",
+    "How many standard drinks",
+    "How often do you have six or more drinks",
+    "found that you were not able to stop",
+)
+
+
+@pytest.fixture(scope="module")
+def audit_page(browser):
+    page = browser.new_page()
+    page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+    page.set_input_files("#loadFileInput", str(AUDIT_FIXTURE))
+    page.wait_for_selector("text=AUDIT", timeout=15_000)
+    modal_close = page.locator("#serverSelectDialog .btn-close")
+    if modal_close.is_visible():
+        modal_close.click()
+        page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+    yield page
+    page.close()
+
+
+def test_audit_likert_questions_render(audit_page: Page):
+    """All 10 AUDIT items are `type: likert` in the YAML; verify a
+    representative subset render on the page. FHIR exports likert as
+    `choice` with ordered options, and LHC-Forms renders it as a combobox
+    (same surface as single_choice but with semantically ordinal options)."""
+    page = audit_page
+    for fragment in AUDIT_QUESTION_FRAGMENTS:
+        expect(page.get_by_text(fragment, exact=False).first).to_be_visible()
+
+
+def test_audit_likert_renders_as_choice_comboboxes(audit_page: Page):
+    """Each AUDIT likert question gets its own combobox.
+
+    AUDIT has 10 likert questions — expect at least 10 comboboxes on the
+    rendered page (one per item).
+    """
+    page = audit_page
+    audit_comboboxes = page.locator("input[role=combobox][id*='audit.q']")
+    assert audit_comboboxes.count() >= 10, (
+        f"expected ≥10 likert comboboxes (one per AUDIT item); "
+        f"got {audit_comboboxes.count()}"
+    )
+
+
+def test_audit_likert_ordinal_options_present_on_first(audit_page: Page):
+    """Opening the first AUDIT question's combobox reveals the ordinal
+    options (Never / Monthly or less / etc.). This is the load-bearing
+    likert claim — answers are an ordered scale, not arbitrary choices."""
+    page = audit_page
+    first_q = page.locator("input[role=combobox][id='audit.q1/1']")
+    first_q.click()
+    page.wait_for_function(
+        "document.activeElement && document.activeElement.getAttribute('aria-expanded') === 'true'",
+        timeout=5_000,
+    )
+    # AUDIT-Q1 frequency scale labels
+    for label in ("Never", "Monthly or less", "2-4 times a month"):
+        expect(page.get_by_text(label, exact=False).first).to_be_visible()
+
+
+# ------------------------------------------------------------------
+# Multi-rule enableWhen with enable_behavior=all (AND across rules)
+# ------------------------------------------------------------------
+#
+# PHQ-9.difficulty already covers enable_behavior=any (3 rules combined OR).
+# This section verifies the complementary AND case: a question gated on
+# multiple conditions ALL evaluating true.
+
+ENABLE_BEHAVIOR_ALL_FIXTURE = (
+    Path(__file__).parent / "fixtures" / "enable_behavior_all_fhir_questionnaire.json"
+)
+
+
+@pytest.fixture(scope="module")
+def enable_behavior_all_page(browser):
+    page = browser.new_page()
+    page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+    page.set_input_files("#loadFileInput", str(ENABLE_BEHAVIOR_ALL_FIXTURE))
+    page.wait_for_selector("text=Multi-rule AND test", timeout=15_000)
+    modal_close = page.locator("#serverSelectDialog .btn-close")
+    if modal_close.is_visible():
+        modal_close.click()
+        page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+    yield page
+    page.close()
+
+
+# Helper: select a yes/no boolean answer in LHC-Forms.
+# LHC-Forms renders boolean items as radios with non-trivial DOM: the radio
+# inputs have empty `id` attributes but each has an associated `<label>`
+# whose `id` looks like `<link_id>/<row>|<true|false|null>`. Click the label.
+def _select_radio_answer(page: Page, link_id_substring: str, value: bool) -> None:
+    """Click the Yes/No radio for the boolean question whose linkId contains
+    `link_id_substring`. `value=True` clicks Yes, `value=False` clicks No."""
+    suffix = "true" if value else "false"
+    # The label ID looks like `trig.age_18/1|true` — anchor on the link_id
+    # substring and the suffix.
+    label = page.locator(f"label[id*='{link_id_substring}'][id$='|{suffix}']").first
+    label.click()
+
+
+def test_enable_behavior_all_gated_question_hidden_initially(
+    enable_behavior_all_page: Page,
+):
+    """Before the two trigger questions are answered, the gated follow-up
+    must be hidden (enable_behavior=all → all triggers must satisfy)."""
+    page = enable_behavior_all_page
+    # The trigger questions are visible
+    expect(page.get_by_text("Are you 18 or older", exact=False).first).to_be_visible()
+    expect(page.get_by_text("Are you a current smoker", exact=False).first).to_be_visible()
+    # The gated question is NOT yet visible
+    gated = page.get_by_text("Cessation counseling follow-up", exact=False)
+    assert gated.count() == 0, (
+        "the AND-gated follow-up should not be visible before either "
+        "trigger is answered"
+    )
+
+
+def test_enable_behavior_all_one_trigger_alone_does_not_reveal(
+    enable_behavior_all_page: Page,
+):
+    """Answer only the first trigger; the AND-gated question must stay hidden."""
+    page = enable_behavior_all_page
+    _select_radio_answer(page, "trig.age_18", True)
+    # Still hidden because trig.smoker isn't answered yet
+    page.wait_for_timeout(300)  # let LHC-Forms re-evaluate
+    gated = page.get_by_text("Cessation counseling follow-up", exact=False)
+    assert gated.count() == 0, (
+        "answering one of two triggers should NOT reveal an enable_behavior=all "
+        "gated question"
+    )
+
+
+def test_enable_behavior_all_both_triggers_reveal_followup(
+    enable_behavior_all_page: Page,
+):
+    """Answer both triggers truthfully; the AND-gated question must appear."""
+    page = enable_behavior_all_page
+    # trig.age_18 was already set to Yes by the previous test (module-scoped page).
+    # Now answer the second trigger.
+    _select_radio_answer(page, "trig.smoker", True)
+    expect(
+        page.get_by_text("Cessation counseling follow-up", exact=False).first
+    ).to_be_visible(timeout=5_000)

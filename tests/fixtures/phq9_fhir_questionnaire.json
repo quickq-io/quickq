@@ -5,7 +5,7 @@
   "version": "1.0",
   "url": "http://quickq.io/instruments/phq9",
   "description": "9-item depression screening instrument (Kroenke & Spitzer, 2002)",
-  "date": "2026-05-13T01:21:43Z",
+  "date": "2026-05-13T01:35:30Z",
   "name": "PHQ9PatientHealthQuestionnaire",
   "extension": [
     {

@@ -29,7 +29,7 @@ The test-path column points to the Playwright test (or other automation) that ba
 | `numeric` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | gout `attacks_12mo`, `uric_acid` |
 | `date` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_date_input_present` | gout `last_attack_date`, `uric_acid_date` |
 | `datetime` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_date_input_present` | gout `last_attack_datetime` |
-| `likert` | 🟡 | ⚪ | implicit via PHQ-9 (single_choice with ordinal options) | Distinct `likert` type explicitly used in `audit`, `prapare` |
+| `likert` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_audit_likert_*` | All 10 AUDIT items are explicitly `type: likert`. LHC-Forms renders them as comboboxes with ordered options (Never / Monthly or less / 2-4 times a month / ...) |
 | `grid` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_grid_in_repeating_renders_as_horizontal_table` | Spike `quickq-io-9u0` verified `.lhc-form-horizontal-table` rendering; coverage is *grid as child of a repeating group*, not standalone — but the spec-level pattern is identical |
 | `ranked` | 🟡 | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | The label renders. Whether LHC-Forms actually supports an ordering UI (drag-to-rank, numbered dropdown, etc.) for FHIR `choice` items with `ordinalValue` extensions is unverified — the question renders as a choice question, not necessarily as a ranking control |
 | `slider` | 🟡 | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_slider_question_renders_an_input` | **Partial support in LHC-Forms.** Renders as a plain text input with placeholder "Type a number" — the min/max metadata from the FHIR export is silently ignored. The question doesn't disappear; the slider *affordance* does. Empirical finding from `quickq-io-r4m` audit. |
@@ -52,7 +52,7 @@ The test-path column points to the Playwright test (or other automation) that ba
 | `repeating_group` with a `grid` child | ✅ | ⚪ | bv8 + 9u0 spike verified end-to-end on LHC-Forms; tests in `test_e2e_lhcforms.py` |
 | `grid` (standalone, not inside a repeating group) | 🟡 | ⚪ | The horizontal-table rendering pattern is the same as the verified grid-in-repeating case; standalone case is implied to work but not directly tested |
 | Multi-level `enableWhen` (multiple rules per item, `enable_behavior=any`) | ✅ | ⚪ | PHQ-9 `difficulty` exercises 3 rules with `enable_behavior=any`, verified in `test_difficulty_appears_after_nonzero_answer` |
-| Multi-level `enableWhen` with `enable_behavior=all` | ⚪ | ⚪ | (untested) |
+| Multi-level `enableWhen` with `enable_behavior=all` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_enable_behavior_all_*` | Uses dedicated fixture `enable_behavior_all.yaml` (two boolean triggers AND-gating a follow-up). **Surfaced a real bug in `quickq/renderer_fhir.py`**: enableWhen answer type was always `answerString` for non-choice triggers, but FHIR requires the type to match the trigger. LHC-Forms (correctly) refused to match. Fix in same commit: dispatch on trigger type for `answerBoolean` / `answerDate` / `answerDateTime` / `answerDecimal`. |
 | `operator: in` (post-expansion to N flat `=` rules) | 🟡 | ⚪ | Lands as N standard FHIR `enableWhen` entries with `enable_behavior=any`; should render in any FHIR-compliant renderer but not directly tested |
 
 ## Skip-logic features (post-ap8)
@@ -95,6 +95,7 @@ When quickq-forms gains an E2E Playwright suite (`quickq-io-ckf` may drive this 
 | 2026-05-12 | `grid` and `repeating_group` cells marked ✅ for LHC-Forms | `quickq-io-9u0` spike + commit `b37cb09` |
 | 2026-05-12 | gout_checkin sweep added: `multiple_choice` / `boolean` / `text` / `numeric` / `date` / `datetime` → ✅ for LHC-Forms; `slider` and `ranked` → 🟡 with notes on partial support. Stale FHIR fixtures regenerated (8 files). | `quickq-io-r4m` |
 | 2026-05-12 | `sata_other` ✅ via PRAPARE (renders as multi-select combobox in LHC-Forms). `repeating_group` (simple children) ✅ via prenatal_visits (first instance renders + Add control). LHC-Forms covers 11 of 12 question types now; only `likert` remains 🟡 (covered implicitly via PHQ-9 ordinal-choice but no distinct test). | `quickq-io-r4m` |
+| 2026-05-12 | `likert` ✅ via AUDIT (10 dedicated likert items). `enable_behavior=all` ✅ via new `enable_behavior_all.yaml` fixture. **Surfaced FHIR export bug in `renderer_fhir.py`**: `enableWhen` answer was always emitted as `answerString` for non-choice triggers, but FHIR requires the type to match the trigger's data type. LHC-Forms correctly refused to match — gated questions never appeared. Fixed by dispatching on trigger type (`answerBoolean` / `answerDate` / `answerDateTime` / `answerDecimal`). All 6 checked-in FHIR Questionnaire fixtures regenerated. **Every question type in the LHC-Forms column now empirically verified (8 ✅ + 2 🟡).** | `quickq-io-r4m` |
 
 ## Related
 

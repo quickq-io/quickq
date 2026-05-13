@@ -348,7 +348,8 @@ def _enable_when(conn: sqlite3.Connection, qq_id: int) -> list[dict]:
             ew["operator"] = op
             val = r["trigger_value"]
             if val is not None:
-                if r["trigger_type"] in _CHOICE_TYPES:
+                trigger_type = r["trigger_type"]
+                if trigger_type in _CHOICE_TYPES:
                     # Use answerCoding so LHC-Forms (and any FHIR validator)
                     # can compare like-for-like against the rendered valueCoding.
                     coding: dict = {}
@@ -359,11 +360,23 @@ def _enable_when(conn: sqlite3.Connection, qq_id: int) -> list[dict]:
                     else:
                         coding["code"] = val
                     ew["answerCoding"] = coding
-                else:
+                elif trigger_type == "boolean":
+                    # FHIR enableWhen's answer[x] type must match the trigger's
+                    # data type. answerString='true' against a boolean trigger
+                    # is non-conformant and LHC-Forms (correctly) won't match.
+                    ew["answerBoolean"] = str(val).lower() == "true"
+                elif trigger_type == "date":
+                    ew["answerDate"] = val
+                elif trigger_type == "datetime":
+                    ew["answerDateTime"] = val
+                elif trigger_type in ("numeric", "slider"):
                     try:
                         ew["answerDecimal"] = float(val)
                     except (ValueError, TypeError):
                         ew["answerString"] = val
+                else:
+                    # text and any unknown type: fall back to answerString
+                    ew["answerString"] = val
 
         result.append(ew)
     return result

@@ -1,0 +1,39 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "draft",
+  "title": "Multi-rule AND test",
+  "version": "1.0",
+  "url": "http://quickq.io/instruments/enable-behavior-all-test",
+  "description": "Boundary fixture \u2014 a question gated on two triggers combined with enable_behavior=all (AND). Used by the renderer-coverage E2E suite to verify LHC-Forms (and quickq-forms) correctly suppress the gated question until both triggers are satisfied.",
+  "name": "MultiruleANDtest",
+  "item": [
+    {
+      "linkId": "trig.age_18",
+      "text": "Are you 18 or older?",
+      "type": "boolean"
+    },
+    {
+      "linkId": "trig.smoker",
+      "text": "Are you a current smoker?",
+      "type": "boolean"
+    },
+    {
+      "linkId": "gated.cessation",
+      "text": "Cessation counseling follow-up \u2014 when did you last try to quit?",
+      "type": "text",
+      "enableWhen": [
+        {
+          "question": "trig.age_18",
+          "operator": "=",
+          "answerBoolean": true
+        },
+        {
+          "question": "trig.smoker",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ],
+      "enableBehavior": "all"
+    }
+  ]
+}
