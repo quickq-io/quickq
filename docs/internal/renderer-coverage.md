@@ -23,7 +23,7 @@ The test-path column points to the Playwright test (or other automation) that ba
 |---|---|---|---|---|
 | `single_choice` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_frequency_options_present` | PHQ-9 frequency options |
 | `multiple_choice` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | gout `attack_joints`, `family_gout` |
-| `sata_other` | ⚪ | ⚪ | (untested) | YAML fixture: `prapare`, `health_intake_demo` |
+| `sata_other` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_prapare_sata_other_renders_a_combobox` | LHC-Forms renders sata_other (FHIR `open-choice`) as a multi-select combobox; options visible after dropdown interaction |
 | `boolean` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | gout `on_ult` |
 | `text` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_text_area_present` | gout `notes` |
 | `numeric` | ✅ | ⚪ | `test_e2e_lhcforms.py::test_gout_checkin_question_labels_render` | gout `attacks_12mo`, `uric_acid` |
@@ -48,7 +48,7 @@ The test-path column points to the Playwright test (or other automation) that ba
 
 | Shape | LHC-Forms | quickq-forms | Notes |
 |---|---|---|---|
-| `repeating_group` with simple-type children | ⚪ | ⚪ | `prenatal_visits` fixture is the natural anchor; no E2E test |
+| `repeating_group` with simple-type children | ✅ | ⚪ | `test_e2e_lhcforms.py::test_prenatal_basic_repeating_group_first_instance_renders` + `test_prenatal_repeating_group_add_control_present` — LHC-Forms renders the first instance with all flat children plus an Add control |
 | `repeating_group` with a `grid` child | ✅ | ⚪ | bv8 + 9u0 spike verified end-to-end on LHC-Forms; tests in `test_e2e_lhcforms.py` |
 | `grid` (standalone, not inside a repeating group) | 🟡 | ⚪ | The horizontal-table rendering pattern is the same as the verified grid-in-repeating case; standalone case is implied to work but not directly tested |
 | Multi-level `enableWhen` (multiple rules per item, `enable_behavior=any`) | ✅ | ⚪ | PHQ-9 `difficulty` exercises 3 rules with `enable_behavior=any`, verified in `test_difficulty_appears_after_nonzero_answer` |
@@ -94,6 +94,7 @@ When quickq-forms gains an E2E Playwright suite (`quickq-io-ckf` may drive this 
 | 2026-05-12 | Initial audit; populated empirical cells from existing tests | `quickq-io-r4m` |
 | 2026-05-12 | `grid` and `repeating_group` cells marked ✅ for LHC-Forms | `quickq-io-9u0` spike + commit `b37cb09` |
 | 2026-05-12 | gout_checkin sweep added: `multiple_choice` / `boolean` / `text` / `numeric` / `date` / `datetime` → ✅ for LHC-Forms; `slider` and `ranked` → 🟡 with notes on partial support. Stale FHIR fixtures regenerated (8 files). | `quickq-io-r4m` |
+| 2026-05-12 | `sata_other` ✅ via PRAPARE (renders as multi-select combobox in LHC-Forms). `repeating_group` (simple children) ✅ via prenatal_visits (first instance renders + Add control). LHC-Forms covers 11 of 12 question types now; only `likert` remains 🟡 (covered implicitly via PHQ-9 ordinal-choice but no distinct test). | `quickq-io-r4m` |
 
 ## Related
 

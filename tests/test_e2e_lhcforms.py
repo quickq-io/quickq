@@ -306,3 +306,118 @@ def test_gout_checkin_slider_question_renders_an_input(gout_checkin_page: Page):
         "the slider question must at minimum render an input control; "
         "it disappeared entirely"
     )
+
+
+# ------------------------------------------------------------------
+# sata_other via prapare.necessities (FHIR `open-choice`)
+# ------------------------------------------------------------------
+
+PRAPARE_FIXTURE = Path(__file__).parent / "fixtures" / "prapare_fhir_questionnaire.json"
+
+
+@pytest.fixture(scope="module")
+def prapare_page(browser):
+    """Load LHC-Forms with the PRAPARE fixture once per module."""
+    page = browser.new_page()
+    page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+    page.set_input_files("#loadFileInput", str(PRAPARE_FIXTURE))
+    page.wait_for_selector("text=PRAPARE", timeout=15_000)
+    modal_close = page.locator("#serverSelectDialog .btn-close")
+    if modal_close.is_visible():
+        modal_close.click()
+        page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+    yield page
+    page.close()
+
+
+def test_prapare_sata_other_question_renders(prapare_page: Page):
+    """The sata_other question (`prapare.necessities`, FHIR `open-choice`)
+    appears in the rendered form. This is the must-not-disappear bar."""
+    page = prapare_page
+    expect(page.get_by_text("unable to get any of the following", exact=False).first).to_be_visible()
+
+
+def test_prapare_sata_other_renders_a_combobox(prapare_page: Page):
+    """LHC-Forms renders the sata_other question (`prapare.necessities`,
+    FHIR `open-choice`) as a multi-select combobox.
+
+    Options are inside the closed dropdown and only become visible after
+    user interaction. The renderer-coverage claim is "the question
+    produces an interactive control" — verified by the combobox's
+    presence with the expected linkId.
+    """
+    page = prapare_page
+    combobox = page.locator("input#prapare\\.necessities\\/1[role='combobox']")
+    assert combobox.count() == 1, (
+        f"expected one combobox for prapare.necessities; got {combobox.count()}"
+    )
+
+
+# ------------------------------------------------------------------
+# Basic repeating_group (no grid child) via prenatal_visits
+# ------------------------------------------------------------------
+
+PRENATAL_VISITS_FIXTURE = Path(__file__).parent / "fixtures" / "prenatal_visits_fhir_questionnaire.json"
+
+PRENATAL_CHILD_LABELS = (
+    "Week of pregnancy at visit",
+    "Type of provider seen",
+    "Were any concerns documented",
+)
+
+
+@pytest.fixture(scope="module")
+def prenatal_page(browser):
+    """Load LHC-Forms with the prenatal_visits fixture once per module."""
+    page = browser.new_page()
+    page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+    page.set_input_files("#loadFileInput", str(PRENATAL_VISITS_FIXTURE))
+    page.wait_for_selector("text=Prenatal Visit Log", timeout=15_000)
+    modal_close = page.locator("#serverSelectDialog .btn-close")
+    if modal_close.is_visible():
+        modal_close.click()
+        page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+    yield page
+    page.close()
+
+
+def test_prenatal_title_visible(prenatal_page: Page):
+    expect(prenatal_page.get_by_text("Prenatal Visit Log", exact=False).first).to_be_visible()
+
+
+def test_prenatal_basic_repeating_group_first_instance_renders(prenatal_page: Page):
+    """The first repeating-group instance renders all three flat children.
+
+    This is the basic case (simple-type children: numeric, choice, boolean)
+    distinct from the grid-in-repeating composite covered elsewhere.
+    """
+    page = prenatal_page
+    for label in PRENATAL_CHILD_LABELS:
+        expect(page.get_by_text(label, exact=False).first).to_be_visible()
+
+
+def test_prenatal_count_question_renders(prenatal_page: Page):
+    """The visit_count numeric (which drives the optional count_qq_id
+    linkage for the repeating group) renders alongside the repeating
+    container."""
+    expect(prenatal_page.get_by_text("How many prenatal visits", exact=False).first).to_be_visible()
+
+
+def test_prenatal_repeating_group_add_control_present(prenatal_page: Page):
+    """LHC-Forms surfaces an 'Add' affordance for repeating groups —
+    typically a button labelled '+' / 'Add' / 'Add another' / 'Add Visit'.
+
+    This is the load-bearing claim that LHC-Forms knows how to handle the
+    `repeats: true` flag on a group beyond just rendering the first instance.
+    """
+    page = prenatal_page
+    # LHC-Forms emits a button with class lhc-float-button-end for "Add"
+    # on repeating groups. Accept any of the common patterns.
+    add_button = page.locator(
+        "button:has-text('Add'), .lhc-float-button-end, [aria-label*='Add' i]"
+    )
+    assert add_button.count() >= 1, (
+        "expected at least one 'Add' control on the page for the repeating "
+        "group; got none — LHC-Forms may not be rendering the repeats:true "
+        "affordance"
+    )

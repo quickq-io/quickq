@@ -1,0 +1,63 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "draft",
+  "title": "Prenatal Visit Log",
+  "version": "1.0",
+  "url": "http://quickq.io/instruments/prenatal-visits",
+  "description": "Tracks individual prenatal care visits for a respondent.",
+  "name": "PrenatalVisitLog",
+  "item": [
+    {
+      "linkId": "visit_count",
+      "text": "How many prenatal visits did you have in total?",
+      "type": "decimal",
+      "required": true,
+      "extension": []
+    },
+    {
+      "linkId": "visits",
+      "text": "Visit details",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "visits.week",
+          "text": "Week of pregnancy at visit",
+          "type": "decimal",
+          "required": true,
+          "extension": []
+        },
+        {
+          "linkId": "visits.provider",
+          "text": "Type of provider seen",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "display": "OB/GYN",
+                "code": "ob"
+              }
+            },
+            {
+              "valueCoding": {
+                "display": "Midwife",
+                "code": "midwife"
+              }
+            },
+            {
+              "valueCoding": {
+                "display": "NP/PA",
+                "code": "np"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "visits.concern",
+          "text": "Were any concerns documented?",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}
