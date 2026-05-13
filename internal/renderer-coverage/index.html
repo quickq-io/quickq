@@ -1734,9 +1734,9 @@
 </tr>
 <tr>
 <td>Grid-in-repeating fill → import</td>
+<td>✅</td>
 <td>⚪</td>
-<td>⚪</td>
-<td>Same caveat — bv8 import tested with hand-built JSON</td>
+<td><code>test_e2e_lhcforms.py::test_grid_in_repeating_round_trip_closes_bv8</code> — fills two visit instances with a 3-row severity grid each (6 grid cells total), submits, imports, and asserts every grid cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. Closes the third leg of the bv8 verification trifecta.</td>
 </tr>
 </tbody>
 </table>
@@ -1795,6 +1795,11 @@
 <td>2026-05-13</td>
 <td><strong>Repeating-group submission round-trip</strong> ✅ via prenatal_visits: test fills two visit instances (week / provider / concern × 2), clicks the "+ Visit details" button to add the second instance, and asserts the imported responses carry the correct <code>repeat_index</code> per instance (0 for the first, 1 for the second). This closes the matching renderer-side loop for <code>quickq-io-bv8</code> — until now the import path was only exercised against hand-built FHIR JSON. Two more Playwright mechanics worth recording: (1) Add buttons can be partially overlapped by sticky UI elements, so use <code>click(force=True)</code>; (2) LHC-Forms numbers the second instance's children with the parent's repeat-index in the FIRST slot (<code>visits.week/2/1</code>, not <code>visits.week/1/2</code>).</td>
 <td><code>quickq-io-r4m</code></td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong>Grid-in-repeating submission round-trip</strong> ✅ — the third leg of the bv8 verification trifecta. Test fills two visit instances each with a 3-row severity grid (6 grid cells total), submits, imports, and asserts every cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. With this commit bv8 is fully verified end-to-end: data-model (3 boundary tests), structural rendering (5 tests), and submission round-trip (1 test). Grid-cell IDs follow the pattern <code>linkId/parent_repeat/grid_repeat/root</code> — instance 2's first grid row is <code>rg.visits.severity.r0/2/1/1</code>, not <code>/1/2/1</code> (recording in case the next nested-shape work re-encounters this).</td>
+<td><code>quickq-io-r4m</code> / <code>quickq-io-bv8</code></td>
 </tr>
 </tbody>
 </table>
