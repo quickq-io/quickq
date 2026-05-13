@@ -1,0 +1,146 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "draft",
+  "title": "Per-Visit Symptom Severity",
+  "version": "1.0",
+  "url": "http://quickq.io/instruments/repeating-with-grid-test",
+  "description": "Boundary fixture \u2014 repeating group whose children include a grid.",
+  "name": "PerVisitSymptomSeverity",
+  "item": [
+    {
+      "linkId": "rg.visit_count",
+      "text": "How many visits?",
+      "type": "decimal",
+      "required": true,
+      "extension": []
+    },
+    {
+      "linkId": "rg.visits",
+      "text": "Visit details",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "rg.visits.week",
+          "text": "Week of visit",
+          "type": "decimal",
+          "required": true,
+          "extension": []
+        },
+        {
+          "linkId": "rg.visits.severity",
+          "text": "Symptom severity grid (this visit)",
+          "type": "group",
+          "item": [
+            {
+              "linkId": "rg.visits.severity.r0",
+              "text": "Pain",
+              "type": "choice",
+              "answerOption": [
+                {
+                  "valueCoding": {
+                    "code": "0",
+                    "display": "None"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "1",
+                    "display": "Mild"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "2",
+                    "display": "Moderate"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "3",
+                    "display": "Severe"
+                  }
+                }
+              ]
+            },
+            {
+              "linkId": "rg.visits.severity.r1",
+              "text": "Fatigue",
+              "type": "choice",
+              "answerOption": [
+                {
+                  "valueCoding": {
+                    "code": "0",
+                    "display": "None"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "1",
+                    "display": "Mild"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "2",
+                    "display": "Moderate"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "3",
+                    "display": "Severe"
+                  }
+                }
+              ]
+            },
+            {
+              "linkId": "rg.visits.severity.r2",
+              "text": "Sleep disturbance",
+              "type": "choice",
+              "answerOption": [
+                {
+                  "valueCoding": {
+                    "code": "0",
+                    "display": "None"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "1",
+                    "display": "Mild"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "2",
+                    "display": "Moderate"
+                  }
+                },
+                {
+                  "valueCoding": {
+                    "code": "3",
+                    "display": "Severe"
+                  }
+                }
+              ]
+            }
+          ],
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "gtable"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

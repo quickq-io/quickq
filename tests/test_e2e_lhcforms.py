@@ -116,3 +116,91 @@ def test_difficulty_appears_after_nonzero_answer(lhcforms_page: Page):
     expect(
         lhcforms_page.get_by_text(DIFFICULTY_TEXT, exact=False).first
     ).to_be_visible(timeout=5_000)
+
+
+# ------------------------------------------------------------------
+# Grid-in-repeating-group rendering (quickq-io-9u0 spike for bv8)
+# ------------------------------------------------------------------
+#
+# Verifies LHC-Forms renders the composite shape introduced in bv8: a grid
+# child (row × column matrix) inside a repeating_group container. The
+# data-model side passes 3 boundary tests in tests/test_repeating_nested_boundary.py;
+# this test answers the corresponding renderer-side question.
+
+GRID_IN_REPEATING_FIXTURE = Path(__file__).parent / "fixtures" / "repeating_with_grid_fhir_questionnaire.json"
+
+GRID_ROW_LABELS = ("Pain", "Fatigue", "Sleep disturbance")
+GRID_COL_LABELS = ("None", "Mild", "Moderate", "Severe")
+
+
+@pytest.fixture(scope="module")
+def grid_in_repeating_page(browser):
+    """Load LHC-Forms with the repeating-with-grid fixture once per module."""
+    page = browser.new_page()
+    page.goto(LHCFORMS_URL, wait_until="networkidle", timeout=30_000)
+
+    page.set_input_files("#loadFileInput", str(GRID_IN_REPEATING_FIXTURE))
+    page.wait_for_selector("text=Week of visit", timeout=15_000)
+
+    # Dismiss the FHIR-server modal if present
+    modal_close = page.locator("#serverSelectDialog .btn-close")
+    if modal_close.is_visible():
+        modal_close.click()
+        page.wait_for_selector("#serverSelectDialog", state="hidden", timeout=5_000)
+
+    yield page
+    page.close()
+
+
+def test_grid_in_repeating_title_visible(grid_in_repeating_page: Page):
+    """The questionnaire title renders."""
+    expect(
+        grid_in_repeating_page.get_by_text("Per-Visit Symptom Severity", exact=False).first
+    ).to_be_visible()
+
+
+def test_grid_in_repeating_first_instance_renders_week(grid_in_repeating_page: Page):
+    """The repeating group's flat numeric child renders in the first instance."""
+    expect(grid_in_repeating_page.get_by_text("Week of visit", exact=False).first).to_be_visible()
+
+
+def test_grid_in_repeating_first_instance_renders_grid_rows(grid_in_repeating_page: Page):
+    """All three grid row labels render inside the first repeating-group instance.
+
+    If LHC-Forms silently drops grid children of a repeating group, none of
+    the row labels will be present.
+    """
+    page = grid_in_repeating_page
+    for row_label in GRID_ROW_LABELS:
+        expect(page.get_by_text(row_label, exact=False).first).to_be_visible()
+
+
+def test_grid_in_repeating_renders_as_horizontal_table(grid_in_repeating_page: Page):
+    """LHC-Forms renders the grid sub-group as a horizontal-layout table.
+
+    This is the structural check that LHC-Forms treats the FHIR group with
+    choice children as a proper matrix layout — not just a vertical stack of
+    independent choice questions.
+    """
+    page = grid_in_repeating_page
+    # LHC-Forms emits the .lhc-form-horizontal-table class for grid sub-groups.
+    expect(page.locator(".lhc-form-horizontal-table").first).to_be_visible()
+
+
+def test_grid_in_repeating_has_interactive_answer_cells(grid_in_repeating_page: Page):
+    """Each grid row has an interactive answer combobox.
+
+    The grid renders one combobox per row (LHC-Forms' horizontal-table layout
+    surfaces the column choices via the row's combobox). With three rows in
+    the first instance, expect at least three comboboxes on the page (one per
+    row), beyond any non-grid comboboxes from sibling questions.
+    """
+    page = grid_in_repeating_page
+    # Anchor inside the grid's horizontal table to avoid counting sibling
+    # combobox controls (visit_count, week).
+    grid_table = page.locator(".lhc-form-horizontal-table").first
+    cell_inputs = grid_table.locator("input[role=combobox]")
+    assert cell_inputs.count() >= 3, (
+        f"expected ≥3 answer comboboxes in the grid (one per row); "
+        f"got {cell_inputs.count()}"
+    )
