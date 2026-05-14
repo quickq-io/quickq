@@ -1810,7 +1810,7 @@ through unit tests; the renderer side is the limitation.</p>
 <td>Grid-in-repeating fill → import</td>
 <td>✅</td>
 <td>✅</td>
-<td>LHC: <code>test_grid_in_repeating_round_trip_closes_bv8</code>. qq-forms: <code>test_grid_in_repeating_imports_per_instance_grid_cells</code> — drives both visit instances, submits, imports, asserts each grid cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. <strong>Note:</strong> this test loads the OLTP schema via <code>quickq.loader.load_yaml</code> rather than <code>quickq.parser_fhir.import_fhir</code> because <code>import_fhir</code> currently drops the grid type for grids nested inside repeating groups (tracked as <code>quickq-io-gdc</code>).</td>
+<td>LHC: <code>test_grid_in_repeating_round_trip_closes_bv8</code>. qq-forms: <code>test_grid_in_repeating_imports_per_instance_grid_cells</code> — drives both visit instances, submits, imports, asserts each grid cell lands with the correct <code>(grid_row_id, grid_column_id, repeat_index)</code> triple. Schema loaded via <code>import_fhir</code> end-to-end (the previous <code>import_fhir</code> grid-in-repeating bug was fixed in <code>quickq-io-gdc</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -1898,8 +1898,13 @@ through unit tests; the renderer side is the limitation.</p>
 </tr>
 <tr>
 <td>2026-05-13</td>
-<td><strong>quickq-forms column fully populated.</strong> 10 new tests in <code>test_render_round_trip.py</code> close every remaining ⚪ cell on the quickq-forms side: <code>multiple_choice</code>, <code>sata_other</code>, <code>date</code>, <code>datetime</code>, <code>likert</code>, <code>slider</code>, <code>ranked</code>, standalone <code>grid</code>, the gout multi-type DB round-trip, and the grid-in-repeating DB round-trip. The <code>ranked</code> and <code>slider</code> rows now have ✅ on the quickq-forms side and 🟡 on the LHC-Forms side — quickq-forms is the renderer that actually honors the <code>ordinalValue</code> and slider extensions quickq emits, which is the empirical proof that the FHIR export is fit for purpose (not just FHIR-spec-compliant). Surfaced a separate bug filed as <code>quickq-io-gdc</code>: <code>import_fhir</code> drops the grid type when a grid is nested inside a repeating group — the grid-in-repeating import test works around it by loading the OLTP schema via <code>load_yaml</code> instead.</td>
+<td><strong>quickq-forms column fully populated.</strong> 10 new tests in <code>test_render_round_trip.py</code> close every remaining ⚪ cell on the quickq-forms side: <code>multiple_choice</code>, <code>sata_other</code>, <code>date</code>, <code>datetime</code>, <code>likert</code>, <code>slider</code>, <code>ranked</code>, standalone <code>grid</code>, the gout multi-type DB round-trip, and the grid-in-repeating DB round-trip. The <code>ranked</code> and <code>slider</code> rows now have ✅ on the quickq-forms side and 🟡 on the LHC-Forms side — quickq-forms is the renderer that actually honors the <code>ordinalValue</code> and slider extensions quickq emits, which is the empirical proof that the FHIR export is fit for purpose (not just FHIR-spec-compliant). Surfaced a separate bug filed as <code>quickq-io-gdc</code>: <code>import_fhir</code> drops the grid type when a grid is nested inside a repeating group — the grid-in-repeating import test temporarily worked around it by loading the OLTP schema via <code>load_yaml</code> instead.</td>
 <td>(renderer-coverage closing pass)</td>
+</tr>
+<tr>
+<td>2026-05-13</td>
+<td><strong><code>quickq-io-gdc</code> closed.</strong> <code>parser_fhir._collect_items</code> now keeps <code>group + itemControl=gtable</code> items intact (was flattening them, so standalone grids vanished). <code>_import_item</code> detects grids via the same itemControl check, sets <code>question_type='grid'</code>, and populates <code>grid_row</code> + <code>grid_column</code> from the FHIR shape — mirroring the YAML loader's behavior. Two new regression tests in <code>quickq/tests/test_fhir_import.py</code> cover both standalone and nested-in-repeating grids. The quickq-forms E2E workaround dropped; the grid-in-repeating round-trip test now uses <code>import_fhir</code> end-to-end.</td>
+<td><code>quickq-io-gdc</code></td>
 </tr>
 </tbody>
 </table>
