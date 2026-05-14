@@ -24,13 +24,14 @@ By the end you will have:
 
 ## Step 1 — Install quickq
 
-Install the `quickq` command from GitHub:
+Install `quickq` and the `quickq-forms` delivery package in one step:
 
 ```bash
-uv tool install git+https://github.com/quickq-io/quickq.git
+uv tool install git+https://github.com/quickq-io/quickq.git \
+    --with git+https://github.com/quickq-io/quickq-forms.git
 ```
 
-This installs `quickq` as a standalone command on your PATH, with the bundled question library included. Updates later via `uv tool upgrade quickq`. If you prefer plain pip: `pip install git+https://github.com/quickq-io/quickq.git`.
+This installs `quickq` as a standalone command on your PATH, bundles `quickq-forms` so `quickq serve` and `quickq preview` work out of the box, and includes the question library. Updates later via `uv tool upgrade quickq`. If you prefer plain pip: `pip install git+https://github.com/quickq-io/quickq.git git+https://github.com/quickq-io/quickq-forms.git`.
 
 Verify the install and get a quick overview of what the tool does:
 
@@ -105,8 +106,7 @@ Preview it in your browser:
 quickq preview study.db 1
 ```
 
-!!! note "Two renderers in this tutorial"
-    `quickq preview` uses **LHC-Forms** (NIH's reference FHIR renderer, CDN-loaded on first run, then cached at `~/.cache/quickq/lhcforms/` for offline reuse) for quick visual checks during authoring. Step 5's `quickq serve` uses **quickq-forms**, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.
+This opens the same renderer your respondents will see in Step 5 (`quickq-forms`), in read-only mode — the questionnaire renders normally but inputs are disabled and there's no Submit button. To preview via NLM's reference FHIR renderer instead (useful for confirming the FHIR export is portable across renderers), use `quickq preview study.db 1 --renderer=lhc-forms`. See [Third-party FHIR renderers](../reference/third-party-renderers.md) for the interop story.
 
 ### Stage 2 — Add an option set
 
@@ -253,21 +253,13 @@ quickq list library study.db
 quickq fhir export study.db 1 --output gout.json
 ```
 
-This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant delivery tool can render it. In the next step, quickq-forms reads directly from `study.db`, so you won't need this file today — but it's what you'd hand to an external tool like LHC-Forms or REDCap.
+This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant delivery tool can render it. In the next step, quickq-forms reads directly from `study.db`, so you won't need this file today — but it's what you'd hand to an external tool like LHC-Forms or REDCap. See [Third-party FHIR renderers](../reference/third-party-renderers.md) for the interop story.
 
 ---
 
 ## Step 5 — Start the form server
 
-`quickq serve` launches a web form for your study and opens it in your browser. Submitted responses write straight back to `study.db`.
-
-The serve command lives in a separate package, `quickq-forms`. Reinstall `quickq` with `quickq-forms` alongside so both end up on your PATH together:
-
-```bash
-uv tool install --reinstall \
-    git+https://github.com/quickq-io/quickq.git \
-    --with git+https://github.com/quickq-io/quickq-forms.git
-```
+`quickq serve` launches a web form for your study and opens it in your browser. Submitted responses write straight back to `study.db`. This is the same renderer you saw in Step 4's preview, now in live mode (Submit enabled, responses persisted).
 
 Start the server from inside your study repo:
 
@@ -279,13 +271,13 @@ quickq serve study.db
 You should see:
 
 ```
-Serving questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://localhost:8000
+serving: questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://localhost:8000
 ```
 
 A browser tab opens at **http://localhost:8000** showing the form.
 
 !!! note
-    If the form does not load, try a private/incognito window. Some browser extensions block localhost requests or third-party scripts; an incognito profile typically bypasses both. (Same family of issue noted for the LHC-Forms preview in [Collect Responses](collect.md#reference-delivery-tool-lhc-forms).)
+    If the form does not load, try a private/incognito window. Some browser extensions block localhost requests; an incognito profile typically bypasses them.
 
 ---
 

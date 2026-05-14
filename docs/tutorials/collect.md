@@ -1,32 +1,40 @@
 # Tutorial: Collecting Responses
 
-This tutorial covers the response collection phase: exporting your questionnaire for delivery, importing FHIR QuestionnaireResponse JSON files, and verifying what landed in the database.
+This tutorial covers the response collection phase: serving the form to respondents (or handing the FHIR export to a third-party delivery tool), importing FHIR QuestionnaireResponse JSON files, and verifying what landed in the database.
 
-Survey delivery is intentionally out of scope for quickq. The FHIR handoff is the interface: quickq exports a `Questionnaire` JSON, a delivery tool renders and collects responses, and quickq ingests the resulting `QuestionnaireResponse` JSON. This keeps the collection layer pluggable — any FHIR-compliant tool works.
+The FHIR boundary is the interface: a delivery tool renders the `Questionnaire`, collects responses, and produces `QuestionnaireResponse` JSON that quickq ingests. The default tool is `quickq-forms` (bundled when you `uv tool install` quickq), but the contract is FHIR — any FHIR-compliant tool works.
 
 ---
 
-## Export for delivery
+## Default delivery: `quickq serve`
 
-After loading your instrument, export it as a FHIR R4 Questionnaire JSON:
+For most studies — small lab cohorts through n=10–30 distributed pilots — `quickq serve` is the path of least resistance. It launches `quickq-forms` against your `study.db`, opens a browser, and writes submitted responses directly back to the OLTP.
+
+```bash
+quickq serve study.db
+```
+
+For pilot deployments with a known respondent list, add a roster file so only listed IDs can submit:
+
+```bash
+printf "R001\nR002\nR003\n" > codes.txt
+quickq serve study.db --respondents codes.txt
+# email each respondent http://your-host:8000/?r=R001
+```
+
+See the [End-to-End walkthrough](end-to-end.md) for the full local flow, and [Third-party FHIR renderers](../reference/third-party-renderers.md) for the interop story (REDCap, LHC-Forms, custom mobile clients).
+
+---
+
+## Export for an external delivery tool
+
+If you need to hand the questionnaire to a tool that's not `quickq-forms` (REDCap, a custom mobile app, LHC-Forms for an interop demo), export the FHIR Questionnaire JSON:
 
 ```bash
 quickq fhir export study.db 1 --output phq9_questionnaire.json
 ```
 
-This produces a standard FHIR Questionnaire resource. Hand it to any delivery tool that accepts FHIR Questionnaire JSON — a web app, a mobile app, a clinical portal, REDCap, or LHC-Forms.
-
-### Reference delivery tool: LHC-Forms
-
-**[LHC-Forms](https://lhncbc.nlm.nih.gov/LHC-forms/)** (NLM) is the reference delivery tool for quickq. It is an open-source JavaScript widget that renders FHIR Questionnaires in a browser with no server dependency. Participants complete the form; LHC-Forms produces a FHIR QuestionnaireResponse that quickq can import directly.
-
-!!! note "CDN access"
-    LHC-Forms is served from the NLM CDN. Browser extensions that block third-party scripts may prevent it from loading. The quickq `preview` command serves LHC-Forms assets from localhost to avoid this.
-
-```bash
-# Preview a questionnaire locally before handing off to a delivery tool
-quickq preview study.db 1
-```
+The output is a standard FHIR R4 `Questionnaire` resource. Any FHIR-compliant delivery tool accepts it. When responses come back as `QuestionnaireResponse` JSON, import them with `quickq fhir import-response` (below).
 
 ---
 

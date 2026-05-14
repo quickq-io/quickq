@@ -72,6 +72,7 @@ nav:
       - Compliance & Governance: reference/compliance.md
       - Federated Analytics: reference/federated.md
       - FHIR Interoperability: fhir.md
+      - Third-party FHIR Renderers: reference/third-party-renderers.md
       - OMOP Interoperability: reference/omop.md
       - Worked examples:
           - 'PHQ-9 Rendered Instrument': reference/example-phq9.md

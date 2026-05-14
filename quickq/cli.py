@@ -366,13 +366,32 @@ def analytics_cmd(olap_path: str, queries_file: str | None) -> None:
 @click.argument("questionnaire_id", type=int)
 @click.option("--port", default=5173, show_default=True, help="Local port for the preview server.")
 @click.option("--no-browser", is_flag=True, help="Start server without opening a browser tab.")
-@click.option("--output", "-o", type=click.Path(), default=None, help="Write static HTML to file instead of serving.")
-def preview_cmd(db_path: str, questionnaire_id: int, port: int, no_browser: bool, output: str | None) -> None:
-    """Render a questionnaire in a local browser via LHC-Forms (read-only)."""
+@click.option("--output", "-o", type=click.Path(), default=None,
+              help="Write static HTML (LHC-Forms-based) to file instead of serving.")
+@click.option("--renderer", type=click.Choice(["quickq-forms", "lhc-forms"]),
+              default="quickq-forms", show_default=True,
+              help="Which renderer to use. Default is quickq-forms (same renderer respondents see "
+                   "during `quickq serve`). Use `--renderer=lhc-forms` to preview via NLM's reference "
+                   "FHIR renderer — useful for FHIR-interop demos. The --output path always uses "
+                   "LHC-Forms (single-file static export).")
+def preview_cmd(
+    db_path: str,
+    questionnaire_id: int,
+    port: int,
+    no_browser: bool,
+    output: str | None,
+    renderer: str,
+) -> None:
+    """Render a questionnaire in a local browser (read-only)."""
     if output:
         html = build_preview_html(db_path, questionnaire_id)
         Path(output).write_text(html)
         click.echo(f"Preview HTML written to {output}.")
+        return
+
+    if renderer == "lhc-forms":
+        from .preview import preview_lhcforms
+        preview_lhcforms(db_path, questionnaire_id, port=port, open_browser=not no_browser)
     else:
         preview_questionnaire(db_path, questionnaire_id, port=port, open_browser=not no_browser)
 
