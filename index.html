@@ -320,10 +320,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-the-data-model-is-the-argument" class="md-nav__link">
+  <a href="#what-you-get" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why the data model is the argument
+        What you get
       
     </span>
   </a>
@@ -331,10 +331,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-quickq-implements-this" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How quickq implements this
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-quickq-fits-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How quickq fits together
       
     </span>
   </a>
@@ -353,10 +364,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#why-this-stays-simple" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Why this stays simple
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authoring-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authoring example
       
     </span>
   </a>
@@ -1466,10 +1488,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-the-data-model-is-the-argument" class="md-nav__link">
+  <a href="#what-you-get" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why the data model is the argument
+        What you get
       
     </span>
   </a>
@@ -1477,10 +1499,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-quickq-implements-this" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How quickq implements this
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-quickq-fits-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How quickq fits together
       
     </span>
   </a>
@@ -1499,10 +1532,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#why-this-stays-simple" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Why this stays simple
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authoring-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authoring example
       
     </span>
   </a>
@@ -1552,21 +1596,36 @@
 
 
 <h1 id="quickq">quickq<a class="headerlink" href="#quickq" title="Permanent link">&para;</a></h1>
-<p><strong>quickq is a survey authoring and analytics toolkit for health and epidemiology research, built around a single principle: the data model is the contract.</strong> Skip logic, data dictionaries, scoring rules, completion analyses, missingness audits, and cross-study harmonization are all <em>derivations</em> of the data model — not parallel sidecar documents maintained alongside it. That choice is the central argument for using quickq, and every other feature in this documentation follows from it.</p>
-<h2 id="why-the-data-model-is-the-argument">Why the data model is the argument<a class="headerlink" href="#why-the-data-model-is-the-argument" title="Permanent link">&para;</a></h2>
-<p>Good data modelling is the difference between a study where every analysis starts with rebuilding the model from sidecar documents, and a study where every analysis is a SQL query against the model itself. Three concrete consequences of the way quickq stores a study:</p>
+<p><strong>quickq is a survey authoring and analytics toolkit for health and epidemiology research.</strong> Author instruments in YAML, deliver them over FHIR, collect responses through a bundled web form, and analyze with SQL — all from one command-line tool, with a shared data model underneath that keeps every artifact in sync.</p>
+<h2 id="what-you-get">What you get<a class="headerlink" href="#what-you-get" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Skip logic is structured rows in <code>skip_rule</code>, not prose in a PDF.</strong> Eligibility, integrity, and the structurally-missing / truly-missing distinction are SQL recipes that work across every instrument unchanged. See <a href="reference/skip-logic-qc/">Skip-Logic Recipes</a>.</li>
-<li><strong>The data dictionary is a query, not a Word document.</strong> <code>quickq data-dict</code> reads the live schema and emits a complete, up-to-date dictionary (question text, types, concept codes, valid response values, skip conditions, scoring memberships). It can't drift from the data because it is the data. See the <a href="reference/example-prapare-data-dict/">PRAPARE Data Dictionary</a> for a worked example.</li>
-<li><strong>Every question type stores answers in <code>fact_response</code> the same way.</strong> Choice answers in <code>option_id</code> and <code>option_value</code>, numeric in <code>response_numeric</code>, date in <code>response_date</code>, text in <code>response_text</code>. The same query shape works for single_choice, multiple_choice, likert, boolean, numeric, date, slider, ranked, and grid questions, with no instrument-specific code. See <a href="reference/query-patterns/">Query Patterns by Question Type</a>.</li>
+<li><strong>Bundled instrument library.</strong> PHQ-9, GAD-7, AUDIT-10, PRAPARE, PROMIS-10, and more — ready to drop into a study. Compose your own instruments by referencing library questions, or author from scratch in YAML.</li>
+<li><strong>FHIR-compliant delivery.</strong> The bundled <code>quickq-forms</code> web app renders your instrument in a browser; or hand the FHIR export to REDCap, LHC-Forms, a custom mobile app, or any FHIR-compliant tool. Responses flow back the same way.</li>
+<li><strong>A data dictionary that can't drift.</strong> <code>quickq data-dict</code> reads the live schema and emits question text, types, concept codes, valid responses, skip conditions, and scoring memberships — generated from the data, not maintained alongside it.</li>
+<li><strong>Skip logic and QC as queries.</strong> Eligibility, integrity violations, and the structurally-missing-vs-truly-missing distinction are SQL recipes that work across every instrument unchanged.</li>
+<li><strong>Versioning and provenance.</strong> Questions are immutable once used; rewording or changing an option produces a new versioned definition, so every response points to exactly what was asked.</li>
+<li><strong>Federated analytics + concept harmonization.</strong> Aggregate queries across multi-site databases without moving individual records. Questions and response options carry LOINC, SNOMED, and OMOP codes for cross-study harmonization.</li>
+<li><strong>Compliance scaffolding.</strong> FAIR self-audit, GDPR-style erasure, IRB-style withdrawal, and metadata export are first-class commands aligned with HIPAA, GDPR, and IRB conventions.</li>
 </ul>
-<p>The alternative — skip logic in delivery configs, data dictionaries in Word, custom storage per question type, completion rates that hand-encode the rules — turns every analytical question into a model-reconstruction exercise. The pattern compounds: every analyst rebuilds the same understanding from the same sidecar documents, every reproduction is an opportunity for drift, every audit is a manual diff between artifacts that should have been one. quickq treats those reconstructions as the design smell they are.</p>
-<p>Scoring rules, concept codes, errata, lineage between question versions, and the data-quality flags raised at collection time follow the same pattern: they are first-class rows in the model, not annotations bolted onto it later.</p>
-<div class="admonition tip">
-<p class="admonition-title">Start with the data model</p>
-<p>Before you write your first query or author your first instrument, read the <strong><a href="database/data-model/">Data Model overview</a></strong> — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with ER diagrams for the four that carry the most analytical weight. Every other page in this documentation cross-references those eight layers.</p>
-</div>
-<h2 id="how-quickq-implements-this">How quickq implements this<a class="headerlink" href="#how-quickq-implements-this" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq with the bundled form server</span>
+uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/quickq-io/quickq.git<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--with<span class="w"> </span>git+https://github.com/quickq-io/quickq-forms.git
+
+<span class="c1"># Author and serve a study</span>
+quickq<span class="w"> </span>init<span class="w"> </span>study.db<span class="w"> </span>--with-library<span class="w">          </span><span class="c1"># OLTP database + standard instrument library</span>
+quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db<span class="w">         </span><span class="c1"># compile your YAML instrument</span>
+quickq<span class="w"> </span>serve<span class="w"> </span>study.db<span class="w">                        </span><span class="c1"># launch the form server in your browser</span>
+
+<span class="c1"># Build and inspect the analytics layer</span>
+quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb<span class="w">     </span><span class="c1"># OLTP → OLAP star schema</span>
+quickq<span class="w"> </span>report<span class="w">  </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w">   </span><span class="c1"># Markdown summary</span>
+quickq<span class="w"> </span>analytics<span class="w">                             </span><span class="c1"># interactive DuckDB UI (requires duckdb on PATH)</span>
+</code></pre></div>
+<p>For a copy-paste-runnable walkthrough that builds a complete study from scratch in about 15 minutes, see the <a href="tutorials/end-to-end/">End-to-End Walkthrough</a>.</p>
+<hr />
+<h2 id="how-quickq-fits-together">How quickq fits together<a class="headerlink" href="#how-quickq-fits-together" title="Permanent link">&para;</a></h2>
 <div style="max-width: 50%; margin: 0 auto;">
 
 <pre class="mermaid"><code>graph TD
@@ -1583,20 +1642,18 @@
 
 </div>
 
-<p>Two layers connected by a refresh. <code>study.db</code> (SQLite) is the <em>source of truth</em> — normalized, FK-constrained, FHIR-compatible, the file that gets backed up, version-controlled, and handed to collaborators. <code>analytics.duckdb</code> (DuckDB) is the <em>analytical contract</em> — a star schema rebuilt on demand from the OLTP, the same for every quickq study so the same query works against any of them.</p>
-<p><strong><code>study.db</code> is the portable study artifact.</strong> It is a standard SQLite file readable by any SQL tool or language with SQLite bindings. The framework around it is built on open standards:</p>
+<p>Two databases connected by a refresh. <code>study.db</code> (SQLite) is the <em>source of truth</em> — normalized, FK-constrained, FHIR-compatible, the file that gets backed up, version-controlled, and handed to collaborators. <code>analytics.duckdb</code> (DuckDB) is the <em>analytical contract</em> — a star schema rebuilt on demand from the OLTP, with the same shape for every quickq study so the same query works against any of them.</p>
+<p><strong><code>study.db</code> is the portable study artifact.</strong> It's a standard SQLite file readable by any SQL tool or language with SQLite bindings. The framework around it is built on open standards:</p>
 <ul>
-<li>Instruments are authored in YAML and validated against existing instruments in the database to avoid duplicating established questions; a preview renderer shows the instrument before deployment</li>
-<li>Delivery is via FHIR. quickq exports a <code>Questionnaire.json</code>, any compliant tool renders and collects responses, and quickq ingests the <code>QuestionnaireResponse.json</code> back</li>
-<li>Questions and response options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization</li>
-<li>A Python SDK provides a clean interface to both databases; the SQLite schema is the contract for non-Python implementations</li>
+<li>Instruments are authored in YAML and validated against existing library content to avoid duplicating established questions; a preview renderer shows the instrument before deployment.</li>
+<li>Delivery is via FHIR R4. quickq exports a <code>Questionnaire.json</code>, any compliant tool renders and collects responses, and quickq ingests the resulting <code>QuestionnaireResponse.json</code> back.</li>
+<li>Questions and response options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization.</li>
+<li>A Python SDK provides a clean interface to both databases; the SQLite schema is the contract for non-Python implementations.</li>
 </ul>
-<p><strong>OLTP layer (<code>study.db</code>, SQLite): correctness and provenance.</strong> Questions are immutable once used in a study — a reword or option change produces a new versioned definition, so every response points to exactly what was asked. Skip logic is structured rules in <code>skip_rule</code>, not prose in external documentation. Foreign key constraints and typed response storage enforce integrity at collection time; data quality issues are flagged without interrupting collection.</p>
-<p><strong>OLAP layer (<code>analytics.duckdb</code>, DuckDB): standardized analysis.</strong> Every answered question is one row in <code>fact_response</code>, so the same query pattern works for every question type and every instrument. Skip logic violations, out-of-range values, and truly-missing responses are standard SQL queries against the star schema, not custom scripts per instrument. Subscale scores (PHQ-9, GAD-7, AUDIT) are computed from versioned scoring definitions on refresh and can be recomputed against historical data at any time. Questions and response options carry OMOP-compatible concept IDs; cross-study harmonization on shared LOINC or SNOMED codes is a JOIN.</p>
 <hr />
 <h2 id="what-it-does">What it does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
 <p><code>quickq --help</code> shows the full command surface, grouped by purpose:</p>
-<div class="highlight"><pre><span></span><code>Core              init · load · preview · serve · refresh · seed · data-dict
+<div class="highlight"><pre><span></span><code>Core              new · init · load · preview · serve · refresh · seed · data-dict
                   render · report · analytics · export · list
 
 Study management  fork · merge
@@ -1611,29 +1668,29 @@ Federated         federated query
 </code></pre></div>
 <p>A complete study lifecycle uses commands from each group:</p>
 <ul>
-<li><strong>Core</strong> authors the instrument, collects responses, and produces analytical outputs (reports, exports, scoring, the DuckDB UI via <code>quickq analytics</code>).</li>
-<li><strong>Study management</strong> combines and divides study databases. <code>quickq fork</code> scaffolds a new study database from an existing one's structure (questions, options, scoring rules) without copying responses; useful for multi-site distribution, dev/staging environments, or generational handoff. <code>quickq merge</code> is the inverse: combine multiple site databases into a single combined study.</li>
-<li><strong>FHIR</strong> is the cross-language handoff. Export a <code>Questionnaire</code> JSON for any FHIR-compatible delivery tool (LHC-Forms, REDCap, a custom mobile app), then import the <code>QuestionnaireResponse</code> back.</li>
+<li><strong>Core</strong> scaffolds the study repository, authors the instrument, collects responses, and produces analytical outputs (reports, exports, scoring, the DuckDB UI via <code>quickq analytics</code>).</li>
+<li><strong>Study management</strong> combines and divides study databases. <code>quickq fork</code> scaffolds a new study database from an existing one's structure (questions, options, scoring rules) without copying responses — useful for multi-site distribution, dev/staging environments, or generational handoff. <code>quickq merge</code> is the inverse: combine multiple site databases into a single combined study.</li>
+<li><strong>FHIR</strong> is the cross-language handoff. Export a <code>Questionnaire</code> JSON for any FHIR-compatible delivery tool (LHC-Forms, REDCap, a custom mobile app), then import the <code>QuestionnaireResponse</code> back. See <a href="reference/third-party-renderers/">Third-party FHIR renderers</a>.</li>
 <li><strong>Compliance</strong> supports common research-data workflows aligned with HIPAA, GDPR, and IRB conventions: FAIR-aligned metadata for repository deposit, a FAIR self-audit, GDPR-style erasure, and IRB-style withdrawal. These commands implement specific mechanical operations and assist compliance work; they do not certify that your deployment meets any framework on its own.</li>
 <li><strong>Federated</strong> runs aggregate queries across multiple site databases without ever moving individual-level records, with cell-size suppression for disclosure control.</li>
 </ul>
 <hr />
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq with the optional form server alongside</span>
-uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span>./quickq<span class="w"> </span>--with<span class="w"> </span>./quickq-forms
-
-<span class="c1"># Author a study</span>
-quickq<span class="w"> </span>init<span class="w"> </span>study.db<span class="w"> </span>--with-library<span class="w">             </span><span class="c1"># OLTP database + standard instrument library</span>
-quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db<span class="w">            </span><span class="c1"># add your YAML instrument</span>
-quickq<span class="w"> </span>serve<span class="w"> </span>study.db<span class="w">                           </span><span class="c1"># launch the form server in your browser</span>
-
-<span class="c1"># Build and inspect the analytics layer</span>
-quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb<span class="w">        </span><span class="c1"># OLTP → OLAP star schema</span>
-quickq<span class="w"> </span>report<span class="w">  </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w">      </span><span class="c1"># Markdown summary</span>
-quickq<span class="w"> </span>analytics<span class="w">                                </span><span class="c1"># interactive DuckDB UI (requires duckdb on PATH)</span>
-</code></pre></div>
-<p>For a copy-paste-runnable walkthrough that authors a complete questionnaire from scratch, see the <a href="tutorials/end-to-end/">End-to-End Walkthrough</a>.</p>
-<p>Authoring from YAML:</p>
+<h2 id="why-this-stays-simple">Why this stays simple<a class="headerlink" href="#why-this-stays-simple" title="Permanent link">&para;</a></h2>
+<p>The foundation of quickq is a small, well-shaped data model. That shape is what makes standardization, analysis, and quality control simple SQL queries rather than separate workflows: the data dictionary is a query, skip-logic QC is a query, cross-study harmonization is a JOIN. The data is already in a form that's easy to reason about, so dictionaries, catalogs, and scoring rules don't have to be maintained alongside it — they're views of the model itself.</p>
+<p>Three concrete consequences:</p>
+<ul>
+<li><strong>Skip logic is structured rows in <code>skip_rule</code>, not prose in a PDF.</strong> Eligibility, integrity, and the structurally-missing / truly-missing distinction are SQL recipes that work across every instrument unchanged. See <a href="reference/skip-logic-qc/">Skip-Logic Recipes</a>.</li>
+<li><strong>The data dictionary is a query, not a Word document.</strong> <code>quickq data-dict</code> reads the live schema and emits a complete, up-to-date dictionary that can't drift from the data because it <em>is</em> the data. See the <a href="reference/example-prapare-data-dict/">PRAPARE Data Dictionary</a> for a worked example.</li>
+<li><strong>Every question type stores answers in <code>fact_response</code> the same way.</strong> Choice answers in <code>option_id</code> and <code>option_value</code>, numeric in <code>response_numeric</code>, date in <code>response_date</code>, text in <code>response_text</code>. The same query shape works for single_choice, multiple_choice, likert, boolean, numeric, date, slider, ranked, and grid questions, with no instrument-specific code. See <a href="reference/query-patterns/">Query Patterns by Question Type</a>.</li>
+</ul>
+<p>The alternative — skip logic in delivery configs, data dictionaries in Word, custom storage per question type, completion rates that hand-encode the rules — turns every analytical question into a model-reconstruction exercise. Every analyst rebuilds the same understanding from the same sidecar documents, every reproduction is an opportunity for drift, every audit is a manual diff between artifacts that should have been one. quickq treats those reconstructions as the design smell they are.</p>
+<p>Scoring rules, concept codes, errata, lineage between question versions, and the data-quality flags raised at collection time follow the same pattern: they are first-class rows in the model, not annotations bolted onto it later.</p>
+<div class="admonition tip">
+<p class="admonition-title">Going further on the data model</p>
+<p>For the full schema with ER diagrams, see the <strong><a href="database/data-model/">Data Model overview</a></strong> — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with diagrams for the four that carry the most analytical weight.</p>
+</div>
+<hr />
+<h2 id="authoring-example">Authoring example<a class="headerlink" href="#authoring-example" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PHQ-9</span>
 <span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span>
@@ -1664,18 +1721,18 @@ quickq<span class="w"> </span>analytics<span class="w">                         
 <hr />
 <h2 id="what-quickq-is-not">What quickq is not<a class="headerlink" href="#what-quickq-is-not" title="Permanent link">&para;</a></h2>
 <ul>
-<li>A patient portal or EMR integration layer. quickq exports FHIR and ingests it back; integration is the delivery tool's job</li>
-<li>An always-on service. The refresh model is batch and on-demand, appropriate for research use</li>
+<li>A patient portal or EMR integration layer. quickq exports FHIR and ingests it back; integration is the delivery tool's job.</li>
+<li>An always-on service. The refresh model is batch and on-demand, appropriate for research use.</li>
 <li>A replacement for managed survey platforms. REDCap and Qualtrics solve overlapping problems with built-in respondent management, role-based access, and institutional support; the right tool depends on what your study needs over its lifetime. See <a href="design_decisions/#when-to-use-quickq">When to use quickq</a>.</li>
 </ul>
 <hr />
 <h2 id="going-deeper">Going deeper<a class="headerlink" href="#going-deeper" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="tutorials/end-to-end/">End-to-End Walkthrough</a> — copy-paste runnable; build a study from scratch in about 15 minutes</li>
-<li><a href="tutorial/">The Study Journey</a> — phase-by-phase tour of a researcher's workflow against the demo database</li>
-<li><a href="design_decisions/">Design Decisions</a> — delivery independence, scaling patterns, federated analytics, data sovereignty</li>
-<li><a href="authoring/">Survey Authoring</a> — YAML format, question types, skip logic, scoring rules, concept mapping</li>
-<li><a href="architecture/">Architecture</a> — schema, refresh model, FHIR handoff details</li>
+<li><a href="tutorials/end-to-end/">End-to-End Walkthrough</a> — copy-paste runnable; build a study from scratch in about 15 minutes.</li>
+<li><a href="tutorial/">The Study Journey</a> — phase-by-phase tour of a researcher's workflow against the demo database.</li>
+<li><a href="design_decisions/">Design Decisions</a> — delivery independence, scaling patterns, federated analytics, data sovereignty.</li>
+<li><a href="authoring/">Survey Authoring</a> — YAML format, question types, skip logic, scoring rules, concept mapping.</li>
+<li><a href="architecture/">Architecture</a> — schema, refresh model, FHIR handoff details.</li>
 </ul>
 
 
