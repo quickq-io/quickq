@@ -487,30 +487,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#export-for-delivery" class="md-nav__link">
+  <a href="#default-delivery-quickq-serve" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export for delivery
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Export for delivery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-delivery-tool-lhc-forms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference delivery tool: LHC-Forms
+        Default delivery: quickq serve
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#export-for-an-external-delivery-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export for an external delivery tool
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1025,6 +1019,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/third-party-renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party FHIR Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/omop/" class="md-nav__link">
         
   
@@ -1063,10 +1085,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
         
           
-          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
             
   
   
@@ -1084,8 +1106,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1476,30 +1498,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#export-for-delivery" class="md-nav__link">
+  <a href="#default-delivery-quickq-serve" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export for delivery
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Export for delivery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-delivery-tool-lhc-forms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference delivery tool: LHC-Forms
+        Default delivery: quickq serve
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#export-for-an-external-delivery-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export for an external delivery tool
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1596,23 +1612,25 @@
 
 
 <h1 id="tutorial-collecting-responses">Tutorial: Collecting Responses<a class="headerlink" href="#tutorial-collecting-responses" title="Permanent link">&para;</a></h1>
-<p>This tutorial covers the response collection phase: exporting your questionnaire for delivery, importing FHIR QuestionnaireResponse JSON files, and verifying what landed in the database.</p>
-<p>Survey delivery is intentionally out of scope for quickq. The FHIR handoff is the interface: quickq exports a <code>Questionnaire</code> JSON, a delivery tool renders and collects responses, and quickq ingests the resulting <code>QuestionnaireResponse</code> JSON. This keeps the collection layer pluggable — any FHIR-compliant tool works.</p>
+<p>This tutorial covers the response collection phase: serving the form to respondents (or handing the FHIR export to a third-party delivery tool), importing FHIR QuestionnaireResponse JSON files, and verifying what landed in the database.</p>
+<p>The FHIR boundary is the interface: a delivery tool renders the <code>Questionnaire</code>, collects responses, and produces <code>QuestionnaireResponse</code> JSON that quickq ingests. The default tool is <code>quickq-forms</code> (bundled when you <code>uv tool install</code> quickq), but the contract is FHIR — any FHIR-compliant tool works.</p>
 <hr />
-<h2 id="export-for-delivery">Export for delivery<a class="headerlink" href="#export-for-delivery" title="Permanent link">&para;</a></h2>
-<p>After loading your instrument, export it as a FHIR R4 Questionnaire JSON:</p>
+<h2 id="default-delivery-quickq-serve">Default delivery: <code>quickq serve</code><a class="headerlink" href="#default-delivery-quickq-serve" title="Permanent link">&para;</a></h2>
+<p>For most studies — small lab cohorts through n=10–30 distributed pilots — <code>quickq serve</code> is the path of least resistance. It launches <code>quickq-forms</code> against your <code>study.db</code>, opens a browser, and writes submitted responses directly back to the OLTP.</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>serve<span class="w"> </span>study.db
+</code></pre></div>
+<p>For pilot deployments with a known respondent list, add a roster file so only listed IDs can submit:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;R001\nR002\nR003\n&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>codes.txt
+quickq<span class="w"> </span>serve<span class="w"> </span>study.db<span class="w"> </span>--respondents<span class="w"> </span>codes.txt
+<span class="c1"># email each respondent http://your-host:8000/?r=R001</span>
+</code></pre></div>
+<p>See the <a href="../end-to-end/">End-to-End walkthrough</a> for the full local flow, and <a href="../../reference/third-party-renderers/">Third-party FHIR renderers</a> for the interop story (REDCap, LHC-Forms, custom mobile clients).</p>
+<hr />
+<h2 id="export-for-an-external-delivery-tool">Export for an external delivery tool<a class="headerlink" href="#export-for-an-external-delivery-tool" title="Permanent link">&para;</a></h2>
+<p>If you need to hand the questionnaire to a tool that's not <code>quickq-forms</code> (REDCap, a custom mobile app, LHC-Forms for an interop demo), export the FHIR Questionnaire JSON:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>phq9_questionnaire.json
 </code></pre></div>
-<p>This produces a standard FHIR Questionnaire resource. Hand it to any delivery tool that accepts FHIR Questionnaire JSON — a web app, a mobile app, a clinical portal, REDCap, or LHC-Forms.</p>
-<h3 id="reference-delivery-tool-lhc-forms">Reference delivery tool: LHC-Forms<a class="headerlink" href="#reference-delivery-tool-lhc-forms" title="Permanent link">&para;</a></h3>
-<p><strong><a href="https://lhncbc.nlm.nih.gov/LHC-forms/">LHC-Forms</a></strong> (NLM) is the reference delivery tool for quickq. It is an open-source JavaScript widget that renders FHIR Questionnaires in a browser with no server dependency. Participants complete the form; LHC-Forms produces a FHIR QuestionnaireResponse that quickq can import directly.</p>
-<div class="admonition note">
-<p class="admonition-title">CDN access</p>
-<p>LHC-Forms is served from the NLM CDN. Browser extensions that block third-party scripts may prevent it from loading. The quickq <code>preview</code> command serves LHC-Forms assets from localhost to avoid this.</p>
-</div>
-<div class="highlight"><pre><span></span><code><span class="c1"># Preview a questionnaire locally before handing off to a delivery tool</span>
-quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
-</code></pre></div>
+<p>The output is a standard FHIR R4 <code>Questionnaire</code> resource. Any FHIR-compliant delivery tool accepts it. When responses come back as <code>QuestionnaireResponse</code> JSON, import them with <code>quickq fhir import-response</code> (below).</p>
 <hr />
 <h2 id="import-responses">Import responses<a class="headerlink" href="#import-responses" title="Permanent link">&para;</a></h2>
 <p>When FHIR QuestionnaireResponse JSON files come back from the delivery tool, import them into the OLTP:</p>

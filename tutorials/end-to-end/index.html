@@ -1118,6 +1118,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/third-party-renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party FHIR Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/omop/" class="md-nav__link">
         
   
@@ -1156,10 +1184,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
         
           
-          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
             
   
   
@@ -1177,8 +1205,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1803,10 +1831,11 @@
 </div>
 <hr />
 <h2 id="step-1-install-quickq">Step 1 — Install quickq<a class="headerlink" href="#step-1-install-quickq" title="Permanent link">&para;</a></h2>
-<p>Install the <code>quickq</code> command from GitHub:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/quickq-io/quickq.git
+<p>Install <code>quickq</code> and the <code>quickq-forms</code> delivery package in one step:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/quickq-io/quickq.git<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--with<span class="w"> </span>git+https://github.com/quickq-io/quickq-forms.git
 </code></pre></div>
-<p>This installs <code>quickq</code> as a standalone command on your PATH, with the bundled question library included. Updates later via <code>uv tool upgrade quickq</code>. If you prefer plain pip: <code>pip install git+https://github.com/quickq-io/quickq.git</code>.</p>
+<p>This installs <code>quickq</code> as a standalone command on your PATH, bundles <code>quickq-forms</code> so <code>quickq serve</code> and <code>quickq preview</code> work out of the box, and includes the question library. Updates later via <code>uv tool upgrade quickq</code>. If you prefer plain pip: <code>pip install git+https://github.com/quickq-io/quickq.git git+https://github.com/quickq-io/quickq-forms.git</code>.</p>
 <p>Verify the install and get a quick overview of what the tool does:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>--help
 </code></pre></div>
@@ -1854,10 +1883,7 @@ quickq<span class="w"> </span>list<span class="w"> </span>surveys<span class="w"
 <p>Preview it in your browser:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Two renderers in this tutorial</p>
-<p><code>quickq preview</code> uses <strong>LHC-Forms</strong> (NIH's reference FHIR renderer, CDN-loaded on first run, then cached at <code>~/.cache/quickq/lhcforms/</code> for offline reuse) for quick visual checks during authoring. Step 5's <code>quickq serve</code> uses <strong>quickq-forms</strong>, our delivery package and what your respondents will actually see. We plan to unify on quickq-forms once it gains a read-only preview mode.</p>
-</div>
+<p>This opens the same renderer your respondents will see in Step 5 (<code>quickq-forms</code>), in read-only mode — the questionnaire renders normally but inputs are disabled and there's no Submit button. To preview via NLM's reference FHIR renderer instead (useful for confirming the FHIR export is portable across renderers), use <code>quickq preview study.db 1 --renderer=lhc-forms</code>. See <a href="../../reference/third-party-renderers/">Third-party FHIR renderers</a> for the interop story.</p>
 <h3 id="stage-2-add-an-option-set">Stage 2 — Add an option set<a class="headerlink" href="#stage-2-add-an-option-set" title="Permanent link">&para;</a></h3>
 <p>Option sets define a reusable list of choices that multiple questions can share. Add a frequency scale and two questions that use it:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
@@ -1973,26 +1999,21 @@ quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class
 <h2 id="step-4-export-as-fhir">Step 4 — Export as FHIR<a class="headerlink" href="#step-4-export-as-fhir" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>gout.json
 </code></pre></div>
-<p>This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant delivery tool can render it. In the next step, quickq-forms reads directly from <code>study.db</code>, so you won't need this file today — but it's what you'd hand to an external tool like LHC-Forms or REDCap.</p>
+<p>This produces a standard FHIR R4 Questionnaire resource. Any FHIR-compliant delivery tool can render it. In the next step, quickq-forms reads directly from <code>study.db</code>, so you won't need this file today — but it's what you'd hand to an external tool like LHC-Forms or REDCap. See <a href="../../reference/third-party-renderers/">Third-party FHIR renderers</a> for the interop story.</p>
 <hr />
 <h2 id="step-5-start-the-form-server">Step 5 — Start the form server<a class="headerlink" href="#step-5-start-the-form-server" title="Permanent link">&para;</a></h2>
-<p><code>quickq serve</code> launches a web form for your study and opens it in your browser. Submitted responses write straight back to <code>study.db</code>.</p>
-<p>The serve command lives in a separate package, <code>quickq-forms</code>. Reinstall <code>quickq</code> with <code>quickq-forms</code> alongside so both end up on your PATH together:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>git+https://github.com/quickq-io/quickq.git<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--with<span class="w"> </span>git+https://github.com/quickq-io/quickq-forms.git
-</code></pre></div>
+<p><code>quickq serve</code> launches a web form for your study and opens it in your browser. Submitted responses write straight back to <code>study.db</code>. This is the same renderer you saw in Step 4's preview, now in live mode (Submit enabled, responses persisted).</p>
 <p>Start the server from inside your study repo:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>gout-study<span class="w">     </span><span class="c1"># if you aren&#39;t there already</span>
 quickq<span class="w"> </span>serve<span class="w"> </span>study.db
 </code></pre></div>
 <p>You should see:</p>
-<div class="highlight"><pre><span></span><code>Serving questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://localhost:8000
+<div class="highlight"><pre><span></span><code>serving: questionnaire 1 from /Users/yourname/code/gout-study/study.db on http://localhost:8000
 </code></pre></div>
 <p>A browser tab opens at <strong>http://localhost:8000</strong> showing the form.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If the form does not load, try a private/incognito window. Some browser extensions block localhost requests or third-party scripts; an incognito profile typically bypasses both. (Same family of issue noted for the LHC-Forms preview in <a href="../collect/#reference-delivery-tool-lhc-forms">Collect Responses</a>.)</p>
+<p>If the form does not load, try a private/incognito window. Some browser extensions block localhost requests; an incognito profile typically bypasses them.</p>
 </div>
 <hr />
 <h2 id="step-6-take-the-survey">Step 6 — Take the survey<a class="headerlink" href="#step-6-take-the-survey" title="Permanent link">&para;</a></h2>

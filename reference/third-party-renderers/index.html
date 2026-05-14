@@ -12,13 +12,13 @@
         <meta name="author" content="quickq Contributors">
       
       
-        <link rel="canonical" href="https://quickq-io.github.io/quickq/reference/example-prapare-data-dict/">
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/reference/third-party-renderers/">
       
       
-        <link rel="prev" href="../example-phq9/">
+        <link rel="prev" href="../../fhir/">
       
       
-        <link rel="next" href="../example-gout-checkin/">
+        <link rel="next" href="../omop/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>PRAPARE Data Dictionary - quickq</title>
+        <title>Third-party FHIR Renderers - quickq</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#prapare" class="md-skip">
+        <a href="#third-party-fhir-renderers" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              PRAPARE Data Dictionary
+              Third-party FHIR Renderers
             
           </span>
         </div>
@@ -875,10 +875,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../third-party-renderers/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party FHIR Renderers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -894,6 +921,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-a-third-party-renderer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use a third-party renderer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preview-through-lhc-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preview through LHC-Forms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#static-html-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static HTML export
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#redcap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REDCap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-mobile-web-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom mobile / web clients
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-quickq-keeps-the-interop-story-honest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How quickq keeps the interop story honest
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -931,8 +1044,6 @@
                 
   
   
-    
-  
   
   
     
@@ -942,11 +1053,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
         
           
           <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
@@ -967,7 +1078,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_14">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1010,19 +1121,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../example-prapare-data-dict/" class="md-nav__link">
         
   
   
@@ -1038,7 +1140,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1362,6 +1463,80 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-a-third-party-renderer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use a third-party renderer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preview-through-lhc-forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preview through LHC-Forms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#static-html-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static HTML export
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#redcap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REDCap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-mobile-web-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom mobile / web clients
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-quickq-keeps-the-interop-story-honest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How quickq keeps the interop story honest
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1380,237 +1555,88 @@
   
 
 
-<div class="admonition note">
-<p class="admonition-title">Generated output</p>
-<p>This page was produced by running <code>quickq data-dict</code> against a database initialized with <code>quickq init --with-library</code>. Nothing was written by hand.</p>
-</div>
-<h1 id="prapare">PRAPARE<a class="headerlink" href="#prapare" title="Permanent link">&para;</a></h1>
+<h1 id="third-party-fhir-renderers">Third-Party FHIR Renderers<a class="headerlink" href="#third-party-fhir-renderers" title="Permanent link">&para;</a></h1>
+<p>quickq's default delivery tool is <code>quickq-forms</code> — bundled when you install quickq, used by <code>quickq serve</code> and <code>quickq preview</code>. But the contract between quickq and any delivery tool is <strong>FHIR R4</strong>, not a quickq-specific API. Any tool that accepts a FHIR <code>Questionnaire</code> and produces a FHIR <code>QuestionnaireResponse</code> works without modification.</p>
+<p>This page covers when you'd use a third-party tool, how to preview your instrument in one, and what quickq tests to keep that contract honest.</p>
+<hr />
+<h2 id="when-to-use-a-third-party-renderer">When to use a third-party renderer<a class="headerlink" href="#when-to-use-a-third-party-renderer" title="Permanent link">&para;</a></h2>
+<p>Three common cases:</p>
+<ol>
+<li><strong>You already use REDCap / Qualtrics / a clinical EHR portal.</strong> Your IRB, your respondents, or your institution mandate a specific tool. Hand them the FHIR Questionnaire JSON; collect the responses; import them via <code>quickq fhir import-response</code>.</li>
+<li><strong>You need a custom mobile app</strong> for in-field data collection. Build it against the FHIR R4 spec; quickq doesn't care what's in front.</li>
+<li><strong>You want to demonstrate interop</strong> to a regulator, a collaborator, or yourself — "this study's data model is portable, not locked to one tool." Render the FHIR export through NLM's reference renderer to make the contract concrete.</li>
+</ol>
+<p>If none of these apply, stick with <code>quickq-forms</code>. It's the renderer with the best fidelity to what quickq actually emits (correctly honors the slider, ranked-with-<code>ordinalValue</code>, grid, and skip-logic extensions; see the renderer-coverage audit for the empirical comparison).</p>
+<hr />
+<h2 id="preview-through-lhc-forms">Preview through LHC-Forms<a class="headerlink" href="#preview-through-lhc-forms" title="Permanent link">&para;</a></h2>
+<p><a href="https://lhncbc.nlm.nih.gov/LHC-forms/">LHC-Forms</a> is the reference FHIR Questionnaire renderer maintained by the U.S. National Library of Medicine. It's the closest thing to a "reference implementation" of the FHIR Questionnaire spec.</p>
+<p>To preview your instrument through it:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--renderer<span class="o">=</span>lhc-forms
+</code></pre></div>
+<p>This opens a localhost server that bundles LHC-Forms (cached at <code>~/.cache/quickq/lhcforms/</code> after first download) and renders your exported FHIR Questionnaire. Inputs are interactive but no responses are saved — it's purely a visual / interop check.</p>
+<p>What you'll see:</p>
+<ul>
+<li><strong>Simple types</strong> (single_choice, multiple_choice, boolean, text, numeric, date, datetime, likert) render correctly. The FHIR contract is honored end-to-end.</li>
+<li><strong>Sliders</strong> fall back to a plain text input. LHC-Forms doesn't currently honor the <code>itemControl=slider</code> extension or the min/max metadata. The question is still answerable but you lose the affordance.</li>
+<li><strong>Ranked questions</strong> render as a single-select combobox. LHC-Forms doesn't currently honor the <code>ordinalValue</code> extension or surface a multi-position ordering UI. Respondents can pick one option but cannot rank them.</li>
+<li><strong>Grids</strong> render correctly as horizontal tables.</li>
+<li><strong>Skip logic</strong> (<code>enableWhen</code>, <code>enableBehavior=all|any</code>) works.</li>
+</ul>
+<p>These limitations are LHC-Forms gaps, not quickq bugs — the FHIR export is correct, LHC-Forms just doesn't render every detail. If you need real slider/ranked affordances, use <code>quickq-forms</code> (or your custom renderer).</p>
+<hr />
+<h2 id="static-html-export">Static HTML export<a class="headerlink" href="#static-html-export" title="Permanent link">&para;</a></h2>
+<p>To produce a single-file HTML page that renders your instrument anywhere with a browser — useful for emailing a preview to a collaborator who doesn't have quickq installed:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>preview<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>instrument-preview.html
+</code></pre></div>
+<p>The file uses LHC-Forms loaded from the NLM CDN. No server required to view; just open the HTML.</p>
+<hr />
+<h2 id="redcap">REDCap<a class="headerlink" href="#redcap" title="Permanent link">&para;</a></h2>
+<p>REDCap supports importing FHIR Questionnaires. Workflow:</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span><span class="nb">export</span><span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>instrument.json
+<span class="c1"># in REDCap: Project Setup → Import a FHIR Questionnaire → upload instrument.json</span>
+</code></pre></div>
+<p>When responses come back from REDCap (REDCap exports FHIR <code>QuestionnaireResponse</code> JSON):</p>
+<div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>fhir<span class="w"> </span>import-response<span class="w"> </span>responses.json<span class="w"> </span>study.db
+</code></pre></div>
+<p>We haven't end-to-end-tested every REDCap variant. If you hit a parser warning, check the <code>data_quality_flag</code> table — quickq writes warnings rather than throwing, so partial imports are recoverable.</p>
+<hr />
+<h2 id="custom-mobile-web-clients">Custom mobile / web clients<a class="headerlink" href="#custom-mobile-web-clients" title="Permanent link">&para;</a></h2>
+<p>If you're building a custom renderer (React Native, Flutter, a clinical portal frontend), the contract is:</p>
 <table>
 <thead>
 <tr>
-<th>#</th>
-<th>Variable</th>
-<th>Label</th>
-<th>Type</th>
-<th>Concept</th>
-<th>Valid Values</th>
-<th>Skip Conditions</th>
-<th>Scoring Rules</th>
+<th>Direction</th>
+<th>What you send / receive</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>0</td>
-<td><code>prapare.hispanic</code></td>
-<td>Are you Hispanic or Latino?</td>
-<td>single_choice</td>
-<td>LOINC:56051-6</td>
-<td>1=Yes<br>0=No<br>7=Refused<br>9=Don't know</td>
-<td></td>
-<td></td>
+<td><strong>In</strong></td>
+<td>FHIR R4 <code>Questionnaire</code> JSON from <code>quickq fhir export</code></td>
 </tr>
 <tr>
-<td>1</td>
-<td><code>prapare.race</code></td>
-<td>Which race(s) are you? (select best answer)</td>
-<td>single_choice</td>
-<td>LOINC:32624-9</td>
-<td>1=American Indian or Alaska Native<br>2=Asian<br>3=Black or African American<br>4=Native Hawaiian or Other Pacific Islander<br>5=White<br>9=Unknown</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>2</td>
-<td><code>prapare.farm_worker</code></td>
-<td>At any point in the past 2 years, has seasonal or migrant farm work been your or your family's main source of income?</td>
-<td>single_choice</td>
-<td>LOINC:93035-4</td>
-<td>1=Yes<br>0=No<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>3</td>
-<td><code>prapare.military</code></td>
-<td>Have you or any family members ever served in the military?</td>
-<td>single_choice</td>
-<td>LOINC:93034-7</td>
-<td>1=Yes<br>0=No<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>4</td>
-<td><code>prapare.language</code></td>
-<td>What language are you most comfortable speaking?</td>
-<td>single_choice</td>
-<td>LOINC:54899-0</td>
-<td>1=English<br>2=Spanish<br>3=Chinese<br>4=Vietnamese<br>5=Tagalog<br>6=Other</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>5</td>
-<td><code>prapare.household_size</code></td>
-<td>How many people are living or staying at your address?</td>
-<td>numeric</td>
-<td>LOINC:63512-8</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6</td>
-<td><code>prapare.housing_status</code></td>
-<td>What is your housing situation today?</td>
-<td>single_choice</td>
-<td>LOINC:71802-3</td>
-<td>1=I have a steady place to live<br>2=I have a place to live today, but I am worried about losing it in the future<br>3=I do not have a steady place to live (temporarily staying with others, hotel, shelter, or outside)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>7</td>
-<td><code>prapare.housing_concern</code></td>
-<td>Are you worried about losing your housing?</td>
-<td>single_choice</td>
-<td>LOINC:93033-9</td>
-<td>1=Yes<br>0=No<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>8</td>
-<td><code>prapare.address</code></td>
-<td>What is your current address?</td>
-<td>text</td>
-<td>LOINC:56799-0</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>9</td>
-<td><code>prapare.education</code></td>
-<td>What is the highest level of school that you have finished?</td>
-<td>single_choice</td>
-<td>LOINC:82589-3</td>
-<td>1=Less than high school degree<br>2=High school diploma or GED<br>3=More than high school</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>10</td>
-<td><code>prapare.employment</code></td>
-<td>What is your current work situation?</td>
-<td>single_choice</td>
-<td>LOINC:67875-5</td>
-<td>1=Unemployed<br>2=Part-time or temporary work<br>3=Full-time work<br>4=Otherwise unemployed but not seeking work (e.g., retired, student, disabled, caregiver)<br>5=Student</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>11</td>
-<td><code>prapare.insurance</code></td>
-<td>What is your main insurance?</td>
-<td>single_choice</td>
-<td>LOINC:76437-3</td>
-<td>1=None/uninsured<br>2=Medicaid<br>3=CHIP Medicaid<br>4=Medicare<br>5=Other public insurance (not CHIP)<br>6=Other public insurance (CHIP)<br>7=Private insurance</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12</td>
-<td><code>prapare.income</code></td>
-<td>During the past year, what was the total combined income for you and the family members you live with? Please include money from jobs, disability payments, unemployment benefits, food stamps, Social Security, child support, and any other sources.</td>
-<td>numeric</td>
-<td>LOINC:63586-2</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>13</td>
-<td><code>prapare.necessities</code></td>
-<td>In the past year, have you or any family members you live with been unable to get any of the following when it was really needed? (check all that apply)</td>
-<td>sata_other</td>
-<td>LOINC:93031-3</td>
-<td>1=Food<br>2=Clothing<br>3=Utilities<br>4=Child care<br>5=Medicine or Any Health Care<br>6=Phone<br>7=Other<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>14</td>
-<td><code>prapare.transportation</code></td>
-<td>Has lack of transportation kept you from medical appointments, meetings, work, or from getting things needed for daily living?</td>
-<td>boolean</td>
-<td>LOINC:93030-5</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15</td>
-<td><code>prapare.social_contact</code></td>
-<td>How often do you see or talk to people that you care about and feel close to (for example: talking to friends on the phone, visiting friends or family, going to church or club meetings)?</td>
-<td>single_choice</td>
-<td>LOINC:93029-7</td>
-<td>1=Less than once a week<br>2=1 or 2 times a week<br>3=3 to 5 times a week<br>4=5 or more times a week<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16</td>
-<td><code>prapare.stress</code></td>
-<td>Stress is when someone feels tense, nervous, anxious, or can't sleep at night because their mind is troubled. How stressed are you?</td>
-<td>likert</td>
-<td>LOINC:93038-8</td>
-<td>1=Not at all<br>2=A little bit<br>3=Somewhat<br>4=Quite a bit<br>5=Very much<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17</td>
-<td><code>prapare.incarceration</code></td>
-<td>Have you spent more than 2 nights in a row in a jail, prison, detention center, or juvenile correctional facility in the past 12 months?</td>
-<td>single_choice</td>
-<td>LOINC:93028-9</td>
-<td>1=Yes<br>0=No<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18</td>
-<td><code>prapare.refugee</code></td>
-<td>Are you a refugee?</td>
-<td>single_choice</td>
-<td>LOINC:93027-1</td>
-<td>1=Yes<br>0=No<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19</td>
-<td><code>prapare.safety</code></td>
-<td>Do you feel physically and emotionally safe where you currently live?</td>
-<td>single_choice</td>
-<td>LOINC:93026-3</td>
-<td>1=Yes<br>0=No<br>2=Unsure<br>9=I choose not to answer this question</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>20</td>
-<td><code>prapare.partner_fear</code></td>
-<td>Are you afraid of your partner or ex-partner?</td>
-<td>boolean</td>
-<td>LOINC:76501-6</td>
-<td></td>
-<td></td>
-<td></td>
+<td><strong>Out</strong></td>
+<td>FHIR R4 <code>QuestionnaireResponse</code> JSON to <code>quickq fhir import-response</code></td>
 </tr>
 </tbody>
 </table>
+<p>quickq's <code>quickq-forms</code> is itself a reference implementation of this — it's open source and you can fork it, study its serializer for the exact shape of nested items, repeating groups, grids, and ranked answers, or just import the <code>quickq_forms.engine.fhir_serializer</code> module to skip writing your own.</p>
+<p>The key invariants:</p>
+<ul>
+<li>Repeating groups: emit <strong>N separate top-level items with the same <code>linkId</code></strong>, one per instance. Children inside each parent item are scoped to that instance.</li>
+<li>Grids: emit a parent item with the grid's <code>linkId</code> and a nested <code>item[]</code> where each child is a row's response (linkIds suffixed <code>.r0</code>, <code>.r1</code>, …).</li>
+<li>Ranked: emit <code>valueCoding</code> answers in rank order, each with an <code>extension</code> of type <code>http://hl7.org/fhir/StructureDefinition/ordinalValue</code> carrying the rank as <code>valueDecimal</code>.</li>
+<li>Skip-logic exclusion: do not include answers for disabled items in the output. quickq's importer treats their absence as "structurally missing" (the question was hidden), not "truly missing" (the respondent skipped a visible question).</li>
+</ul>
+<hr />
+<h2 id="how-quickq-keeps-the-interop-story-honest">How quickq keeps the interop story honest<a class="headerlink" href="#how-quickq-keeps-the-interop-story-honest" title="Permanent link">&para;</a></h2>
+<p>Two test suites guard the FHIR contract:</p>
+<ul>
+<li><code>quickq-forms/tests/e2e/test_render_round_trip.py</code> (28+ tests) — the <strong>product correctness</strong> suite. Verifies quickq-forms renders every question type and round-trips through <code>import_fhir_response</code> back into the OLTP. Runs on every commit.</li>
+<li><code>quickq/tests/test_e2e_lhcforms.py</code> (35 tests) — the <strong>interop canary</strong>. Verifies the FHIR JSON exported by quickq renders correctly in LHC-Forms. Runs before any FHIR-export change ships and nightly in CI. Selectable as <code>pytest -m interop</code>.</li>
+</ul>
+<p>Both suites use the same fixture set. A passing quickq-forms test with a failing LHC-Forms test on the same fixture is the signal "our FHIR shape is wrong but our renderer hides it" — which has caught real bugs (most recently a 2026-05-12 fix where <code>enableWhen</code> answer types were always emitted as <code>answerString</code> regardless of the trigger's actual type).</p>
+<p>For the full status grid of which features are verified in which renderer, see <a href="../../internal/renderer-coverage/">renderer-coverage.md</a> (internal).</p>
 
 
 
