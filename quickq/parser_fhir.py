@@ -33,8 +33,8 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from .authoring import upsert_question, place_question
-from .models import QuestionDef
+from .authoring import upsert_question, place_question, insert_grid_rows_columns
+from .models import QuestionDef, GridRowDef, GridColumnDef
 
 
 _EXT = "https://quickq.io/fhir/StructureDefinition"
@@ -164,17 +164,35 @@ def import_fhir(conn: sqlite3.Connection, source: str | dict) -> int:
 # Item processing
 # ------------------------------------------------------------------
 
+def _is_grid(item: dict) -> bool:
+    """A FHIR group with itemControl=gtable represents a quickq grid question.
+    Rows are the group's `item[]` children; columns are the first child's
+    `answerOption[]`."""
+    if item.get("type") != "group":
+        return False
+    for ext in item.get("extension", []):
+        if ext.get("url") == "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl":
+            codes = [c.get("code") for c in ext.get("valueCodeableConcept", {}).get("coding", [])]
+            if "gtable" in codes:
+                return True
+    return False
+
+
 def _collect_items(items: list[dict]) -> list[dict]:
     """
-    Flatten the FHIR item tree. Non-repeating groups are promoted (children
-    bubble up); repeating groups (group + repeats:true) are kept as-is so
-    their children can be imported with parent_qq_id set.
+    Flatten the FHIR item tree. Non-repeating organizational groups are
+    promoted (their children bubble up). Repeating groups (group +
+    repeats:true) and grids (group + itemControl=gtable) are kept intact —
+    they're real questions whose children describe their internal structure,
+    not nested sub-questions.
     """
     result: list[dict] = []
     for item in items:
         fhir_type = item.get("type", "string")
         if fhir_type == "group" and item.get("repeats"):
             result.append(item)          # repeating group: preserve with children
+        elif _is_grid(item):
+            result.append(item)          # grid: preserve so rows/columns can be extracted
         elif fhir_type == "group":
             result.extend(_collect_items(item.get("item", [])))
         elif fhir_type not in _SKIP_TYPES:
@@ -200,6 +218,8 @@ def _import_item(
         qtype = "multiple_choice"
     if fhir_type == "group" and item.get("repeats"):
         qtype = "repeating_group"
+    if _is_grid(item):
+        qtype = "grid"
     if fhir_type == "integer":
         for ext in item.get("extension", []):
             if ext.get("url") == "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl":
@@ -240,12 +260,33 @@ def _import_item(
     elif "answerOption" in item:
         _import_answer_options(conn, q_id, item["answerOption"])
 
+    # Grids carry their rows + columns inline. Rows come from the group's
+    # nested item[] (each child's text becomes a row label); columns come
+    # from the first child's answerOption[]. Both must be inserted now so
+    # that the response-import path can resolve grid_row_id / grid_column_id
+    # at collection time.
+    if qtype == "grid":
+        children = item.get("item", [])
+        rows = [GridRowDef(text=(c.get("text") or c.get("linkId", ""))) for c in children]
+        columns: list[GridColumnDef] = []
+        if children:
+            for opt in children[0].get("answerOption", []):
+                coding = opt.get("valueCoding", {})
+                columns.append(GridColumnDef(
+                    text=coding.get("display") or coding.get("code") or "",
+                    value=coding.get("code"),
+                ))
+        if rows and columns:
+            insert_grid_rows_columns(conn, q_id, rows, columns)
+
     qq_id = place_question(
         conn, qnaire_id, q_id, display_order=order, required=required,
         parent_qq_id=parent_qq_id,
     )
 
-    # Repeating group: import child items with parent_qq_id
+    # Repeating group: import child items with parent_qq_id. Grids' children
+    # are virtual rows (already handled above by insert_grid_rows_columns),
+    # not real questions — do NOT recurse for them.
     if qtype == "repeating_group":
         for child_order, child in enumerate(item.get("item", [])):
             _import_item(conn, qnaire_id, child, child_order, parent_qq_id=qq_id)

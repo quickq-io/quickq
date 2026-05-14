@@ -919,3 +919,92 @@ def test_slider_roundtrip_preserves_type(tmp_path):
     assert row["slider_max_label"] == "Worst imaginable"
     assert row["numeric_min"] == 0.0
     assert row["numeric_max"] == 100.0
+
+
+# ------------------------------------------------------------------
+# Grid type preservation (regression guard for quickq-io-gdc)
+# ------------------------------------------------------------------
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def test_standalone_grid_imports_with_type_and_rows_and_columns(tmp_path):
+    """A FHIR group with itemControl=gtable at the top level must import as
+    question_type='grid' with all rows + columns populated. Before quickq-io-gdc
+    the parser flattened the group's children, losing the grid entirely."""
+    conn = init_oltp(tmp_path / "study.db")
+    fixture = (FIXTURES_DIR / "gout_checkin_fhir_questionnaire.json").read_text()
+    import_fhir(conn, fixture)
+    conn.commit()
+
+    row = conn.execute(
+        "SELECT question_type FROM question WHERE link_id = ?",
+        ("gout.joint_severity",),
+    ).fetchone()
+    assert row is not None and row["question_type"] == "grid"
+
+    row_count = conn.execute(
+        """
+        SELECT COUNT(*) FROM grid_row gr
+        JOIN question q ON gr.question_id = q.question_id
+        WHERE q.link_id = ?
+        """,
+        ("gout.joint_severity",),
+    ).fetchone()[0]
+    col_count = conn.execute(
+        """
+        SELECT COUNT(*) FROM grid_column gc
+        JOIN question q ON gc.question_id = q.question_id
+        WHERE q.link_id = ?
+        """,
+        ("gout.joint_severity",),
+    ).fetchone()[0]
+    assert row_count == 6, f"expected 6 grid rows (joints), got {row_count}"
+    assert col_count == 4, f"expected 4 grid columns (severity scale), got {col_count}"
+
+
+def test_grid_inside_repeating_group_imports_correctly(tmp_path):
+    """The specific bug that surfaced quickq-io-gdc: a grid nested inside a
+    repeating group must import as question_type='grid' with rows + columns
+    AND have parent_qq_id set to the enclosing repeating group."""
+    conn = init_oltp(tmp_path / "study.db")
+    fixture = (FIXTURES_DIR / "repeating_with_grid_fhir_questionnaire.json").read_text()
+    import_fhir(conn, fixture)
+    conn.commit()
+
+    row = conn.execute(
+        """
+        SELECT q.question_type, qq.parent_qq_id
+        FROM questionnaire_question qq
+        JOIN question q ON qq.question_id = q.question_id
+        WHERE q.link_id = ?
+        """,
+        ("rg.visits.severity",),
+    ).fetchone()
+    assert row is not None
+    assert row["question_type"] == "grid"
+    assert row["parent_qq_id"] is not None, "grid inside repeating group must have parent_qq_id"
+
+    rows = conn.execute(
+        """
+        SELECT gr.display_order, gr.row_text
+        FROM grid_row gr
+        JOIN question q ON gr.question_id = q.question_id
+        WHERE q.link_id = ?
+        ORDER BY gr.display_order
+        """,
+        ("rg.visits.severity",),
+    ).fetchall()
+    assert [r["row_text"] for r in rows] == ["Pain", "Fatigue", "Sleep disturbance"]
+
+    cols = conn.execute(
+        """
+        SELECT gc.column_value
+        FROM grid_column gc
+        JOIN question q ON gc.question_id = q.question_id
+        WHERE q.link_id = ?
+        ORDER BY gc.display_order
+        """,
+        ("rg.visits.severity",),
+    ).fetchall()
+    assert [c["column_value"] for c in cols] == ["0", "1", "2", "3"]
