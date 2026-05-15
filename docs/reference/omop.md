@@ -1,6 +1,8 @@
-# OMOP Interoperability
+# OMOP-aligned survey extracts
 
-OMOP CDM is the standard data model for federated clinical research networks (PCORnet, TriNetX, All of Us). quickq projects concept-mapped responses into three OMOP-aligned tables on every `quickq refresh`.
+quickq is not an OMOP CDM. It produces an **extract layer** in OMOP-aligned shape — three tables built during `quickq refresh` — designed to feed federated clinical research networks (PCORnet, TriNetX, All of Us) and OMOP-native analytical pipelines. Concept-mapped survey responses become rows a downstream OMOP consumer can ingest without bespoke transformation.
+
+The intended consumer is a downstream OMOP CDM environment, not quickq itself. If you need full CDM coverage (person, visit_occurrence, drug_exposure, condition_occurrence, etc.), use a CDM tool; quickq sits upstream of that, contributing the survey-response slice.
 
 ---
 
