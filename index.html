@@ -953,6 +953,34 @@
   
   
     <li class="md-nav__item">
+      <a href="reference/multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Site Studies (fork + merge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="reference/federated/" class="md-nav__link">
         
   
@@ -1044,7 +1072,7 @@
   <span class="md-ellipsis">
     
   
-    OMOP Interoperability
+    OMOP-aligned survey extracts
   
 
     
@@ -1075,10 +1103,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_15" >
         
           
-          <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_15" id="__nav_3_15_label" tabindex="0">
             
   
   
@@ -1096,8 +1124,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_14">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1603,6 +1631,7 @@
 <li><strong>FHIR-compliant delivery.</strong> The bundled <code>quickq-forms</code> web app renders your instrument in a browser; or hand the FHIR export to REDCap, LHC-Forms, a custom mobile app, or any FHIR-compliant tool. Responses flow back the same way.</li>
 <li><strong>A data dictionary that can't drift.</strong> <code>quickq data-dict</code> reads the live schema and emits question text, types, concept codes, valid responses, skip conditions, and scoring memberships — generated from the data, not maintained alongside it.</li>
 <li><strong>Skip logic and QC as queries.</strong> Eligibility, integrity violations, and the structurally-missing-vs-truly-missing distinction are SQL recipes that work across every instrument unchanged.</li>
+<li><strong>Validated scoring computed automatically.</strong> PHQ-9 total + severity band, GAD-7 anxiety category, AUDIT alcohol-use score, custom scoring rules — all computed during <code>quickq refresh</code> and queryable from <code>agg_respondent_scores</code> without writing the scoring logic in your analysis code.</li>
 <li><strong>Versioning and provenance.</strong> Questions are immutable once used; rewording or changing an option produces a new versioned definition, so every response points to exactly what was asked.</li>
 <li><strong>Federated analytics + concept harmonization.</strong> Aggregate queries across multi-site databases without moving individual records. Questions and response options carry LOINC, SNOMED, and OMOP codes for cross-study harmonization.</li>
 <li><strong>Compliance scaffolding.</strong> FAIR self-audit, GDPR-style erasure, IRB-style withdrawal, and metadata export are first-class commands aligned with HIPAA, GDPR, and IRB conventions.</li>
@@ -1682,6 +1711,7 @@ Federated         federated query
 <li><strong>Skip logic is structured rows in <code>skip_rule</code>, not prose in a PDF.</strong> Eligibility, integrity, and the structurally-missing / truly-missing distinction are SQL recipes that work across every instrument unchanged. See <a href="reference/skip-logic-qc/">Skip-Logic Recipes</a>.</li>
 <li><strong>The data dictionary is a query, not a Word document.</strong> <code>quickq data-dict</code> reads the live schema and emits a complete, up-to-date dictionary that can't drift from the data because it <em>is</em> the data. See the <a href="reference/example-prapare-data-dict/">PRAPARE Data Dictionary</a> for a worked example.</li>
 <li><strong>Every question type stores answers in <code>fact_response</code> the same way.</strong> Choice answers in <code>option_id</code> and <code>option_value</code>, numeric in <code>response_numeric</code>, date in <code>response_date</code>, text in <code>response_text</code>. The same query shape works for single_choice, multiple_choice, likert, boolean, numeric, date, slider, ranked, and grid questions, with no instrument-specific code. See <a href="reference/query-patterns/">Query Patterns by Question Type</a>.</li>
+<li><strong>Scoring is data, not code.</strong> Scoring rules declared in YAML at authoring time produce <code>agg_respondent_scores</code> rows during refresh — one per respondent × rule. "Mean PHQ-9 score by site" is <code>SELECT mean(score_raw) FROM agg_respondent_scores GROUP BY site</code> against a table that's always current, not a custom analysis pipeline that has to be rewritten for each new instrument.</li>
 </ul>
 <p>The alternative — skip logic in delivery configs, data dictionaries in Word, custom storage per question type, completion rates that hand-encode the rules — turns every analytical question into a model-reconstruction exercise. Every analyst rebuilds the same understanding from the same sidecar documents, every reproduction is an opportunity for drift, every audit is a manual diff between artifacts that should have been one. quickq treats those reconstructions as the design smell they are.</p>
 <p>Scoring rules, concept codes, errata, lineage between question versions, and the data-quality flags raised at collection time follow the same pattern: they are first-class rows in the model, not annotations bolted onto it later.</p>

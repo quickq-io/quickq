@@ -2,134 +2,154 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://quickq-io.github.io/quickq/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/analytics/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/architecture/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/authoring/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/design_decisions/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/fhir/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/philosophy/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorial/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/database/data-model/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/database/olap/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/database/oltp/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
-         <loc>https://quickq-io.github.io/quickq/internal/external-audit-2026-05-14/</loc>
-         <lastmod>2026-05-14</lastmod>
-    </url>
-    <url>
-         <loc>https://quickq-io.github.io/quickq/internal/external-audit-persona-2026-05-14/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <loc>https://quickq-io.github.io/quickq/internal/audit-workflow/</loc>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/internal/renderer-coverage/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/internal/user-level-abstractions/</loc>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/internal/audits/2026-05-14-generalist/</loc>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/internal/audits/2026-05-14-persona-lay-epi/</loc>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/internal/audits/INDEX/</loc>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/internal/audits/personas/</loc>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/analysis-recipes-r/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/analysis-recipes/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/compliance/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/example-gout-checkin/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/example-phq9/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/example-prapare-data-dict/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/federated/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
+    </url>
+    <url>
+         <loc>https://quickq-io.github.io/quickq/reference/multi-site/</loc>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/omop/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/query-patterns/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/question-types/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/seed/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/skip-logic-qc/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/third-party-renderers/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/reference/versioning/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorials/analytics/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorials/authoring/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorials/collect/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorials/data-quality/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
     <url>
          <loc>https://quickq-io.github.io/quickq/tutorials/end-to-end/</loc>
-         <lastmod>2026-05-14</lastmod>
+         <lastmod>2026-05-15</lastmod>
     </url>
 </urlset>

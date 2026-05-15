@@ -1062,6 +1062,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Site Studies (fork + merge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../reference/federated/" class="md-nav__link">
         
   
@@ -1153,7 +1181,7 @@
   <span class="md-ellipsis">
     
   
-    OMOP Interoperability
+    OMOP-aligned survey extracts
   
 
     
@@ -1184,10 +1212,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_15" >
         
           
-          <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_15" id="__nav_3_15_label" tabindex="0">
             
   
   
@@ -1205,8 +1233,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_14">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2048,6 +2076,16 @@ quickq<span class="w"> </span>serve<span class="w"> </span>study.db
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
 <p>The report shows answer distributions for each question, completion statistics, and scores for any scoring rules defined on the instrument. With 50+ responses you should see meaningful distributions — how often each frequency option was chosen, the spread of pain ratings, which joints came up most often.</p>
+<div class="admonition tip">
+<p class="admonition-title">Scoring is automatic</p>
+<p>Any scoring rule you defined in the YAML (PHQ-9 total + severity bands, GAD-7 category, AUDIT score, your own custom rule) is <strong>computed during <code>quickq refresh</code></strong> and stored as one row per respondent per rule in <code>agg_respondent_scores</code>. The report surfaces these directly; you can also query them in SQL:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">scoring_rule_name</span><span class="p">,</span><span class="w"> </span><span class="n">score_category</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">agg_respondent_scores</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">scoring_rule_name</span><span class="p">,</span><span class="w"> </span><span class="n">score_category</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">scoring_rule_name</span><span class="p">,</span><span class="w"> </span><span class="n">score_category</span><span class="p">;</span>
+</code></pre></div>
+<p>No scoring logic to maintain in your analysis code; the YAML scoring rule <em>is</em> the implementation.</p>
+</div>
 <p>To export a human-readable document for sharing with colleagues, an IRB, or a coordinating center:</p>
 <div class="highlight"><pre><span></span><code>quickq<span class="w"> </span>report<span class="w"> </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w"> </span>--output<span class="w"> </span>report.md
 </code></pre></div>

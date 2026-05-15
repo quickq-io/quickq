@@ -29,7 +29,7 @@
     
     
       
-        <title>OMOP Interoperability - quickq</title>
+        <title>OMOP-aligned survey extracts - quickq</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#omop-interoperability" class="md-skip">
+        <a href="#omop-aligned-survey-extracts" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              OMOP Interoperability
+              OMOP-aligned survey extracts
             
           </span>
         </div>
@@ -822,6 +822,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Site Studies (fork + merge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../federated/" class="md-nav__link">
         
   
@@ -922,7 +950,7 @@
   <span class="md-ellipsis">
     
   
-    OMOP Interoperability
+    OMOP-aligned survey extracts
   
 
     
@@ -940,7 +968,7 @@
   <span class="md-ellipsis">
     
   
-    OMOP Interoperability
+    OMOP-aligned survey extracts
   
 
     
@@ -1079,10 +1107,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_15" >
         
           
-          <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_15" id="__nav_3_15_label" tabindex="0">
             
   
   
@@ -1100,8 +1128,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_14">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1599,8 +1627,9 @@
   
 
 
-<h1 id="omop-interoperability">OMOP Interoperability<a class="headerlink" href="#omop-interoperability" title="Permanent link">&para;</a></h1>
-<p>OMOP CDM is the standard data model for federated clinical research networks (PCORnet, TriNetX, All of Us). quickq projects concept-mapped responses into three OMOP-aligned tables on every <code>quickq refresh</code>.</p>
+<h1 id="omop-aligned-survey-extracts">OMOP-aligned survey extracts<a class="headerlink" href="#omop-aligned-survey-extracts" title="Permanent link">&para;</a></h1>
+<p>quickq is not an OMOP CDM. It produces an <strong>extract layer</strong> in OMOP-aligned shape — three tables built during <code>quickq refresh</code> — designed to feed federated clinical research networks (PCORnet, TriNetX, All of Us) and OMOP-native analytical pipelines. Concept-mapped survey responses become rows a downstream OMOP consumer can ingest without bespoke transformation.</p>
+<p>The intended consumer is a downstream OMOP CDM environment, not quickq itself. If you need full CDM coverage (person, visit_occurrence, drug_exposure, condition_occurrence, etc.), use a CDM tool; quickq sits upstream of that, contributing the survey-response slice.</p>
 <hr />
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <table>

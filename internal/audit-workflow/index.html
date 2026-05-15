@@ -12,13 +12,9 @@
         <meta name="author" content="quickq Contributors">
       
       
-        <link rel="canonical" href="https://quickq-io.github.io/quickq/database/data-model/">
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/internal/audit-workflow/">
       
       
-        <link rel="prev" href="../../analytics/">
-      
-      
-        <link rel="next" href="../oltp/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>Data Model (overview) - quickq</title>
+        <title>Audit Workflow - quickq</title>
       
     
     
@@ -80,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#the-quickq-data-model" class="md-skip">
+        <a href="#audit-workflow" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Data Model (overview)
+              Audit Workflow
             
           </span>
         </div>
@@ -1105,8 +1101,6 @@
       
   
   
-    
-  
   
   
     
@@ -1119,11 +1113,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
@@ -1144,7 +1138,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1271,37 +1265,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Model (overview)
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../database/data-model/" class="md-nav__link">
         
   
   
@@ -1317,170 +1284,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#oltp-whats-collected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OLTP — what's collected
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OLTP — what&#39;s collected">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-study-and-response-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Study and response flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-instrument-definition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Instrument definition
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-vocabulary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Vocabulary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-provenance-and-quality" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Provenance and quality
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#olap-whats-derived" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OLAP — what's derived
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OLAP — what&#39;s derived">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-star-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Star schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-aggregates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Aggregates
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-omop-interoperability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. OMOP interoperability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Provenance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-oltp-becomes-olap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How OLTP becomes OLAP
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#going-deeper" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Going deeper
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1493,7 +1296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../oltp/" class="md-nav__link">
+      <a href="../../database/oltp/" class="md-nav__link">
         
   
   
@@ -1521,7 +1324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../olap/" class="md-nav__link">
+      <a href="../../database/olap/" class="md-nav__link">
         
   
   
@@ -1576,132 +1379,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#oltp-whats-collected" class="md-nav__link">
+  <a href="#why-we-audit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OLTP — what's collected
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OLTP — what&#39;s collected">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-study-and-response-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Study and response flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-instrument-definition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Instrument definition
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-vocabulary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Vocabulary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-provenance-and-quality" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Provenance and quality
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#olap-whats-derived" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OLAP — what's derived
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OLAP — what&#39;s derived">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-star-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Star schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-aggregates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Aggregates
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-omop-interoperability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. OMOP interoperability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Provenance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-oltp-becomes-olap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How OLTP becomes OLAP
+        Why we audit
       
     </span>
   </a>
@@ -1709,10 +1390,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#going-deeper" class="md-nav__link">
+  <a href="#structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Going deeper
+        Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cadence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cadence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filing-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filing principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audits-to-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audits to date
       
     </span>
   </a>
@@ -1739,224 +1475,78 @@
   
 
 
-<h1 id="the-quickq-data-model">The quickq Data Model<a class="headerlink" href="#the-quickq-data-model" title="Permanent link">&para;</a></h1>
-<p>The data model is the central argument for using quickq. Every analytical capability described in the rest of this documentation — skip-logic recipes, completion-rate accounting, the auto-generated data dictionary, scoring, cross-study harmonization on concept codes — falls out of the way data is stored. Read this page first; the rest of the docs is downstream from it.</p>
-<p>quickq's data model has two halves connected by a refresh.</p>
-<p>The <strong>OLTP</strong> half (SQLite) is the <em>source of truth</em>. It stores every authored instrument, every collected response, and every piece of provenance about how the study was run. One <code>.db</code> file is the complete portable study artifact.</p>
-<p>The <strong>OLAP</strong> half (DuckDB) is the <em>analytical projection</em>. It is rebuilt on demand from OLTP by <code>quickq refresh</code>. Every report, dashboard, federated query, and cross-study harmonization runs against OLAP — never against the OLTP file directly. The OLAP schema is stable and standardized; the OLTP schema is normalized and intentionally allowed to evolve over time.</p>
-<p>Each half has logical layers — distinct concerns that compose into the full model. The diagrams on this page show those layers individually rather than overwhelming you with a single 40-table chart. For the full table-by-table reference, see <a href="../oltp/">OLTP Schema</a> and <a href="../olap/">OLAP Schema</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Why per-layer diagrams</p>
-<p>Real-world cohort study databases run to 30–50 tables. A single diagram that tries to show all of them either crops out the columns that matter or routes lines through other tables. We adopt the OMOP CDM convention: one diagram per logical layer, with clear callouts where the layers connect. Each diagram below shows the most informative columns per table; the SQL DDL has the rest.</p>
-</div>
-<hr />
-<h2 id="oltp-whats-collected">OLTP — what's collected<a class="headerlink" href="#oltp-whats-collected" title="Permanent link">&para;</a></h2>
-<p>Four layers. Together they answer <em>what was authored, what was collected, what does each value mean, and how do we know it's trustworthy</em>.</p>
-<h3 id="1-study-and-response-flow">1. Study and response flow<a class="headerlink" href="#1-study-and-response-flow" title="Permanent link">&para;</a></h3>
-<p>The data-collection lifecycle. A <code>study</code> has many <code>respondent</code>s; each respondent has many <code>response_session</code>s; each session has many <code>response</code>s. <code>admin_event</code> records dispatch / reminder / mode-change activity around a session. <code>person_map</code> is a separate identity index for studies that need linkable identity outside the response_session table.</p>
-<p><img alt="Study and response flow" src="../oltp_study_response.svg" /></p>
-<p>This layer is the entry point for almost every analytical question: "how many respondents", "how many sessions per respondent", "what's the completion rate by admin mode". The integer surrogate keys (<code>respondent_id</code>, <code>session_id</code>) are quickq's; the <code>external_id</code> on <code>respondent</code> is the study-assigned participant identifier that researchers actually recognize.</p>
-<h3 id="2-instrument-definition">2. Instrument definition<a class="headerlink" href="#2-instrument-definition" title="Permanent link">&para;</a></h3>
-<p>What the questionnaire actually asks. A <code>questionnaire</code> has <code>section</code>s; each section has <code>questionnaire_question</code> placements (the verb is "places this question here, in this order, with these skip rules and scoring weights"); each placement points to a reusable <code>question</code>. Options for choice questions live in <code>response_option</code>, optionally grouped into shared <code>response_option_set</code>s. Grid questions use <code>grid_row</code> × <code>grid_column</code>. Skip logic is structured in <code>skip_rule</code>. Scoring is structured in <code>scoring_rule</code> / <code>scoring_rule_item</code> / <code>scoring_category</code>.</p>
-<p><img alt="Instrument definition" src="../oltp_instrument.svg" /></p>
-<p>The reuse pattern is intentional: a question (LOINC <code>44250-9</code> "Little interest or pleasure in doing things") can be <em>placed</em> in many questionnaires under the same <code>link_id</code> with different display order, required flag, or scoring weight. That separation between <em>the question</em> and <em>the question's placement</em> is what makes harmonization across instruments possible.</p>
-<p><code>questionnaire_question.parent_qq_id</code> and <code>count_qq_id</code> together support repeating-group questions: parent_qq_id chains the children into a group, count_qq_id links the group to a numeric question that drives N. The <code>skip_rule</code> table is the structured form of FHIR's <code>enableWhen</code> and is what every cross-instrument skip-logic recipe queries against.</p>
-<h3 id="3-vocabulary">3. Vocabulary<a class="headerlink" href="#3-vocabulary" title="Permanent link">&para;</a></h3>
-<p>Standard concept codes for cross-study harmonization. Modeled directly on OMOP CDM v5.4: a <code>vocabulary</code> (LOINC, SNOMED, NCI, BRFSS, Local) groups <code>concept</code>s identified by <code>(vocabulary_id, concept_code)</code>, with <code>concept_id</code> as the surrogate. <code>concept_relationship</code> rows encode "Maps to", "Is a", "Subsumes", "Answer of".</p>
-<p><img alt="Vocabulary" src="../oltp_vocabulary.svg" /></p>
-<p>Every <code>question</code>, <code>response_option</code>, <code>grid_row</code>, and <code>grid_column</code> may reference a <code>concept_id</code> (the FK is shown in the instrument diagram, not redrawn here). When two studies use the same LOINC code on the same construct, joining their data is a single SQL JOIN. When they don't, the <code>concept_relationship</code> table makes the mapping explicit instead of folkloric.</p>
-<p>The vocabulary plane is small (three tables) but it is the single most important integration surface: it is what makes a quickq study composable with OMOP cohorts, REDCap projects with codings, and FHIR Implementation Guides.</p>
-<h3 id="4-provenance-and-quality">4. Provenance and quality<a class="headerlink" href="#4-provenance-and-quality" title="Permanent link">&para;</a></h3>
-<p>How questions evolved, what data quality issues were flagged, who did what to the database. <code>question_lineage</code> tracks rewords / option changes / splits / merges / adapted_from edges between question versions. <code>question_equivalence</code> declares which questions can be pooled across versions. <code>questionnaire_version_diff</code> records cross-version structural changes. <code>data_quality_flag</code> is written at collection time when the FHIR ingester rejects an answer. <code>study_errata_log</code> is the researcher's hand-recorded "we discovered after the fact that sessions 1–20 had a delivery bug" log. <code>tool_audit_log</code> records every quickq command that touched the database.</p>
-<table>
-<thead>
-<tr>
-<th>Table</th>
-<th>Purpose</th>
-<th>Key columns</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>question_lineage</code></td>
-<td>Edges between question versions: reword, option_change, split, merge, adapted_from</td>
-<td>lineage_id, question_id, parent_question_id, change_type</td>
-</tr>
-<tr>
-<td><code>question_equivalence</code></td>
-<td>Declares which questions can be pooled across versions</td>
-<td>equivalence_id, source_question_id, target_question_id, equivalence_type</td>
-</tr>
-<tr>
-<td><code>questionnaire_version_diff</code></td>
-<td>Cross-version structural changes at questionnaire level</td>
-<td>diff_id, source_questionnaire_id, target_questionnaire_id, change_type</td>
-</tr>
-<tr>
-<td><code>data_quality_flag</code></td>
-<td>Written at collection time when the FHIR ingester rejects an answer</td>
-<td>flag_id, session_id, qq_id, severity, description, raised_at</td>
-</tr>
-<tr>
-<td><code>study_errata_log</code></td>
-<td>Researcher's hand-recorded errata (delivery bugs, batch issues, retracted sessions)</td>
-<td>errata_id, study_id, severity, title, status, raised_at</td>
-</tr>
-<tr>
-<td><code>tool_audit_log</code></td>
-<td>Every quickq command that touched the database</td>
-<td>audit_id, study_id, operation, performed_by, occurred_at</td>
-</tr>
-</tbody>
-</table>
-<p>This layer is what lets a researcher answer "what changed between v1 and v2 of the instrument", "did this respondent's responses get flagged at any point", and "when was this database last modified, by what command". The lineage and equivalence tables propagate to the OLAP <code>dim_question_lineage</code> and <code>dim_question_equivalence</code> so analytical queries can use them too.</p>
-<hr />
-<h2 id="olap-whats-derived">OLAP — what's derived<a class="headerlink" href="#olap-whats-derived" title="Permanent link">&para;</a></h2>
-<p>Four layers, all rebuilt by <code>quickq refresh</code>. The OLAP schema is the <em>contract</em> analytical tooling depends on: it is stable across releases, while the OLTP schema is allowed to evolve.</p>
-<h3 id="1-star-schema">1. Star schema<a class="headerlink" href="#1-star-schema" title="Permanent link">&para;</a></h3>
-<p>The analytical core. <code>fact_response</code> is one row per answer atom; the eight <code>dim_*</code> tables are the standard star points. Every analytical query starts with a SELECT against fact_response and joins outward to the dimensions.</p>
-<p><img alt="Star schema" src="../olap_star.svg" /></p>
-<p>Several things to notice:</p>
+<h1 id="audit-workflow">Audit Workflow<a class="headerlink" href="#audit-workflow" title="Permanent link">&para;</a></h1>
+<p>How we run, file, and act on independent audits of quickq. Lightweight on process; heavy on discipline about which findings become tickets vs which become notes.</p>
+<p>The first two audits — see <a href="../audits/INDEX/">audits/INDEX.md</a> — emerged organically without a framework. This document captures the pattern they revealed and the failure modes to avoid as we run more.</p>
+<h2 id="why-we-audit">Why we audit<a class="headerlink" href="#why-we-audit" title="Permanent link">&para;</a></h2>
+<p>We commission external audits as a proxy for early user feedback. quickq doesn't yet have enough real users to surface the framing, jargon, and friction problems that an outsider notices in 30 minutes. Until we do, audits fill the gap.</p>
+<p>Two specific audit purposes:</p>
+<ol>
+<li><strong>Comparative.</strong> A generalist or domain expert reads the public docs and reports on merits, weaknesses, and recommendations. Tests the value proposition against external knowledge.</li>
+<li><strong>Experiential.</strong> A constrained persona walks through the docs as the target user would, in character. Tests whether the framing and onboarding actually work for the audience we hope to reach.</li>
+</ol>
+<p>Both are valuable; they surface different problems. The persona audit on 2026-05-14 caught friction the generalist audit didn't, and vice versa.</p>
+<h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>docs/internal/
+  audit-workflow.md                    # this file
+  audits/
+    INDEX.md                           # chronological list + summary
+    personas.md                        # checked-in persona definitions
+    YYYY-MM-DD-&lt;slug&gt;.md               # one file per audit
+</code></pre></div>
+<p>Each audit doc follows the same shape:</p>
+<ol>
+<li><strong>Header.</strong> Date, persona/lens, position in the audit series.</li>
+<li><strong>Context.</strong> Why this audit was commissioned at this moment. What hypothesis (if any) it was meant to test.</li>
+<li><strong>Prompt summary.</strong> The brief the auditor was given. Not verbatim — the gist, with the persona block if applicable.</li>
+<li><strong>The audit, verbatim.</strong> What the auditor said. No editing for tone or selection; this is the durable record.</li>
+<li><strong>How it translated into work.</strong> Three sub-sections: tickets filed, comments added to existing tickets, things deliberately not filed (with reasons).</li>
+<li><strong>Cross-cutting observations.</strong> What this audit suggests about quickq beyond the individual recommendations — patterns worth carrying forward.</li>
+</ol>
+<p>The "deliberately not filed" section is critical. Not every recommendation becomes a ticket. The goal is to be intentional about which findings to act on, not exhaustive.</p>
+<h2 id="lifecycle">Lifecycle<a class="headerlink" href="#lifecycle" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Commission        →    Run            →    File           →    Close
+- pick a lens          - brief the         - new tickets        - regression-test
+- pick a moment          auditor             where warranted      against the same
+- write the              (agent or         - comments on          persona/lens
+  prompt                  human)             existing tickets     once fixes ship
+                       - capture           - explicit &quot;not
+                          verbatim            filed&quot; notes
+                          response
+</code></pre></div>
+<p>The <strong>regression-test</strong> step is what makes audits a narrative rather than a series of snapshots. When a ticket filed in response to an audit closes, re-run the relevant audit (against the same persona, same prompt structure, against the updated docs) and either:</p>
 <ul>
-<li><strong>The same query shape works for every question type and every instrument.</strong> A SELECT on <code>fact_response</code> joined to <code>dim_question</code> and <code>dim_response_option</code> answers "what's the distribution of answers to this question" regardless of whether the question is a single_choice, multiple_choice, likert, or boolean. That uniformity is what makes the star-schema model worth the redundancy of a wide fact table.</li>
-<li><strong>Snowflake edges connect the dimensions to each other.</strong> <code>dim_session → dim_respondent → dim_study</code> and <code>dim_session → dim_questionnaire → dim_study</code> form two parallel paths up to study, which is what enables study-level rollups without aggregating from facts. <code>dim_question → dim_concept</code> and <code>dim_response_option → dim_concept</code> make concept-based harmonization a JOIN, not a custom script.</li>
-<li><strong><code>fact_response</code> carries <code>repeat_index</code>.</strong> For repeating-group questions (a pregnancy history loop, an occupational history loop), each instance gets a 0-based index so per-instance aggregation works in standard SQL.</li>
+<li>Confirm the original finding is fixed → note in the audit doc and the closing ticket comment</li>
+<li>Discover the fix didn't land for the persona → reopen the ticket with what's still wrong</li>
 </ul>
-<p>The <code>dim_date</code> table participates in two date-keyed joins (<code>fact_response.response_date_key</code>, <code>fact_response.session_start_key</code>) that aren't drawn here because those columns are part of the "+ 12 more columns" trim — see the OLAP schema reference for the full fact table.</p>
-<h3 id="2-aggregates">2. Aggregates<a class="headerlink" href="#2-aggregates" title="Permanent link">&para;</a></h3>
-<p>Materialized rollups. Each <code>agg_*</code> table is a precomputed answer to a recurring analytical question, joinable to the same dim_* tables shown in the star schema.</p>
-<table>
-<thead>
-<tr>
-<th>Table</th>
-<th>Purpose</th>
-<th>Key columns</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>agg_question_distribution</code></td>
-<td>One row per (question, answer) — counts and percentages</td>
-<td>study_id, questionnaire_id, question_id, option_id, n, pct</td>
-</tr>
-<tr>
-<td><code>agg_session_completion</code></td>
-<td>Daily enrollment and completion rollup by admin_mode</td>
-<td>study_id, questionnaire_id, date_key, n_started, n_completed, completion_rate, median_duration_sec</td>
-</tr>
-<tr>
-<td><code>agg_respondent_scores</code></td>
-<td>One row per (respondent, session, scoring_rule) — raw score and severity band</td>
-<td>respondent_id, scoring_rule_id, scoring_rule_name, score_raw, score_category, items_answered</td>
-</tr>
-<tr>
-<td><code>agg_numeric_stats</code></td>
-<td>Per-question numeric summary (mean, median, std_dev, percentiles)</td>
-<td>study_id, question_id, n, mean, median, std_dev, min_val, max_val</td>
-</tr>
-</tbody>
-</table>
+<p>The regression check costs roughly 2 minutes of agent time. It's the single highest-leverage piece of the workflow.</p>
+<h2 id="cadence">Cadence<a class="headerlink" href="#cadence" title="Permanent link">&para;</a></h2>
+<p>Loose, not prescriptive. The right frequency is "when something has changed enough that a fresh outside read would surface new things, or when we've fixed enough of the last round's findings to deserve a regression check."</p>
+<p>A few rough guidelines:</p>
 <ul>
-<li><strong><code>agg_question_distribution</code></strong> — for each (question, option), how many respondents picked it and what percentage. This is what <code>quickq report</code> reads to produce the per-question distribution tables.</li>
-<li><strong><code>agg_session_completion</code></strong> — daily enrollment and completion rates broken down by <code>admin_mode</code>. This is the "are people finishing the survey?" view.</li>
-<li><strong><code>agg_respondent_scores</code></strong> — one row per (respondent, session, scoring_rule). Stores the computed raw score and the severity category (PHQ-9 "moderate", GAD-7 "mild"). This is what cohort queries read to filter by score band.</li>
-<li><strong><code>agg_numeric_stats</code></strong> — n / mean / median / std_dev / quartiles for every numeric question. Avoids re-aggregating from facts when the answer is the same shape every time.</li>
+<li><strong>Don't audit everything every cycle.</strong> Pick one lens per audit round. Running four audits at once dilutes attention and bloats the backlog.</li>
+<li><strong>Audit after material changes to public-facing surfaces.</strong> A landing-page rewrite (e.g. <code>quickq-io-3if</code>) deserves a regression audit. A skip-logic engine refactor probably doesn't.</li>
+<li><strong>Audit when stuck on a strategic question.</strong> "Are we positioned correctly?" is a question external audits answer better than internal debate. The 2026-05-14 generalist audit was commissioned exactly this way.</li>
+<li><strong>Don't audit for validation.</strong> If you suspect a fourth audit will tell you something you already believe, skip it. Audits earn their cost by surprising you.</li>
 </ul>
-<p>Aggregates are recomputed in full on every <code>quickq refresh</code>. They exist for query performance and for standardization (every site, every report, every downstream tool reads the same definition of "PHQ-9 mean score").</p>
-<h3 id="3-omop-interoperability">3. OMOP interoperability<a class="headerlink" href="#3-omop-interoperability" title="Permanent link">&para;</a></h3>
-<p>OMOP CDM v5.4-aligned tables, projected from the star schema for cross-study harmonization with other OMOP cohorts.</p>
-<table>
-<thead>
-<tr>
-<th>Table</th>
-<th>Purpose</th>
-<th>Key columns</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>omop_observation</code></td>
-<td>Every fact_response with a question concept_id projects here. Values resolve across <code>value_as_number</code> (numeric), <code>value_as_concept_id</code> (choice), and the date columns. <code>person_id</code> is <code>respondent_id</code>.</td>
-<td>observation_id, person_id, observation_concept_id, observation_date, value_as_number, value_as_concept_id</td>
-</tr>
-<tr>
-<td><code>omop_survey_conduct</code></td>
-<td>Every response_session projects here — which respondent took which questionnaire, when, for how long</td>
-<td>survey_conduct_id, person_id, survey_concept_id, survey_start_date, survey_end_date</td>
-</tr>
-<tr>
-<td><code>omop_unmapped_questions</code></td>
-<td>Questions without a concept_id, surfaced as the actionable list before federated export</td>
-<td>question_id, link_id, question_text, source_instrument</td>
-</tr>
-</tbody>
-</table>
+<p>The persona library in <a href="../audits/personas/">audits/personas.md</a> is the place where audit <em>intent</em> accumulates. When a new persona feels worth commissioning, add the sketch there first; the prompt writes itself once the persona is concrete.</p>
+<h2 id="anti-patterns">Anti-patterns<a class="headerlink" href="#anti-patterns" title="Permanent link">&para;</a></h2>
+<p>Three failure modes to watch for:</p>
+<p><strong>Audit-as-busywork.</strong> Every recommendation becomes a ticket → the backlog inflates → nobody reads the audits → they stop being commissioned. Counterweight: each audit doc has a "deliberately not filed" section. Be willing to use it. Some findings are notes-to-self, not work.</p>
+<p><strong>Audit-as-validation.</strong> Commissioning an audit when you already know what it will say. Counterweight: before running, write down what you expect the auditor to find. If you find yourself writing the audit <em>for</em> the auditor, skip it.</p>
+<p><strong>Audit-without-regression.</strong> Running fresh audits forever without ever re-testing whether the previous findings landed. Counterweight: every closed ticket that came from an audit gets a "regression-tested via 2026-05-14 audit re-run, persona-Maria" comment, or an honest "not regression-tested" if it wasn't. Visibility forces the discipline.</p>
+<p>A fourth, milder concern: <strong>audit-persona drift.</strong> A persona that gets re-used across many audits starts behaving as the audit-runner expects, not as a real researcher would. Counterweight: update personas in <a href="../audits/personas/">audits/personas.md</a> when real-user encounters teach us something new. When a real user shows up and disagrees with Maria, Maria changes.</p>
+<h2 id="filing-principles">Filing principles<a class="headerlink" href="#filing-principles" title="Permanent link">&para;</a></h2>
+<p>When deciding what to file from an audit:</p>
 <ul>
-<li><strong><code>omop_observation</code></strong> — every fact_response row that has a question concept_id projects into observation. This is what an OMOP-native analyst expects to query, by <code>observation_concept_id</code>, with the value resolved across <code>value_as_number</code> (numeric responses), <code>value_as_concept_id</code> (choice responses), and the date-typed columns. <code>person_id</code> here is <code>respondent_id</code> from quickq's perspective.</li>
-<li><strong><code>omop_survey_conduct</code></strong> — every response_session projects into survey_conduct. This is the "which respondent took which questionnaire, when, for how long" view.</li>
-<li><strong><code>omop_unmapped_questions</code></strong> — surfaces questions that don't have a <code>concept_id</code> and therefore can't project into observation. This is the actionable list for a researcher preparing to share data: map these before federated export.</li>
+<li><strong>High-impact framing problems → file as P2.</strong> The audit's strongest findings are usually framing problems (vocabulary, ordering, missing context) — they're cheap to fix and high-leverage.</li>
+<li><strong>Buried capabilities → file as P3.</strong> Features that work but aren't visible in the docs are real opportunities and well-bounded.</li>
+<li><strong>Aspirational extensions → file as P4 with "held for trigger."</strong> Things that would broaden appeal but need a partner or concrete user. Don't build speculatively.</li>
+<li><strong>Framing meta-recommendations → don't file, fold into existing landing/docs tickets.</strong> "Reframe X" is rarely a standalone ticket; it's usually a comment on the parent docs work.</li>
+<li><strong>Findings that contradict an active design decision → don't file; record in the audit doc's cross-cutting section.</strong> If we're deliberately doing the thing the auditor flagged, the audit doc is where that reasoning lives. Don't bury it in a ticket comment.</li>
 </ul>
-<p>The OMOP layer is <em>additive</em>. quickq's native star schema (above) is the analytical contract for quickq itself; the OMOP layer is the bridge to the broader OHDSI ecosystem. Studies that don't need OHDSI compatibility can ignore the omop_* tables entirely.</p>
-<h3 id="4-provenance">4. Provenance<a class="headerlink" href="#4-provenance" title="Permanent link">&para;</a></h3>
-<p>Three small tables that record how the OLAP was built and how its dimensions evolved.</p>
-<table>
-<thead>
-<tr>
-<th>Table</th>
-<th>Purpose</th>
-<th>Key columns</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>refresh_log</code></td>
-<td>One row per <code>quickq refresh</code> invocation</td>
-<td>refresh_id, started_at, completed_at, rows_inserted, rows_updated</td>
-</tr>
-<tr>
-<td><code>dim_question_lineage</code></td>
-<td>Mirrors OLTP <code>question_lineage</code>. Lets analytical queries walk the parent chain to find earlier versions of the same construct.</td>
-<td>lineage_id, question_id, parent_question_id, change_type</td>
-</tr>
-<tr>
-<td><code>dim_question_equivalence</code></td>
-<td>Mirrors OLTP <code>question_equivalence</code>. Lets cross-study cohort queries pool semantically equivalent questions across versions.</td>
-<td>equivalence_id, source_question_id, target_question_id, equivalence_type</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong><code>refresh_log</code></strong> — one row per <code>quickq refresh</code> invocation. Captures start / end timestamps, rows inserted, rows updated. Useful for "when was this analytical database last refreshed".</li>
-<li><strong><code>dim_question_lineage</code></strong> — mirrors OLTP <code>question_lineage</code>. Lets an analytical query that touches <code>dim_question</code> walk up the parent chain to find an earlier version of the same construct.</li>
-<li><strong><code>dim_question_equivalence</code></strong> — mirrors OLTP <code>question_equivalence</code>. Lets a cross-study cohort query pool semantically equivalent questions across instrument versions.</li>
-</ul>
-<p>The provenance layer is small but it is what makes "why did this score change between refreshes" and "show me the v1 question this v2 question replaces" answerable in standard SQL.</p>
-<hr />
-<h2 id="how-oltp-becomes-olap">How OLTP becomes OLAP<a class="headerlink" href="#how-oltp-becomes-olap" title="Permanent link">&para;</a></h2>
-<p>The bridge between the two halves is <code>quickq refresh</code>. It reads the OLTP file via DuckDB's native SQLite extension, applies a small set of transformations, and writes the standardized OLAP tables.</p>
-<pre class="mermaid"><code>graph LR
-    OLTP["OLTP — SQLite&lt;br/&gt;(source of truth)"]
-    REFRESH{{quickq refresh}}
-    OLAP["OLAP — DuckDB&lt;br/&gt;(analytical contract)"]
-
-    OLTP --&gt;|incremental by response_id| REFRESH
-    REFRESH --&gt; OLAP
-
-    OLAP --&gt;|reads| Reports["Reports · Cohort queries · Federated · OMOP export"]
-
-    style OLTP fill:#5A9BD4,color:#fff
-    style OLAP fill:#FAA75B,color:#fff
-    style REFRESH fill:#7AC36A,color:#fff</code></pre>
-<p>The refresh is <strong>incremental</strong> by <code>response_id</code> watermark — only newly arrived responses are processed on subsequent runs. It is <strong>on-demand</strong>, not streaming: appropriate for batch / research workflows. It is <strong>lossy in one direction</strong>: the OLAP can be regenerated entirely from OLTP at any time, but the OLTP cannot be regenerated from OLAP. The portable study artifact is always the SQLite file.</p>
-<p>For implementation detail, see <a href="../../architecture/#olap-refresh">Architecture</a>.</p>
-<hr />
-<h2 id="going-deeper">Going deeper<a class="headerlink" href="#going-deeper" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Full column-by-column reference</strong>: <a href="../oltp/">OLTP Schema</a>, <a href="../olap/">OLAP Schema</a>.</li>
-<li><strong>Architecture decisions</strong> (why two stores, why FHIR is the boundary, why scoring is in OLTP not OLAP): <a href="../../architecture/">Architecture</a>, <a href="../../design_decisions/">Design Decisions</a>.</li>
-<li><strong>Query patterns by question type</strong>: <a href="../../reference/query-patterns/">Query Patterns Reference</a>.</li>
-<li><strong>Diagram source</strong>: the <code>.dbml</code> files under <code>docs/database/source/</code> are the editable source for the diagrams above. They open directly in <a href="https://dbdiagram.io/d">dbdiagram.io</a> for layout adjustments.</li>
-</ul>
+<h2 id="audits-to-date">Audits to date<a class="headerlink" href="#audits-to-date" title="Permanent link">&para;</a></h2>
+<p>See <a href="../audits/INDEX/">audits/INDEX.md</a> for the chronological list. As of 2026-05-14: two run (generalist, lay-epi persona), three queued (privacy/IRB, CDISC, technical deep-dive).</p>
 
 
 

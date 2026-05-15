@@ -1,0 +1,1733 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Health and Epidemiology Survey Authoring & Analytics">
+      
+      
+        <meta name="author" content="quickq Contributors">
+      
+      
+        <link rel="canonical" href="https://quickq-io.github.io/quickq/internal/audits/2026-05-14-generalist/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>External Audit — 2026-05-14 - quickq</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#external-audit-2026-05-14" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="quickq" class="md-header__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            quickq
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              External Audit — 2026-05-14
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="quickq" class="md-nav__button md-logo" aria-label="quickq" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    quickq
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/quickq-io/quickq" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start here: End-to-End Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Study Journey (overview)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring deep-dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/collect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Collect responses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Analyze
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Data quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/question-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Question Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey Authoring (YAML)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/query-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query Patterns by Question Type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/skip-logic-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skip-Logic Recipes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/analysis-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Recipes (Python)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/analysis-recipes-r/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Recipes (R)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/seed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data (seed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument Versioning & Data Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/compliance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compliance & Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/multi-site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Site Studies (fork + merge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/federated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Federated Analytics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../fhir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FHIR Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/third-party-renderers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party FHIR Renderers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/omop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OMOP-aligned survey extracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_15" id="__nav_3_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Worked examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Worked examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/example-phq9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PHQ-9 Rendered Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/example-prapare-data-dict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PRAPARE Data Dictionary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/example-gout-checkin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gout Check-In (all question types)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Going deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Going deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../design_decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics & Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../database/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model (overview)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../database/oltp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema (SQLite OLTP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../database/olap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema (DuckDB OLAP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-audit-verbatim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The audit, verbatim
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The audit, verbatim">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weaknesses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weaknesses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simplify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#broaden-appeal-within-healthepi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Broaden appeal (within health/epi)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#closing-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closing note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-this-audit-translated-into-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How this audit translated into work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How this audit translated into work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#already-tracked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Already tracked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deliberately-not-filed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deliberately not filed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#things-to-keep-in-mind-from-this-audit-on-future-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Things to keep in mind from this audit on future work
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="external-audit-2026-05-14">External Audit — 2026-05-14<a class="headerlink" href="#external-audit-2026-05-14" title="Permanent link">&para;</a></h1>
+<p>A naive outside generalist audit of quickq, commissioned to balance the inside-out perspective the project has accumulated. Filed alongside the existing internal docs (renderer-coverage, design rationale).</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The recent landing-page rework surfaced a worry that the project's framing might be too mechanism-forward ("the data model is the contract") for a researcher landing cold on the public docs. Rather than iterate on that question internally, we asked an independent data-applications generalist — fresh context, no exposure to our internal docs (CLAUDE.md, docs/internal/) — to read the public docs and give a candid audit.</p>
+<p>The audit is <strong>anchored to quickq's own self-described scope</strong> (health and epidemiology survey research) rather than recommending pivots toward general survey tooling.</p>
+<h2 id="prompt">Prompt<a class="headerlink" href="#prompt" title="Permanent link">&para;</a></h2>
+<p>The auditor was briefed as follows (paraphrased):</p>
+<blockquote>
+<p>You're an experienced data-applications generalist — someone who's built production survey/data platforms, knows the modern data stack (dbt, Airflow, DuckDB, Parquet), has consulted on tooling decisions for research orgs, and is familiar with REDCap, Qualtrics, KoBoToolbox, Open Data Kit, LimeSurvey, OpenEpi, ResearchKit.</p>
+<p>Form your own view from the public docs site (https://quickq-io.github.io/quickq/) and the two repos. Don't lean on <code>CLAUDE.md</code> files or <code>docs/internal/</code> — internal AI-agent notes, not the user-facing view.</p>
+<p>Deliver: (1) merits within the stated scope, (2) weaknesses, (3) three categories of recommendation — <strong>simplify</strong>, <strong>extend</strong>, <strong>broaden appeal within reason</strong> (stay in health/epi research). Compare honestly to REDCap and KoBoToolbox at minimum. Be candid. Strong opinions held loosely.</p>
+</blockquote>
+<p>Result was ~1800 words of prose with clear section headers per ask. Reproduced in full below.</p>
+<h2 id="the-audit-verbatim">The audit, verbatim<a class="headerlink" href="#the-audit-verbatim" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>I spent time on the public docs site, the README, and enough of the source to spot-check claims. I deliberately ignored anything under <code>CLAUDE.md</code> or <code>docs/internal/</code>. What follows is what a candid generalist would tell you over coffee, not a recruitment pitch.</p>
+</blockquote>
+<h3 id="merits">Merits<a class="headerlink" href="#merits" title="Permanent link">&para;</a></h3>
+<p><strong>The data-model-as-deliverable framing is the strongest thing here.</strong> The pitch that "the <code>.db</code> file is the portable study artifact" (README, <code>philosophy.md</code>, <code>design_decisions.md</code>) is genuinely differentiated. REDCap and Qualtrics treat the platform as the deliverable — the data is something you export <em>out</em> of the system, and the schema is opaque, undocumented, or wildly per-instance. quickq inverts this. A researcher with <code>sqlite3</code> and no quickq installed at all can open <code>study.db</code>, see the schema, and reconstruct the study. That's a real archival/reproducibility property that the incumbents don't have, and it lands well for the docs/IRB/FAIR-deposit story.</p>
+<p><strong>The OLTP/OLAP separation is grown-up engineering, not over-engineered theater.</strong> <code>quickq/sql/oltp_schema.sql</code> (~27 tables, 530 lines) and <code>olap_schema.sql</code> (~19 tables/views) are sensibly partitioned: normalized authoring/responses on the SQLite side, a star schema with materialized scoring views on the DuckDB side. The "wide-table-per-instrument is the wrong default" critique in <code>design_decisions.md</code> is correct in my experience — REDCap's pivot-on-export model is exactly the pain quickq is responding to. The same <code>fact_response</code> query shape working across question types and instruments (<code>reference/query-patterns/</code>) is a real productivity unlock for anyone doing cross-instrument analysis.</p>
+<p><strong>FHIR as the only boundary is a sharper architectural commitment than I expected.</strong> Most "FHIR-compatible" tools tack FHIR on as one of several exports. quickq has actually structured the repos around the FHIR contract: <code>quickq-forms</code> doesn't import from <code>quickq</code>, the renderer test suite (<code>reference/third-party-renderers/</code>) explicitly verifies that LHC-Forms and REDCap can render the exported <code>Questionnaire</code>. That's a meaningfully different posture from REDCap (whose FHIR support is limited and instance-specific) and KoBoToolbox (XLSForm-native, no FHIR).</p>
+<p><strong>The bundled instrument library is a real differentiator if it grows.</strong> <code>quickq/library/</code> ships PHQ-9, GAD-7, PHQ-2, AUDIT (referenced), PRAPARE, PROMIS-10, BRFSS tobacco, CDC demographics. REDCap has a "shared library" but it's behind an instance and not standardized across deployments. KoBoToolbox has nothing comparable. Public-domain validated scales as versioned, FHIR-canonical YAML, with LOINC mappings — that's a useful artifact even for researchers who never adopt the rest of the stack.</p>
+<p><strong>The federated mode is honestly scoped.</strong> <code>reference/federated/</code> is clear that this is query-distribute-aggregate, not true distributed computation, with row-level suppression. That's the right tradeoff for the audience and it sidesteps the DUA/IRB-amendment trap that kills most multi-site epi studies. The fact that it works because every site has the same OLAP schema is exactly the payoff of the schema-as-contract decision.</p>
+<p><strong>The CLI surface is coherent.</strong> ~26 commands across 5 subgroups in <code>cli.py</code> (912 lines) — that's a lot but it organizes cleanly: <code>new/init/load</code>, <code>preview/serve</code>, <code>fhir export/import</code>, <code>refresh/analytics/report</code>, <code>compliance *</code>, <code>federated *</code>. Verbs are consistent and the noun model (study/survey/questionnaire/response) maps directly onto the data model.</p>
+<h3 id="weaknesses">Weaknesses<a class="headerlink" href="#weaknesses" title="Permanent link">&para;</a></h3>
+<p><strong>The "researcher in YAML" persona is in tension with the actual onboarding path.</strong> The end-to-end tutorial is fifteen-ish commands, requires <code>uv</code>, Python 3.11+, and Node.js, and walks the user through four progressive YAML rewrites. That's a 45–60-minute onramp before a single real respondent. REDCap's onramp for the equivalent task is "log in, click New Project, click Add Field" — sub-five-minutes for a single-instrument study. The portability/reproducibility argument is real but the upfront cost is high, and the docs don't honestly acknowledge that REDCap exists or why a researcher would pay this cost. The README doesn't even mention the incumbents.</p>
+<p><strong>SQL literacy is an unstated hard prerequisite.</strong> <code>tutorials/analytics/</code>, <code>tutorials/data-quality/</code>, <code>reference/query-patterns/</code>, and the R recipes all assume the user reads and writes SQL. For an epi PI working through an RA, that's fine. For a solo grad student or a public-health-department analyst with Excel skills and maybe some Stata, that's a wall. REDCap's report builder and KoBo's basic dashboards lower this bar substantially. The docs should either say "this tool is for SQL-literate teams" loudly, or build a thin no-SQL path (saved reports, parameterized queries) for the common cases.</p>
+<p><strong>The grid and likert reporting gaps are quietly admitted in <code>reference/question-types/</code>.</strong> Grid renders as a flat list rather than a row×column matrix; likert renders as categorical rather than ordinal. These are exactly the two question types epi researchers use most for symptom batteries and Likert scales. "Full pipeline" with a footnote that the report doesn't render them correctly is a credibility crack — these should be either fixed or surfaced more prominently as known limitations.</p>
+<p><strong>The synthetic seed is uniform-distribution-only.</strong> <code>reference/seed/</code> acknowledges this honestly but it limits the feature to structural smoke-testing. For sample-size simulation, scoring-rule validation against realistic distributions, or pre-IRB power analysis (all things the audience actually wants), uniform sampling is useless. This wants either configurable per-question distributions, calibration against published norms (PHQ-9 has known prevalences), or a "seed-from-real-data" mode.</p>
+<p><strong><code>quickq serve</code> is local-only.</strong> <code>tutorials/collect/</code> is honest that it's "small lab cohorts through n=10–30 distributed pilots," but the docs gloss over what happens at n=200 or n=2000. There's a roster file and a "single writer per site" caveat, but no story for HTTPS termination, no auth model beyond roster IDs, no production deployment recipe, no Docker image, no "stand this behind nginx" guide. The hosted adapter is on the architecture diagram but not built. So either the realistic ceiling is much lower than the marketing implies, or there's a missing chapter on deployment.</p>
+<p><strong>OMOP integration is narrower than "OMOP integration" suggests.</strong> <code>reference/omop/</code> projects to <code>omop_survey_conduct</code>, <code>omop_observation</code>, and an unmapped-questions checklist. That's a useful piece for federated survey queries but it's not a CDM and OHDSI researchers will notice. Calling this "OMOP interoperability" sets up an expectation that the docs then have to walk back. "OMOP-aligned survey extracts for federated queries" would be more accurate and still differentiating.</p>
+<p><strong>The compliance commands are mechanical, not workflow-shaped.</strong> <code>compliance fair-check</code>, <code>compliance set-metadata</code>, <code>compliance delete</code>, <code>compliance withdraw</code> are real (<code>quickq/compliance.py</code>, <code>fair_check.py</code>) but they're plumbing. There's no DMP-plan generator, no audit-log export in a form an IRB actually accepts, no consent-document linkage, no e-signature trail. For the "IRB workflows" claim on the landing page to land, this needs more than five commands that operate on a SQLite file.</p>
+<p><strong><code>fork</code> and <code>merge</code> are present in the CLI but absent from the public docs.</strong> <code>quickq/fork.py</code> and <code>quickq/merge.py</code> exist as commands. The use case (probably multi-site Tier-3 work, possibly cross-cohort harmonization) is exactly the differentiating workflow, and it's invisible to a docs-landing-page reader. This is buried capital.</p>
+<p><strong>Three-renderer story has cracks.</strong> <code>reference/third-party-renderers/</code> says LHC-Forms drops slider affordances and ranked-question multi-position UI, and "we haven't end-to-end-tested every REDCap variant." For something marketed as headless-via-FHIR, the FHIR-out story needs to be ironclad. Either the renderer matrix gets tested in CI against every supported tool, or the marketing dials back to "quickq-forms with experimental third-party render targets."</p>
+<p><strong>No mobile / iOS / ResearchKit story.</strong> The docs say FHIR-out plus a custom mobile client is supported in principle, but there's no SDK, no example, no template, no ResearchKit bridge. For a tool aimed at epi/health, this is a meaningful gap — momentary-EMA and remote-assessment studies are exactly where you can't use REDCap and where FHIR-native delivery would shine.</p>
+<h3 id="simplify">Simplify<a class="headerlink" href="#simplify" title="Permanent link">&para;</a></h3>
+<p><strong>Demote OMOP from a top-line feature to a section under "Federated Analytics."</strong> It's a projection layer, the docs admit this, and calling it "OMOP Interoperability" creates an expectation the tool can't meet. Rename to "OMOP-aligned survey extracts." This costs nothing and de-risks the credibility of the rest of the docs.</p>
+<p><strong>Cut or hide the four-stage YAML tutorial.</strong> The end-to-end walkthrough rebuilds the same instrument four times to introduce features progressively. A reader who already knows what they want is doing busywork; a beginner is being asked to absorb option sets, skip logic, and library references before they've seen a single response. Replace with one complete annotated example plus a "patterns" reference page.</p>
+<p><strong>Consolidate the renderer matrix into a single capabilities table.</strong> Right now the question-types page, third-party-renderers page, and various tutorials all hint at "this works in quickq-forms but degrades in LHC-Forms" in different places. One table, fully matrixed (question type × renderer × status), would replace several pages of scattered caveats and tell researchers up front what they can actually deliver where.</p>
+<p><strong>Hide <code>fork</code>/<code>merge</code> behind a "Multi-site" section header or remove them from the public CLI until documented.</strong> Undocumented commands are worse than absent ones — researchers find them, try them, and lose trust when they don't work as expected.</p>
+<p><strong>The <code>data-dict</code>, <code>report</code>, <code>render</code>, and <code>preview</code> commands all produce documentation artifacts.</strong> Consider consolidating under <code>quickq docs &lt;kind&gt;</code>. The current verb-soup makes the CLI feel larger than the underlying capability set.</p>
+<h3 id="extend">Extend<a class="headerlink" href="#extend" title="Permanent link">&para;</a></h3>
+<p><strong>A no-SQL analysis surface.</strong> Even a small library of <code>quickq report-builder</code> saved queries — frequency tables per question, scored-instrument distributions, missingness by item, response-rate-over-time — would broaden the audience substantially. Not every epidemiologist writes SQL; almost every one needs frequency tables and scored distributions. The OLAP schema is stable enough to support this; it's a docs-and-templates project, not an engineering project.</p>
+<p><strong>Realistic synthetic data.</strong> Per-question-type distribution overrides in YAML (<code>distribution: {mean: 1.2, sd: 0.8}</code> for PHQ items, <code>prevalence: 0.12</code> for boolean), plus a "calibrate from real responses" mode. This unlocks pre-IRB power analysis, scoring-rule validation, and educational demos.</p>
+<p><strong>A <code>quickq deploy</code> story.</strong> A Docker image, an example reverse-proxy config, an auth-token bolt-on, and a "responding to 500 emails" guide. This doesn't require building the hosted adapter — it requires acknowledging that real pilots run on real servers and giving people a sane default.</p>
+<p><strong>Score-as-data, not score-as-doc.</strong> The PHQ-9 example shows scoring as metadata. What an analyst wants is <code>fact_score</code> populated automatically by <code>refresh</code>, with severity bands from the YAML, so that the "depression severity by site" query is one SELECT. If this already exists I missed it; if it doesn't, it's the single highest-leverage extension.</p>
+<p><strong>Mobile / iOS template.</strong> A bare-bones ResearchKit or Capacitor template that reads a FHIR Questionnaire and POSTs a QuestionnaireResponse to a hosted quickq endpoint. Even an "experimental" version would be a meaningful credibility unlock for the headless-delivery claim.</p>
+<p><strong>Longitudinal / EMA support.</strong> The repeating-group type and session model can probably be coaxed into supporting daily diaries, but there's no story for scheduling, reminders, or per-respondent timeline analytics. This is where REDCap and Qualtrics actively lose to specialized tools (MetricWire, Avicenna) — there's a gap to fill.</p>
+<h3 id="broaden-appeal-within-healthepi">Broaden appeal (within health/epi)<a class="headerlink" href="#broaden-appeal-within-healthepi" title="Permanent link">&para;</a></h3>
+<p><strong>Clinical research coordinators at academic medical centers.</strong> They live in REDCap and are forced into it. The pitch they'd respond to: "Your REDCap project export, in a portable database file, with FHIR for EHR integration." A <code>quickq import-redcap</code> command that ingests a REDCap data dictionary CSV and produces a quickq YAML would do more for adoption than any new feature. Frame quickq as a <em>destination</em> for REDCap projects, not a replacement.</p>
+<p><strong>Epi grad students.</strong> The audience that already knows R/Stata and is teaching themselves SQL. The pitch: "Your dissertation study, reproducibly archived in a single file you can deposit." Lean harder into the FAIR / data-deposit story; partner with a repository (Dryad, ICPSR) on a <code>quickq compliance export-for-deposit</code> profile. Build a tidyverse-shaped R package wrapping the DuckDB queries — the R recipes page is good content but a real package would move the needle.</p>
+<p><strong>Federally-funded center data coordinators (PCORnet, All of Us, NIH Common Fund consortia).</strong> The federated-aggregation pattern is exactly what these networks need below the level of full CDM integration. The pitch: "Distribute a query to twelve sites, get back twelve JSON files, assemble." Document a real worked example — fake but realistic three-site deployment with disclosure controls — and this audience will find it. The OMOP framing should be rewritten for this audience specifically.</p>
+<p><strong>Public health departments.</strong> Surveillance instruments (BRFSS-style, post-outbreak case-investigation forms, vaccine-adverse-event intake) are good fits for the YAML-versioned, FHIR-deliverable model, and these teams don't have REDCap budgets. The bundled <code>brfss_tobacco.yaml</code> and <code>cdc_demographics.yaml</code> already gesture at this. A "Public Health Surveillance" worked example using a realistic case-investigation form would land.</p>
+<p><strong>CDISC-aligned consortia / regulatory submissions.</strong> This is further afield but the data-model-as-contract framing speaks directly to the CDISC SDTM crowd, who think the same way. A worked example showing quickq's <code>fact_response</code> mapped to SDTM <code>QS</code> (Questionnaire) and <code>QSCG</code> (Custom Grouping) domains would attract a small but high-value audience and complement the OMOP story. The triad — FHIR for delivery, OMOP for observational queries, CDISC for regulatory — is a tighter pitch than any of the three alone.</p>
+<p><strong>ResearchKit / DHT (digital health technology) folks.</strong> The DHT-as-medical-device space (Apple Heart Study, Verily Baseline, big pharma decentralized trials) is FHIR-native and starved for portable instrument tooling. A minimal Swift/Capacitor reference client that consumes the FHIR export would put quickq on the map for this audience, which is far better-resourced than typical epi research.</p>
+<h3 id="closing-note">Closing note<a class="headerlink" href="#closing-note" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>One last note. The single biggest framing risk in the docs is that the landing page leads with mechanism ("YAML, FHIR, SQLite, DuckDB") rather than benefit. A researcher who already trusts the stack reads that and gets excited. A researcher comparing tools reads it and bounces to REDCap. Lead with what a researcher gets — a portable study file, reproducible analytics, multi-site without DUAs, FAIR-ready deposits — and let the stack be the proof, not the pitch.</p>
+</blockquote>
+<h2 id="how-this-audit-translated-into-work">How this audit translated into work<a class="headerlink" href="#how-this-audit-translated-into-work" title="Permanent link">&para;</a></h2>
+<p>Below is the index of beads tickets filed in direct response to this audit. Items already tracked by pre-existing tickets are noted rather than duplicated.</p>
+<h3 id="filed">Filed<a class="headerlink" href="#filed" title="Permanent link">&para;</a></h3>
+<p><strong>P2 (high-impact, do soon):</strong>
+- <code>quickq-io-3if</code> — Landing page benefit-first rewrite (audit follow-up)
+- <code>quickq-io-3g1</code> — <code>quickq import-redcap</code>: read REDCap data dictionary CSV → quickq YAML
+- <code>quickq-io-8p0</code> — <code>quickq deploy</code>: Docker image + reverse-proxy recipe + auth-token bolt-on</p>
+<p><strong>P3 (recommended improvements):</strong>
+- <code>quickq-io-c5j</code> — Grid/likert report rendering: ordinal + matrix output
+- <code>quickq-io-8ra</code> — OMOP feature: rename + reframe as "OMOP-aligned survey extracts"
+- <code>quickq-io-u67</code> — Document fork and merge in public docs (currently buried capital)
+- <code>quickq-io-tw8</code> — No-SQL analysis surface: saved-query templates
+- <code>quickq-io-enz</code> — Synthetic seed: per-question distribution overrides
+- <code>quickq-io-zso</code> — Surface <code>agg_respondent_scores</code> in public docs <em>(the feature exists; the auditor missed it, which means the surfacing is weak)</em></p>
+<p><strong>P4 (held for trigger):</strong>
+- <code>quickq-io-bbc</code> — Mobile / ResearchKit reference client
+- <code>quickq-io-fvm</code> — Longitudinal / EMA support: scheduling, reminders, timeline analytics
+- <code>quickq-io-wyo</code> — R package wrapper for OLAP queries</p>
+<h3 id="already-tracked">Already tracked<a class="headerlink" href="#already-tracked" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>quickq-io-uql</code> — Strategic: position quickq as a CDISC + FHIR + OMOP regulatory data tool (covers the CDISC-aligned-consortia recommendation)</li>
+<li><code>quickq-io-bt9</code> — Concise repository acknowledgement / related-work surface (touches the Dryad/ICPSR repository-partnership recommendation)</li>
+<li><code>quickq-io-4lc</code> — Multi-site tutorial rebuild (covers part of the federated worked-example recommendation)</li>
+</ul>
+<h3 id="deliberately-not-filed">Deliberately not filed<a class="headerlink" href="#deliberately-not-filed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>"Consolidate <code>data-dict</code>, <code>report</code>, <code>render</code>, <code>preview</code> under <code>quickq docs &lt;kind&gt;</code>" — interesting suggestion but the verb-soup framing is the auditor's outside view; internally these produce semantically different outputs (a dict, a Markdown summary, a rendered questionnaire, a live preview server) and conflating them would muddle the CLI for current users. Held without a ticket.</li>
+<li>Auditor's pure framing/marketing recommendations (e.g. "the README doesn't acknowledge REDCap exists") — absorbed into the landing-page benefit-first rewrite ticket rather than filed separately.</li>
+</ul>
+<h2 id="things-to-keep-in-mind-from-this-audit-on-future-work">Things to keep in mind from this audit on future work<a class="headerlink" href="#things-to-keep-in-mind-from-this-audit-on-future-work" title="Permanent link">&para;</a></h2>
+<p>A few cross-cutting observations that don't map to a single ticket but should shape ongoing decisions:</p>
+<ol>
+<li>
+<p><strong>A first-time visitor comparing tools is not the same persona as a researcher already invested in YAML + SQL.</strong> The docs currently serve the second well and the first poorly. The recent landing-page reorder helped; further passes should keep this distinction in mind.</p>
+</li>
+<li>
+<p><strong>The "credibility cracks" framing.</strong> Small admissions in passing — "we haven't end-to-end-tested every REDCap variant," "grid renders as a flat list" — accumulate into a sense of "almost-shipped." Each one is small to fix; collectively they compound. Worth periodically scanning the public docs for "but" and "however" sentences and deciding which deserve a fix versus a more prominent caveat.</p>
+</li>
+<li>
+<p><strong>REDCap is the unavoidable comparison.</strong> quickq doesn't have to win against REDCap on every axis; it has to be clear about which axes it's choosing to win on. The audit's strongest framing — "frame quickq as a <em>destination</em> for REDCap projects, not a replacement" — is a sharp positioning move that the docs could lean into without changing any code.</p>
+</li>
+<li>
+<p><strong>Score-as-data may or may not already exist.</strong> Worth a quick verification pass against the OLAP schema and scoring tests before filing the corresponding ticket.</p>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
