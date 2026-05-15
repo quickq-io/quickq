@@ -70,6 +70,7 @@ nav:
       - Synthetic Data (seed): reference/seed.md
       - Instrument Versioning & Data Governance: reference/versioning.md
       - Compliance & Governance: reference/compliance.md
+      - Multi-Site Studies (fork + merge): reference/multi-site.md
       - Federated Analytics: reference/federated.md
       - FHIR Interoperability: fhir.md
       - Third-party FHIR Renderers: reference/third-party-renderers.md
