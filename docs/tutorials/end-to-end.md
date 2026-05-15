@@ -337,6 +337,18 @@ quickq report analytics.duckdb study.db 1
 
 The report shows answer distributions for each question, completion statistics, and scores for any scoring rules defined on the instrument. With 50+ responses you should see meaningful distributions — how often each frequency option was chosen, the spread of pain ratings, which joints came up most often.
 
+!!! tip "Scoring is automatic"
+    Any scoring rule you defined in the YAML (PHQ-9 total + severity bands, GAD-7 category, AUDIT score, your own custom rule) is **computed during `quickq refresh`** and stored as one row per respondent per rule in `agg_respondent_scores`. The report surfaces these directly; you can also query them in SQL:
+
+    ```sql
+    SELECT scoring_rule_name, score_category, COUNT(*) AS n
+    FROM agg_respondent_scores
+    GROUP BY scoring_rule_name, score_category
+    ORDER BY scoring_rule_name, score_category;
+    ```
+
+    No scoring logic to maintain in your analysis code; the YAML scoring rule *is* the implementation.
+
 To export a human-readable document for sharing with colleagues, an IRB, or a coordinating center:
 
 ```bash
