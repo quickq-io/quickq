@@ -1,6 +1,6 @@
 # External Audit — Lay Epidemiologist Persona — 2026-05-14
 
-Second of two audits run on 2026-05-14. The first was a [data-applications generalist](external-audit-2026-05-14.md) — sharp on architecture and competitive positioning. This second one tests something the generalist couldn't: **does the landing page and walkthrough work for the persona we actually want to adopt the tool?**
+Second of two audits run on 2026-05-14. The first was a [data-applications generalist](2026-05-14-generalist.md) — sharp on architecture and competitive positioning. This second one tests something the generalist couldn't: **does the landing page and walkthrough work for the persona we actually want to adopt the tool?**
 
 ## Context
 
