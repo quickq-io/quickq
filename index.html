@@ -320,6 +320,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#when-quickq-fits-when-redcap-fits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When quickq fits, when REDCap fits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-what-youd-write" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what you'd write
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-you-get" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -331,10 +353,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#try-it-in-5-minutes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Try it in 5 minutes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analyze-in-the-tools-you-already-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyze in the tools you already use
       
     </span>
   </a>
@@ -368,17 +401,6 @@
     <span class="md-ellipsis">
       
         Why this stays simple
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authoring-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authoring example
       
     </span>
   </a>
@@ -1516,6 +1538,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#when-quickq-fits-when-redcap-fits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When quickq fits, when REDCap fits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-what-youd-write" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what you'd write
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-you-get" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1527,10 +1571,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#try-it-in-5-minutes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Try it in 5 minutes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analyze-in-the-tools-you-already-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyze in the tools you already use
       
     </span>
   </a>
@@ -1564,17 +1619,6 @@
     <span class="md-ellipsis">
       
         Why this stays simple
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authoring-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authoring example
       
     </span>
   </a>
@@ -1624,62 +1668,115 @@
 
 
 <h1 id="quickq">quickq<a class="headerlink" href="#quickq" title="Permanent link">&para;</a></h1>
-<p><strong>quickq is a survey authoring and analytics toolkit for health and epidemiology research.</strong> Author instruments in YAML, deliver them over FHIR, collect responses through a bundled web form, and analyze with SQL — all from one command-line tool, with a shared data model underneath that keeps every artifact in sync.</p>
+<p><strong>quickq is a survey authoring and analytics toolkit for health and epidemiology research.</strong> Author instruments once, collect responses through a bundled web form (or hand the export to REDCap or any other FHIR-compliant tool), and analyze in whatever stats environment you already use — Stata, R, Python, or SQL.</p>
+<p>The defining choice: every study lives in a single, portable file (<code>study.db</code>). Hand a collaborator that file and they have the complete study — instrument definitions, scoring rules, responses, audit trail. No proprietary platform, no vendor relationship, no losing the thread back to the original study.</p>
+<h2 id="when-quickq-fits-when-redcap-fits">When quickq fits, when REDCap fits<a class="headerlink" href="#when-quickq-fits-when-redcap-fits" title="Permanent link">&para;</a></h2>
+<p>quickq isn't trying to replace REDCap — it solves overlapping problems with different tradeoffs. Honest framing:</p>
+<p><strong>quickq is the right pick when:</strong></p>
+<ul>
+<li>Your study runs for years and you want the instrument <strong>version-controlled alongside your analysis code</strong>, not behind a clicking-around UI</li>
+<li>You're running <strong>multi-site research</strong> and need every site to use the same canonical instrument with the same analytical shape</li>
+<li>You want a <strong>single archival file</strong> that survives postdocs leaving, institutional access expiring, or vendor pricing changes</li>
+<li>You're depositing in a FAIR repository and need machine-readable provenance</li>
+</ul>
+<p><strong>REDCap (or Qualtrics) is the right pick when:</strong></p>
+<ul>
+<li>You need polished respondent management, e-consent, role-based access, and your institution's IT support</li>
+<li>You're a single-site team that doesn't care about archival portability past the study's end</li>
+<li>You're new to programming and need a clickable UI for everything</li>
+</ul>
+<p>The two tools coexist gracefully. quickq exports FHIR Questionnaire JSON that REDCap can import; REDCap exports FHIR QuestionnaireResponse JSON that quickq can ingest. Several teams use quickq for authoring + archival, REDCap for collection.</p>
+<h2 id="see-what-youd-write">See what you'd write<a class="headerlink" href="#see-what-youd-write" title="Permanent link">&para;</a></h2>
+<p>quickq's authoring format is YAML — plain text, indented, readable. A question looks like this:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phq.1</span>
+<span class="w">  </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Little interest or pleasure in doing things?</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single_choice</span>
+<span class="w">  </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Not</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">all&quot;</span><span class="p p-Indicator">,</span><span class="nt">   value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Several</span><span class="nv"> </span><span class="s">days&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;More</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">half</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">days&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Nearly</span><span class="nv"> </span><span class="s">every</span><span class="nv"> </span><span class="s">day&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>A whole questionnaire is a list of those. You can also drop in validated scales from the bundled library (PHQ-9, GAD-7, AUDIT-10, PRAPARE, PROMIS-10, …) with one line:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> library</span><span class="p">:</span><span class="w"> </span><span class="nv">phq9.1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>That pulls in the question text, the LOINC code, and the standard option set — already validated against the published scale.</p>
 <h2 id="what-you-get">What you get<a class="headerlink" href="#what-you-get" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Bundled instrument library.</strong> PHQ-9, GAD-7, AUDIT-10, PRAPARE, PROMIS-10, and more — ready to drop into a study. Compose your own instruments by referencing library questions, or author from scratch in YAML.</li>
-<li><strong>FHIR-compliant delivery.</strong> The bundled <code>quickq-forms</code> web app renders your instrument in a browser; or hand the FHIR export to REDCap, LHC-Forms, a custom mobile app, or any FHIR-compliant tool. Responses flow back the same way.</li>
+<li><strong>Delivery that isn't locked to one tool.</strong> The bundled <code>quickq-forms</code> web app renders your instrument in a browser. Or export to FHIR (a healthcare data standard) and hand it to REDCap, LHC-Forms, a custom mobile app, or any FHIR-compliant tool — responses flow back the same way. Your study is portable to any tool the institution standardizes on.</li>
 <li><strong>A data dictionary that can't drift.</strong> <code>quickq data-dict</code> reads the live schema and emits question text, types, concept codes, valid responses, skip conditions, and scoring memberships — generated from the data, not maintained alongside it.</li>
-<li><strong>Skip logic and QC as queries.</strong> Eligibility, integrity violations, and the structurally-missing-vs-truly-missing distinction are SQL recipes that work across every instrument unchanged.</li>
-<li><strong>Validated scoring computed automatically.</strong> PHQ-9 total + severity band, GAD-7 anxiety category, AUDIT alcohol-use score, custom scoring rules — all computed during <code>quickq refresh</code> and queryable from <code>agg_respondent_scores</code> without writing the scoring logic in your analysis code.</li>
+<li><strong>Skip logic + QC that distinguishes shown-but-skipped from never-asked.</strong> "Did the respondent decline to answer item 7, or did the skip logic hide it because they answered no to item 6?" quickq tracks both as first-class data; you don't have to reconstruct the distinction in your analysis code.</li>
+<li><strong>Validated scoring computed automatically.</strong> PHQ-9 total + severity band, GAD-7 anxiety category, AUDIT alcohol-use score, custom scoring rules — all computed during <code>quickq refresh</code> so a query for "mean PHQ-9 by site" is one line.</li>
 <li><strong>Versioning and provenance.</strong> Questions are immutable once used; rewording or changing an option produces a new versioned definition, so every response points to exactly what was asked.</li>
-<li><strong>Federated analytics + concept harmonization.</strong> Aggregate queries across multi-site databases without moving individual records. Questions and response options carry LOINC, SNOMED, and OMOP codes for cross-study harmonization.</li>
+<li><strong>Multi-site studies.</strong> <code>quickq fork</code> distributes a canonical instrument to N sites; <code>quickq merge</code> brings the populated databases back. Or run <strong>federated queries</strong> across sites without moving individual records. See <a href="reference/multi-site/">Multi-site studies</a>.</li>
 <li><strong>Compliance scaffolding.</strong> FAIR self-audit, GDPR-style erasure, IRB-style withdrawal, and metadata export are first-class commands aligned with HIPAA, GDPR, and IRB conventions.</li>
 </ul>
-<hr />
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq with the bundled form server</span>
+<h2 id="try-it-in-5-minutes">Try it in 5 minutes<a class="headerlink" href="#try-it-in-5-minutes" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install quickq with the bundled form server.</span>
+<span class="c1"># (uv is Astral&#39;s Python tool installer — like pip, but isolates each tool.</span>
+<span class="c1">#  Install via: brew install uv  or  curl -LsSf https://astral.sh/uv/install.sh | sh)</span>
 uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>git+https://github.com/quickq-io/quickq.git<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--with<span class="w"> </span>git+https://github.com/quickq-io/quickq-forms.git
 
 <span class="c1"># Author and serve a study</span>
-quickq<span class="w"> </span>init<span class="w"> </span>study.db<span class="w"> </span>--with-library<span class="w">          </span><span class="c1"># OLTP database + standard instrument library</span>
+quickq<span class="w"> </span>init<span class="w"> </span>study.db<span class="w"> </span>--with-library<span class="w">          </span><span class="c1"># study database + standard instrument library</span>
 quickq<span class="w"> </span>load<span class="w"> </span>instrument.yaml<span class="w"> </span>study.db<span class="w">         </span><span class="c1"># compile your YAML instrument</span>
 quickq<span class="w"> </span>serve<span class="w"> </span>study.db<span class="w">                        </span><span class="c1"># launch the form server in your browser</span>
 
 <span class="c1"># Build and inspect the analytics layer</span>
-quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb<span class="w">     </span><span class="c1"># OLTP → OLAP star schema</span>
+quickq<span class="w"> </span>refresh<span class="w"> </span>study.db<span class="w"> </span>analytics.duckdb<span class="w">     </span><span class="c1"># build the analytics database from the study</span>
 quickq<span class="w"> </span>report<span class="w">  </span>analytics.duckdb<span class="w"> </span>study.db<span class="w"> </span><span class="m">1</span><span class="w">   </span><span class="c1"># Markdown summary</span>
-quickq<span class="w"> </span>analytics<span class="w">                             </span><span class="c1"># interactive DuckDB UI (requires duckdb on PATH)</span>
 </code></pre></div>
 <p>For a copy-paste-runnable walkthrough that builds a complete study from scratch in about 15 minutes, see the <a href="tutorials/end-to-end/">End-to-End Walkthrough</a>.</p>
-<hr />
+<h2 id="analyze-in-the-tools-you-already-use">Analyze in the tools you already use<a class="headerlink" href="#analyze-in-the-tools-you-already-use" title="Permanent link">&para;</a></h2>
+<p>quickq's analytics layer is a standard DuckDB file (<code>analytics.duckdb</code>). DuckDB can be opened directly from R, Python, Julia, and the command line — no SQL knowledge required if you don't want it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Export the star schema as Parquet files for any tool that reads them</span>
+quickq<span class="w"> </span><span class="nb">export</span><span class="w"> </span>parquet<span class="w"> </span>analytics.duckdb<span class="w"> </span>-o<span class="w"> </span>data/
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># In R — read the Parquet exports</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">arrow</span><span class="p">)</span>
+<span class="n">responses</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span><span class="s">&quot;data/fact_response.parquet&quot;</span><span class="p">)</span>
+<span class="n">scores</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span><span class="s">&quot;data/agg_respondent_scores.parquet&quot;</span><span class="p">)</span>
+<span class="c1"># or query DuckDB directly via duckdb-r</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">duckdb</span><span class="p">);</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dbConnect</span><span class="p">(</span><span class="n">duckdb</span><span class="o">::</span><span class="nf">duckdb</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;analytics.duckdb&quot;</span><span class="p">)</span>
+<span class="n">respondents</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dbGetQuery</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SELECT * FROM dim_respondent&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># In Python — read the Parquet exports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;data/fact_response.parquet&quot;</span><span class="p">)</span>
+<span class="n">scores</span>    <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;data/agg_respondent_scores.parquet&quot;</span><span class="p">)</span>
+<span class="c1"># or query DuckDB directly</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">duckdb</span>
+<span class="n">con</span> <span class="o">=</span> <span class="n">duckdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;analytics.duckdb&quot;</span><span class="p">)</span>
+<span class="n">respondents</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM dim_respondent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
+</code></pre></div>
+<p>If you do write SQL, the analytics layer rewards you: every quickq study has the same schema, so the same query works across studies. See <a href="reference/query-patterns/">Query Patterns by Question Type</a> for the canonical recipes.</p>
 <h2 id="how-quickq-fits-together">How quickq fits together<a class="headerlink" href="#how-quickq-fits-together" title="Permanent link">&para;</a></h2>
 <div style="max-width: 50%; margin: 0 auto;">
 
 <pre class="mermaid"><code>graph TD
-    A["&lt;b&gt;Authoring&lt;/b&gt;&lt;br/&gt;YAML"]
-    B["&lt;b&gt;OLTP&lt;/b&gt;&lt;br/&gt;study.db (SQLite)"]
-    C["&lt;b&gt;Delivery&lt;/b&gt;&lt;br/&gt;FHIR R4"]
-    D["&lt;b&gt;OLAP&lt;/b&gt;&lt;br/&gt;analytics.duckdb (DuckDB)"]
-    E["&lt;b&gt;Analysis&lt;/b&gt;&lt;br/&gt;SQL · Reports · Parquet · Federated"]
+    A["&lt;b&gt;Authoring&lt;/b&gt;&lt;br/&gt;(YAML)"]
+    B["&lt;b&gt;Study database&lt;/b&gt;&lt;br/&gt;study.db"]
+    C["&lt;b&gt;Delivery&lt;/b&gt;&lt;br/&gt;any FHIR-compliant tool"]
+    D["&lt;b&gt;Analytics database&lt;/b&gt;&lt;br/&gt;analytics.duckdb"]
+    E["&lt;b&gt;Analysis&lt;/b&gt;&lt;br/&gt;Stata · R · Python · SQL · reports"]
 
     A --&gt;|quickq load| B
-    B &lt;--&gt;|FHIR Questionnaire / QuestionnaireResponse| C
+    B &lt;--&gt;|FHIR exchange| C
     B --&gt;|quickq refresh| D
     D --&gt; E</code></pre>
 
 </div>
 
-<p>Two databases connected by a refresh. <code>study.db</code> (SQLite) is the <em>source of truth</em> — normalized, FK-constrained, FHIR-compatible, the file that gets backed up, version-controlled, and handed to collaborators. <code>analytics.duckdb</code> (DuckDB) is the <em>analytical contract</em> — a star schema rebuilt on demand from the OLTP, with the same shape for every quickq study so the same query works against any of them.</p>
-<p><strong><code>study.db</code> is the portable study artifact.</strong> It's a standard SQLite file readable by any SQL tool or language with SQLite bindings. The framework around it is built on open standards:</p>
+<p>Two databases connected by a <code>refresh</code> step. <strong><code>study.db</code></strong> is the source of truth — your instruments, your responses, your audit trail, in one file. <strong><code>analytics.duckdb</code></strong> is rebuilt from it on demand, in a shape designed for analytical queries (every quickq study has the same schema, so the same query works across studies).</p>
+<p>Both files are standard, single-file SQLite and DuckDB databases — readable by any SQL tool in any language, with or without quickq installed. The framework around them is built on open standards:</p>
 <ul>
-<li>Instruments are authored in YAML and validated against existing library content to avoid duplicating established questions; a preview renderer shows the instrument before deployment.</li>
-<li>Delivery is via FHIR R4. quickq exports a <code>Questionnaire.json</code>, any compliant tool renders and collects responses, and quickq ingests the resulting <code>QuestionnaireResponse.json</code> back.</li>
-<li>Questions and response options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization.</li>
-<li>A Python SDK provides a clean interface to both databases; the SQLite schema is the contract for non-Python implementations.</li>
+<li>Instruments are authored in YAML, validated against existing library content, and previewable before deployment.</li>
+<li>Delivery is via FHIR R4 (a healthcare data standard). quickq exports <code>Questionnaire</code> JSON, any compliant tool collects responses, quickq ingests <code>QuestionnaireResponse</code> JSON back.</li>
+<li>Questions and options carry standard vocabulary codes (LOINC, SNOMED, OMOP) for cross-study harmonization.</li>
 </ul>
-<hr />
 <h2 id="what-it-does">What it does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
 <p><code>quickq --help</code> shows the full command surface, grouped by purpose:</p>
 <div class="highlight"><pre><span></span><code>Core              new · init · load · preview · serve · refresh · seed · data-dict
@@ -1695,18 +1792,16 @@ Compliance        compliance set-metadata · compliance fair-check
 
 Federated         federated query
 </code></pre></div>
-<p>A complete study lifecycle uses commands from each group:</p>
 <ul>
-<li><strong>Core</strong> scaffolds the study repository, authors the instrument, collects responses, and produces analytical outputs (reports, exports, scoring, the DuckDB UI via <code>quickq analytics</code>).</li>
-<li><strong>Study management</strong> combines and divides study databases. <code>quickq fork</code> scaffolds a new study database from an existing one's structure (questions, options, scoring rules) without copying responses — useful for multi-site distribution, dev/staging environments, or generational handoff. <code>quickq merge</code> is the inverse: combine multiple site databases into a single combined study.</li>
-<li><strong>FHIR</strong> is the cross-language handoff. Export a <code>Questionnaire</code> JSON for any FHIR-compatible delivery tool (LHC-Forms, REDCap, a custom mobile app), then import the <code>QuestionnaireResponse</code> back. See <a href="reference/third-party-renderers/">Third-party FHIR renderers</a>.</li>
-<li><strong>Compliance</strong> supports common research-data workflows aligned with HIPAA, GDPR, and IRB conventions: FAIR-aligned metadata for repository deposit, a FAIR self-audit, GDPR-style erasure, and IRB-style withdrawal. These commands implement specific mechanical operations and assist compliance work; they do not certify that your deployment meets any framework on its own.</li>
+<li><strong>Core</strong> scaffolds the study repository, authors the instrument, collects responses, and produces analytical outputs.</li>
+<li><strong>Study management</strong> distributes and combines studies. <a href="reference/multi-site/"><code>quickq fork</code></a> scaffolds a new study from an existing one's structure (questions, scoring rules) without copying responses. <a href="reference/multi-site/"><code>quickq merge</code></a> is the inverse.</li>
+<li><strong>FHIR</strong> is the cross-tool handoff. See <a href="reference/third-party-renderers/">Third-party FHIR renderers</a>.</li>
+<li><strong>Compliance</strong> supports common research-data workflows aligned with HIPAA, GDPR, and IRB conventions.</li>
 <li><strong>Federated</strong> runs aggregate queries across multiple site databases without ever moving individual-level records, with cell-size suppression for disclosure control.</li>
 </ul>
-<hr />
 <h2 id="why-this-stays-simple">Why this stays simple<a class="headerlink" href="#why-this-stays-simple" title="Permanent link">&para;</a></h2>
 <p>The foundation of quickq is a small, well-shaped data model. That shape is what makes standardization, analysis, and quality control simple SQL queries rather than separate workflows: the data dictionary is a query, skip-logic QC is a query, cross-study harmonization is a JOIN. The data is already in a form that's easy to reason about, so dictionaries, catalogs, and scoring rules don't have to be maintained alongside it — they're views of the model itself.</p>
-<p>Three concrete consequences:</p>
+<p>Four concrete consequences:</p>
 <ul>
 <li><strong>Skip logic is structured rows in <code>skip_rule</code>, not prose in a PDF.</strong> Eligibility, integrity, and the structurally-missing / truly-missing distinction are SQL recipes that work across every instrument unchanged. See <a href="reference/skip-logic-qc/">Skip-Logic Recipes</a>.</li>
 <li><strong>The data dictionary is a query, not a Word document.</strong> <code>quickq data-dict</code> reads the live schema and emits a complete, up-to-date dictionary that can't drift from the data because it <em>is</em> the data. See the <a href="reference/example-prapare-data-dict/">PRAPARE Data Dictionary</a> for a worked example.</li>
@@ -1717,45 +1812,14 @@ Federated         federated query
 <p>Scoring rules, concept codes, errata, lineage between question versions, and the data-quality flags raised at collection time follow the same pattern: they are first-class rows in the model, not annotations bolted onto it later.</p>
 <div class="admonition tip">
 <p class="admonition-title">Going further on the data model</p>
-<p>For the full schema with ER diagrams, see the <strong><a href="database/data-model/">Data Model overview</a></strong> — eight logical layers across the OLTP source-of-truth and the OLAP analytical projection, with diagrams for the four that carry the most analytical weight.</p>
+<p>For the full schema with ER diagrams, see the <strong><a href="database/data-model/">Data Model overview</a></strong> — eight logical layers across the study source-of-truth and the analytical projection, with diagrams for the four that carry the most analytical weight.</p>
 </div>
-<hr />
-<h2 id="authoring-example">Authoring example<a class="headerlink" href="#authoring-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nt">questionnaire</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PHQ-9</span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span>
-<span class="w">  </span><span class="nt">canonical_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://quickq.io/instruments/phq-9</span>
-
-<span class="w">  </span><span class="nt">option_sets</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">phq_frequency</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Not</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">all&quot;</span><span class="p p-Indicator">,</span><span class="nt">              value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p p-Indicator">,</span><span class="nt"> concept</span><span class="p">:</span><span class="w"> </span><span class="nv">LOINC</span><span class="p p-Indicator">:</span><span class="nv">LA6568-5</span><span class="w"> </span><span class="p p-Indicator">}</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Several</span><span class="nv"> </span><span class="s">days&quot;</span><span class="p p-Indicator">,</span><span class="nt">            value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="p p-Indicator">,</span><span class="nt"> concept</span><span class="p">:</span><span class="w"> </span><span class="nv">LOINC</span><span class="p p-Indicator">:</span><span class="nv">LA6569-3</span><span class="w"> </span><span class="p p-Indicator">}</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;More</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">half</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">days&quot;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p p-Indicator">,</span><span class="nt"> concept</span><span class="p">:</span><span class="w"> </span><span class="nv">LOINC</span><span class="p p-Indicator">:</span><span class="nv">LA6570-1</span><span class="w"> </span><span class="p p-Indicator">}</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Nearly</span><span class="nv"> </span><span class="s">every</span><span class="nv"> </span><span class="s">day&quot;</span><span class="p p-Indicator">,</span><span class="nt">        value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span><span class="p p-Indicator">,</span><span class="nt"> concept</span><span class="p">:</span><span class="w"> </span><span class="nv">LOINC</span><span class="p p-Indicator">:</span><span class="nv">LA6571-9</span><span class="w"> </span><span class="p p-Indicator">}</span>
-
-<span class="w">  </span><span class="nt">questions</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phq-1</span>
-<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Little interest or pleasure in doing things?</span>
-<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single_choice</span>
-<span class="w">      </span><span class="nt">concept</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOINC:44250-9</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$phq_frequency</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">link_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phq-2</span>
-<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Feeling down, depressed, or hopeless?</span>
-<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single_choice</span>
-<span class="w">      </span><span class="nt">concept</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOINC:44255-8</span>
-<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$phq_frequency</span>
-</code></pre></div>
-<hr />
 <h2 id="what-quickq-is-not">What quickq is not<a class="headerlink" href="#what-quickq-is-not" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A patient portal or EMR integration layer. quickq exports FHIR and ingests it back; integration is the delivery tool's job.</li>
 <li>An always-on service. The refresh model is batch and on-demand, appropriate for research use.</li>
-<li>A replacement for managed survey platforms. REDCap and Qualtrics solve overlapping problems with built-in respondent management, role-based access, and institutional support; the right tool depends on what your study needs over its lifetime. See <a href="design_decisions/#when-to-use-quickq">When to use quickq</a>.</li>
+<li>A managed survey platform. See the comparison above — REDCap, Qualtrics, and quickq each solve overlapping problems with different tradeoffs.</li>
 </ul>
-<hr />
 <h2 id="going-deeper">Going deeper<a class="headerlink" href="#going-deeper" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="tutorials/end-to-end/">End-to-End Walkthrough</a> — copy-paste runnable; build a study from scratch in about 15 minutes.</li>
