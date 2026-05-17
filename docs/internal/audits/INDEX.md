@@ -39,6 +39,8 @@ See [audit-workflow.md](../audit-workflow.md) for the framework these follow, an
 
 **Spawned 2 new tickets** (`99l` minimum-prereqs onboarding, `dmk` deploy-today bridge) + comments on `3if`, `tw8`, `8p0` with specific persona findings.
 
+**Regression run 2026-05-16** — re-ran Maria against the landing page after `quickq-io-3if` shipped (commit `fec2a69`). **Decision moved**: from "back to REDCap" to "going to try `quickq new` on a side test this week." 6 of 8 original complaints fully fixed; 1 partially addressed (`99l` still open); 1 reinforced (YAML positive moment now above the fold). New ask filed for a long-tail "study repo at 6 months" worked example. Full regression notes in the [audit doc](2026-05-14-persona-lay-epi.md#regression-2026-05-16). **First formal regression-audit exercise of the workflow.**
+
 ---
 
 ## Queued / planned

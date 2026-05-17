@@ -136,6 +136,53 @@ The agent was given:
 >
 > 5. **Prerequisites multiply silently.** The walkthrough requires Python, uv, Node, npm, and (for analytics) the DuckDB CLI separately. Each is well-justified internally; cumulatively they're a wall for the Maria persona. Either a one-shot installer script, or a clear "minimum to try authoring and previewing" path that doesn't require Node or DuckDB, would let researchers get a first win in twenty minutes without a sysadmin.
 
+## Regression: 2026-05-16
+
+After `quickq-io-3if` (landing page benefit-first rewrite, commit `fec2a69`) shipped, we re-ran Maria against the updated landing page as the audit-workflow doc prescribes. This is the **first formal regression audit** of the workflow we documented.
+
+### Result: decision moved.
+
+Maria's verdict in the original audit was "Not for this study. Going back to REDCap." Verdict in the regression: **"I'm going to try `quickq new` on a small test instrument this week. That's a real change from the prior audit. The multi-site framing in particular is what tipped it; the readable YAML is what made me believe the trial wouldn't be a waste of an afternoon."**
+
+The audit-workflow's hypothesis — that the persona-bouncing problem was a docs/framing problem solvable without architecture changes — is supported by this regression.
+
+### Original complaints, status
+
+| # | Original complaint | Status |
+|---|---|---|
+| 1 | First-screen jargon density (OLTP / OLAP / DuckDB / Parquet / FHIR / SQLite / YAML on one screen) | **Fixed.** Diagram labels translated; OLTP/OLAP retired from user-facing text. |
+| 2 | FHIR mentioned 5+ times, never translated | **Fixed.** Now glossed "(a healthcare data standard)" and consistently framed as "the thing that lets quickq talk to other tools." |
+| 3 | SQL led the opening tagline; biggest barrier | **Fixed.** Opening now "Stata, R, Python, or SQL — whichever you already know." Analysis section leads with `read_parquet()` in R/Python before any SQL appears. Step 9 of the walkthrough no longer reads as "SQL is the point." |
+| 4 | "When to use quickq" buried three levels deep | **Fixed.** Moved to top of page as positive-framed "When quickq fits, when REDCap fits" — Maria called this "the single biggest improvement." |
+| 5 | Docs don't acknowledge REDCap exists | **Fixed.** REDCap named explicitly on first screen with a real "use REDCap when…" block. |
+| 6 | `uv` used without explanation in Quick Start | **Fixed.** Inline gloss and install instructions provided. |
+| 7 | Prerequisites multiply silently (Python + uv + Node + npm + DuckDB CLI) | **Partially addressed.** The walkthrough now mentions `pip install` as an alternative, which removes most of Maria's prerequisites anxiety. The full Node/DuckDB pruning is `quickq-io-99l` (minimum-prereqs onboarding), still open. |
+| 8 | YAML readability + bundled library were positives | **Reinforced.** A "See what you'd write" section was added pulling the YAML example earlier; `{ library: phq9.1 }` is now visible above the fold. |
+
+### New findings from this regression
+
+Maria surfaced four new niggles and one substantial ask:
+
+**Niggles (deferred for next landing-page touch; not filed separately):**
+
+- The library-scales bullet doesn't distinguish "drop in and scored automatically" (PHQ-9, GAD-7, AUDIT) from "drop in and the raw items are exposed; scoring is on you" (PROMIS, which has its own scoring conventions). One-line clarification.
+- The "Why this stays simple" section uses internal jargon (`skip_rule`, `fact_response`, `dim_question`, FAIR/IRB/HIPAA acronyms) with less gloss than the top of the page; the explanatory tone slips. Either label as "Advanced" or apply the same plain-language discipline.
+- The `quickq --help` command list shows `compliance fair-check` and `federated query` with no inline gloss. Minor.
+- Page-order refinement: consider moving "See what you'd write" *above* "When quickq fits" — Maria suggested the comparison is more persuasive once the reader has seen what the artifact actually looks like.
+
+**Substantial ask (filed as new ticket):**
+
+- A "what does a study repo look like at 6 months" worked example. Maria's framing: "the page sells the start beautifully and gestures at the long tail; the long tail is where I'd lose 100 hours if you've gotten it wrong." This is one of the few first-look concerns the rewrite did NOT address — and the one that would move Maria from "trying on a side test" to "writing the next protocol against quickq." Tracked separately.
+
+### What this regression teaches us about the workflow
+
+- **The workflow earns its cost.** The Maria agent ran in ~2 minutes, the writeup in ~10. Total cost of a regression audit is roughly half an hour of human attention. The value — clearly named "did the fix land" with specifics — is high enough to justify making this a standard discipline.
+- **Personas evolve via regression.** Maria's persona block in [personas.md](personas.md) doesn't need updating from this regression (the persona behaved consistently), but the regression note here will be useful when commissioning a third Maria audit. Future audits should be able to ask "does Maria still bounce on X?" against a known baseline.
+- **"Decision moved" is the right success metric for persona audits.** Not "did the page improve" but "did this specific persona change their behavior." It's binary, falsifiable, and aligned with the actual goal.
+- **Some niggles should be deferred, not filed.** The audit produced four small recommendations that don't deserve their own tickets — they're notes-to-self for the next landing-page touch. The audit-workflow doc's "deliberately not filed" discipline holds up in practice; resist the temptation to file every finding.
+
+---
+
 ## How this audit translated into work
 
 ### Already covered (with refinements added to existing tickets)
