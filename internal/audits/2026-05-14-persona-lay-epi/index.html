@@ -1490,6 +1490,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#regression-2026-05-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression: 2026-05-16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Regression: 2026-05-16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#result-decision-moved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result: decision moved.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#original-complaints-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Original complaints, status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-findings-from-this-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New findings from this regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-regression-teaches-us-about-the-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this regression teaches us about the workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-this-audit-translated-into-work" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1669,6 +1730,84 @@
 </li>
 </ol>
 </blockquote>
+<h2 id="regression-2026-05-16">Regression: 2026-05-16<a class="headerlink" href="#regression-2026-05-16" title="Permanent link">&para;</a></h2>
+<p>After <code>quickq-io-3if</code> (landing page benefit-first rewrite, commit <code>fec2a69</code>) shipped, we re-ran Maria against the updated landing page as the audit-workflow doc prescribes. This is the <strong>first formal regression audit</strong> of the workflow we documented.</p>
+<h3 id="result-decision-moved">Result: decision moved.<a class="headerlink" href="#result-decision-moved" title="Permanent link">&para;</a></h3>
+<p>Maria's verdict in the original audit was "Not for this study. Going back to REDCap." Verdict in the regression: <strong>"I'm going to try <code>quickq new</code> on a small test instrument this week. That's a real change from the prior audit. The multi-site framing in particular is what tipped it; the readable YAML is what made me believe the trial wouldn't be a waste of an afternoon."</strong></p>
+<p>The audit-workflow's hypothesis — that the persona-bouncing problem was a docs/framing problem solvable without architecture changes — is supported by this regression.</p>
+<h3 id="original-complaints-status">Original complaints, status<a class="headerlink" href="#original-complaints-status" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Original complaint</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>First-screen jargon density (OLTP / OLAP / DuckDB / Parquet / FHIR / SQLite / YAML on one screen)</td>
+<td><strong>Fixed.</strong> Diagram labels translated; OLTP/OLAP retired from user-facing text.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FHIR mentioned 5+ times, never translated</td>
+<td><strong>Fixed.</strong> Now glossed "(a healthcare data standard)" and consistently framed as "the thing that lets quickq talk to other tools."</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SQL led the opening tagline; biggest barrier</td>
+<td><strong>Fixed.</strong> Opening now "Stata, R, Python, or SQL — whichever you already know." Analysis section leads with <code>read_parquet()</code> in R/Python before any SQL appears. Step 9 of the walkthrough no longer reads as "SQL is the point."</td>
+</tr>
+<tr>
+<td>4</td>
+<td>"When to use quickq" buried three levels deep</td>
+<td><strong>Fixed.</strong> Moved to top of page as positive-framed "When quickq fits, when REDCap fits" — Maria called this "the single biggest improvement."</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Docs don't acknowledge REDCap exists</td>
+<td><strong>Fixed.</strong> REDCap named explicitly on first screen with a real "use REDCap when…" block.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>uv</code> used without explanation in Quick Start</td>
+<td><strong>Fixed.</strong> Inline gloss and install instructions provided.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Prerequisites multiply silently (Python + uv + Node + npm + DuckDB CLI)</td>
+<td><strong>Partially addressed.</strong> The walkthrough now mentions <code>pip install</code> as an alternative, which removes most of Maria's prerequisites anxiety. The full Node/DuckDB pruning is <code>quickq-io-99l</code> (minimum-prereqs onboarding), still open.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>YAML readability + bundled library were positives</td>
+<td><strong>Reinforced.</strong> A "See what you'd write" section was added pulling the YAML example earlier; <code>{ library: phq9.1 }</code> is now visible above the fold.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="new-findings-from-this-regression">New findings from this regression<a class="headerlink" href="#new-findings-from-this-regression" title="Permanent link">&para;</a></h3>
+<p>Maria surfaced four new niggles and one substantial ask:</p>
+<p><strong>Niggles (deferred for next landing-page touch; not filed separately):</strong></p>
+<ul>
+<li>The library-scales bullet doesn't distinguish "drop in and scored automatically" (PHQ-9, GAD-7, AUDIT) from "drop in and the raw items are exposed; scoring is on you" (PROMIS, which has its own scoring conventions). One-line clarification.</li>
+<li>The "Why this stays simple" section uses internal jargon (<code>skip_rule</code>, <code>fact_response</code>, <code>dim_question</code>, FAIR/IRB/HIPAA acronyms) with less gloss than the top of the page; the explanatory tone slips. Either label as "Advanced" or apply the same plain-language discipline.</li>
+<li>The <code>quickq --help</code> command list shows <code>compliance fair-check</code> and <code>federated query</code> with no inline gloss. Minor.</li>
+<li>Page-order refinement: consider moving "See what you'd write" <em>above</em> "When quickq fits" — Maria suggested the comparison is more persuasive once the reader has seen what the artifact actually looks like.</li>
+</ul>
+<p><strong>Substantial ask (filed as new ticket):</strong></p>
+<ul>
+<li>A "what does a study repo look like at 6 months" worked example. Maria's framing: "the page sells the start beautifully and gestures at the long tail; the long tail is where I'd lose 100 hours if you've gotten it wrong." This is one of the few first-look concerns the rewrite did NOT address — and the one that would move Maria from "trying on a side test" to "writing the next protocol against quickq." Tracked separately.</li>
+</ul>
+<h3 id="what-this-regression-teaches-us-about-the-workflow">What this regression teaches us about the workflow<a class="headerlink" href="#what-this-regression-teaches-us-about-the-workflow" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The workflow earns its cost.</strong> The Maria agent ran in ~2 minutes, the writeup in ~10. Total cost of a regression audit is roughly half an hour of human attention. The value — clearly named "did the fix land" with specifics — is high enough to justify making this a standard discipline.</li>
+<li><strong>Personas evolve via regression.</strong> Maria's persona block in <a href="../personas/">personas.md</a> doesn't need updating from this regression (the persona behaved consistently), but the regression note here will be useful when commissioning a third Maria audit. Future audits should be able to ask "does Maria still bounce on X?" against a known baseline.</li>
+<li><strong>"Decision moved" is the right success metric for persona audits.</strong> Not "did the page improve" but "did this specific persona change their behavior." It's binary, falsifiable, and aligned with the actual goal.</li>
+<li><strong>Some niggles should be deferred, not filed.</strong> The audit produced four small recommendations that don't deserve their own tickets — they're notes-to-self for the next landing-page touch. The audit-workflow doc's "deliberately not filed" discipline holds up in practice; resist the temptation to file every finding.</li>
+</ul>
+<hr />
 <h2 id="how-this-audit-translated-into-work">How this audit translated into work<a class="headerlink" href="#how-this-audit-translated-into-work" title="Permanent link">&para;</a></h2>
 <h3 id="already-covered-with-refinements-added-to-existing-tickets">Already covered (with refinements added to existing tickets)<a class="headerlink" href="#already-covered-with-refinements-added-to-existing-tickets" title="Permanent link">&para;</a></h3>
 <ul>
